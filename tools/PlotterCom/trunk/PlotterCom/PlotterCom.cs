@@ -11,7 +11,7 @@ using System.Net;
  /*  PlotterCom - Tools for HPGL and plotters.
   *  PlotterCom.cs - Main Programm.
   * 
-  *  Copyright (C) 2011  André Matuschek
+  *  Copyright (C) 2011  AndrÃ© Matuschek
   *  
   *  This program is free software: you can redistribute it and/or modify
   *  it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ namespace PlotterCom {
 
 
         private void Form_Hauptfenster_FormClosing(object sender, FormClosingEventArgs e) {
-            if (PlotterCom.ConfigManager.Config.BeimBeendenBestätigen) {
+            if (PlotterCom.ConfigManager.Config.BeimBeendenBestÃ¤tigen) {
                 DialogResult Antwort = MessageBox.Show("Programm beeden?", "Beenden", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (Antwort == DialogResult.Yes) {
@@ -91,9 +91,9 @@ namespace PlotterCom {
             this.Close();
         }
 
-        private void überPlotterComToolStripMenuItem_Click(object sender, EventArgs e) {
+        private void Ã¼berPlotterComToolStripMenuItem_Click(object sender, EventArgs e) {
             MessageBox.Show(
-                "PlotterCom  Copyright (C) 2011  André Matuschek\n" + 
+                "PlotterCom  Copyright (C) 2011  AndrÃ© Matuschek\n" + 
                 "This program comes with ABSOLUTELY NO WARRANTY.\n" + 
                 "This is free software, and you are welcome to redistribute it " +
                 "under certain conditions; see http://www.gnu.org/licenses/ for details.",
@@ -148,7 +148,7 @@ namespace PlotterCom {
             SendeStreamAnPlotter(datenquelle, datenquelle.BaseStream.Length);
         }
 
-        private void SendeStreamAnPlotter(System.IO.TextReader datenquelle, long länge) {
+        private void SendeStreamAnPlotter(System.IO.TextReader datenquelle, long lÃ¤nge) {
             DateTime StartZeitpunkt = DateTime.Now;
             TimeSpan SendeZeit = TimeSpan.Zero;
             DateTime LetztesETAUpdate = DateTime.Now;
@@ -158,7 +158,7 @@ namespace PlotterCom {
             int geleseneBytes = 0;
             double Fortschritt = 0;
             char[] buffer = null;
-            int blockGröße = 8;
+            int blockGrÃ¶ÃŸe = 8;
 
             if (datenquelle == null) {
                 PlotterCom.StaticLogger.Log("Kann keine Daten senden. Datenquelle ist null!", 4);
@@ -175,8 +175,8 @@ namespace PlotterCom {
             button_Abbruch.Enabled = false;
             button_Optimieren.Enabled = false;
             button_Analysieren.Enabled = false;
-            button_Öffnen.Enabled = false;
-            button_Schließen.Enabled = false;
+            button_Ã–ffnen.Enabled = false;
+            button_SchlieÃŸen.Enabled = false;
             button_Viewer.Enabled = false;
             button_Skalieren.Enabled = false;
             button_Speichern.Enabled = false;
@@ -207,7 +207,7 @@ namespace PlotterCom {
 
                 if (Array.IndexOf(System.IO.Ports.SerialPort.GetPortNames(), _Port.PortName) == -1) {
                     MessageBox.Show("Der in den Einstellungen hinterlegte Port \"" + _Port.PortName +
-                        "\" ist nicht verfügbar. Bitte die Port-Einstellungen anpassen!",
+                        "\" ist nicht verfÃ¼gbar. Bitte die Port-Einstellungen anpassen!",
                         "Fehler!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                     button_Senden.Enabled = true;
@@ -218,8 +218,8 @@ namespace PlotterCom {
                     button_Abbruch.Enabled = true;
                     button_Optimieren.Enabled = true;
                     button_Analysieren.Enabled = true;
-                    button_Öffnen.Enabled = true;
-                    button_Schließen.Enabled = true;
+                    button_Ã–ffnen.Enabled = true;
+                    button_SchlieÃŸen.Enabled = true;
                     button_Viewer.Enabled = true;
 
                     ButtonsAnAus();
@@ -234,15 +234,15 @@ namespace PlotterCom {
                 }
 
                 try {
-                    PlotterCom.StaticLogger.Log("Versuche den Port zu öffnen!", 6);
+                    PlotterCom.StaticLogger.Log("Versuche den Port zu Ã¶ffnen!", 6);
                     _Port.Open();
                 } catch (Exception ex) {
-                    PlotterCom.StaticLogger.Log("Konnte den Port nicht öffnen!", 4);
+                    PlotterCom.StaticLogger.Log("Konnte den Port nicht Ã¶ffnen!", 4);
                     PlotterCom.StaticLogger.Log("Fehlermeldung: " + ex.Message, 4);
                     return;
                 }
 
-                PlotterCom.StaticLogger.Log("Port wurde neu geöffnet. Warte 100ms auf Bereitschaft!", 7);
+                PlotterCom.StaticLogger.Log("Port wurde neu geÃ¶ffnet. Warte 100ms auf Bereitschaft!", 7);
                 System.Windows.Forms.Application.DoEvents();
                 System.Threading.Thread.Sleep(50);
                 System.Windows.Forms.Application.DoEvents();
@@ -253,7 +253,7 @@ namespace PlotterCom {
                 _Port.DiscardOutBuffer();
             }
 
-            buffer = new char[blockGröße];
+            buffer = new char[blockGrÃ¶ÃŸe];
 
             while (!_SendenAbbrechen) {
 
@@ -306,7 +306,7 @@ namespace PlotterCom {
                 toolStripStatusLabel.Text = "Sende...";
 
                 // Lese einen Datenblock.
-                geleseneBytes = datenquelle.Read(buffer, 0, blockGröße);
+                geleseneBytes = datenquelle.Read(buffer, 0, blockGrÃ¶ÃŸe);
 
                 if (geleseneBytes == 0) {
                     break;
@@ -314,18 +314,18 @@ namespace PlotterCom {
 
                 // Sende einen Datenblock
                 try {
-                    _Port.Write(buffer, 0, blockGröße);
+                    _Port.Write(buffer, 0, blockGrÃ¶ÃŸe);
                 } catch (Exception ex) {
                     PlotterCom.StaticLogger.Log("Konnte nicht senden!", 4);
                     PlotterCom.StaticLogger.Log("Fehlermeldung: " + ex.Message, 4);
                 }
 
-                geschriebeneBytes += blockGröße;
+                geschriebeneBytes += blockGrÃ¶ÃŸe;
 
-                if ((länge > 0) && (länge > geleseneBytes)) {
+                if ((lÃ¤nge > 0) && (lÃ¤nge > geleseneBytes)) {
 
-                    if (geschriebeneBytes < länge) {
-                        Fortschritt = ((double)geschriebeneBytes / (double)(länge + 4D));
+                    if (geschriebeneBytes < lÃ¤nge) {
+                        Fortschritt = ((double)geschriebeneBytes / (double)(lÃ¤nge + 4D));
                     } else {
                         Fortschritt = 1;
                     }
@@ -369,8 +369,8 @@ namespace PlotterCom {
             button_Abbruch.Enabled = true;
             button_Optimieren.Enabled = true;
             button_Analysieren.Enabled = true;
-            button_Öffnen.Enabled = true;
-            button_Schließen.Enabled = true;
+            button_Ã–ffnen.Enabled = true;
+            button_SchlieÃŸen.Enabled = true;
             button_Viewer.Enabled = true;
 
             ButtonsAnAus();
@@ -404,8 +404,8 @@ namespace PlotterCom {
         }
 
 
-        private void button_Öffnen_Click(object sender, EventArgs e) {
-            PlotterCom.StaticLogger.Log("Benutzer hat 'Öffnen' geklickt!", 8);
+        private void button_Ã–ffnen_Click(object sender, EventArgs e) {
+            PlotterCom.StaticLogger.Log("Benutzer hat 'Ã–ffnen' geklickt!", 8);
             DialogResult Antwort;
 
             Antwort = openFileDialog_HPGL.ShowDialog();
@@ -418,7 +418,7 @@ namespace PlotterCom {
             if (System.IO.File.Exists(openFileDialog_HPGL.FileName)) {
                 toolStripProgressBar_Unten.Visible = true;
                 button_Abbruch.Enabled = true;
-                button_Öffnen.Enabled = false;
+                button_Ã–ffnen.Enabled = false;
 
                 button_Senden.Image = global::PlotterCom.Properties.Resources.agt_print;
 
@@ -440,14 +440,14 @@ namespace PlotterCom {
                 }
 
             } else {
-                PlotterCom.StaticLogger.Log("Benutzer hat eine Datei ausgewählt, die nicht exisitiert!", 4);
+                PlotterCom.StaticLogger.Log("Benutzer hat eine Datei ausgewÃ¤hlt, die nicht exisitiert!", 4);
                 MessageBox.Show(
-                    "Die Datei kann nicht geöffnet werden!", "Fehler beim Lesen!",
+                    "Die Datei kann nicht geÃ¶ffnet werden!", "Fehler beim Lesen!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void button_Schließen_Click(object sender, EventArgs e) {
+        private void button_SchlieÃŸen_Click(object sender, EventArgs e) {
             _HPGL = null;
             button_Senden.Image = global::PlotterCom.Properties.Resources.agt_print;
             ButtonsAnAus();
@@ -519,7 +519,7 @@ namespace PlotterCom {
         private void button_Optimieren_Click(object sender, EventArgs e) {
             PlotterCom.StaticLogger.Log("Benutzer hat Optimieren geklickt!", 6);
             // TODO: Optimieren abbrechen.
-            // Datei schließen darf nicht möglich sein während der optim.
+            // Datei schlieÃŸen darf nicht mÃ¶glich sein wÃ¤hrend der optim.
             if (_HPGL != null)
             {
                 this.toolStripProgressBar_Unten.Visible = true;
@@ -532,7 +532,7 @@ namespace PlotterCom {
                 button_Viewer.Enabled = false;
                 button_SpeichernAls.Enabled = false;
                 button_Abbruch.Enabled = false;
-                button_Schließen.Enabled = false;
+                button_SchlieÃŸen.Enabled = false;
                 button_Senden.Enabled = false;
                 button_DirektSenden.Enabled = false;
                 button_Analysieren.Enabled = false;
@@ -557,9 +557,9 @@ namespace PlotterCom {
             PlotterCom.StaticLogger.Log("Untersuche, welche Buttons enabled werden und welche nicht!", 8);
 
             if (_HPGL == null) {
-                button_Öffnen.Enabled = true;
+                button_Ã–ffnen.Enabled = true;
                 button_Abbruch.Enabled = false;
-                button_Schließen.Enabled = false;
+                button_SchlieÃŸen.Enabled = false;
                 button_Viewer.Enabled = false;
                 button_Analysieren.Enabled = false;
                 button_Optimieren.Enabled = false;
@@ -578,9 +578,9 @@ namespace PlotterCom {
                 this.Text = "PlotterCom";
 
             } else {
-                button_Öffnen.Enabled = false;
+                button_Ã–ffnen.Enabled = false;
                 button_Abbruch.Enabled = false;
-                button_Schließen.Enabled = true;
+                button_SchlieÃŸen.Enabled = true;
                 button_Viewer.Enabled = true;
                 button_Analysieren.Enabled = true;
                 button_Optimieren.Enabled = true;
@@ -632,14 +632,14 @@ namespace PlotterCom {
                 try {
                     _Port.Open();
                 } catch (Exception ex) {
-                    PlotterCom.StaticLogger.Log("Fehler beim Öffnen des Ports!", 4);
+                    PlotterCom.StaticLogger.Log("Fehler beim Ã–ffnen des Ports!", 4);
                     PlotterCom.StaticLogger.Log("Meldung: " + ex.Message, 4);
-                    MessageBox.Show("Konnte den Port nicht öffnen, bitte die Einstellungen prüfen!",
+                    MessageBox.Show("Konnte den Port nicht Ã¶ffnen, bitte die Einstellungen prÃ¼fen!",
                         "Fehler!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                PlotterCom.StaticLogger.Log("Port wurde neu geöffnet. Warte 100ms auf Bereitschaft!", 7);
+                PlotterCom.StaticLogger.Log("Port wurde neu geÃ¶ffnet. Warte 100ms auf Bereitschaft!", 7);
                 System.Windows.Forms.Application.DoEvents();
                 System.Threading.Thread.Sleep(50);
                 System.Windows.Forms.Application.DoEvents();
@@ -706,7 +706,7 @@ namespace PlotterCom {
             Antwort = frmVerschieben.ShowDialog();
 
             if (Antwort == System.Windows.Forms.DialogResult.OK) {
-                MessageBox.Show("Die Verschiebung wurde ausgeführt. Bitte nutzen Sie den Viewer zum Anzeigen des Ergebnisses!",
+                MessageBox.Show("Die Verschiebung wurde ausgefÃ¼hrt. Bitte nutzen Sie den Viewer zum Anzeigen des Ergebnisses!",
                     "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -724,7 +724,7 @@ namespace PlotterCom {
                 button_Viewer.Enabled = false;
                 button_SpeichernAls.Enabled = false;
                 button_Abbruch.Enabled = false;
-                button_Schließen.Enabled = false;
+                button_SchlieÃŸen.Enabled = false;
                 button_Senden.Enabled = false;
                 button_DirektSenden.Enabled = false;
                 button_Analysieren.Enabled = false;
@@ -743,10 +743,10 @@ namespace PlotterCom {
                 toolStripStatusLabel.Text = "Bereit...";
 
                 if (GefundeneDubletten > 0) {
-                    MessageBox.Show("Es wurden " + GefundeneDubletten + " unnötige Linien entfernt!",
+                    MessageBox.Show("Es wurden " + GefundeneDubletten + " unnÃ¶tige Linien entfernt!",
                         "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 } else {
-                    MessageBox.Show("Es wurden keine unnötige Linien gefunden!",
+                    MessageBox.Show("Es wurden keine unnÃ¶tige Linien gefunden!",
                         "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
@@ -763,7 +763,7 @@ namespace PlotterCom {
                 AnzahlHilfsLinien = _HPGL.LinienVerbinden();
 
                 if (AnzahlHilfsLinien > 0) {
-                    MessageBox.Show("Es wurden " + AnzahlHilfsLinien + " Hilfslinien generiert und eingefügt!",
+                    MessageBox.Show("Es wurden " + AnzahlHilfsLinien + " Hilfslinien generiert und eingefÃ¼gt!",
                         "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 } else {
                     MessageBox.Show("Es wurden keine Hilfslinien generiert!",
@@ -776,7 +776,7 @@ namespace PlotterCom {
             TCPTest();
         }
 
-        private void SendeStreamAnNetzwetrk(System.IO.TextReader datenquelle, long länge) {
+        private void SendeStreamAnNetzwetrk(System.IO.TextReader datenquelle, long lÃ¤nge) {
             DateTime StartZeitpunkt = DateTime.Now;
             TimeSpan SendeZeit = TimeSpan.Zero;
             DateTime LetztesETAUpdate = DateTime.Now;
@@ -786,7 +786,7 @@ namespace PlotterCom {
             int geleseneBytes = 0;
             double Fortschritt = 0;
             char[] buffer = null;
-            int blockGröße = 16;
+            int blockGrÃ¶ÃŸe = 16;
 
             if (datenquelle == null) {
                 PlotterCom.StaticLogger.Log("Kann keine Daten senden. Datenquelle ist null!", 4);
@@ -803,8 +803,8 @@ namespace PlotterCom {
             button_Abbruch.Enabled = false;
             button_Optimieren.Enabled = false;
             button_Analysieren.Enabled = false;
-            button_Öffnen.Enabled = false;
-            button_Schließen.Enabled = false;
+            button_Ã–ffnen.Enabled = false;
+            button_SchlieÃŸen.Enabled = false;
             button_Viewer.Enabled = false;
             button_Skalieren.Enabled = false;
             button_Speichern.Enabled = false;
@@ -816,15 +816,15 @@ namespace PlotterCom {
 
 
                 try {
-                    PlotterCom.StaticLogger.Log("Versuche den Port zu öffnen!", 6);
+                    PlotterCom.StaticLogger.Log("Versuche den Port zu Ã¶ffnen!", 6);
                     // tcpopen
                 } catch (Exception ex) {
-                    PlotterCom.StaticLogger.Log("Konnte den Port nicht öffnen!", 4);
+                    PlotterCom.StaticLogger.Log("Konnte den Port nicht Ã¶ffnen!", 4);
                     PlotterCom.StaticLogger.Log("Fehlermeldung: " + ex.Message, 4);
                     return;
                 }
 
-                PlotterCom.StaticLogger.Log("Port wurde neu geöffnet. Warte 100ms auf Bereitschaft!", 7);
+                PlotterCom.StaticLogger.Log("Port wurde neu geÃ¶ffnet. Warte 100ms auf Bereitschaft!", 7);
                 System.Windows.Forms.Application.DoEvents();
                 System.Threading.Thread.Sleep(50);
                 System.Windows.Forms.Application.DoEvents();
@@ -844,7 +844,7 @@ namespace PlotterCom {
 
                 nwStream = tcpClient.GetStream();
  
-            buffer = new char[blockGröße];
+            buffer = new char[blockGrÃ¶ÃŸe];
 
             while (!_SendenAbbrechen) {
                 
@@ -856,7 +856,7 @@ namespace PlotterCom {
                 toolStripStatusLabel.Text = "Sende...";
 
                 // Lese einen Datenblock.
-                geleseneBytes = datenquelle.Read(buffer, 0, blockGröße);
+                geleseneBytes = datenquelle.Read(buffer, 0, blockGrÃ¶ÃŸe);
 
                 if (geleseneBytes == 0) {
                     break;
@@ -866,19 +866,19 @@ namespace PlotterCom {
                 try {
                     string str = new String(buffer);
                     
-                    nwStream.Write(Encoding.ASCII.GetBytes(buffer, 0, blockGröße), 0, blockGröße);
+                    nwStream.Write(Encoding.ASCII.GetBytes(buffer, 0, blockGrÃ¶ÃŸe), 0, blockGrÃ¶ÃŸe);
                     nwStream.Flush();
                 } catch (Exception ex) {
                     PlotterCom.StaticLogger.Log("Konnte nicht senden!", 4);
                     PlotterCom.StaticLogger.Log("Fehlermeldung: " + ex.Message, 4);
                 }
 
-                geschriebeneBytes += blockGröße;
+                geschriebeneBytes += blockGrÃ¶ÃŸe;
 
-                if ((länge > 0) && (länge > geleseneBytes)) {
+                if ((lÃ¤nge > 0) && (lÃ¤nge > geleseneBytes)) {
 
-                    if (geschriebeneBytes < länge) {
-                        Fortschritt = ((double)geschriebeneBytes / (double)(länge + 4D));
+                    if (geschriebeneBytes < lÃ¤nge) {
+                        Fortschritt = ((double)geschriebeneBytes / (double)(lÃ¤nge + 4D));
                     } else {
                         Fortschritt = 1;
                     }
@@ -918,8 +918,8 @@ namespace PlotterCom {
             button_Abbruch.Enabled = true;
             button_Optimieren.Enabled = true;
             button_Analysieren.Enabled = true;
-            button_Öffnen.Enabled = true;
-            button_Schließen.Enabled = true;
+            button_Ã–ffnen.Enabled = true;
+            button_SchlieÃŸen.Enabled = true;
             button_Viewer.Enabled = true;
 
             ButtonsAnAus();

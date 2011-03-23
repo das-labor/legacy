@@ -6,7 +6,7 @@ using System.Windows.Forms;
 /*  PlotterCom - Tools for HPGL and plotters.
  *  HPGL.cs - HPGL tools.
  *  
- *  Copyright (C) 2011  AndrÈ Matuschek
+ *  Copyright (C) 2011  Andr√© Matuschek
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ namespace PlotterCom {
         private char[] HPGLLadenKomma     = new char[] { ',' };
         private char[] HPGLLadenSemikolon = new char[] { ';', '\n', '\r'};
 
-        private double _AnalyseSteckenL‰nge    = 0D;
+        private double _AnalyseSteckenL√§nge    = 0D;
         private double _AnalyseFahrweg         = 0D;
         private int    _AnalyseStiftbewegungen = 0;
         private int    _AnalyseStiftwechsel    = 0;
@@ -58,7 +58,7 @@ namespace PlotterCom {
                     PlotterCom.StaticLogger.Log("Aktuelle Anzahl an Linien: " + _Linien.Count, 8);
                     return _Linien.Count;
                 } else {
-                    PlotterCom.StaticLogger.Log("Derzeit ist _Linien = null. Gebe 0 zur¸ck!", 8);
+                    PlotterCom.StaticLogger.Log("Derzeit ist _Linien = null. Gebe 0 zur√ºck!", 8);
                     return 0;
                 }
             }
@@ -69,8 +69,8 @@ namespace PlotterCom {
             LeseHPGLFile(DateiName, null, null);
         }
 
-        public double SummeStreckenL‰nge {
-            get { return _AnalyseSteckenL‰nge; }
+        public double SummeStreckenL√§nge {
+            get { return _AnalyseSteckenL√§nge; }
         }
 
         public double GesamtFahrweg {
@@ -111,7 +111,7 @@ namespace PlotterCom {
             bool LinienVerbinden = PlotterCom.ConfigManager.Config.HPGLVerbinden;
             double LinienVerbindenAb = PlotterCom.ConfigManager.Config.HPGLVerbindenSchritte;
 
-            // Kultur auf US stellen, damit Flieﬂkommazahlen korrekt formatiert werden.
+            // Kultur auf US stellen, damit Flie√ükommazahlen korrekt formatiert werden.
             Application.CurrentCulture = new System.Globalization.CultureInfo("EN-us", false);
 
             HPGLCode.Append("VS");
@@ -121,7 +121,7 @@ namespace PlotterCom {
 
             foreach (PlotterCom.HPGLElemente.Linie AktuelleLinie in _Linien) {
 
-                // Stiftwechsel nˆtig?
+                // Stiftwechsel n√∂tig?
                 if ((!NurStift1) && (AktuellerStift != AktuelleLinie.Pen)) {
                     HPGLCode.Append("SP");
                     HPGLCode.Append(AktuelleLinie.Pen);
@@ -179,7 +179,7 @@ namespace PlotterCom {
         }
 
         /// <summary>
-        /// Lieﬂt eine HPGL-Datei ein.
+        /// Lie√üt eine HPGL-Datei ein.
         /// </summary>
         /// <param name="DateiName"></param>
         /// <param name="progressBar"></param>
@@ -198,7 +198,7 @@ namespace PlotterCom {
                 return;
             }
 
-            PlotterCom.StaticLogger.Log("Pr¸fe, ob Datei existiert!", 8);
+            PlotterCom.StaticLogger.Log("Pr√ºfe, ob Datei existiert!", 8);
             if (!System.IO.File.Exists(DateiName)) {
                 PlotterCom.StaticLogger.Log("Die Angegebene Datei existiert nicht. Ende.", 4);
                 return;
@@ -207,11 +207,11 @@ namespace PlotterCom {
             }
 
 
-            PlotterCom.StaticLogger.Log("÷ffne die Angegebene Datei!", 8);
+            PlotterCom.StaticLogger.Log("√ñffne die Angegebene Datei!", 8);
             try {
                 HPGLReader = new System.IO.StreamReader(DateiName);
             } catch (Exception ex) {
-                PlotterCom.StaticLogger.Log("Konnte die angegebene Datei nicht zum lesen ˆffnen!", 4);
+                PlotterCom.StaticLogger.Log("Konnte die angegebene Datei nicht zum lesen √∂ffnen!", 4);
                 PlotterCom.StaticLogger.Log("Datei: " + DateiName, 4);
                 PlotterCom.StaticLogger.Log("Fehler: " + ex.Message, 4);
             }
@@ -224,7 +224,7 @@ namespace PlotterCom {
             PlotterCom.StaticLogger.Log("Lese die angegebene Datei komplett ein.", 8);
             HPGLSequenz = HPGLReader.ReadToEnd();
 
-            PlotterCom.StaticLogger.Log("Entferne alle Zeilenumbr¸che aus der Datei.", 8);
+            PlotterCom.StaticLogger.Log("Entferne alle Zeilenumbr√ºche aus der Datei.", 8);
             //HPGLSequenz = HPGLSequenz.Replace("\n", String.Empty);
             //HPGLSequenz = HPGLSequenz.Replace("\r", String.Empty);
             HPGLSequenz = HPGLSequenz.Replace("\t", String.Empty);
@@ -239,7 +239,7 @@ namespace PlotterCom {
             }
 
             // In allen ab hier aufgerufenen Funktionen wird nicht mehr geloggt, um die
-            // Geschwindigkeit zu erhˆhen!
+            // Geschwindigkeit zu erh√∂hen!
 
             foreach (string HPGLBefehl in HPGLBefehle) {
                 ParseHPGLBefehl(HPGLBefehl);
@@ -266,12 +266,12 @@ namespace PlotterCom {
                     (MaximaleYKoordinate > PlotterCom.ConfigManager.Config.PlotterMaxY)) {
 
                     PlotterCom.StaticLogger.Log(
-                        "Die aktuelle HPGL-Datei enth‰lt Koordinaten, die nicht im Plotbaren Bereich des Plotters " +
-                        "liegen. Mˆglicherweise wird die Datei nicht ordnungsgem‰ﬂ gedruckt!", 5);
+                        "Die aktuelle HPGL-Datei enth√§lt Koordinaten, die nicht im Plotbaren Bereich des Plotters " +
+                        "liegen. M√∂glicherweise wird die Datei nicht ordnungsgem√§√ü gedruckt!", 5);
 
                     MessageBox.Show(
-                        "Die aktuelle HPGL-Datei enth‰lt Koordinaten, die nicht im Plotbaren Bereich des Plotters " +
-                        "liegen. Mˆglicherweise wird die Datei nicht ordnungsgem‰ﬂ gedruckt!",
+                        "Die aktuelle HPGL-Datei enth√§lt Koordinaten, die nicht im Plotbaren Bereich des Plotters " +
+                        "liegen. M√∂glicherweise wird die Datei nicht ordnungsgem√§√ü gedruckt!",
                         "Warnung!",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
@@ -413,7 +413,7 @@ namespace PlotterCom {
                 if (Parameter.Substring(0, 2).Equals("PA")) {
 
                     // Die Befehlsfolge PUPA sollte nicht vorkommen, da sie den selben Effekt
-                    // wie PU h‰tte.
+                    // wie PU h√§tte.
                     ParsePA(Parameter.Substring(2));
                     return;
                 }
@@ -430,7 +430,7 @@ namespace PlotterCom {
                         PosX = System.Double.Parse(ParameterListe[i]);
                         PosY = System.Double.Parse(ParameterListe[i + 1]);
 
-                        // Es muss nichts dem Linien-Array hinzugef¸gt werden!
+                        // Es muss nichts dem Linien-Array hinzugef√ºgt werden!
 
                         HPGLLadenPosX = PosX;
                         HPGLLadenPosY = PosY;
@@ -460,7 +460,7 @@ namespace PlotterCom {
                         PosX = System.Double.Parse(ParameterListe[i]);
                         PosY = System.Double.Parse(ParameterListe[i + 1]);
 
-                        // TODO: Die Abfrage ob der Stift unten ist kann fr¸her gemacht werden!
+                        // TODO: Die Abfrage ob der Stift unten ist kann fr√ºher gemacht werden!
                         // Das spart ev. Laufzeit.
                         if (HPGLLadenStiftUnten) {
                             _Linien.Add(new PlotterCom.HPGLElemente.Linie(
@@ -496,7 +496,7 @@ namespace PlotterCom {
                         PosX = System.Double.Parse(ParameterListe[i]);
                         PosY = System.Double.Parse(ParameterListe[i + 1]);
 
-                        // TODO: Die Abfrage ob der Stift unten ist kann fr¸her gemacht werden!
+                        // TODO: Die Abfrage ob der Stift unten ist kann fr√ºher gemacht werden!
                         // Das spart ev. Laufzeit.
                         if (HPGLLadenStiftUnten) {
                             _Linien.Add(new PlotterCom.HPGLElemente.Linie(
@@ -541,7 +541,7 @@ namespace PlotterCom {
             }
 
             if (Skalierungsfaktor > 10D) {
-                PlotterCom.StaticLogger.Log("Kann nicht Skalieren, Faktor zu groﬂ!", 4);
+                PlotterCom.StaticLogger.Log("Kann nicht Skalieren, Faktor zu gro√ü!", 4);
                 return;
             }
 
@@ -658,7 +658,7 @@ namespace PlotterCom {
             int AktuellerStift = 0;
 
             _AnalyseFahrweg = 0D;
-            _AnalyseSteckenL‰nge = 0D;
+            _AnalyseSteckenL√§nge = 0D;
             _AnalyseStiftbewegungen = 0;
             _AnalyseStiftwechsel = 0;
             _AnalysePlotDauer = 0D;
@@ -687,7 +687,7 @@ namespace PlotterCom {
                     ((AktuelleLinie.StartY - AktuelleLinie.EndY)  * 
                      (AktuelleLinie.StartY - AktuelleLinie.EndY)) );
 
-                _AnalyseSteckenL‰nge += Math.Sqrt(
+                _AnalyseSteckenL√§nge += Math.Sqrt(
                     ((AktuelleLinie.StartX - AktuelleLinie.EndX) *
                      (AktuelleLinie.StartX - AktuelleLinie.EndX)) +
                     ((AktuelleLinie.StartY - AktuelleLinie.EndY) *
@@ -709,9 +709,9 @@ namespace PlotterCom {
             List<HPGLElemente.Linie> optimierteListe = null;  // Die neue, optimierte Liste.
             List<UInt16> StiftListe = null;                   // Die Liste aller verwendeten Stifte.
             double kleinsterAbstand;                          // Der kleinste Abstand, der bisher gefunden wurde.
-            double aktuellerAbstandV = 0D;                    // Tempor‰re Variable zum halten des aktuellen Abstands vorw‰rts.
-            double aktuellerAbstandR = 0D;                    // Tempor‰re Variable zum halten des aktuellen Abstands r¸ckw‰rts.
-            bool LinieR¸ckw‰rts = false;                      // Ist true, wenn die aktuelle Linie umgedreht werden muss.
+            double aktuellerAbstandV = 0D;                    // Tempor√§re Variable zum halten des aktuellen Abstands vorw√§rts.
+            double aktuellerAbstandR = 0D;                    // Tempor√§re Variable zum halten des aktuellen Abstands r√ºckw√§rts.
+            bool LinieR√ºckw√§rts = false;                      // Ist true, wenn die aktuelle Linie umgedreht werden muss.
             bool LinieGefunden = true;                        // Habe ich eine Line gefunden?
             HPGLElemente.Linie besteLinie = null;             // Die aktuell beste Linie.
             HPGLElemente.Linie zuletztOptimierteLinie = null; // Die Linie, ab deren Ende gesucht wird.
@@ -730,12 +730,12 @@ namespace PlotterCom {
             // Erstelle eine neue, leere Liste in der die optimierte Liste aufgebaut wird.
             optimierteListe = new List<HPGLElemente.Linie>(_Linien.Count);
 
-            // Zuerst das optimiert-Kennzeichen zur¸ck setzen!
+            // Zuerst das optimiert-Kennzeichen zur√ºck setzen!
             foreach (HPGLElemente.Linie aktuelleLinie in _Linien) {
                 aktuelleLinie.Optimiert = false;
             }
 
-            // Das erste Element suchen und einf¸gen;
+            // Das erste Element suchen und einf√ºgen;
             optimierteListe.Add(ErsteLinie(StiftListe[0]));
             optimierteListe[0].Optimiert = true;
             zuletztOptimierteLinie = optimierteListe[0];
@@ -749,7 +749,7 @@ namespace PlotterCom {
                 while (LinieGefunden) {
                     kleinsterAbstand = System.Double.MaxValue;
 
-                    LinieR¸ckw‰rts = false;
+                    LinieR√ºckw√§rts = false;
                     LinieGefunden = false;  // Wird true gesetzt, wenn eine Linie gefunden wurde.
                                             // Es wird keine Linie gefunden wenn alle Linien optimiert wurden, die mit dem 
                                             // aktuellen Stift gezeichnet werden.
@@ -761,16 +761,16 @@ namespace PlotterCom {
                     // ... suche eine Nachfolgerlinie.
                     foreach (HPGLElemente.Linie aktuelleLinie in _Linien) {
 
-                        // Wenn die Linie einen Stiftwechsel erfordern w¸rde, ignoriere sie.
+                        // Wenn die Linie einen Stiftwechsel erfordern w√ºrde, ignoriere sie.
                         if (aktuelleLinie.Pen != AktuellerStift) {
                             continue;
                         }
 
                         // Bereits optimierte Linien auch ignorieren.
                         if (aktuelleLinie.Optimiert) {
-                            // Ev. w‰re es sinnvoll, die bereits optimierten aus der Liste zu entfernen, um die
-                            // Geschwindigkeit zu erhˆhen. M¸ssste man mal dr¸ber nachdenken was das f¸r Folgen h‰tte.
-                            // --> Abbrechen nicht mehr mˆglich.
+                            // Ev. w√§re es sinnvoll, die bereits optimierten aus der Liste zu entfernen, um die
+                            // Geschwindigkeit zu erh√∂hen. M√ºssste man mal dr√ºber nachdenken was das f√ºr Folgen h√§tte.
+                            // --> Abbrechen nicht mehr m√∂glich.
                             // --> Progress-Bar-Wert wird falsch berechnet.
                             continue;
                         }
@@ -796,18 +796,18 @@ namespace PlotterCom {
                         if (aktuellerAbstandV < kleinsterAbstand) {
                             kleinsterAbstand = aktuellerAbstandV;
                             besteLinie = aktuelleLinie;
-                            LinieR¸ckw‰rts = false;
+                            LinieR√ºckw√§rts = false;
                             LinieGefunden = true;
                         }
 
                         if (aktuellerAbstandR < kleinsterAbstand) {
                             kleinsterAbstand = aktuellerAbstandV;
                             besteLinie = aktuelleLinie;
-                            LinieR¸ckw‰rts = true;
+                            LinieR√ºckw√§rts = true;
                             LinieGefunden = true;
                         }
 
-                        // Wenn ich eine direkt anschlieﬂende Linie gefunden habe, kann ich die Suche stoppen.
+                        // Wenn ich eine direkt anschlie√üende Linie gefunden habe, kann ich die Suche stoppen.
                         if (aktuellerAbstandV == 0D) {
                             break;
                         }
@@ -818,8 +818,8 @@ namespace PlotterCom {
 
                         zuletztOptimierteLinie = besteLinie;
 
-                        // Umdrehen, wenn das Ende n‰her war.
-                        if (LinieR¸ckw‰rts) {
+                        // Umdrehen, wenn das Ende n√§her war.
+                        if (LinieR√ºckw√§rts) {
                             besteLinie.DreheUm();
                         }
 
@@ -866,7 +866,7 @@ namespace PlotterCom {
         private HPGLElemente.Linie ErsteLinie(UInt16 Stift) {
             double KleinsterAbstand = Double.MaxValue;
             double AktuellerAbstand = 0D;
-            bool ErsteLinieR¸ckw‰rts = false;
+            bool ErsteLinieR√ºckw√§rts = false;
             HPGLElemente.Linie ersteLinie = null;
 
             if (_Linien == null || _Linien.Count == 0) {
@@ -889,7 +889,7 @@ namespace PlotterCom {
 
                 if (AktuellerAbstand < KleinsterAbstand) {
                     KleinsterAbstand = AktuellerAbstand;
-                    ErsteLinieR¸ckw‰rts = false;
+                    ErsteLinieR√ºckw√§rts = false;
                     ersteLinie = aktuelleLinie;
                 }
 
@@ -898,13 +898,13 @@ namespace PlotterCom {
 
                 if (AktuellerAbstand < KleinsterAbstand) {
                     KleinsterAbstand = AktuellerAbstand;
-                    ErsteLinieR¸ckw‰rts = true;
+                    ErsteLinieR√ºckw√§rts = true;
                     ersteLinie = aktuelleLinie;
                 }
 
             }
 
-            if (ErsteLinieR¸ckw‰rts) {
+            if (ErsteLinieR√ºckw√§rts) {
                 ersteLinie.DreheUm();
             }
 

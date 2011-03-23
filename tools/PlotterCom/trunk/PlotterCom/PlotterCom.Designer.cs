@@ -23,16 +23,16 @@ namespace PlotterCom {
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.menuStrip_HauptMenü = new System.Windows.Forms.MenuStrip();
+            this.menuStrip_HauptMenÃ¼ = new System.Windows.Forms.MenuStrip();
             this.dateiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.einstellungenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem_Strich1 = new System.Windows.Forms.ToolStripSeparator();
             this.beendenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.infoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.überPlotterComToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Ã¼berPlotterComToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel_Hauptlayout = new System.Windows.Forms.TableLayoutPanel();
-            this.groupBox_Öffnen = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel_Öffnen = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox_Ã–ffnen = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel_Ã–ffnen = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox_Speichern = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel_Speichern = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox_Optimieren = new System.Windows.Forms.GroupBox();
@@ -48,10 +48,10 @@ namespace PlotterCom {
             this.openFileDialog_HPGL = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog_HPGL = new System.Windows.Forms.SaveFileDialog();
             this.button_Viewer = new System.Windows.Forms.Button();
-            this.button_Öffnen = new System.Windows.Forms.Button();
+            this.button_Ã–ffnen = new System.Windows.Forms.Button();
             this.label_DateiGeladen = new System.Windows.Forms.Label();
             this.button_Abbruch = new System.Windows.Forms.Button();
-            this.button_Schließen = new System.Windows.Forms.Button();
+            this.button_SchlieÃŸen = new System.Windows.Forms.Button();
             this.button_Skalieren = new System.Windows.Forms.Button();
             this.button_Verschieben = new System.Windows.Forms.Button();
             this.button_Speichern = new System.Windows.Forms.Button();
@@ -66,10 +66,10 @@ namespace PlotterCom {
             this.button_DirektSenden = new System.Windows.Forms.Button();
             this.button_UmschrRechteck = new System.Windows.Forms.Button();
             this.button_Netzwerk = new System.Windows.Forms.Button();
-            this.menuStrip_HauptMenü.SuspendLayout();
+            this.menuStrip_HauptMenÃ¼.SuspendLayout();
             this.tableLayoutPanel_Hauptlayout.SuspendLayout();
-            this.groupBox_Öffnen.SuspendLayout();
-            this.tableLayoutPanel_Öffnen.SuspendLayout();
+            this.groupBox_Ã–ffnen.SuspendLayout();
+            this.tableLayoutPanel_Ã–ffnen.SuspendLayout();
             this.groupBox_Speichern.SuspendLayout();
             this.tableLayoutPanel_Speichern.SuspendLayout();
             this.groupBox_Optimieren.SuspendLayout();
@@ -79,16 +79,16 @@ namespace PlotterCom {
             this.statusStrip_unten.SuspendLayout();
             this.SuspendLayout();
             // 
-            // menuStrip_HauptMenü
+            // menuStrip_HauptMenÃ¼
             // 
-            this.menuStrip_HauptMenü.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuStrip_HauptMenÃ¼.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.dateiToolStripMenuItem,
             this.infoToolStripMenuItem});
-            this.menuStrip_HauptMenü.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip_HauptMenü.Name = "menuStrip_HauptMenü";
-            this.menuStrip_HauptMenü.Size = new System.Drawing.Size(677, 24);
-            this.menuStrip_HauptMenü.TabIndex = 2;
-            this.menuStrip_HauptMenü.Text = "menuStrip1";
+            this.menuStrip_HauptMenÃ¼.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip_HauptMenÃ¼.Name = "menuStrip_HauptMenÃ¼";
+            this.menuStrip_HauptMenÃ¼.Size = new System.Drawing.Size(677, 24);
+            this.menuStrip_HauptMenÃ¼.TabIndex = 2;
+            this.menuStrip_HauptMenÃ¼.Text = "menuStrip1";
             // 
             // dateiToolStripMenuItem
             // 
@@ -123,24 +123,24 @@ namespace PlotterCom {
             // 
             this.infoToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.infoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.überPlotterComToolStripMenuItem});
+            this.Ã¼berPlotterComToolStripMenuItem});
             this.infoToolStripMenuItem.Name = "infoToolStripMenuItem";
             this.infoToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.infoToolStripMenuItem.Text = "Info";
             // 
-            // überPlotterComToolStripMenuItem
+            // Ã¼berPlotterComToolStripMenuItem
             // 
-            this.überPlotterComToolStripMenuItem.Name = "überPlotterComToolStripMenuItem";
-            this.überPlotterComToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.überPlotterComToolStripMenuItem.Text = "Über PlotterCom";
-            this.überPlotterComToolStripMenuItem.Click += new System.EventHandler(this.überPlotterComToolStripMenuItem_Click);
+            this.Ã¼berPlotterComToolStripMenuItem.Name = "Ã¼berPlotterComToolStripMenuItem";
+            this.Ã¼berPlotterComToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.Ã¼berPlotterComToolStripMenuItem.Text = "Ãœber PlotterCom";
+            this.Ã¼berPlotterComToolStripMenuItem.Click += new System.EventHandler(this.Ã¼berPlotterComToolStripMenuItem_Click);
             // 
             // tableLayoutPanel_Hauptlayout
             // 
             this.tableLayoutPanel_Hauptlayout.ColumnCount = 2;
             this.tableLayoutPanel_Hauptlayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel_Hauptlayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel_Hauptlayout.Controls.Add(this.groupBox_Öffnen, 0, 0);
+            this.tableLayoutPanel_Hauptlayout.Controls.Add(this.groupBox_Ã–ffnen, 0, 0);
             this.tableLayoutPanel_Hauptlayout.Controls.Add(this.groupBox_Speichern, 1, 0);
             this.tableLayoutPanel_Hauptlayout.Controls.Add(this.groupBox_Optimieren, 0, 2);
             this.tableLayoutPanel_Hauptlayout.Controls.Add(this.groupBox_Senden, 1, 1);
@@ -155,42 +155,42 @@ namespace PlotterCom {
             this.tableLayoutPanel_Hauptlayout.Size = new System.Drawing.Size(677, 449);
             this.tableLayoutPanel_Hauptlayout.TabIndex = 3;
             // 
-            // groupBox_Öffnen
+            // groupBox_Ã–ffnen
             // 
-            this.groupBox_Öffnen.Controls.Add(this.tableLayoutPanel_Öffnen);
-            this.groupBox_Öffnen.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox_Öffnen.Location = new System.Drawing.Point(3, 3);
-            this.groupBox_Öffnen.Name = "groupBox_Öffnen";
-            this.tableLayoutPanel_Hauptlayout.SetRowSpan(this.groupBox_Öffnen, 2);
-            this.groupBox_Öffnen.Size = new System.Drawing.Size(332, 207);
-            this.groupBox_Öffnen.TabIndex = 0;
-            this.groupBox_Öffnen.TabStop = false;
-            this.groupBox_Öffnen.Text = "Datei öffnen";
+            this.groupBox_Ã–ffnen.Controls.Add(this.tableLayoutPanel_Ã–ffnen);
+            this.groupBox_Ã–ffnen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox_Ã–ffnen.Location = new System.Drawing.Point(3, 3);
+            this.groupBox_Ã–ffnen.Name = "groupBox_Ã–ffnen";
+            this.tableLayoutPanel_Hauptlayout.SetRowSpan(this.groupBox_Ã–ffnen, 2);
+            this.groupBox_Ã–ffnen.Size = new System.Drawing.Size(332, 207);
+            this.groupBox_Ã–ffnen.TabIndex = 0;
+            this.groupBox_Ã–ffnen.TabStop = false;
+            this.groupBox_Ã–ffnen.Text = "Datei Ã¶ffnen";
             // 
-            // tableLayoutPanel_Öffnen
+            // tableLayoutPanel_Ã–ffnen
             // 
-            this.tableLayoutPanel_Öffnen.ColumnCount = 3;
-            this.tableLayoutPanel_Öffnen.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel_Öffnen.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.tableLayoutPanel_Öffnen.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel_Öffnen.Controls.Add(this.button_Viewer, 0, 1);
-            this.tableLayoutPanel_Öffnen.Controls.Add(this.button_Öffnen, 0, 0);
-            this.tableLayoutPanel_Öffnen.Controls.Add(this.label_DateiGeladen, 1, 0);
-            this.tableLayoutPanel_Öffnen.Controls.Add(this.button_Abbruch, 2, 0);
-            this.tableLayoutPanel_Öffnen.Controls.Add(this.button_Schließen, 2, 1);
-            this.tableLayoutPanel_Öffnen.Controls.Add(this.button_Skalieren, 0, 2);
-            this.tableLayoutPanel_Öffnen.Controls.Add(this.button_Verschieben, 2, 2);
-            this.tableLayoutPanel_Öffnen.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel_Öffnen.Location = new System.Drawing.Point(3, 16);
-            this.tableLayoutPanel_Öffnen.Name = "tableLayoutPanel_Öffnen";
-            this.tableLayoutPanel_Öffnen.RowCount = 4;
-            this.tableLayoutPanel_Öffnen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
-            this.tableLayoutPanel_Öffnen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
-            this.tableLayoutPanel_Öffnen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
-            this.tableLayoutPanel_Öffnen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel_Öffnen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel_Öffnen.Size = new System.Drawing.Size(326, 188);
-            this.tableLayoutPanel_Öffnen.TabIndex = 0;
+            this.tableLayoutPanel_Ã–ffnen.ColumnCount = 3;
+            this.tableLayoutPanel_Ã–ffnen.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel_Ã–ffnen.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel_Ã–ffnen.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel_Ã–ffnen.Controls.Add(this.button_Viewer, 0, 1);
+            this.tableLayoutPanel_Ã–ffnen.Controls.Add(this.button_Ã–ffnen, 0, 0);
+            this.tableLayoutPanel_Ã–ffnen.Controls.Add(this.label_DateiGeladen, 1, 0);
+            this.tableLayoutPanel_Ã–ffnen.Controls.Add(this.button_Abbruch, 2, 0);
+            this.tableLayoutPanel_Ã–ffnen.Controls.Add(this.button_SchlieÃŸen, 2, 1);
+            this.tableLayoutPanel_Ã–ffnen.Controls.Add(this.button_Skalieren, 0, 2);
+            this.tableLayoutPanel_Ã–ffnen.Controls.Add(this.button_Verschieben, 2, 2);
+            this.tableLayoutPanel_Ã–ffnen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel_Ã–ffnen.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel_Ã–ffnen.Name = "tableLayoutPanel_Ã–ffnen";
+            this.tableLayoutPanel_Ã–ffnen.RowCount = 4;
+            this.tableLayoutPanel_Ã–ffnen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel_Ã–ffnen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel_Ã–ffnen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel_Ã–ffnen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel_Ã–ffnen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel_Ã–ffnen.Size = new System.Drawing.Size(326, 188);
+            this.tableLayoutPanel_Ã–ffnen.TabIndex = 0;
             // 
             // groupBox_Speichern
             // 
@@ -374,20 +374,20 @@ namespace PlotterCom {
             this.button_Viewer.UseVisualStyleBackColor = true;
             this.button_Viewer.Click += new System.EventHandler(this.button_Viewer_Click);
             // 
-            // button_Öffnen
+            // button_Ã–ffnen
             // 
-            this.button_Öffnen.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button_Öffnen.Image = global::PlotterCom.Properties.Resources.fileopen;
-            this.button_Öffnen.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_Öffnen.Location = new System.Drawing.Point(3, 3);
-            this.button_Öffnen.Name = "button_Öffnen";
-            this.button_Öffnen.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.button_Öffnen.Size = new System.Drawing.Size(127, 49);
-            this.button_Öffnen.TabIndex = 0;
-            this.button_Öffnen.Text = "Datei öffnen";
-            this.button_Öffnen.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button_Öffnen.UseVisualStyleBackColor = true;
-            this.button_Öffnen.Click += new System.EventHandler(this.button_Öffnen_Click);
+            this.button_Ã–ffnen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button_Ã–ffnen.Image = global::PlotterCom.Properties.Resources.fileopen;
+            this.button_Ã–ffnen.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.button_Ã–ffnen.Location = new System.Drawing.Point(3, 3);
+            this.button_Ã–ffnen.Name = "button_Ã–ffnen";
+            this.button_Ã–ffnen.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.button_Ã–ffnen.Size = new System.Drawing.Size(127, 49);
+            this.button_Ã–ffnen.TabIndex = 0;
+            this.button_Ã–ffnen.Text = "Datei Ã¶ffnen";
+            this.button_Ã–ffnen.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.button_Ã–ffnen.UseVisualStyleBackColor = true;
+            this.button_Ã–ffnen.Click += new System.EventHandler(this.button_Ã–ffnen_Click);
             // 
             // label_DateiGeladen
             // 
@@ -414,20 +414,20 @@ namespace PlotterCom {
             this.button_Abbruch.UseVisualStyleBackColor = true;
             this.button_Abbruch.Click += new System.EventHandler(this.button_Abrruch_Click);
             // 
-            // button_Schließen
+            // button_SchlieÃŸen
             // 
-            this.button_Schließen.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button_Schließen.Image = global::PlotterCom.Properties.Resources.editdelete;
-            this.button_Schließen.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.button_Schließen.Location = new System.Drawing.Point(196, 58);
-            this.button_Schließen.Name = "button_Schließen";
-            this.button_Schließen.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.button_Schließen.Size = new System.Drawing.Size(127, 49);
-            this.button_Schließen.TabIndex = 3;
-            this.button_Schließen.Text = "Datei schließen";
-            this.button_Schließen.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button_Schließen.UseVisualStyleBackColor = true;
-            this.button_Schließen.Click += new System.EventHandler(this.button_Schließen_Click);
+            this.button_SchlieÃŸen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button_SchlieÃŸen.Image = global::PlotterCom.Properties.Resources.editdelete;
+            this.button_SchlieÃŸen.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.button_SchlieÃŸen.Location = new System.Drawing.Point(196, 58);
+            this.button_SchlieÃŸen.Name = "button_SchlieÃŸen";
+            this.button_SchlieÃŸen.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.button_SchlieÃŸen.Size = new System.Drawing.Size(127, 49);
+            this.button_SchlieÃŸen.TabIndex = 3;
+            this.button_SchlieÃŸen.Text = "Datei schlieÃŸen";
+            this.button_SchlieÃŸen.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.button_SchlieÃŸen.UseVisualStyleBackColor = true;
+            this.button_SchlieÃŸen.Click += new System.EventHandler(this.button_SchlieÃŸen_Click);
             // 
             // button_Skalieren
             // 
@@ -601,6 +601,7 @@ namespace PlotterCom {
             this.button_DirektSenden.Name = "button_DirektSenden";
             this.button_DirektSenden.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.button_DirektSenden.Size = new System.Drawing.Size(128, 49);
+
             this.button_DirektSenden.TabIndex = 3;
             this.button_DirektSenden.Text = "Datei direkt\r\nsenden";
             this.button_DirektSenden.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -643,18 +644,18 @@ namespace PlotterCom {
             this.ClientSize = new System.Drawing.Size(677, 473);
             this.Controls.Add(this.statusStrip_unten);
             this.Controls.Add(this.tableLayoutPanel_Hauptlayout);
-            this.Controls.Add(this.menuStrip_HauptMenü);
-            this.MainMenuStrip = this.menuStrip_HauptMenü;
+            this.Controls.Add(this.menuStrip_HauptMenÃ¼);
+            this.MainMenuStrip = this.menuStrip_HauptMenÃ¼;
             this.MinimumSize = new System.Drawing.Size(685, 500);
             this.Name = "Form_Hauptfenster";
             this.Text = "PlotterCom";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Hauptfenster_FormClosing);
             this.Load += new System.EventHandler(this.Form_Hauptfenster_Load);
-            this.menuStrip_HauptMenü.ResumeLayout(false);
-            this.menuStrip_HauptMenü.PerformLayout();
+            this.menuStrip_HauptMenÃ¼.ResumeLayout(false);
+            this.menuStrip_HauptMenÃ¼.PerformLayout();
             this.tableLayoutPanel_Hauptlayout.ResumeLayout(false);
-            this.groupBox_Öffnen.ResumeLayout(false);
-            this.tableLayoutPanel_Öffnen.ResumeLayout(false);
+            this.groupBox_Ã–ffnen.ResumeLayout(false);
+            this.tableLayoutPanel_Ã–ffnen.ResumeLayout(false);
             this.groupBox_Speichern.ResumeLayout(false);
             this.tableLayoutPanel_Speichern.ResumeLayout(false);
             this.groupBox_Optimieren.ResumeLayout(false);
@@ -671,23 +672,23 @@ namespace PlotterCom {
 
         #endregion
 
-        private System.Windows.Forms.MenuStrip menuStrip_HauptMenü;
+        private System.Windows.Forms.MenuStrip menuStrip_HauptMenÃ¼;
         private System.Windows.Forms.ToolStripMenuItem dateiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem beendenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem überPlotterComToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem Ã¼berPlotterComToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem einstellungenToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem_Strich1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Hauptlayout;
         private System.Windows.Forms.StatusStrip statusStrip_unten;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar_Unten;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
-        private System.Windows.Forms.GroupBox groupBox_Öffnen;
+        private System.Windows.Forms.GroupBox groupBox_Ã–ffnen;
         private System.Windows.Forms.GroupBox groupBox_Speichern;
         private System.Windows.Forms.GroupBox groupBox_Optimieren;
         private System.Windows.Forms.GroupBox groupBox_Senden;
         private System.Windows.Forms.Label label_DateiGeladen;
-        private System.Windows.Forms.Button button_Öffnen;
+        private System.Windows.Forms.Button button_Ã–ffnen;
         private System.Windows.Forms.Button button_SpeichernAls;
         private System.Windows.Forms.Button button_Analysieren;
         private System.Windows.Forms.Button button_Optimieren;
@@ -695,8 +696,8 @@ namespace PlotterCom {
         private System.Windows.Forms.ProgressBar progressBar_Senden;
         private System.Windows.Forms.Label label_Senden;
         private System.Windows.Forms.Button button_Viewer;
-        private System.Windows.Forms.Button button_Schließen;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Öffnen;
+        private System.Windows.Forms.Button button_SchlieÃŸen;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Ã–ffnen;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Optimieren;
         private System.Windows.Forms.Button button_SendenAbbrechen;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Speichern;

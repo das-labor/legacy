@@ -6,7 +6,7 @@ using System.IO;
 /*  PlotterCom - Tools for HPGL and plotters.
  *  StatiticLogger.cs - The logging-system for PlotterCom.
  * 
- *  Copyright (C) 2011  André Matuschek
+ *  Copyright (C) 2011  AndrÃ© Matuschek
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ namespace PlotterCom {
 
         /* LogLevel:
          * 0 = Logging abgeschaltet, Meldung wird nicht angezeigt
-         * 1 = Kritische Fehler und Programmabbrüche.
+         * 1 = Kritische Fehler und ProgrammabbrÃ¼che.
          * 2 = Schwere Fehler.
          * 3 = Normale Programmfehler.
          * 4 = Weniger schwerwiegende Fehler.
@@ -81,7 +81,7 @@ namespace PlotterCom {
         /// <param name="message">Die Nachricht, die in das Logfile geschrieben werden soll.</param>
         /// <param name="MessageLogLevel">Das Loglevel:
         /// * 0 = Logging abgeschaltet, Meldung wird nicht angezeigt
-        /// * 1 = Kritische Fehler und Programmabbrüche.
+        /// * 1 = Kritische Fehler und ProgrammabbrÃ¼che.
         /// * 2 = Schwere Fehler.
         /// * 3 = Normale Programmfehler.
         /// * 4 = Weniger schwerwiegende Fehler.
@@ -107,7 +107,7 @@ namespace PlotterCom {
                             FileShare.Read);
                     } catch (Exception e) {
                         _offline = true;
-                        System.Windows.Forms.MessageBox.Show("Logger kann seine Ausgabedatei nicht öffnen!\n" +
+                        System.Windows.Forms.MessageBox.Show("Logger kann seine Ausgabedatei nicht Ã¶ffnen!\n" +
                             e.Message + "\nLog-System wird deaktiviert!", 
                         "Fehler im Log-System!",
                         System.Windows.Forms.MessageBoxButtons.OK,
@@ -195,7 +195,7 @@ namespace PlotterCom {
         }
 
         /// <summary>
-        /// Schreibt eine LogMessage in die Logdatei. Diese Funktion sollte nicht benutzt werden, da kein LogLevel übergeben
+        /// Schreibt eine LogMessage in die Logdatei. Diese Funktion sollte nicht benutzt werden, da kein LogLevel Ã¼bergeben
         /// wird. Es wird das LogLevel 1 angenommen.
         /// </summary>
         /// <param name="message">Die Nachricht, die in die LogDatei geschrieben werden soll.</param>
@@ -205,11 +205,11 @@ namespace PlotterCom {
         }
 
 
-        public static void LogDateiNeuÖffnen() {
-            Log("Logger-Konfiguration geändert, Neuinitialisierung wird angefordert!", 5);
+        public static void LogDateiNeuÃ–ffnen() {
+            Log("Logger-Konfiguration geÃ¤ndert, Neuinitialisierung wird angefordert!", 5);
             //_offline = false;
             _logFileDay = -1;
-            Log("Logger-Konfiguration geändert, Neuinitialisierung wurde angefordert!", 5);
+            Log("Logger-Konfiguration geÃ¤ndert, Neuinitialisierung wurde angefordert!", 5);
         }
 
         public static void Initialisiere() {
