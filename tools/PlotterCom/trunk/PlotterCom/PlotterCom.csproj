@@ -1,0 +1,227 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{00F28D8F-0FA9-4743-BC5B-A109CCE265A9}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PlotterCom</RootNamespace>
+    <AssemblyName>PlotterCom</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <FileAlignment>2048</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Make|AnyCPU'">
+    <OutputPath>bin\Make\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PlotterCom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlotterCom.Designer.cs">
+      <DependentUpon>PlotterCom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Skalierung.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Skalierung.Designer.cs">
+      <DependentUpon>Skalierung.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Verschieben.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Verschieben.Designer.cs">
+      <DependentUpon>Verschieben.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="PlotterCom.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PlotterCom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="Skalierung.resx">
+      <DependentUpon>Skalierung.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Verschieben.resx">
+      <DependentUpon>Verschieben.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ConfigManager\ConfigManager.csproj">
+      <Project>{4FB8ED9E-D408-4FFA-8A9F-C5D49DFFA0EB}</Project>
+      <Name>ConfigManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Einstellungen\Einstellungen.csproj">
+      <Project>{237F0812-D743-4A24-8345-3A686027C514}</Project>
+      <Name>Einstellungen</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HPGLViewer\HPGLViewer.csproj">
+      <Project>{ACE1E46D-85CA-452B-BF9F-F9CB630000DA}</Project>
+      <Name>HPGLViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HPGL\HPGL.csproj">
+      <Project>{42760B65-D8EF-4E93-8D9F-CD7ADE3D18BD}</Project>
+      <Name>HPGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StaticLogger\StaticLogger.csproj">
+      <Project>{7C598D1D-F946-497B-9DFC-142C8BCC0AF4}</Project>
+      <Name>StaticLogger</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\button_cance.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\button_ok.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\agt_print.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\configure.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\find.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fileopen.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\filesaveas.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\display.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\editdelete.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exit.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\next-sail.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\frameprint.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 und x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\filequickprint.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\editcopy.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\window_fullscreen.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\forward.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\filesave.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\editcut.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\start_here.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\connect_to_network.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
