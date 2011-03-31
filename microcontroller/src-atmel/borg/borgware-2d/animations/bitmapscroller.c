@@ -46,8 +46,8 @@ bitmap_t;
  */
 static unsigned char bitmap_getAlignedChunk(bitmap_t const *const pBitmap,
                                             unsigned char const nBorgPlane,
-                                            unsigned int const x,
-                                            unsigned int const y)
+                                            unsigned char const x,
+                                            unsigned char const y)
 {
 	assert(x <= pBitmap->nChunkDomain);
 	assert(y < pBitmap->nHeight);
@@ -96,8 +96,8 @@ static unsigned char bitmap_getAlignedChunk(bitmap_t const *const pBitmap,
  *           left of the viewport.
  */
 static void bitmap_drawViewport(bitmap_t const *const pBitmap,
-                                unsigned int const nX,
-                                unsigned int const nY)
+                                unsigned char const nX,
+                                unsigned char const nY)
 {
 	assert(nX <= pBitmap->nXDomain);
 	assert(nY <= pBitmap->nYDomain);
@@ -199,8 +199,8 @@ void bitmap_scroll(unsigned char const nWidth,
 	bitmap.nChunkCount = (((bitmap.nViewportWidth - 1) / 8) + 1);
 
 	// initial starting point
-	int x = bitmap.nXDomain > 0 ? random8() % bitmap.nXDomain : 0;
-	int y = bitmap.nYDomain > 0 ? random8() % bitmap.nYDomain : 0;
+	unsigned char x = bitmap.nXDomain > 0 ? random8() % bitmap.nXDomain : 0;
+	unsigned char y = bitmap.nYDomain > 0 ? random8() % bitmap.nYDomain : 0;
 	char dx = 0;
 	char dy = 0;
 
