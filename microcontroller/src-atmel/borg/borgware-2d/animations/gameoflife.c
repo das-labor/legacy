@@ -228,15 +228,21 @@ uint8_t pfempty(field_t src) {
 
 /******************************************************************************/
 
-void insertglider(field_t pf) {
+static void insertglider(field_t pf) {
+#ifndef BITSTUFFED
 	/*
 	 *  #
-	 *   #
+	 * #
 	 * ###
 	 */
 	                         setcell(pf, 1, 0, alive);
-	                                                  setcell(pf, 2, 1, alive);
+	setcell(pf, 2, 1, alive);
 	setcell(pf, 0, 2, alive);setcell(pf, 1, 2, alive);setcell(pf, 2, 2, alive);
+#else
+	pf[0][0] |= 0x02; //  #
+	pf[1][0] |= 0x04; // #
+	pf[2][0] |= 0x07; // ###
+#endif
 }
 
 /******************************************************************************/
@@ -269,17 +275,18 @@ void gameoflife() {
 	uint8_t ldbuf_idx = 0;
 	uint16_t cycle;
 
-	/* initialize the field with random */
-	pfinit(pf1);
-
 #ifdef GLIDER_TEST	
 	/* initialize with glider */
-	for(y=YSIZE; y--;) {
-		for(x=XSIZE; x--;) {
+	coord_t x,y;
+	for(y = YSIZE; y--;) {
+		for(x = XSIZE; x--;) {
 			setcell(pf1, x, y, dead);
 		}
 	}
 	insertglider(pf1);
+#else
+	/* initialize the field with random */
+	pfinit(pf1);
 #endif	
 
 	/* the main part */
