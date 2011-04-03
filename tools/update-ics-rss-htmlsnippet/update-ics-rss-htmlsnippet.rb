@@ -2,8 +2,10 @@
 
 ###CONFIG starts here
 
-BASEPATH = "/srv/www.das-labor.org/htdoc/"
-#BASEPATH = "./" #for debugging
+#BASEPATH = "/srv/www.das-labor.org/htdoc/"
+BASEPATH = "./" #for debugging
+
+require 'ruby-debug'
 
 class TalksWorkshopsRSS
   RSSFILE = "#{BASEPATH}/talksworkshops.rss"
@@ -34,9 +36,14 @@ end
 
 require 'rubygems'
 require 'tzinfo' #needed for timezone hack, see below
+##it seems these two are NOT needed for timezone stuff:
 #require 'active_support'
 #require 'active_support/time_with_zone'
 require 'ri_cal'
+gem 'builder', '~> 3.0'
+require 'builder'
+
+$KCODE = "UTF8" #make builder emit utf-8
 
 ###MONKEYPATCH starts here
 #Someone is off the spec, dunno if webdav client (Lightning), server or RiCal.
@@ -100,81 +107,6 @@ class RiCal::PropertyValue::DateTime
 end
 ###MONKEYPATCH end
 
-###ESCAPING
-
-#XML Character converter, from Sam Ruby:
-#(see http://intertwingly.net/stories/2005/09/28/xchar.rb).
-module XChar
-  # http://intertwingly.net/stories/2004/04/14/i18n.html#CleaningWindows
-  CP1252 = {
-    128 => 8364, # euro sign
-    130 => 8218, # single low-9 quotation mark
-    131 =>  402, # latin small letter f with hook
-    132 => 8222, # double low-9 quotation mark
-    133 => 8230, # horizontal ellipsis
-    134 => 8224, # dagger
-    135 => 8225, # double dagger
-    136 =>  710, # modifier letter circumflex accent
-    137 => 8240, # per mille sign
-    138 =>  352, # latin capital letter s with caron
-    139 => 8249, # single left-pointing angle quotation mark
-    140 =>  338, # latin capital ligature oe
-    142 =>  381, # latin capital letter z with caron
-    145 => 8216, # left single quotation mark
-    146 => 8217, # right single quotation mark
-    147 => 8220, # left double quotation mark
-    148 => 8221, # right double quotation mark
-    149 => 8226, # bullet
-    150 => 8211, # en dash
-    151 => 8212, # em dash
-    152 =>  732, # small tilde
-    153 => 8482, # trade mark sign
-    154 =>  353, # latin small letter s with caron
-    155 => 8250, # single right-pointing angle quotation mark
-    156 =>  339, # latin small ligature oe
-    158 =>  382, # latin small letter z with caron
-    159 =>  376} # latin capital letter y with diaeresis
-  
-  # http://www.w3.org/TR/REC-xml/#dt-chardata
-  PREDEFINED = {
-    38 => '&amp;', # ampersand
-    60 => '&lt;',  # left angle bracket
-    62 => '&gt;'}  # right angle bracket
-  
-  # http://www.w3.org/TR/REC-xml/#charsets
-  VALID = [[0x9, 0xA, 0xD], (0x20..0xD7FF), 
-           (0xE000..0xFFFD), (0x10000..0x10FFFF)]
-end
-
-class Fixnum
-  # xml escaped version of chr
-  def xchr
-    n = XChar::CP1252[self] || self
-    n = 42 unless XChar::VALID.find {|range| range.include? n}
-    XChar::PREDEFINED[n] or (n<128 ? n.chr : "&##{n};")
-  end
-end
-
-class String
-  # xml escaped version of to_s
-  def to_xs
-    unpack('U*').map {|n| n.xchr}.join # ASCII, UTF-8
-  rescue
-    unpack('C*').map {|n| n.xchr}.join # ISO-8859-1, WIN-1252
-  end
-end
-
-class String
-  alias_method :escapeXML, :to_xs
-  
-  #For escaping inside attribute values
-  def escapeQ
-    escapeXML.gsub(/(\\|")/) { |match| "\\#{match}" }
-  end
-end
-
-###ESCAPING end
-
 class Date
   def wochentag
     return %w{So Mo Di Mi Do Fr Sa}[wday]
@@ -184,6 +116,14 @@ end
 class RiCal::Component::Event
   def link
     url || attach.first
+  end
+  
+  def display_summary
+    date = dtstart
+    spacelist = [date.strftime("%d.%m.%Y"), "(#{date.wochentag})"]
+    spacelist << date.strftime("%H:%M") if date.instance_of? DateTime
+    spacelist += ["-", summary]
+    return spacelist.join " "
   end
 end
 
@@ -233,26 +173,28 @@ module RSSOutput
   
   def output_rss(filename, title, events)
     File.open(filename, "w") do |f|
-      f << %q{<?xml version="1.0" encoding="UTF8"?>
-<rss version="2.0">
-<channel>
-}
-      f << %Q{<title>#{title.escapeXML}</title>
-<link>http://www.das-labor.org</link>
-<description>Terminfeed des Labor e.V.</description>
-<language>de-de</language>
-<pubDate>} + Time.now.strftime("%a, %d %b %Y %H:%M:%S %Z") + "</pubDate>\n"
-      @events.each do |e|
-        date = e.dtstart
-        f << %Q{<item>
-<title>#{e.summary.escapeXML}</title>
-<description>#{date.strftime("%d.%m.%Y")} (#{date.wochentag}) #{date.strftime("%H:%M")} - #{e.summary.escapeXML}</description>\n}
-        if link = e.link
-          f << "<link>#{link.escapeXML}</link>\n"
+      xml = Builder::XmlMarkup.new :target => f, :indent => 2 #needed for newlines
+      
+      xml.instruct!
+      xml.rss("version" => "2.0") do
+        xml.channel do
+          xml.title title
+          xml.link "http://www.das-labor.org"
+          xml.description "Terminfeed des Labor e.V."
+          xml.language "de-de"
+          xml.pubDate Time.now.strftime("%a, %d %b %Y %H:%M:%S %Z")
+          
+          @events.each do |e|
+            date = e.dtstart
+            xml.item do
+              xml.title e.summary
+              xml.description e.display_summary
+              link = e.link
+              xml.link link if link
+            end
+          end
         end
-        f << "</item>\n"
       end
-      f << "</channel>\n</rss>"
     end
   end
 end
@@ -279,8 +221,10 @@ end
 class OutputHTML
   include OutputHandler
   
+  MAX_EVENTS = 20#5
+  
   def occurrence_options_for(rec)
-    return { :before => Date.today + 19, :starting => Date.today }
+    return { :before => Date.today + 19, :starting => Date.today, :count => MAX_EVENTS }
   end
   
   def initialize
@@ -293,20 +237,39 @@ class OutputHTML
   
   def finish
     @events.sort! { |e1, e2| e1.dtstart <=> e2.dtstart }
+    @events = @events[0...MAX_EVENTS]
     
-    File.open(SNIPPETFILE, "w") do |f|
-      @events.each do |e|
-        date = e.dtstart
-        hline = "#{date.strftime("%d.%m.%Y")} (#{date.wochentag}) #{date.strftime("%H:%M")} - #{e.summary.escapeXML}"
-        if link = e.link
-          hline = "<a href=\"#{link.escapeQ}\">#{hline}</a>"
-        end
-        if date.to_date == Date.today
-          f << "<b>#{hline}</b><br/>\n"
+    html = "" #temporary storage for html snippet
+    
+    xml = Builder::XmlMarkup.new :target => html, :indent => 2 #needed for newlines
+    xml.instruct! #needed to produce utf8, but not desired in output! see below events loop
+    
+    @events.each do |e|
+      date = e.dtstart
+      link = e.link
+      highlight = e.dtstart.to_date == Date.today
+      
+      if link
+        if highlight
+          xml.a("href" => link) do
+            xml.b e.display_summary
+          end
         else
-          f << "#{hline}<br/>\n"
+          xml.a(e.display_summary, "href" => link)
         end
+      else
+        xml << "<b>" if highlight
+        xml.text! e.display_summary
+        xml << "</b>" if highlight
       end
+      xml << "<br/>\n"
+    end
+    html.sub! /<\?[^?]*\?>/, "" #remove output by instruct! again
+    html.sub! /^\s*/, "" #remove leading whitespace
+    html.gsub! %r{</a>\n<br/>}, "</a><br/>" #nice for debugging!
+
+    File.open(SNIPPETFILE, "w") do |f|
+      f << html
     end
   end
 end
