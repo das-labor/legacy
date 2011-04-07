@@ -221,7 +221,7 @@ end
 class OutputHTML
   include OutputHandler
   
-  MAX_EVENTS = 20#5
+  MAX_EVENTS = 5
   
   def occurrence_options_for(rec)
     return { :before => Date.today + 19, :starting => Date.today, :count => MAX_EVENTS }
