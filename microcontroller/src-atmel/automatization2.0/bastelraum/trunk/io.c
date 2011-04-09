@@ -133,21 +133,10 @@ void switch_handler() {
 		
 		if (held_0)
 		{
-/*			outdata.class    = C_VIRT;
-			outdata.object   = VIRT_VORTRAG_PWM;
-			outdata.function = F_PWM_MOD;
-			outdata.data     = 0x00;
-		
-			twi_send(&outdata);*/
+
 		}
 		else if (last_held_0)
 		{
-/*			outdata.class    = C_VIRT;
-			outdata.object   = VIRT_VORTRAG_PWM;
-			outdata.function = F_PWM_DIR;
-			outdata.data     = 0x00;
-
-			twi_send(&outdata);*/
 				
 		}
 		
