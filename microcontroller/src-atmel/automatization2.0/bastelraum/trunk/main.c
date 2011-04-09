@@ -18,6 +18,7 @@
 
 
 
+
 void init(void)
 {
 
@@ -39,9 +40,11 @@ void init(void)
 */
 	DDRB |= _BV(PB0); // LED out
 	
+	TCCR0B = _BV(CS01) | _BV(CS00);
+	TIMSK0 = _BV(TOIE0);
+	
 	init_io();
-	
-	
+
 	//initialize spi port
 	spi_init();
 	
@@ -51,7 +54,8 @@ void init(void)
 	read_can_addr();
 
 	//turn on interrupts
-//	sei();
+	sei();
+  wdt_enable(5); // 500ms
 }
 	 
 int main(void)
@@ -64,12 +68,9 @@ int main(void)
 	while (1)
 	{
 		can_handler();
-
-		switch_handler();
-/*		if (tickscounter_ == 10) {
-			temp_sensor_read();
-			tickscounter = 0;
-		}*/
+//			temp_sensor_read();
+    switch_handler();
+    wdt_reset();
 	}
 	return 1;
 };

@@ -1,12 +1,22 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "io.h"
+#include <avr/interrupt.h>
 
 volatile uint8_t sreg;
 
 void change_shift_reg(uint8_t sreg);
 
 uint8_t stat_licht = 0;
+
+volatile uint16_t tickscounter = 0;
+ISR(TIMER0_OVF_vect) {
+  tickscounter++;
+}
+
+#define HOLD_THRESHOLD 18
+#define CLICK_THRESHOLD 0
+
 
 void init_io() {
 	DDRA |= SREG_STROBE;
@@ -38,6 +48,17 @@ void init_io() {
 
 }
 
+/*
+  -
+  helmer1
+  helmer2
+  drucker1
+  drucker2
+  fenster
+  banner
+  orga
+*/
+
 void change_shift_reg(uint8_t sreg) {
 	for (int i = 0; i < 8; i++) {
 		if (sreg & (1 << i))
@@ -54,22 +75,83 @@ void change_shift_reg(uint8_t sreg) {
 }
 
 void switch_handler() {
+	static uint16_t last_tickscounter;
 
-	if (!(PINA & _BV(PA7))) {
-		if (stat_licht) {
-			sreg = 0;
-			change_shift_reg(sreg);
-			stat_licht = 0;
+	cli();
+	uint16_t tc = tickscounter;
+	sei();
+
+	// alle 32 ticks ... 0.032 sekunden
+	if ((tc - last_tickscounter) >= 20)
+	{
+		last_tickscounter = tc;
+
+
+		// **** Vortrag Licht schalter ****
+
+		static uint8_t counter_0;
+		uint8_t clicked_0 = 0;
+		uint8_t held_0    = 0;
+		static uint8_t last_held_0;
+
+		if (!(PINA & _BV(PA7)))
+		{
+			counter_0 ++;
+			if (counter_0 > HOLD_THRESHOLD)
+			{
+				held_0 = 1;
+				counter_0 = HOLD_THRESHOLD;
+			}
+		} else
+		{
+			if (counter_0 > CLICK_THRESHOLD)
+			{
+				if (counter_0 < HOLD_THRESHOLD)
+				{
+					clicked_0 = 1;
+				}
+			} 
+			counter_0 = 0;
 		}
-		else {
-			stat_licht = 1;
-			sreg = 254;
-			change_shift_reg(sreg);
-			pwm_set(pwm_matrix[0].port, 255);
-			pwm_set(pwm_matrix[1].port, 255);
-			pwm_set(pwm_matrix[3].port, 255);
+		
+		if (clicked_0)
+		{
+		        if (stat_licht) {
+			        sreg = 0;
+			        change_shift_reg(sreg);
+			        stat_licht = 0;
+		        }
+		        else {
+			        sreg = 212;
+			        change_shift_reg(sreg);
+			        pwm_set(pwm_matrix[0].port, 200);
+			        pwm_set(pwm_matrix[1].port, 200);
+			        pwm_set(pwm_matrix[3].port, 200);
+       			        stat_licht = 1;
+		        }
 		}
-		_delay_ms(250);
+		
+		if (held_0)
+		{
+/*			outdata.class    = C_VIRT;
+			outdata.object   = VIRT_VORTRAG_PWM;
+			outdata.function = F_PWM_MOD;
+			outdata.data     = 0x00;
+		
+			twi_send(&outdata);*/
+		}
+		else if (last_held_0)
+		{
+/*			outdata.class    = C_VIRT;
+			outdata.object   = VIRT_VORTRAG_PWM;
+			outdata.function = F_PWM_DIR;
+			outdata.data     = 0x00;
+
+			twi_send(&outdata);*/
+				
+		}
+		
+		last_held_0 = held_0;
 	}
 }
 
