@@ -98,6 +98,8 @@ extern void can_handler()
 						else
 							virt_pwm_dir = 1;
 						break;
+					case 4: // test
+					        OCR0 = rx_msg->data[1];
 				}
 			}
 		}
