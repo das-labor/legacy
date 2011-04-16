@@ -1,5 +1,4 @@
 OBJ = main.o can/can.o can/spi.o can_handler.o lights.o motion.o
-
 # Default values
 OUT           ?= image
 MCU_TARGET    ?= atmega8
