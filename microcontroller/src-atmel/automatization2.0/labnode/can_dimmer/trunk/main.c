@@ -5,6 +5,7 @@
 //#include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/wdt.h>
 
 #include "config.h"
 
@@ -15,10 +16,24 @@
 #include "can/spi.h"
 #include "can/lap.h"
 
+
+ISR(TIMER0_COMP_vect) {
+  PORTD |= _BV(PD5);
+}
+
+ISR(TIMER0_OVF_vect) {
+  PORTD &= ~_BV(PD5);
+}
+
 void init(void)
 {
 	DDRB |= _BV(PB0); // LED out
-		
+	DDRD |= _BV(PD5); // 0-10V
+	
+	TCCR0 = _BV(CS01) | _BV(CS00);
+	TIMSK |= _BV(OCIE0) | _BV(TOIE0);
+	OCR0 = 50;
+	
 	//initialize spi port
 	spi_init();
 	
@@ -26,6 +41,7 @@ void init(void)
 	can_init();
 	
 	read_can_addr();
+	wdt_enable(5); // 500ms
 }
 	 
 int main(void)
@@ -52,6 +68,7 @@ int main(void)
 	while (1)
 	{
 		can_handler();
+		wdt_reset();
 	}
 
 }
