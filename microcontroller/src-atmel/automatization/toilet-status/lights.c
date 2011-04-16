@@ -3,8 +3,8 @@
 
 void lights_init()
 {
-	DDRC |= 0x0F;
-	PORTC |= 0x0F; /* all on */
+	DDRC |= _BV(PC0) | _BV(PC1) | _BV(PC2) | _BV(PC3);
+	PORTC |= _BV(PC0) | _BV(PC1) | _BV(PC2) | _BV(PC3); /* all on */
 }
 void lights_set_raw (uint8_t in_bits)
 {

@@ -86,11 +86,11 @@ void init(void)
 	//initialize can communication
 	can_init();
 	read_can_addr();
-
+/*
 	timer2_init();
 	timer0_init();
 	mtd_init();
-	sei();
+	sei(); */
 }
 
 
