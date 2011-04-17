@@ -30,7 +30,8 @@ void init(void)
 	DDRB |= _BV(PB0); // LED out
 	DDRD |= _BV(PD5); // 0-10V
 	
-	TCCR0 = _BV(CS01) | _BV(CS00);
+//	TCCR0 = _BV(CS01) | _BV(CS00);
+	TCCR0 = _BV(CS02);
 	TIMSK |= _BV(OCIE0) | _BV(TOIE0);
 	OCR0 = 50;
 	
@@ -72,3 +73,4 @@ int main(void)
 	}
 
 }
+
