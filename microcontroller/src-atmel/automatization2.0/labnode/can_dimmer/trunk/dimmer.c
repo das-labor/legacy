@@ -83,16 +83,13 @@ void dimmer_init() {
 	OCR1B = MAX_VAL;
 
 	TIMSK |= (1<<TICIE1) | (1<<OCIE1B);//Input capture int on, output compare 1B on
-
-	
 }
 
 
 void set_dimmer(uint8_t channel, uint8_t bright) {
 
 	if (channel == 3) bright = (bright>128) ? 255:0;//only allow full or no brighnes for evg on channel 3
-        else if (bright > 200)
-                bright = 200;
+
 	uint16_t dimval = 512 - bright * 2;
 	if (bright == 0) dimval = MAX_VAL;
 	if (bright == 255) dim_max[channel] = 1; else dim_max[channel] = 0;
