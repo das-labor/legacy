@@ -67,7 +67,10 @@ extern void can_handler()
 						set_dimmer(3, virt_stat);
 						break;
 					case 1://C_PWM:
-						set_dimmer(rx_msg->data[1], rx_msg->data[2]);
+						if (rx_msg->data[1] < 4)
+							set_dimmer(rx_msg->data[1], rx_msg->data[2]);
+						else if (rx_msg->data[1] == 4)
+							OCR0 = rx_msg->data[2];
 						break;
 					case 2://PWM_MOD
 
@@ -98,8 +101,6 @@ extern void can_handler()
 						else
 							virt_pwm_dir = 1;
 						break;
-					case 4: // test
-					        OCR0 = rx_msg->data[1];
 				}
 			}
 		}
