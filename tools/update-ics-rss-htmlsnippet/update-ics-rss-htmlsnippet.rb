@@ -1,11 +1,10 @@
 #!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
 
 ###CONFIG starts here
 
-#BASEPATH = "/srv/www.das-labor.org/htdoc/"
-BASEPATH = "./" #for debugging
-
-require 'ruby-debug'
+BASEPATH = "/srv/www.das-labor.org/htdoc/"
+#BASEPATH = "./" #for debugging
 
 class TalksWorkshopsRSS
   RSSFILE = "#{BASEPATH}/talksworkshops.rss"
