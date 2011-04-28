@@ -3,26 +3,25 @@
 #include <avr/interrupt.h>
 #include "adc.h"
 
-#define ADC_CHANNEL_U 5
-#define ADC_CHANNEL_I 4
+#define ADC_CHANNEL_UWAVE 7
 
-volatile uint16_t adc_u;
-volatile uint16_t adc_i;
+volatile uint16_t adc_uwave;
 
 
 ISR(ADC_vect){
 	static uint8_t state;
 	if(state == 0){
-		state = 1;
-		adc_u = ADC;
-		//select AVCC reference and u channel again for next conversion (i conversion running allready)
-		ADMUX = (1<<REFS1) | (1<<REFS0) | ADC_CHANNEL_U;
+		state = 0;
+		adc_uwave = ADC;
+		//select 2.56V reference and u channel again for next conversion
+		ADMUX = (1<<REFS1) | (1<<REFS0) | ADC_CHANNEL_UWAVE;
 	}else{
+		/*
 		state = 0;
 		adc_i = ADC;
 		//select AVCC reference and i channel again for next conversion (u conversion running allready)
 		ADMUX = (1<<REFS1) | (1<<REFS0) | ADC_CHANNEL_I;
-
+		*/
 	}
 }
 
@@ -46,6 +45,6 @@ void init_adc(){
 	//1 0 1 32
 	//1 1 0 64
 	//1 1 1 128
-	ADCSRA = (1<<ADEN) | (1<<ADSC) | (1<<ADFR) | (1<<ADIE) | 7;
+	ADCSRA = (1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | 7;
 	
 }

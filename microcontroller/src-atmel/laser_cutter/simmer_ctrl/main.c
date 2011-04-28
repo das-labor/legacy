@@ -30,7 +30,13 @@ uint16_t simmer_u;
 #define CS_CHK2          4
 #define CS_SIMMER_SOLL_L 5
 #define CS_SIMMER_SOLL_H 6
-#define CS_SLAVE1_REQ    7
+#define CS_POWER_SOLL_L  7
+#define CS_POWER_SOLL_H  8
+#define CS_PERIOD_L      9
+#define CS_PERIOD_H     10
+#define CS_SLAVE1_REQ   11
+#define CS_SLAVE2_REQ   12
+
 
 
 void put_uint16(uint16_t i){
@@ -75,15 +81,27 @@ void slave_com(){
 				}
 				com_state = CS_SIMMER_SOLL_L;
 				break;
+				
 			case CS_SIMMER_SOLL_L:
 				tmp = c;
 				com_state = CS_SIMMER_SOLL_H;
 				break;
 			case CS_SIMMER_SOLL_H:
 				simmer_i_soll = ((uint16_t)c<<8) | tmp;
-				com_state = CS_SLAVE1_REQ;
+				com_state = CS_POWER_SOLL_L;
 				break;
-				
+			case CS_POWER_SOLL_L:
+				com_state = CS_POWER_SOLL_H;
+				break;
+			case CS_POWER_SOLL_H:
+				com_state = CS_PERIOD_L;
+				break;
+			case CS_PERIOD_L:
+				com_state = CS_PERIOD_H;
+				break;
+			case CS_PERIOD_H:
+				com_state = CS_SLAVE1_REQ;
+				break;					
 			case CS_SLAVE1_REQ:{
 				uint8_t stat;
 				stat =   (state_500V_psu        ? MSK_500V_PSU_STATE  : 0)
@@ -98,8 +116,11 @@ void slave_com(){
 				}else if(poll_num == 1){
 					put_uint16(simmer_u);
 				}
-				com_state = CS_WAIT_SYNC;
+				com_state = CS_SLAVE2_REQ;
 				}break;
+			case CS_SLAVE2_REQ:
+				com_state = CS_WAIT_SYNC;
+				break;
 		}
 	}	
 }
