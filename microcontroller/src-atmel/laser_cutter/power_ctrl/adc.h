@@ -1,5 +1,4 @@
 
-extern volatile uint16_t adc_u;
-extern volatile uint16_t adc_i;
+extern volatile uint16_t adc_uwave;
 
 void init_adc();

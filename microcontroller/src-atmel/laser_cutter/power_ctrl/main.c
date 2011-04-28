@@ -3,6 +3,7 @@
 #include "uart/uart.h"
 #include "ioport.h"
 #include "../lib/com/com.h"
+#include "pulse_isr.h"
 
 #include "adc.h"
 #include "hardware.h"
@@ -11,18 +12,35 @@ uint8_t state_main_on;
 
 uint8_t command_auto;
 
+uint8_t command_power_psu;
+uint8_t state_power_psu;
+
+uint8_t command_pumpe;
+uint8_t state_pumpe;
+
+uint8_t command_charge;
+uint8_t state_charge;
+
+uint8_t command_fire;
+
+uint16_t power_u_soll;
+uint16_t power_u_ist;
+
 uint8_t command_zuenden;
 uint8_t state_zuenden;
 
 uint8_t command_500V_psu;
-uint8_t state_500V_psu;
+//uint8_t state_500V_psu;
 
 uint8_t command_simmer_psu;
-uint8_t state_simmer_psu;
+//uint8_t state_simmer_psu;
 
 uint16_t simmer_i_soll;
 uint16_t simmer_i_ist;
 uint16_t simmer_u;
+
+uint16_t fire_period = 1000;
+
 
 #define CS_WAIT_SYNC     0
 #define CS_CMD1          1
@@ -31,31 +49,41 @@ uint16_t simmer_u;
 #define CS_CHK2          4
 #define CS_SIMMER_SOLL_L 5
 #define CS_SIMMER_SOLL_H 6
-#define CS_SLAVE1_REQ    7
+#define CS_POWER_SOLL_L  7
+#define CS_POWER_SOLL_H  8
+#define CS_PERIOD_L      9
+#define CS_PERIOD_H     10
+#define CS_SLAVE1_REQ   11
+#define CS_SLAVE2_REQ   12
+
 
 
 uint8_t shift_port =0;  //Speichert den aktuellen Zustand der Ausgänge
 
 //Setzt einen Port am Schieberegister
-#define SET_SHIFT_PORT(PIN)  shift_port |=  PIN; shift_update(shift_port);
-#define CLEAR_SHIFT_PIN(PIN) shift_port &= ~PIN; shift_update(shift_port);
+#define SET_SHIFT_PORT(m)   shift_port |=  m; shift_update()
+#define CLEAR_SHIFT_PORT(m) shift_port &= ~m; shift_update()
 
 
 //Ladegerät an/aus schalten
-#define NT_ON   SET_SHIFT_PORT(SHIFT_NT_ON)
-#define NT_OFF  CLEAR_SHIFT_PORT(SHIFT_NT_ON)
+#define NT_ON()   SET_SHIFT_PORT(SHIFT_NT_ON)
+#define NT_OFF()  CLEAR_SHIFT_PORT(SHIFT_NT_ON)
 
+
+//Pumpe an/aus schalten
+#define PUMPE_ON()   SET_SHIFT_PORT(REL_PUMPE)
+#define PUMPE_OFF()  CLEAR_SHIFT_PORT(REL_PUMPE)
 
 
 
 //Sendet den aktuellen Status ab das Schieberegister
 void shift_update(void) {
-    OUTPUT_OFF(SHIFT_SS);           //SS low
-
     SPDR = shift_port;                    //Daten senden
     while(!(SPSR & (1<<SPIF)));
 
     OUTPUT_ON(SHIFT_SS);            //SS High -->Daten an den Ausgang
+    OUTPUT_OFF(SHIFT_SS);           //SS low
+
 }
 
 
@@ -63,8 +91,8 @@ void shift_update(void) {
 //Initialisiert die Schieberegister-Ansteuerung
 void init_shift() {
     //Output Enable H --> Ausgänge Z
-    SET_DDR(SHIFT_OE);
     OUTPUT_ON(SHIFT_OE);
+    SET_DDR(SHIFT_OE);
 
     //Latch-Clock auf Masse
     SET_DDR(SHIFT_SS);
@@ -77,7 +105,8 @@ void init_shift() {
     //SPI: Enable, Master, f/16
     SPCR |= (1<< SPE) | (1 << MSTR) | (1 << SPR0);
 
-    send_shift(0);
+    shift_port = 0;
+	shift_update();
 
     //Ausgang aktiv
     OUTPUT_OFF(SHIFT_OE);
@@ -91,6 +120,11 @@ void put_uint16(uint16_t i){
 void io_init(){
     SET_DDR(NT_INHIBIT);
 	OUTPUT_ON(NT_INHIBIT);  //Netzteil gestoppt
+	
+	SET_DDR(NT_POWER);
+	
+	PORTC = 0xff;//Pullups an Netzteil ausgängen
+	
 }
 
 
@@ -137,32 +171,51 @@ void slave_com(){
 					command_zuenden    = (cmd1 & MSK_ZUEND_CMD)    ? 1:0;
 					command_500V_psu   = (cmd1 & MSK_500V_PSU_CMD) ? 1:0;
 					command_simmer_psu = (cmd1 & MSK_SIMMER_CMD)   ? 1:0;
-
+					command_pumpe      = (cmd2 & MSK_PUMPE_CMD)    ? 1:0;
+					command_power_psu  = (cmd2 & MSK_POWER_PSU_CMD)? 1:0;
+					command_fire       = (cmd2 & MSK_FIRE_CMD)     ? 1:0;
+					command_charge     = (cmd2 & MSK_CHARGE_CMD)   ? 1:0;
 				}
 				com_state = CS_SIMMER_SOLL_L;
 				break;
 			case CS_SIMMER_SOLL_L:
-				tmp = c;
 				com_state = CS_SIMMER_SOLL_H;
 				break;
 			case CS_SIMMER_SOLL_H:
-				simmer_i_soll = ((uint16_t)c<<8) | tmp;
+				com_state = CS_POWER_SOLL_L;
+				break;
+			case CS_POWER_SOLL_L:
+				tmp = c;
+				com_state = CS_POWER_SOLL_H;
+				break;
+			case CS_POWER_SOLL_H:
+				power_u_soll = ((uint16_t)c<<8) | tmp;
+				com_state = CS_PERIOD_L;
+				break;
+			case CS_PERIOD_L:
+				tmp = c;
+				com_state = CS_PERIOD_H;
+				break;
+			case CS_PERIOD_H:
+				fire_period = ((uint16_t)c<<8) | tmp;
 				com_state = CS_SLAVE1_REQ;
 				break;
-
-			case CS_SLAVE1_REQ:{
+			case CS_SLAVE1_REQ:
+				com_state = CS_SLAVE2_REQ;
+				break;
+			case CS_SLAVE2_REQ:{
 				uint8_t stat;
-				stat =   (state_500V_psu        ? MSK_500V_PSU_STATE  : 0)
-	        			|(state_zuenden         ? MSK_ZUEND_STATE     : 0)
-	        			|(state_simmer_psu      ? MSK_SIMMER_STATE    : 0);
+				stat =   (state_pumpe        ? MSK_PUMPE_STATE         : 0)
+	        			|(state_power_psu    ? MSK_POWER_PSU_STATE     : 0)
+						|(state_charge       ? MSK_CHARGE_STATE        : 0) ;
 
 				poll_num = c & 0x0f;
 
 				uart_putc(stat);
 				if(poll_num == 0){
-					put_uint16(simmer_i_ist);
+					put_uint16(power_u_ist);
 				}else if(poll_num == 1){
-					put_uint16(simmer_u);
+					//
 				}
 				com_state = CS_WAIT_SYNC;
 				}break;
@@ -172,36 +225,30 @@ void slave_com(){
 
 void statemachine (){
 	if(state_main_on){
-		state_simmer_psu = command_simmer_psu;
-		state_500V_psu   = command_500V_psu;
+		state_power_psu = command_power_psu;		
 	}else{
-		state_simmer_psu = 0;
-		state_500V_psu   = 0;
+		state_power_psu = 0;
 	}
+	
+	state_pumpe = command_pumpe;
+	state_charge = INPUT(NT_END_OF_CHARGE) ? 0 : 1;
 }
 
 
 void set_outputs(){
-	static uint8_t old_zuenden;
-	if(state_simmer_psu){
-		OUTPUT_OFF(SIMMER); //is inverted (PS-ON of PC-PSU)
+	if(state_power_psu){
+		OUTPUT_ON(NT_POWER);
 	}else{
-		OUTPUT_ON(SIMMER);
+		OUTPUT_OFF(NT_POWER);
 	}
-	if(state_500V_psu){
-		OUTPUT_ON(PSU_500V);
+	
+	if(state_pumpe){
+		PUMPE_ON();
 	}else{
-		OUTPUT_OFF(PSU_500V);
+		PUMPE_OFF();
 	}
-
-	if(command_zuenden && (! old_zuenden)){
-		OUTPUT_ON(ZUENDUNG);
-	}else{
-		OUTPUT_OFF(ZUENDUNG);
-	}
-	old_zuenden = command_zuenden;
-
-	OCR1A = (simmer_i_soll * 192) / 256 ;
+	
+	OCR1A = (power_u_soll * 16) / 94 ;
 }
 
 
@@ -212,17 +259,14 @@ int main(){
 	uart_init();
 	init_adc();
 	init_shift();
+	init_pulse();
 
 	sei();
 
 
 	while(1){
-		simmer_i_ist = (35 * adc_i) / 128;
-		if(simmer_i_ist > 20){
-			state_zuenden = 1;
-		}else{
-			state_zuenden = 0;
-		}
+		//442 adc val = 1400V
+		power_u_ist = (53 * adc_uwave) / 16;
 
 		slave_com();
 		statemachine();

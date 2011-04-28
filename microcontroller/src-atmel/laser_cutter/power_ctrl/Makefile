@@ -1,6 +1,6 @@
 PRG            = image
-OBJ            = main.o uart/uart.o adc.o
-MCU_TARGET     = atmega8
+OBJ            = main.o uart/uart.o adc.o pulse_isr.o
+MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
 FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -U $(PRG).hex
