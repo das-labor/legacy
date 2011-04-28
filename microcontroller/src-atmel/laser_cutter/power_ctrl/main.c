@@ -5,76 +5,7 @@
 #include "../lib/com/com.h"
 
 #include "adc.h"
-
-
-//Schieberegister Bit1-7 = relais ausgänge
-//Main power = bit 7
-#define SHIFT_SS_PORT B
-#define SHIFT_SS_BIT  4
-
-//low = enable
-#define SHIFT_OE_PORT B
-#define SHIFT_OE_BIT  3
-
-#define SHIFT_MOSI_PORT B
-#define SHIFT_MOSI_BIT  5
-
-#define SHIFT_SCK_PORT B
-#define SHIFT_SCK_BIT  7
-
-
-//low = NT Enable
-#define NT_INHIBIT_PORT A
-#define NT_INHIBIT_BIT  0
-
-//high = power on
-#define NT_POWER_PORT   A
-#define NT_POWER_BIT    1
-
-//low =  nt off
-#define NT_STATUS_OFF_PORT C
-#define NT_STATUS_OFF_BIT  0
-
-//low =  error
-#define NT_NO_CURRENT_REV_PORT C
-#define NT_NO_CURRENT_REV_BIT  1
-
-//low =  overload
-#define NT_OVERLOAD_PORT C
-#define NT_OVERLOAD_BIT  2
-
-//low =  interlock_open
-#define NT_INTERLOCK_OPEN_PORT C
-#define NT_INTERLOCK_OPEN_BIT  3
-
-//low =  thermal overload
-#define NT_THERMAL_OVERLOAD_PORT C
-#define NT_THERMAL_OVERLOAD_BIT  4
-
-//low =  on
-#define NT_STATUS_ON_PORT C
-#define NT_STATUS_ON_BIT  5
-
-//low =  end of charge
-#define NT_END_OF_CHARGE_PORT C
-#define NT_END_OF_CHARGE_BIT  6
-
-//low =  inhibited
-#define NT_STATUS_INHIBIT_PORT C
-#define NT_STATUS_INHIBIT_BIT  7
-
-//OC1A - 0 ist 0V und volle kanne ist 1300V
-#define PWM_U_SOLL_PORT        D
-#define PWM_U_SOLL_BIT         5
-
-//reserve OC1B
-#define PWM_RESERVE_PORT        D
-#define PWM_RESERVE_BIT         4
-
-//ADC7: U_IST
-//über Spannungteiler 15V/2.36V
-
-//ADC6: reserve
+#include "hardware.h"
 
 uint8_t state_main_on;
 
@@ -103,10 +34,74 @@ uint16_t simmer_u;
 #define CS_SLAVE1_REQ    7
 
 
+uint8_t shift_port =0;  //Speichert den aktuellen Zustand der Ausgänge
+
+//Setzt einen Port am Schieberegister
+#define SET_SHIFT_PORT(PIN)  shift_port |=  PIN; shift_update(shift_port);
+#define CLEAR_SHIFT_PIN(PIN) shift_port &= ~PIN; shift_update(shift_port);
+
+
+//Ladegerät an/aus schalten
+#define NT_ON   SET_SHIFT_PORT(SHIFT_NT_ON)
+#define NT_OFF  CLEAR_SHIFT_PORT(SHIFT_NT_ON)
+
+
+
+
+//Sendet den aktuellen Status ab das Schieberegister
+void shift_update(void) {
+    OUTPUT_OFF(SHIFT_SS);           //SS low
+
+    SPDR = shift_port;                    //Daten senden
+    while(!(SPSR & (1<<SPIF)));
+
+    OUTPUT_ON(SHIFT_SS);            //SS High -->Daten an den Ausgang
+}
+
+
+
+//Initialisiert die Schieberegister-Ansteuerung
+void init_shift() {
+    //Output Enable H --> Ausgänge Z
+    SET_DDR(SHIFT_OE);
+    OUTPUT_ON(SHIFT_OE);
+
+    //Latch-Clock auf Masse
+    SET_DDR(SHIFT_SS);
+    OUTPUT_OFF(SHIFT_SS);
+
+    //Datenleitungen als Ausgang
+    SET_DDR(SHIFT_MOSI);
+    SET_DDR(SHIFT_SCK);
+
+    //SPI: Enable, Master, f/16
+    SPCR |= (1<< SPE) | (1 << MSTR) | (1 << SPR0);
+
+    send_shift(0);
+
+    //Ausgang aktiv
+    OUTPUT_OFF(SHIFT_OE);
+}
+
 void put_uint16(uint16_t i){
 	uart_putc(i & 0xff);
 	uart_putc(i>>8);
 }
+
+void io_init(){
+    SET_DDR(NT_INHIBIT);
+	OUTPUT_ON(NT_INHIBIT);  //Netzteil gestoppt
+}
+
+
+void pwm_init(){
+    //8bit fast pwm, non inverting
+	TCCR1A = (1<<COM1A1) | (1<<WGM10); //Fast PWM 8 bit
+	TCCR1B = (1<<WGM12)  | (1<<CS10) ; //clk/1
+	OCR1A  = 0; // current off
+	SET_DDR(PWM_U_SOLL);
+}
+
 
 void slave_com(){
 	uint8_t c, res;
@@ -136,13 +131,13 @@ void slave_com(){
 				break;
 			case CS_CHK2:
 				chk2 = c;
-				if( (cmd1 == (chk1 ^ 0xff)) && (cmd2 == (chk2 ^ 0xff)) ) {								
+				if( (cmd1 == (chk1 ^ 0xff)) && (cmd2 == (chk2 ^ 0xff)) ) {
 					state_main_on      = (cmd1 & MSK_MAIN_CMD)     ? 1:0;
 					command_auto       = (cmd1 & MSK_AUTO_CMD)     ? 1:0;
 					command_zuenden    = (cmd1 & MSK_ZUEND_CMD)    ? 1:0;
 					command_500V_psu   = (cmd1 & MSK_500V_PSU_CMD) ? 1:0;
 					command_simmer_psu = (cmd1 & MSK_SIMMER_CMD)   ? 1:0;
-					
+
 				}
 				com_state = CS_SIMMER_SOLL_L;
 				break;
@@ -154,25 +149,25 @@ void slave_com(){
 				simmer_i_soll = ((uint16_t)c<<8) | tmp;
 				com_state = CS_SLAVE1_REQ;
 				break;
-				
+
 			case CS_SLAVE1_REQ:{
 				uint8_t stat;
 				stat =   (state_500V_psu        ? MSK_500V_PSU_STATE  : 0)
 	        			|(state_zuenden         ? MSK_ZUEND_STATE     : 0)
 	        			|(state_simmer_psu      ? MSK_SIMMER_STATE    : 0);
-	        			
+
 				poll_num = c & 0x0f;
-				
+
 				uart_putc(stat);
 				if(poll_num == 0){
-					put_uint16(simmer_i_ist);	
+					put_uint16(simmer_i_ist);
 				}else if(poll_num == 1){
 					put_uint16(simmer_u);
 				}
 				com_state = CS_WAIT_SYNC;
 				}break;
 		}
-	}	
+	}
 }
 
 void statemachine (){
@@ -184,22 +179,6 @@ void statemachine (){
 		state_500V_psu   = 0;
 	}
 }
-
-#define OCR1A_PORT B
-#define OCR1A_BIT  1
-
-#define SIMMER_PORT D
-#define SIMMER_BIT  2
-
-//13 - PD7: on
-#define PSU_500V_PORT D
-#define PSU_500V_BIT  7
-
-//12 - PD6: ready
-
-//11 - PD5: zündung
-#define ZUENDUNG_PORT D
-#define ZUENDUNG_BIT  5
 
 
 void set_outputs(){
@@ -221,35 +200,22 @@ void set_outputs(){
 		OUTPUT_OFF(ZUENDUNG);
 	}
 	old_zuenden = command_zuenden;
-	
+
 	OCR1A = (simmer_i_soll * 192) / 256 ;
 }
 
-void io_init(){
-	SET_DDR(SIMMER);
-	SET_DDR(PSU_500V);
-	SET_DDR(ZUENDUNG);
-	
-}
 
-
-
-void pwm_init(){
-	TCCR1A = (1<<COM1A1) | (1<<WGM10); //Fast PWM 8 bit
-	TCCR1B = (1<<WGM12)  | (1<<CS10) ; //clk/1
-	OCR1A  = 0; // current off 
-	SET_DDR(OCR1A);
-}
 
 int main(){
 	io_init();
 	pwm_init();
 	uart_init();
 	init_adc();
-	
+	init_shift();
+
 	sei();
-	
-	
+
+
 	while(1){
 		simmer_i_ist = (35 * adc_i) / 128;
 		if(simmer_i_ist > 20){
@@ -257,9 +223,9 @@ int main(){
 		}else{
 			state_zuenden = 0;
 		}
-	
+
 		slave_com();
 		statemachine();
-		set_outputs();	
+		set_outputs();
 	}
 }
