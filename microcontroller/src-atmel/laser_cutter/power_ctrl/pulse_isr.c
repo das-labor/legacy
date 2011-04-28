@@ -1,11 +1,14 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#include <pulse_isr.h>
+#include "ioport.h"
+#include "pulse_isr.h"
+#include "hardware.h"
 
 
 extern uint16_t fire_period;
 extern uint8_t command_fire;
+extern uint8_t command_charge;
 
 volatile uint8_t fire_process_running = 0;    //Zeigt an, dass die Feuerprozess läuft
 
@@ -13,6 +16,7 @@ void init_pulse(void) {
     TCCR0 |= _BV(CS02);
     OCR0 = 63; //=1,008ms
     TIMSK |= _BV(OCIE0);
+    fire_process_running=0;
 }
 
 ISR(TIMER0_COMP_vect) {
@@ -25,9 +29,9 @@ ISR(TIMER0_COMP_vect) {
             fire_process_running = 1;
         } else {
             if (command_charge) {
-                INHIBIT_OFF();
+                OUTPUT_OFF(NT_INHIBIT);
             } else {
-                INHIBIT_ON();
+                OUTPUT_ON(NT_INHIBIT);
             }
 
             return; //Beendet die ISR, wenn Prozess nicht läuft
@@ -38,7 +42,7 @@ ISR(TIMER0_COMP_vect) {
     switch (ticks) {
         //Periodenbeginn: Inhibit aus -->Laden startet
         case TICK_CHARGE_START:
-            INHIBIT_OFF();
+            OUTPUT_OFF(NT_INHIBIT);
             break;
 
         //Ladeende prüfen
@@ -49,17 +53,17 @@ ISR(TIMER0_COMP_vect) {
 
         //Inhibit HIGH
         case TICK_CHARGE_STOP:
-            INHIBIT_ON();
+            OUTPUT_ON(NT_INHIBIT);
             break;
 
         //Puls ausgeben
         case TICK_PULSE_ON:
-            FIRE_ON();
+            OUTPUT_ON(FIRE);
             break;
 
         //Puls beenden
         case TICK_PULSE_OFF:
-            FIRE_OFF();
+            OUTPUT_OFF(FIRE);
             break;
     }
 
