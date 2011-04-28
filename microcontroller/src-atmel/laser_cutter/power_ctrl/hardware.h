@@ -17,6 +17,9 @@
 #define OCR1A_PORT D
 #define OCR1A_BIT  5
 
+#define FIRE_PORT B
+#define FIRE_BIT  0
+
 //Ausgänge des Schieberegisters
 #define REL_NT_CONTROL (1<<7) //R1   Ladegerät Steuerung (Schieberegister QH,Bit 7)
 #define REL_NT_POWER   (1<<6) //R2   Ladegerät Leistung (Schieberegister QG, Bit 6)
@@ -76,4 +79,21 @@
 //über Spannungteiler 15V/2.36V
 
 //ADC6: reserve
+
+
+//Setzt einen Port am Schieberegister
+#define SET_SHIFT_PORT(m)   shift_port |=  m; shift_update()
+#define CLEAR_SHIFT_PORT(m) shift_port &= ~m; shift_update()
+
+
+//Ladegerät an/aus schalten
+#define NT_ON()   SET_SHIFT_PORT(SHIFT_NT_ON)
+#define NT_OFF()  CLEAR_SHIFT_PORT(SHIFT_NT_ON)
+
+
+//Pumpe an/aus schalten
+#define PUMPE_ON()   SET_SHIFT_PORT(REL_PUMPE)
+#define PUMPE_OFF()  CLEAR_SHIFT_PORT(REL_PUMPE)
+
+
 

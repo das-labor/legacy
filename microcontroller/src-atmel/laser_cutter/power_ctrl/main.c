@@ -60,21 +60,6 @@ uint16_t fire_period = 1000;
 
 uint8_t shift_port =0;  //Speichert den aktuellen Zustand der Ausgänge
 
-//Setzt einen Port am Schieberegister
-#define SET_SHIFT_PORT(m)   shift_port |=  m; shift_update()
-#define CLEAR_SHIFT_PORT(m) shift_port &= ~m; shift_update()
-
-
-//Ladegerät an/aus schalten
-#define NT_ON()   SET_SHIFT_PORT(SHIFT_NT_ON)
-#define NT_OFF()  CLEAR_SHIFT_PORT(SHIFT_NT_ON)
-
-
-//Pumpe an/aus schalten
-#define PUMPE_ON()   SET_SHIFT_PORT(REL_PUMPE)
-#define PUMPE_OFF()  CLEAR_SHIFT_PORT(REL_PUMPE)
-
-
 
 //Sendet den aktuellen Status ab das Schieberegister
 void shift_update(void) {
@@ -120,11 +105,11 @@ void put_uint16(uint16_t i){
 void io_init(){
     SET_DDR(NT_INHIBIT);
 	OUTPUT_ON(NT_INHIBIT);  //Netzteil gestoppt
-	
+
 	SET_DDR(NT_POWER);
-	
+
 	PORTC = 0xff;//Pullups an Netzteil ausgängen
-	
+
 }
 
 
@@ -225,11 +210,11 @@ void slave_com(){
 
 void statemachine (){
 	if(state_main_on){
-		state_power_psu = command_power_psu;		
+		state_power_psu = command_power_psu;
 	}else{
 		state_power_psu = 0;
 	}
-	
+
 	state_pumpe = command_pumpe;
 	state_charge = INPUT(NT_END_OF_CHARGE) ? 0 : 1;
 }
@@ -241,13 +226,13 @@ void set_outputs(){
 	}else{
 		OUTPUT_OFF(NT_POWER);
 	}
-	
+
 	if(state_pumpe){
 		PUMPE_ON();
 	}else{
 		PUMPE_OFF();
 	}
-	
+
 	OCR1A = (power_u_soll * 16) / 94 ;
 }
 
