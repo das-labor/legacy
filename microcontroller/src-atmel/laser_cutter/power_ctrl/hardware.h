@@ -20,13 +20,6 @@
 #define FIRE_PORT B
 #define FIRE_BIT  0
 
-//Ausgänge des Schieberegisters
-#define REL_NT_CONTROL (1<<7) //R1   Ladegerät Steuerung (Schieberegister QH,Bit 7)
-#define REL_NT_POWER   (1<<6) //R2   Ladegerät Leistung (Schieberegister QG, Bit 6)
-#define REL_SIMMER     (1<<5) //R3   Simmernetzteil (Scheiberegister GF, Bit 5)
-#define REL_PUMPE      (1<<4) //R4   Pumpe
-                                //R4 - R7 Reserve
-
 //low = NT Enable
 #define NT_INHIBIT_PORT A
 #define NT_INHIBIT_BIT  0
@@ -85,15 +78,12 @@
 #define SET_SHIFT_PORT(m)   shift_port |=  m; shift_update()
 #define CLEAR_SHIFT_PORT(m) shift_port &= ~m; shift_update()
 
-
-//Ladegerät an/aus schalten
-#define NT_ON()   SET_SHIFT_PORT(SHIFT_NT_ON)
-#define NT_OFF()  CLEAR_SHIFT_PORT(SHIFT_NT_ON)
-
-
-//Pumpe an/aus schalten
-#define PUMPE_ON()   SET_SHIFT_PORT(REL_PUMPE)
-#define PUMPE_OFF()  CLEAR_SHIFT_PORT(REL_PUMPE)
+//Ausgänge des Schieberegisters
+#define REL_NT_CONTROL (1<<7) //R1   Ladegerät Steuerung (Schieberegister QH,Bit 7)
+#define REL_NT_POWER   (1<<6) //R2   Ladegerät Leistung (Schieberegister QG, Bit 6)
+#define REL_SIMMER     (1<<5) //R3   Simmernetzteil (Scheiberegister GF, Bit 5)
+#define REL_PUMPE      (1<<4) //R4   Pumpe
+                                //R4 - R7 Reserve
 
 
 

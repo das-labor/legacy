@@ -13,8 +13,8 @@ extern uint8_t command_charge;
 volatile uint8_t fire_process_running = 0;    //Zeigt an, dass die Feuerprozess läuft
 
 void init_pulse(void) {
-    TCCR0 |= _BV(CS02) | _BV(WGM01); //Prescaler 256, CTC
-    OCR0 = 63; //=1,008ms
+    TCCR0 |= _BV(CS01) | _BV(CS00) | _BV(WGM01); //Prescaler 64, CTC
+    OCR0 = 250; //=1,000ms
     TIMSK |= _BV(OCIE0);
     fire_process_running=0;
 }
@@ -25,7 +25,7 @@ ISR(TIMER0_COMP_vect) {
 
    if (!fire_process_running) {
         if (command_fire) {
-            ticks = 0;
+            ticks = 1;
             fire_process_running = 1;
         } else {
             if (command_charge) {
@@ -69,7 +69,7 @@ ISR(TIMER0_COMP_vect) {
 
     //Prozess beenden: zu kurze Wartezeit verhindern und periodendauer einhalten
     //  (Wenn fire_periode zu klein und Anzahl der minimalen Ticks erreicht) ODER
-    if ((fire_period < TICK_SEQUENCE_COUNT && ticks > MIN_FIRE_PERIOD) || ticks > (fire_period- TICK_SEQUENCE_COUNT)) {
+    if (((fire_period < MIN_FIRE_PERIOD) && (ticks >= MIN_FIRE_PERIOD)) || (ticks >= fire_period)) {
         fire_process_running = 0; //Durchlauf für beendet erklären
     }
 

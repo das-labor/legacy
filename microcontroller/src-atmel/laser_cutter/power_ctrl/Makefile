@@ -5,7 +5,7 @@ OPTIMIZE       = -Os
 
 FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -U $(PRG).hex
 
-DEFS           = -DF_CPU=8000000
+DEFS           = -DF_CPU=16000000
 LIBS           =
 
 # You should not have to change anything below here.

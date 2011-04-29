@@ -106,6 +106,8 @@ void io_init(){
     SET_DDR(NT_INHIBIT);
 	OUTPUT_ON(NT_INHIBIT);  //Netzteil gestoppt
 
+	SET_DDR(FIRE);
+
 	SET_DDR(NT_POWER);
 
 	PORTC = 0xff;//Pullups an Netzteil ausgängen
@@ -197,6 +199,8 @@ void slave_com(){
 				poll_num = c & 0x0f;
 
 				uart_putc(stat);
+				uart_putc(0);
+				
 				if(poll_num == 0){
 					put_uint16(power_u_ist);
 				}else if(poll_num == 1){
@@ -223,14 +227,24 @@ void statemachine (){
 void set_outputs(){
 	if(state_power_psu){
 		OUTPUT_ON(NT_POWER);
+		SET_SHIFT_PORT(REL_NT_POWER);
 	}else{
 		OUTPUT_OFF(NT_POWER);
+		CLEAR_SHIFT_PORT(REL_NT_POWER);
 	}
 
 	if(state_pumpe){
-		PUMPE_ON();
+		SET_SHIFT_PORT(REL_PUMPE);
 	}else{
-		PUMPE_OFF();
+		CLEAR_SHIFT_PORT(REL_PUMPE);
+	}
+	
+	if(state_main_on){
+		SET_SHIFT_PORT(REL_NT_CONTROL);
+		SET_SHIFT_PORT(REL_SIMMER);
+	}else{
+		CLEAR_SHIFT_PORT(REL_NT_CONTROL);
+		CLEAR_SHIFT_PORT(REL_SIMMER);
 	}
 
 	OCR1A = (power_u_soll * 16) / 94 ;

@@ -409,7 +409,7 @@ void master_com(){
   {
 	  //slave request 2
 	  static uint8_t power_poll_num;
-	  #define NUM_POWER_VALUES 2
+	  #define NUM_POWER_VALUES 1
 
 	  uart_putc(0x20 | power_poll_num);
 	  
