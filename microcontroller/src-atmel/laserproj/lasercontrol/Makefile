@@ -1,13 +1,13 @@
-OBJ =  main.o uart.o util.o ks0108.o kb.o
+OBJ =  main.o uart.o ks0108.o kb.o ICcom.o
 
 # Default values
 OUT           ?= image
 MCU_TARGET    ?= atmega32
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
-OPTIMIZE      ?= -Os
+OPTIMIZE      ?= -O2
 WARNINGS      ?= -Wall -Winline
-DEFS          ?= -DF_CPU=16000000
+DEFS          ?= -DF_CPU=8000000
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map
