@@ -187,3 +187,24 @@ char uart_getc_nb(char *c)
 	return 0;
 }
 #endif // UART_INTERRUPT
+
+#ifdef UART_INTERRUPT
+char uart_rxbuffer_notempty(void)
+{
+	if (rxhead==rxtail)
+		return 0;
+	else
+		return 1;
+}
+#endif
+
+#ifdef UART_INTERRUPT
+#if UART_RXBUFSIZE < 255
+uint8_t uart_getrxqueuelength(void) 
+#else
+uint16_t uart_getrxqueuelength(void) 
+#endif
+{
+	return (rxhead - rxtail);
+}
+#endif
