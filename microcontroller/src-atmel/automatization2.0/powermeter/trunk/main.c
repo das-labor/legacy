@@ -84,11 +84,11 @@ int main(void)
 	/* Set reference voltage on ADC A to be 1.00 V.*/
 	ADC_Reference_Config(&ADCA, ADC_REFSEL_INT1V_gc);
 
-	/* Setup channel 0, 1 with different inputs. */
+	/* Setup channel 0 with different inputs. */
 	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH0,
 	                                 ADC_CH_INPUTMODE_DIFF_gc,
 	                                 ADC_DRIVER_CH_GAIN_NONE);
-	/* Setup channel 0, 1 with different inputs. */
+	/* Setup channel 1 with different inputs. */
 	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH1,
 	                                 ADC_CH_INPUTMODE_DIFF_gc,
 	                                 ADC_DRIVER_CH_GAIN_NONE);
@@ -101,7 +101,7 @@ int main(void)
 	 * therefore below the maximum frequency to use this function. */
 	ADC_Wait_8MHz(&ADCA);
  	offset = ADC_Offset_Get_Signed(&ADCA, &ADCA.CH0, false);
-    ADC_Disable(&ADCA);
+	ADC_Disable(&ADCA);
 	
 	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN0_gc);
 	ADC_Ch_InputMux_Config(&ADCA.CH1, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
@@ -125,6 +125,7 @@ int main(void)
 	PORTE.OUTCLR = PIN4_bm;
 	
 	printf("Hallo\r\n");
+	printf("%d\r\n", offset);
 	
 	while (1) {
 	        int x;
@@ -142,7 +143,7 @@ int main(void)
         	
         	akk = akk / 26580;
         	
-        	printf("%d\r\n",akk);
+        	printf("%d\r\n", akk);
         	
 	}
 
