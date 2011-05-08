@@ -1,7 +1,7 @@
-OBJ = main.o can/can.o can/spi.o can_handler.o
+OBJ = main.o stepper.o uart/uart.o
 
 # Default values
-OUT           ?= main
+OUT           ?= image
 MCU_TARGET    ?= atmega32
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
@@ -16,7 +16,6 @@ LDFLAGS        = -Wl,-Map,$(OUT).map
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:image.hex
-ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
 
 #############################################################################
 # Rules
