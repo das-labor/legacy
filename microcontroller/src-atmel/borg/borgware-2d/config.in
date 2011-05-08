@@ -9,7 +9,8 @@ comment "General Setup"
  	  "ATmega8        atmega8     \
 	   ATmega32		  atmega32    \
 	   ATmega644      atmega644   \
-	   ATmega644p     atmega644p" \
+	   ATmega644p     atmega644p   \
+	   ATmega8515     atmega8515" \
 	   'ATmega32' MCU
 	
 	int "MCU frequency" FREQ 16000000
