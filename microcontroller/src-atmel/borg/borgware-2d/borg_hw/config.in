@@ -16,7 +16,8 @@ choice 'Hardware Driver'			\
     Borg-mini              HW_BORG_MINI \
     Panel-One              HW_PANEL_ONE \
     4xPD1165               HW_PD1165 \
-    PingPong               HW_PINGPONG" \
+    PingPong               HW_PINGPONG \
+    Gigaborg               HW_GIGABORG" \
    'Borg-16' BORG_HW
 
 
@@ -50,6 +51,14 @@ fi
 
 if [ "$BORG_HW" == "HW_PINGPONG" ] ; then
   source borg_hw/config_pingpong.in
+fi
+
+if [ "$BORG_HW" == "HW_ROTOR" ] ; then
+  source borg_hw/config_rotor.in
+fi
+
+if [ "$BORG_HW" == "HW_GIGABORG" ] ; then
+  source borg_hw/config_gigaborg.in
 fi
 
 

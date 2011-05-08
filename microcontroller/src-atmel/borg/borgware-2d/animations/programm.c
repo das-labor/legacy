@@ -115,8 +115,8 @@ void schachbrett(unsigned char times){
 	clear_screen(0);
 	for (unsigned char i = times; i--;) {
 		for (unsigned char row = 0; row < NUM_ROWS; ++row) {
-			for (unsigned char col = 0; col < LINEBYTES; ++col) {
-				pixmap[2][row][col] = ((i ^ row) & 0x01) ? 0x55 : 0xAA;
+			for (unsigned char col = 0; col < NUM_COLS; ++col) {
+				setpixel( (pixel){col, row}, ((i ^ row ^ col) & 0x01) ? 0:3 );
 			}
 		}
 		wait(200);

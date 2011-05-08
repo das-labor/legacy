@@ -1,0 +1,91 @@
+mainmenu_option next_comment
+comment "Rotor port setup"
+
+#define COLPORT1  PORTC
+#define COLDDR1   DDRC
+
+#define COLPORT2  PORTA
+#define COLDDR2   DDRA
+
+#// Der andere Port übernimmt die Steuerung der Schieberegister
+#define ROWPORT PORTD
+#define ROWDDR   DDRD
+#// Clock und reset gehen gemeinsam an beide Schieberegister
+#// der reset pin ist negiert
+#define PIN_RST  PD4  
+#define PIN_CLK  PD6
+#//das dier sind die individuellen Dateneingänge für die Schieberegister
+#define PIN_SHFT1 PD7
+
+
+choice 'Column Port 1 (upper)'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTC' COLPORT1 
+
+choice 'Column Port 2 (lower)'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTA' COLPORT2 
+
+
+choice 'Latch Red Port'			\
+   "PORTA  A \
+    PORTB  B \
+    PORTC  C \
+    PORTD  D" \
+   'PORTD' LATCH_R_PORT
+
+choice 'Latch Red Bit'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin0' LATCH_R_BIT
+
+
+choice 'Latch Green Port'			\
+   "PORTA  A \
+    PORTB  B \
+    PORTC  C \
+    PORTD  D" \
+   'PORTD' LATCH_G_PORT
+
+choice 'Latch Green Bit'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin1' LATCH_G_BIT
+
+choice 'Latch Blue Port'			\
+   "PORTA  A \
+    PORTB  B \
+    PORTC  C \
+    PORTD  D" \
+   'PORTD' LATCH_B_PORT
+
+choice 'Latch Blue Bit'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin2' LATCH_B_BIT
+
+endmenu
