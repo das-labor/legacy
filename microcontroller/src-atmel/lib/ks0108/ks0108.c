@@ -12,6 +12,7 @@
 				   by Patrick Rudolph mailto:siro@das-labor.org 8.05.11 added ks0108FontHeight()
 				   by Patrick Rudolph mailto:siro@das-labor.org 8.05.11 added ks0108GotoX(uint8_t x)
 				   by Patrick Rudolph mailto:siro@das-labor.org 8.05.11 added ks0108TestPattern()
+				   by Patrick Rudolph mailto:siro@das-labor.org 8.05.11 added definition KS0108_LSBMSBData 1/0 (swap LSB/MSB on DATA-Port on/off)
  */
 
 #include <inttypes.h>
@@ -491,6 +492,14 @@ void ks0108Init(uint8_t invert) {
 inline void ks0108Enable(void) {
 	
 	volatile uint8_t i=0;
+#if KS0108_LSBMSBData == 1
+		volatile uint8_t j=0;
+	for(i=0;i<8;i++)
+		if(LCD_DATA_OUT & (1<<i))
+			j|=(1<<(7-i));
+	
+	LCD_DATA_OUT=j;
+#endif
 
 	LCD_CMD_PORT |= 0x01 << EN;			 //width: min. 450ns	
 	asm volatile("nop\n\t"
@@ -537,20 +546,24 @@ uint8_t ks0108DoReadData(uint8_t first) {
 	asm volatile("nop\n\t"
 				 "nop\n\t"
 				 "nop\n\t"
+	             "nop\n\t"
 				 ::);
 	
 	data = LCD_DATA_IN;								// read Data			 
 	
 	LCD_CMD_PORT &= ~(0x01 << EN);
-#if KS0108_READBUSYF == 1
-	LCD_DATA_OUT = 0x00; //clear port
-	LCD_DATA_DIR &= 0x7F;	// make busy pin input
-	while(LCD_DATA_IN & 0x80)	//wait until busy flag is off
-		asm volatile("nop\n\t"::);
-#else
+
+	#if KS0108_LSBMSBData == 1
+	volatile uint8_t j=0;
+	for(i=0;i<8;i++)
+		if(data & (1<<i))
+			j|=(1<<(7-i));
+	
+	data=j;
+	#endif
+	
 	for(i=0;i<8;i++)
 		asm volatile("nop\n\t"::);
-#endif
 	
 	LCD_DATA_DIR = 0xFF;
 	
@@ -625,12 +638,13 @@ void ks0108WriteData(uint8_t data) {
 
 		LCD_CMD_PORT = cmdPort;						// restore command port
 		LCD_DATA_DIR = 0xFF;						// data port is output
-		
+
 		displayData |= (data << yOffset);
 		if(ks0108Inverted)
 			displayData = ~displayData;
 		LCD_DATA_OUT = displayData;					// write data
 		ks0108Enable();								// enable
+			
 		
 		// second page
 		ks0108GotoXY(ks0108Coord.x, ks0108Coord.y+8);
@@ -641,7 +655,7 @@ void ks0108WriteData(uint8_t data) {
 			displayData=0;
 
 		LCD_CMD_PORT = cmdPort;						// restore command port
-		LCD_DATA_DIR = 0xFF;						// data port is output
+		LCD_DATA_DIR = 0xFF;	// data port is output
 		
 		displayData |= (data >> yOffset);
 		

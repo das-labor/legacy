@@ -36,8 +36,8 @@
 #define CSEL2				0x01		// CS2 Bit Number
 
 //read busy flag ? (1=read busy flag, 0 = don't read busy flag)
-#define KS0108_READBUSYF 1
-
+#define KS0108_READBUSYF 0
+#define KS0108_LSBMSBData 1
 // Chips
 #define CHIP1				0x00
 #define CHIP2				0x01
