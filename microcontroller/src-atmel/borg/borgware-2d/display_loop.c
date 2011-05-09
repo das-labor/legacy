@@ -24,8 +24,9 @@
 #include "mcuf/mcuf.h"
 #include "menu/menu.h"
 #include "pixel.h"
-#include "joystick/joystick.h"
-
+#ifdef JOYSTICK_SUPPORT
+#  include "joystick/joystick.h"
+#endif
 
 volatile unsigned char oldMode, oldOldmode, mode;
 
@@ -61,13 +62,13 @@ void display_loop(){
 		case 1:
 			scrolltext(scrolltext_text);
 
-#ifdef RANDOM_SUPPORT
+#  ifdef RANDOM_SUPPORT
 			{
 				char a[28];
 				sprintf(a,"</# counter == %lu  ", (unsigned long) percnt_get());
 				scrolltext(a);
 			}
-#endif
+#  endif
 			break;
 #endif
 
@@ -212,7 +213,7 @@ void display_loop(){
 		case 43:
 			menu();
 			mode = oldOldmode;
-#else
+
 		case 42:
 			if (JOYISFIRE)
 				mode = 43;
@@ -225,29 +226,29 @@ void display_loop(){
 			while (JOYISFIRE); // wait until user released the fire button
 			wait(25);          // wait for button to settle
 
-#ifdef GAME_TETRIS
+#  ifdef GAME_TETRIS
 			tetris();
-#endif
+#  endif
 
-#ifdef GAME_BASTET
+#  ifdef GAME_BASTET
 			tetris_bastet();
-#endif
+#  endif
 
-#ifdef GAME_TETRIS_FP
+#  ifdef GAME_TETRIS_FP
 			tetris_fp();
-#endif
+#  endif
 
-#ifdef GAME_SPACE_INVADERS
+#  ifdef GAME_SPACE_INVADERS
 			borg_invaders();
-#endif
+#  endif
 
-#ifdef GAME_SNAKE
+#  ifdef GAME_SNAKE
 			snake_game();
-#endif
+#  endif
 
-#ifdef GAME_BREAKOUT
+#  ifdef GAME_BREAKOUT
 			borg_breakout(0);
-#endif
+#  endif
 
 			while (JOYISFIRE); // avoid an unwanted restart of the game loop
 			wait(25);          // wait for button to settle
