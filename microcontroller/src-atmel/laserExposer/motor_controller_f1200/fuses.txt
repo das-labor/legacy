@@ -1,0 +1,2 @@
+hfuse = 0x99
+lfuse = 0xef
