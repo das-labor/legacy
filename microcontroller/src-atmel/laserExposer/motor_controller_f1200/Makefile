@@ -1,8 +1,8 @@
-OBJ = main.o can/can.o can/spi.o can_handler.o
+OBJ = main.o
 
 # Default values
-OUT           ?= main
-MCU_TARGET    ?= atmega32
+OUT           ?= image
+MCU_TARGET    ?= attiny2313
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
