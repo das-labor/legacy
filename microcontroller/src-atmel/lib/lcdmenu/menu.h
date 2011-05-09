@@ -26,11 +26,6 @@
 #define MENU_READANDWRITE 1
 #define MENU_READONLY 0
 
-volatile static uint8_t menu_ycursor=0;  //y cursor
-volatile static uint8_t menu_LCD_MAXLINES=1;
-volatile static uint8_t menu_entry_cnt=0;
-volatile static uint8_t menu_key_i=0;
-volatile static uint8_t menu_key_t=0;
 
 typedef struct
 {
@@ -39,13 +34,12 @@ typedef struct
 	const char * str;
 }pointer_size_t;
 
-//link to values, define your values here
-static pointer_size_t menu_val[MENU_MAXENTRIES];
+
 
 //function prototypes
 void menu_init(void);
-static void menu_draw(uint8_t cls);
-void menu_update(void);
+void menu_draw(uint8_t cls);
+void* menu_update(void);
 void menu_init_entry(void *p,uint8_t size, const char * menu_str, uint8_t iswriteable);
 
 /* example programm:
