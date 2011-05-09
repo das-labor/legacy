@@ -20,14 +20,14 @@
 // alle Textstellen EEMEM im Quellcode durch __attribute__ ... ersetzen
 #define EEMEM  __attribute__ ((section (".eeprom")))
 #endif
-
+/*
 //define your struct here
 typedef struct {
     uint8_t   label[8];
     uint8_t   rom_code[8];
 } eeprom_t;
-
-eeprom_t EEMEM eeprom_status=1;
-eeprom_t EEMEM eeprom_struct;
-
+*/
+//function prototypes
+uint8_t eeprom_read(eeprom_t* s);
+void eeprom_write(eeprom_t* s);
 #endif
