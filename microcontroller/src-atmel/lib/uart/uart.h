@@ -41,5 +41,10 @@ char uart_getc_nb(char *c);		// non blocking, returns 1 on success
 	//returns buffer with zero terminated line on success, 0 pointer otherwise
 	char * uart_getline();
 #endif
-
+char uart_rxbuffer_notempty(void);	//returns 1 if queue is not empty, otherwise 0
+#if UART_RXBUFSIZE < 255
+uint8_t uart_getrxqueuelength(void); //returns queue length
+#else
+uint16_t uart_getrxqueuelength(void); //returns queue length
+#endif
 #endif
