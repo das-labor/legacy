@@ -5,7 +5,7 @@
 // Author			: Patrick Rudolph mailto:siro@das-labor.org
 // Created			: 2011-05-08
 // Revised			: 
-// Version			: 0.2
+// Version			: 0.1
 // Target MCU	: Atmel AVR series
 //
 // This code is distributed under the GNU Public License
@@ -16,14 +16,23 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 
 #include "kb.h"	//if you don't use PS2 keyboard comment this line
 #include "ks0108.h"	//if you don't use ks0108 comment this line 
 #include "arial8.h"
 #include "menu.h"
 
-void menu_update(void)
+static uint8_t menu_ycursor=0;  //y cursor
+static uint8_t menu_LCD_MAXLINES=1;
+static uint8_t menu_entry_cnt=0;
+static uint8_t menu_key_i=0;
+static uint8_t menu_key_t=0;
+
+//link to values, define your values here
+static pointer_size_t menu_val[MENU_MAXENTRIES];
+
+void* menu_update(void)
 {
 	uint8_t add_val=0;
 	uint8_t s=0;
@@ -31,7 +40,7 @@ void menu_update(void)
 	char kbchar=0;		//buffer holding the key pressed
 	kbchar=getcharx();		//get char from keyboard
 	if(!kbchar)		//if 0 is return no key was pressed
-		return;	//return, nothing to do
+		return NULL;	//return, nothing to do
 	
 	s=(menu_val[menu_ycursor].size & 0xF);
 	
@@ -54,7 +63,7 @@ void menu_update(void)
 	//If Button RIGHT pressed, enter submenu
 	if (BUTTON_RIGHT)
 	{
-		if(menu_val[menu_ycursor].size & 0x80){
+		if(menu_val[menu_ycursor].size & 0x80){	//check if value is changeable
 			if(menu_key_i != 0x01)
 				menu_key_t=0;
 		
@@ -71,12 +80,13 @@ void menu_update(void)
 			if(s == 4)
 				(*((uint32_t *)menu_val[menu_ycursor].p))+=add_val;
 			menu_draw(0);
+			return menu_val[menu_ycursor].p;
 		}
 	}
 	//If button LEFT pressed, leave submenu
 	if (BUTTON_LEFT)
 	{
-		if(menu_val[menu_ycursor].size & 0x80){
+		if(menu_val[menu_ycursor].size & 0x80){	//check if value is changeable
 			if(menu_key_i != 0x02)
 				menu_key_t=0;
 		
@@ -93,6 +103,7 @@ void menu_update(void)
 			if(s == 4)
 				(*((uint32_t *)menu_val[menu_ycursor].p))-=add_val;
 			menu_draw(0);
+			return menu_val[menu_ycursor].p;
 		}
 	}	
 #ifdef __KB_INCLUDED
@@ -105,6 +116,7 @@ void menu_update(void)
 		}
 		
 		menu_draw(0);
+		return NULL;
 	}	
 	if (BUTTON_ISNUMMERIC)
 	{
@@ -117,8 +129,10 @@ void menu_update(void)
 			if(menu_val[menu_ycursor].size == 4)
 				(*((uint32_t *)menu_val[menu_ycursor].p))=((*((uint32_t *)menu_val[menu_ycursor].p))%1000000000)*10+(uint8_t)(kbchar - '0');
 		}
+		//return menu_ycursor;
 	}
 #endif
+		return NULL;
 }
 
 
