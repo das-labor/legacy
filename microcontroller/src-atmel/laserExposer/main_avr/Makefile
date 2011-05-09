@@ -1,4 +1,4 @@
-OBJ = main.o stepper.o uart/uart.o
+OBJ = main.o stepper.o uart/uart.o com.o
 
 # Default values
 OUT           ?= image
