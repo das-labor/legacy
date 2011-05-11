@@ -216,15 +216,19 @@ void display_loop(){
 #else
 
 		case 42:
+#ifdef JOYSTICK_SUPPORT
 			if (JOYISFIRE)
 				mode = 43;
 			else
+#endif
 				mode = 1;
 			break;
 
 		case 43:
+#ifdef JOYSTICK_SUPPORT
 			waitForFire = 0;   // avoid circular jumps
 			while (JOYISFIRE); // wait until user released the fire button
+#endif
 			wait(25);          // wait for button to settle
 
 #  ifdef GAME_TETRIS
@@ -251,10 +255,14 @@ void display_loop(){
 			borg_breakout(0);
 #  endif
 
+#ifdef JOYSTICK_SUPPORT
 			while (JOYISFIRE); // avoid an unwanted restart of the game loop
+#endif
 			wait(25);          // wait for button to settle
 			mode = oldOldmode; // restore old animation mode
+#ifdef JOYSTICK_SUPPORT
 			waitForFire = 1;   // reenable joystick query of the wait() function
+#endif
 			break;
 #endif
 
