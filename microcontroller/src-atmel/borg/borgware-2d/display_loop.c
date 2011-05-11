@@ -213,6 +213,7 @@ void display_loop(){
 		case 43:
 			menu();
 			mode = oldOldmode;
+#else
 
 		case 42:
 			if (JOYISFIRE)
