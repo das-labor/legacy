@@ -1,4 +1,4 @@
-OBJ = main.o stepper.o uart/uart.o com.o
+OBJ = main.o stepper.o uart/uart.o com.o laser.o
 
 # Default values
 OUT           ?= image
@@ -22,7 +22,7 @@ FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:image.hex
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec uart/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex

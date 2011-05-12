@@ -1,2 +1,7 @@
 
 #define UART_BAUD_RATE 128000
+
+#define UART_INTERRUPT
+
+#define UART_TXBUFSIZE 20
+#define UART_RXBUFSIZE 256

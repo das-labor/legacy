@@ -5,7 +5,6 @@
 #include "pinout.h"
 
 uint8_t stepper_command;
-uint8_t stepper_run;
 //1= forward, 0= reverse
 uint8_t stepper_dir;
 
@@ -24,6 +23,8 @@ uint16_t step_counter;
 uint16_t position_request;
 
 void update_stepper(){
+	uint8_t stepper_run = 0;
+
 	switch(stepper_command){
 		case CMD_STEP:
 			stepper_off_delay = STEPPER_OFF_DELAY;
@@ -59,9 +60,7 @@ void update_stepper(){
 			}else{
 				stepper_dir = 0;
 				stepper_run = 1;
-			
 			}
-		
 	}
 	
 	if(stepper_run){

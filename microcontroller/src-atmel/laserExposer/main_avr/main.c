@@ -7,6 +7,8 @@
 
 #include "stepper.h"
 #include "pinout.h"
+#include "com.h"
+#include "laser.h"
 
 // 4096 motor-clocks/revolution
 
@@ -36,7 +38,24 @@ void timer_init () {
 
 
 
+void stepper_home(){
+	stepper_command = CMD_HOME;
+	if(stepper_command == 0){
+		position_request = 1200;
+		stepper_command = CMD_GOTO;
+	}
+			
+}
 
+
+void io_init(){
+	SET_DDR(LED);
+	
+	OUTPUT_ON(MOTOR);
+	SET_DDR(MOTOR);
+	
+	OUTPUT_ON(DOOR_SWITCH); // pullup
+}
 
 int main(){
 	static uint16_t led_delay;
@@ -46,26 +65,23 @@ int main(){
 	timer_init();
 	uart_init();
 	
+	laser_init();
+	
+	io_init();
+	
 	sei();
 	
-	SET_DDR(LED);
-	
-	stepper_command = CMD_HOME;
 	
 	while(1){
 		if (ms_over) {
 			ms_over = 0;
 			update_stepper();
-			
-			if(stepper_command == 0){
-				position_request = 1200;
-				stepper_command = CMD_GOTO;
-			}
-			
+			update_com();
+					
 			if(led_delay){
 				led_delay --;
 			}else{
-				uart_putstr("Hello world!\r\n");
+				//uart_putstr("Hello world!\r\n");
 				led_delay = 500;
 				led_state ^= 1;
 				if(led_state){
@@ -77,7 +93,4 @@ int main(){
 			
 		}
 	}
-
 }
-
-
