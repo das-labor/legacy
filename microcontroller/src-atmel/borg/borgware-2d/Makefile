@@ -39,6 +39,7 @@ include defaults.mk
 .subdirs: autoconf.h
 	@ echo "checking in which subdirs to build"
 	@ $(RM) -f $@
+	@ echo "SUBDIRS += smallani" >> $@
 	@ echo "SUBDIRS += animations" >> $@
 	@ (for subdir in `grep -e "^#define .*_SUPPORT" autoconf.h \
 	      | sed -e "s/^#define //" -e "s/_SUPPORT.*//" \
@@ -72,7 +73,7 @@ compile-subdirs_avr:
 
 .PHONY: compile-$(TARGET)
 compile-$(TARGET): compile-subdirs_avr $(TARGET).hex $(TARGET).bin $(TARGET).lst
-	@ echo "foobar"
+
 
 
 OBJECTS += $(patsubst %.c,./obj_avr/%.o,${SRC})
@@ -141,7 +142,6 @@ menuconfig:
 	@echo ""
 	@echo "Next, you can: "
 	@echo " * 'make' to compile your borgware"
-	
 
 #%/menuconfig:
 #	$(SH) "$(@D)/configure"
