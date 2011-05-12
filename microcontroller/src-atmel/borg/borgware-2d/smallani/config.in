@@ -1,0 +1,5 @@
+mainmenu_option next_comment
+comment "small Animations"
+	bool     "rowwalk"       SMALLANIMATION_ROWWALK
+	bool     "colwalk"       SMALLANIMATION_COLWALK
+endmenu
