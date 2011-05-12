@@ -24,6 +24,13 @@
 #include "mcuf/mcuf.h"
 #include "menu/menu.h"
 #include "pixel.h"
+#ifdef SMALLANIMATION_ROWWALK
+#include "smallani/rowwalk.h"
+#endif
+#ifdef SMALLANIMATION_COLWALK
+#include "smallani/colwalk.h"
+#endif
+
 #ifdef JOYSTICK_SUPPORT
 #  include "joystick/joystick.h"
 #endif
@@ -203,6 +210,18 @@ void display_loop(){
 			test_palette();
 			test_palette2();
 			break;
+#endif
+
+#ifdef SMALLANIMATION_ROWWALK
+		case 36:
+		  rowwalk(10,50);
+		  break;
+#endif
+
+#ifdef SMALLANIMATION_COLWALK
+		case 37:
+		  colwalk(10,50);
+		  break;
 #endif
 
 #ifdef MENU_SUPPORT

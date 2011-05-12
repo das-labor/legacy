@@ -65,7 +65,7 @@ void flyingdots()
 		
 		//shift the picture right
 		//(yes, shift_pixmap_l shifts the picture right)
-		shift_pixmap_l();						
+		shift_pixmap_l();
 		
 		//wait a bit
 		wait(100);		
