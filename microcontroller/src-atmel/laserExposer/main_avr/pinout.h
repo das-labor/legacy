@@ -20,3 +20,16 @@
 
 #define MOTOR_READY_PORT  D
 #define MOTOR_READY_BIT   3
+
+
+//Laser (OC1A)
+#define LASER_PORT        D
+#define LASER_BIT         5
+
+//Laser power setting voltage (OC0)
+#define LASER_PWM_PORT    B
+#define LASER_PWM_BIT     3
+
+//Door Switch (needs pullup, low means door closed)
+#define DOOR_SWITCH_PORT  C
+#define DOOR_SWITCH_BIT   0
