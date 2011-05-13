@@ -1,6 +1,6 @@
-#ifndef COLBOUNCE_H_
-#define COLBOUNCE_H_
+#ifndef ROWBOUNCE_H_
+#define ROWBOUNCE_H_
 
-void colbounce(uint8_t times,uint8_t speed);
+void rowbounce(uint8_t times,uint8_t speed);
 
-#endif /* COLBOUNCE_H_ */
+#endif /* ROWBOUNCE_H_ */

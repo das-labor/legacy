@@ -217,7 +217,7 @@ void display_loop(){
 
 #ifdef SMALLANIMATION_ROWWALK
 		case 36:
-		  rowwalk(10,50);
+		  rowwalk(50,10);
 		  break;
 #endif
 
@@ -229,6 +229,11 @@ void display_loop(){
 #ifdef SMALLANIMATION_COLBOUNCE
 		case 38:
 		  colbounce(10,25);
+		  break;
+#endif
+#ifdef SMALLANIMATION_COLBOUNCE
+		case 39:
+		  rowbounce(10,25);
 		  break;
 #endif
 
