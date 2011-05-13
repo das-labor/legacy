@@ -39,8 +39,8 @@ include defaults.mk
 .subdirs: autoconf.h
 	@ echo "checking in which subdirs to build"
 	@ $(RM) -f $@
-	@ echo "SUBDIRS += smallani" >> $@
 	@ echo "SUBDIRS += animations" >> $@
+	@ echo "SUBDIRS += smallani" >> $@
 	@ (for subdir in `grep -e "^#define .*_SUPPORT" autoconf.h \
 	      | sed -e "s/^#define //" -e "s/_SUPPORT.*//" \
 	      | tr "[A-Z]\\n" "[a-z] " `; do \

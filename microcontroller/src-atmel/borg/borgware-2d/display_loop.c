@@ -25,10 +25,13 @@
 #include "menu/menu.h"
 #include "pixel.h"
 #ifdef SMALLANIMATION_ROWWALK
-#include "smallani/rowwalk.h"
+#  include "smallani/rowwalk.h"
 #endif
 #ifdef SMALLANIMATION_COLWALK
-#include "smallani/colwalk.h"
+#  include "smallani/colwalk.h"
+#endif
+#ifdef SMALLANIMATION_COLBOUNCE
+#  include "smallani/colbounce.h"
 #endif
 
 #ifdef JOYSTICK_SUPPORT
@@ -221,6 +224,11 @@ void display_loop(){
 #ifdef SMALLANIMATION_COLWALK
 		case 37:
 		  colwalk(10,50);
+		  break;
+#endif
+#ifdef SMALLANIMATION_COLBOUNCE
+		case 38:
+		  colbounce(10,25);
 		  break;
 #endif
 
