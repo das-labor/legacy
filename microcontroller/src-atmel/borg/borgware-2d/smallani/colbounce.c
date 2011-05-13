@@ -18,7 +18,7 @@ void colbounce(uint8_t times,uint8_t speed)
 	    }
 	    wait(speed*10);
 	  }
-	  for (h=NUM_COLS;h>0;h--){
+	  for (h=NUM_COLS-1;h>1;h--){
 	    for (i=0;i<NUM_COLS;i++){
 	      for (j=0;j<NUM_ROWS;j++){
 		setpixel( (pixel){i,j},((h-1)==i) ? 1:0);
