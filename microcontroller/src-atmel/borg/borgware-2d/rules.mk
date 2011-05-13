@@ -19,7 +19,6 @@ OBJECTS += $(patsubst %.S,obj_avr/%.o,${ASRC})
 objects_avr: $(OBJECTS)
 	@ echo "writing object ineventory"
 	@ echo $(OBJECTS) > obj_avr/.objects
-	
 
 ##############################################################################
 # rules for buildung simulator objects
@@ -49,6 +48,5 @@ clean: clean-common
 
 all:
 	make -C $(TOPDIR) all
-	
 
 include $(TOPDIR)/depend.mk

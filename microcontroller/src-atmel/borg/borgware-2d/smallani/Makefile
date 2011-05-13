@@ -10,5 +10,13 @@ ifeq ($(SMALLANIMATION_COLWALK),y)
   SRC += colwalk.c
 endif
 
+ifeq ($(SMALLANIMATION_ROWBOUNCE),y)
+  SRC += rowbounce.c
+endif
+
+ifeq ($(SMALLANIMATION_COLBOUNCE),y)
+  SRC += colbounce.c
+endif
+
 
 include $(TOPDIR)/rules.mk
