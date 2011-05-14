@@ -217,23 +217,23 @@ void display_loop(){
 
 #ifdef SMALLANIMATION_ROWWALK
 		case 36:
-		  rowwalk(50,10);
+		  rowwalk(SMALLANIMATION_ROWWALK_COUNT,SMALLANIMATION_ROWWALK_SPEED);
 		  break;
 #endif
 
 #ifdef SMALLANIMATION_COLWALK
 		case 37:
-		  colwalk(10,50);
+		  colwalk(SMALLANIMATION_COLWALK_COUNT,SMALLANIMATION_COLWALK_SPEED);
 		  break;
 #endif
 #ifdef SMALLANIMATION_COLBOUNCE
 		case 38:
-		  colbounce(10,25);
+		  colbounce(SMALLANIMATION_ROWBOUNCE_COUNT,SMALLANIMATION_COLBOUNCE_SPEED);
 		  break;
 #endif
-#ifdef SMALLANIMATION_COLBOUNCE
+#ifdef SMALLANIMATION_ROWBOUNCE
 		case 39:
-		  rowbounce(10,25);
+		  rowbounce(SMALLANIMATION_COLBOUNCE_COUNT,SMALLANIMATION_ROWBOUNCE_SPEED);
 		  break;
 #endif
 
