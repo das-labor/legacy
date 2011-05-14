@@ -1,14 +1,18 @@
 mainmenu_option next_comment
 comment "small Animations"
 	bool "rowwalk" SMALLANIMATION_ROWWALK
-	int "speed of rowwalk in 20ms" SMALLANIMATION_ROWWALK_SPEED "50"
+	int "speed of rowwalk in 10ms" SMALLANIMATION_ROWWALK_SPEED "50"
+	int "count of rowwalk in full cycles" SMALLANIMATION_ROWWALK_COUNT "10"
 
 	bool "colwalk" SMALLANIMATION_COLWALK
-	int "speed of colwalk in 20ms" SMALLANIMATION_COLWALK_SPEED "50"
+	int "speed of colwalk in 10ms" SMALLANIMATION_COLWALK_SPEED "50"
+	int "count of colwalk in full cycles" SMALLANIMATION_COLWALK_COUNT "10"
 
 	bool "rowbounce" SMALLANIMATION_ROWBOUNCE 
-	int "speed of rowbounce in 20ms" SMALLANIMATION_ROWBOUNCE_SPEED "50"
+	int "speed of rowbounce in 10ms" SMALLANIMATION_ROWBOUNCE_SPEED "50"
+	int "count of rowbounce in full cycles" SMALLANIMATION_ROWBOUNCE_COUNT "10"
 
 	bool "colbounce" SMALLANIMATION_COLBOUNCE
-	int "speed of colbounce in 20ms" SMALLANIMATION_COLBOUNCE_SPEED "50"
+	int "speed of colbounce in 10ms" SMALLANIMATION_COLBOUNCE_SPEED "50"
+	int "count of colbounce in full cycles" SMALLANIMATION_COLBOUNCE_COUNT "10"
 endmenu

@@ -13,15 +13,15 @@ void rowbounce(uint8_t times,uint8_t speed)
 	  for (h=0;h<NUM_ROWS;h++){
 	    for (i=0;i<NUM_COLS;i++){
 	      for (j=0;j<NUM_ROWS;j++){
-		setpixel( (pixel){i,j},(h==i) ? 1:0);
+		setpixel( (pixel){i,j},(h==j) ? 1:0);
 	      }
 	    }
 	    wait(speed*10);
 	  }
-	  for (h=NUM_ROW-1;h>1;h--){
+	  for (h=NUM_ROWS-1;h>1;h--){
 	    for (i=0;i<NUM_COLS;i++){
 	      for (j=0;j<NUM_ROWS;j++){
-		setpixel( (pixel){i,j},((h-1)==i) ? 1:0);
+		setpixel( (pixel){i,j},((h-1)==j) ? 1:0);
 	      }
 	    }
 	    wait(speed*10);
