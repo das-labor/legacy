@@ -1,0 +1,5 @@
+
+- make exposure timing controlled by the microcontroller
+- make the pc app complain when windows wants to shutdown because of updates
+- improve performance of file loading
+
