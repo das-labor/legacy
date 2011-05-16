@@ -43,7 +43,7 @@ ISR(TIMER1_COMPA_vect)
 }
 
 
-void switch_timer_init(){
+void switch_timer_init() {
 	TCCR1B |=  _BV(WGM12) | 3; // CTC, clk/64
 
 	//1000 Hz
@@ -166,22 +166,27 @@ void switch_handler()
 		
 		if (clicked_1)
 		{
+		
 			outdata.class    = C_SW;
 			outdata.object   = SWL_LOUNGE;
-			outdata.function = F_SW_TOGGLE;
+			outdata.function = F_SW_ON; //TOGGLE
 			outdata.data     = 0x00;
 		
 			twi_send(&outdata);
+			can_send2(0);
 		}
 		
 		if (held_1)
 		{
+		
 			outdata.class    = C_PWM;
 			outdata.object   = PWM_LOUNGE;
 			outdata.function = F_PWM_MOD;
 			outdata.data     = 0x00;
 		
 			twi_send(&outdata);
+
+			can_send2(2);
 			
 		}
 		else if (last_held_1)
@@ -192,6 +197,8 @@ void switch_handler()
 			outdata.data     = 0x00;
 		
 			twi_send(&outdata);
+			
+			can_send2(3);
 		}
 		
 		last_held_1 = held_1;
@@ -203,7 +210,8 @@ void switch_handler()
 		stat_switches.hauptschalter = 0;
 
 		uint8_t msg[2];
-		msg[0] =  stat_switches.bla;
+		msg[0] = 1;
+		msg[1] = stat_switches.bla;
 		can_send(0x02, msg);
 		
 		outdata.class    = C_VIRT;
@@ -222,7 +230,8 @@ void switch_handler()
 		stat_switches.hauptschalter = 1;
 
 		uint8_t msg[2];
-		msg[0] =  stat_switches.bla;
+		msg[0] = 1;
+		msg[1] = stat_switches.bla;
 		can_send(0x02, msg);
 
 		outdata.class    = C_VIRT;
@@ -241,8 +250,9 @@ void switch_handler()
 	if ((PINC & _BV(PC2)) && stat_switches.power_ok)
 	{
 		stat_switches.power_ok = 0;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
+		uint8_t msg[2];
+		msg[0] = 2;
+		msg[1] = stat_switches.bla;
 		can_send(0x02, msg);
 		
 		PORTA |= LED_ROT; // red
@@ -251,8 +261,9 @@ void switch_handler()
 	if (!(PINC & _BV(PC2)) && stat_switches.power_ok == 0)
 	{
 		stat_switches.power_ok = 1;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
+		uint8_t msg[2];
+		msg[0] = 2;
+		msg[1] = stat_switches.bla;
 		can_send(0x02, msg);
 		
 		PORTA |= LED_GRUEN; // green
@@ -262,8 +273,9 @@ void switch_handler()
 	if ((PIND & _BV(PD6)) && stat_switches.rcd_server)
 	{
 		stat_switches.rcd_server = 0;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
+		uint8_t msg[2];
+		msg[0] = 3;
+		msg[1] = stat_switches.bla;
 		can_send(0x02, msg);
 
 		PORTA |= LED_ROT; // red
@@ -272,8 +284,9 @@ void switch_handler()
 	if (!(PIND & _BV(PD6)) && stat_switches.rcd_server == 0)
 	{
 		stat_switches.rcd_server = 1;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
+		uint8_t msg[2];
+		msg[0] = 3;
+		msg[0] = stat_switches.bla;
 		can_send(0x02, msg);
 		
 		PORTA |= LED_GRUEN; // green
@@ -283,8 +296,9 @@ void switch_handler()
 	if ((PINA & _BV(PA1)) && stat_switches.rcd_power)
 	{
 		stat_switches.rcd_power = 0;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
+		uint8_t msg[2];
+		msg[0] = 4;
+		msg[1] = stat_switches.bla;
 		can_send(0x02, msg);
 		
 		PORTA |= LED_ROT; // red
@@ -293,8 +307,9 @@ void switch_handler()
 	if (!(PINA & _BV(PA1)) && stat_switches.rcd_power == 0)
 	{
 		stat_switches.rcd_power = 1;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
+		uint8_t msg[2];
+		msg[0] = 4;
+		msg[1] = stat_switches.bla;
 		can_send(0x02, msg);
 		
 		PORTA |= LED_GRUEN; // green
@@ -304,8 +319,9 @@ void switch_handler()
 	if ((PIND & _BV(PD7)) && stat_switches.rcd_licht)
 	{
 		stat_switches.rcd_licht = 0;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
+		uint8_t msg[2];
+		msg[0] = 5;
+		msg[1] = stat_switches.bla;
 		can_send(0x02, msg);
 		
 		PORTA |= LED_ROT; // red
@@ -314,8 +330,9 @@ void switch_handler()
 	if (!(PIND & _BV(PD7)) && stat_switches.rcd_licht == 0)
 	{
 		stat_switches.rcd_licht = 1;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
+		uint8_t msg[2];
+		msg[0] = 5;
+		msg[1] = stat_switches.bla;
 		can_send(0x02, msg);
 		
 		PORTA |= LED_GRUEN; // green

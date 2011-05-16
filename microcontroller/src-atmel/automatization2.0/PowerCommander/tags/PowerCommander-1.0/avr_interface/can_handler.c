@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
+#include <util/delay.h>
 
 #include "can/can.h"
 #include "can_handler.h"
@@ -48,7 +49,8 @@ extern void can_handler()
 					( (rx_msg->data[0] == C_SW) &&
 					( (rx_msg->data[1] == SWA_HS) ||
 					(rx_msg->data[1] == SWA_STECKDOSEN) ||
-					(rx_msg->data[1] == SWA_KLO))))
+					(rx_msg->data[1] == SWA_KLO) || 
+					(rx_msg->data[1] == SWL_LOUNGE))))
 				{
 				}
 
@@ -109,14 +111,34 @@ void twi_get(uint8_t *p)
 
 void can_send(uint8_t port, uint8_t *p)
 {
-	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
+	static can_message msg = {0x03, 0x00, 0x00, 0x01, 2, {0}};
 	uint8_t i;
-	for (i = 0; i < 1; i++)
+	for (i = 0; i < 2; i++)
 		msg.data[i] = p[i];
 	msg.addr_src = myaddr;
 	msg.port_dst = port;
 	can_transmit(&msg);
 }
+
+void can_send2(uint8_t p)
+{
+	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
+
+	msg.data[0] = p;
+	msg.addr_src = myaddr;
+	msg.addr_dst = 0x61;
+	msg.port_dst = 1;
+	can_transmit(&msg);
+	
+	_delay_ms(1);
+	
+	msg.data[0] = p;
+	msg.addr_src = myaddr;
+	msg.addr_dst = 0x60;
+	msg.port_dst = 1;
+	can_transmit(&msg);
+}
+
 
 void read_can_addr()
 {
