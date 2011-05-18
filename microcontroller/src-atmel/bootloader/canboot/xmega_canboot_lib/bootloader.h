@@ -1,4 +1,6 @@
-#include <avr/boot.h>
+//#include <avr/boot.h>
+#include "sp_driver.h"
+#define 	BOOTLOADER_SECTION   __attribute__ ((section (".bootloader")))
 
 extern unsigned char Station_id;
 

@@ -4,6 +4,7 @@
 
 #include "../config.h"
 #include "can.h"
+#include "spi.h"
 #include "mcp2515reg.h"
 #include "bootloader.h"
 
@@ -24,17 +25,6 @@ unsigned char mcp_read(unsigned char reg) BOOTLOADER_SECTION;
 
 // Functions
 
-#define spi_release_ss() SPI_PORT |= _BV(SPI_PIN_SS)
-#define spi_assert_ss() SPI_PORT &= ~_BV(SPI_PIN_SS)
-
-unsigned char spi_data(unsigned char c)  __attribute__ ((noinline)) __attribute__ ((section (".bootloader")));
-
-unsigned char spi_data(unsigned char c)
-{
-	SPDR = c;
-	while (!(SPSR & _BV(SPIF)));
-	return(SPDR);
-}
 
 inline static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val)
 {
@@ -200,20 +190,7 @@ unsigned char mcp_config_str2[] PROGMEM = {
 
 void can_init()
 {	
-	//PORTB |= (1<<SPI_PIN_MISO); //MISO pullup for debugging
-		
-	//set output SPI pins to output
-	#ifdef SPI_PIN_SS_AVR
-		SPI_DDR = _BV(SPI_PIN_MOSI) | _BV(SPI_PIN_SCK) | _BV(SPI_PIN_SS) | _BV(SPI_PIN_SS_AVR);
-	#else
-		SPI_DDR = _BV(SPI_PIN_MOSI) | _BV(SPI_PIN_SCK) | _BV(SPI_PIN_SS);
-	#endif
-
-	//set Slave select high
-	spi_release_ss();
-	SPCR = _BV(SPE) | _BV(MSTR);
-	//Double speed on
-	SPSR = _BV(SPI2X);
+	spi_init();
 
 	spi_assert_ss();
 	spi_data(RESET);
@@ -231,7 +208,7 @@ void can_init()
 unsigned char can_get_nb()
 {
 	//check the pin, that the MCP's Interrup output connects to
-	if (SPI_REG_PIN_MCP_INT & _BV(SPI_PIN_MCP_INT))
+	if (SPI_REG_PIN_MCP_INT.IN & _BV(SPI_PIN_MCP_INT))
 	{
 		return 0; //no message
 	}

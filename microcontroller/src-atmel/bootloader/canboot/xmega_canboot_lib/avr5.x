@@ -1,6 +1,6 @@
 /* Default linker script, for normal executables */
 OUTPUT_FORMAT("elf32-avr","elf32-avr","elf32-avr")
-OUTPUT_ARCH(avr:5)
+OUTPUT_ARCH(avr:106)
 MEMORY
 {
   bootloader (rx)   : ORIGIN = 0, LENGTH = 128K
