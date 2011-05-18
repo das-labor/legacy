@@ -1,6 +1,6 @@
 
 
-MCU_TARGET     = atmega32
+MCU_TARGET     = atxmega128a3
 
 BOOTLOADER_START = 0x7C00
 

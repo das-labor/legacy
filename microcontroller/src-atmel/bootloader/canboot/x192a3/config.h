@@ -34,4 +34,6 @@
 
 #define JUMP_OPCODE "jmp"
 
+#define XMEGA
+
 #endif
