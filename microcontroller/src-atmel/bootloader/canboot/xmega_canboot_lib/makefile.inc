@@ -1,5 +1,8 @@
+
+DIRECTORY      = xmega_canboot_lib
 PRG            = bootloader
-SRC            = canboot_lib/bootloader.c canboot_lib/util.c canboot_lib/can.c canboot_lib/main.c
+SRC            = $(DIRECTORY)/bootloader.c $(DIRECTORY)/util.c $(DIRECTORY)/can.c $(DIRECTORY)/main.c $(DIRECTORY)/spi.c 
+ASM_OBJ        = $(DIRECTORY)/sp_driver.o
 OPTIMIZE       = -Os -fshort-enums
 
 FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -V -U bootloader.hex
@@ -15,21 +18,24 @@ CC             = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
-override LDFLAGS       = -T ./canboot_lib/avr5.x -Wl,-Map,$(PRG).map,--section-start=.bootloader=$(BOOTLOADER_START)
+override LDFLAGS       = -T ./$(DIRECTORY)/avr5.x -Wl,-Map,$(PRG).map,--section-start=.bootloader=$(BOOTLOADER_START)
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
 all: $(PRG).elf lst text eeprom
 
-$(PRG).elf: $(SRC)
+$(PRG).elf: $(SRC) $(ASM_OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+%.o: %.s
+	$(CC) $(CFLAGS) -x assembler-with-cpp -c -o $@ $^
 
 #image.o: $(SRC)
 #	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
+	rm -rf $(DIRECTORY)/*.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
 flash:

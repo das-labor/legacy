@@ -1,4 +1,7 @@
-#include <avr/boot.h>
+
+//#include <avr/boot.h>
+#include "sp_driver.h"
+
 //#include "pgmspace.h"
 #include <avr/io.h>
 #include <util/delay.h>
@@ -58,10 +61,14 @@ unsigned char Flash_info_msg[] PROGMEM =
 };
 
 
+uint8_t data_buffer[SPM_PAGESIZE];
+
 
 void bootloader(void) {
 	uint16_t Address;
 	uint16_t Size;
+	
+	uint16_t buffer_address;
 	unsigned char x;
 	
 	asm volatile(
@@ -82,9 +89,11 @@ void bootloader(void) {
 
 	//don't use library function to read eeprom
 	//because it wouldn't end up in bootloader section
-	EEAR = EEPR_ADDR_NODE;
-	EECR = (1<<EERE);
-	Station_id = EEDR;
+	//EEAR = EEPR_ADDR_NODE;
+	//EECR = (1<<EERE);
+	//Station_id = EEDR;
+
+	Station_id = 5;
 
 	can_init();
 	
@@ -169,22 +178,31 @@ void bootloader(void) {
 
 	programm:
 
+	buffer_address = 0;
+	
 	while (1) {
 		while (!can_get_nb());
 		if (Rx_msg.port_dst != PORT_SDO_DATA) {
-			boot_rww_enable ();
+			//boot_rww_enable ();
 			goto sdo_server;
 		} else {
-			for (x = 0; x < 4; x++) {
-				boot_page_fill(Address, ((sdo_data_message*)Rx_msg.data)->data[x]);
-				Address += 2;
+			for (x = 0; x < 8; x++) {
+				//boot_page_fill(Address, ((sdo_data_message*)Rx_msg.data)->data[x]);
+				//Address += 2;
+				data_buffer[buffer_address++] = Rx_msg.data[x];
 			}
 
-			if ((Address % SPM_PAGESIZE) == 0) {
-				boot_page_erase (Address - SPM_PAGESIZE);
-				boot_spm_busy_wait ();      // Wait until the memory is erased.
-				boot_page_write (Address - SPM_PAGESIZE);     // Store buffer in flash page.
-				boot_spm_busy_wait();       // Wait until the memory is written.
+			if ((buffer_address % SPM_PAGESIZE) == 0) {
+				
+				SP_LoadFlashPage(data_buffer);
+				
+				SP_EraseWriteApplicationPage(Address);
+				
+				
+				//boot_page_erase (Address - SPM_PAGESIZE);
+				//boot_spm_busy_wait ();      // Wait until the memory is erased.
+				//boot_page_write (Address - SPM_PAGESIZE);     // Store buffer in flash page.
+				//boot_spm_busy_wait();       // Wait until the memory is written.
 			}
 
 			can_transmit();		//this will repeat the ACK message

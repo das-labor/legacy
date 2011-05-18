@@ -1,5 +1,7 @@
 #include <avr/pgmspace.h>
-#include <avr/boot.h>
+//#include <avr/boot.h>
+
+#define 	BOOTLOADER_SECTION   __attribute__ ((section (".bootloader")))
 
 #include "util.h"
 

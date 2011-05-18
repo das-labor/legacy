@@ -1,7 +1,8 @@
 #ifndef CAN_H
 #define CAN_H
 
-#include <avr/boot.h>
+//#include <avr/boot.h>
+#define 	BOOTLOADER_SECTION   __attribute__ ((section (".bootloader")))
 
 /*****************************************************************************
  * Simple CAN Library
