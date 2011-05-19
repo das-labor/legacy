@@ -1,14 +1,14 @@
 
 DIRECTORY      = xmega_canboot_lib
 PRG            = bootloader
-SRC            = $(DIRECTORY)/bootloader.c $(DIRECTORY)/util.c $(DIRECTORY)/can.c $(DIRECTORY)/main.c $(DIRECTORY)/spi.c 
+SRC            = $(DIRECTORY)/bootloader.c $(DIRECTORY)/can.c $(DIRECTORY)/main.c $(DIRECTORY)/spi.c $(DIRECTORY)/util.c
 ASM_OBJ        = $(DIRECTORY)/sp_driver.o
 OPTIMIZE       = -Os -fshort-enums
 
-FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -V -U bootloader.hex
-FUSECMD        = avrdude -p $(MCU_TARGET) -c usbasp -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m -U efuse:w:$(EFUSE):m
+FLASHCMD       = avrdude -p $(MCU_TARGET) -c avrisp2 -P usb -e  -U boot:w:bootloader.bin:r
+FUSECMD        = avrdude -p $(MCU_TARGET) -c avrisp2 -P usb -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m -U efuse:w:$(EFUSE):m
 
-DEFS           = -DF_CPU=16000000
+DEFS           = -DF_CPU=32000000
 LIBS           =
 
 # You should not have to change anything below here.
@@ -18,7 +18,7 @@ CC             = avr-gcc
 # Override is only needed by avr-lib build system.
 
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
-override LDFLAGS       = -T ./$(DIRECTORY)/avr5.x -Wl,-Map,$(PRG).map,--section-start=.bootloader=$(BOOTLOADER_START)
+override LDFLAGS       = -Wl,-Map,$(PRG).map,--section-start=.text=$(BOOTLOADER_START)
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
@@ -38,7 +38,7 @@ clean:
 	rm -rf $(DIRECTORY)/*.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
-flash:
+flash: text
 	$(FLASHCMD)
 
 fuse:

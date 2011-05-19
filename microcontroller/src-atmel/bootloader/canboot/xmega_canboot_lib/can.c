@@ -14,13 +14,8 @@ typedef uint16_t pgm_p_t;
 
 #ifdef pgm_read_byte_far
 	#undef pgm_read_byte
-	#define pgm_read_byte(x) pgm_read_byte_far(0x10000l | (x)) 
+	#define pgm_read_byte(x) pgm_read_byte_far( ((FLASHEND + 1ul) & 0xff0000ul ) | (x)) 
 #endif
-
-/* MCP */
-void mcp_write(unsigned char reg, unsigned char data) BOOTLOADER_SECTION;
-void mcp_write_b(pgm_p_t stream) BOOTLOADER_SECTION;
-unsigned char mcp_read(unsigned char reg) BOOTLOADER_SECTION;
 
 
 // Functions
@@ -189,10 +184,19 @@ unsigned char mcp_config_str2[] PROGMEM = {
 };
 
 void can_init()
-{	
+{
+	//init the timmer for mcp2515 clock
+	PORTD.DIRSET = (1<<2);
+	TCD0.CTRLB = TC0_CCCEN_bm | 3; //single slope pwm, OC0C as output
+	TCD0.PER = 1;
+	TCD0.CCC = 1;
+	TCD0.CNT = 0;
+	TCD0.CTRLA = 1; //clk/1
+		
 	spi_init();
 
 	spi_assert_ss();
+	spi_data(RESET);
 	spi_data(RESET);
 	spi_release_ss();
 	

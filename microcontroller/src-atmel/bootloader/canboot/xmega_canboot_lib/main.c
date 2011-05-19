@@ -1,7 +1,8 @@
 #include <avr/io.h>
-int bootloader(void);
 
-int main() {
-	bootloader();
+extern int main();
+
+int app_main() {
+	main();
 	return 0;
 }
