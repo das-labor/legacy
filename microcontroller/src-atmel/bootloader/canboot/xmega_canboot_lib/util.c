@@ -1,16 +1,14 @@
 #include <avr/pgmspace.h>
 //#include <avr/boot.h>
 
-#define 	BOOTLOADER_SECTION   __attribute__ ((section (".bootloader")))
-
 #include "util.h"
 
 
 #ifdef pgm_read_byte_far
-	void my_memcpy_P (unsigned char size, void * dest, PGM_VOID_P source){
+	void my_memcpy_P (void * dest, PGM_VOID_P source, unsigned char size){
 		uint8_t * d = dest;
 		while(size--){
-			*d++ = pgm_read_byte_far(0x10000l | (uint16_t)(source++));
+			*d++ = pgm_read_byte_far(((FLASHEND + 1ul) & 0xff0000ul ) | (uint16_t)(source++));
 		}
 	
 	}
@@ -18,7 +16,7 @@
 
 
 
-	void my_memcpy_P (unsigned char size, void * dest, PGM_VOID_P source){
+	void my_memcpy_P (void * dest, PGM_VOID_P source, unsigned char size){
 			asm volatile(
 			"\nmy_memcpy_lp:\n\t"
 			"lpm r25,Z+\n\t"

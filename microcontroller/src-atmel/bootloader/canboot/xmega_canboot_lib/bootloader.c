@@ -21,7 +21,6 @@
 
 unsigned char Station_id;
 
-
 typedef struct
 {
 	unsigned char cmd;
@@ -64,29 +63,40 @@ unsigned char Flash_info_msg[] PROGMEM =
 uint8_t data_buffer[SPM_PAGESIZE];
 
 
-void bootloader(void) {
+void sync_osc() {
+	/*32 MHz Oszillator starten und 32.768kHz Oszillator für DFLL starten*/
+	OSC.CTRL |= OSC_RC32MEN_bm | OSC_RC32KEN_bm ;
+	
+	/*Wenn Oscillator stabil wird das Flag RC32MRDY
+	 * gesetzt und 32Mhz können benutzt werden*/
+	while (!(OSC.STATUS & OSC_RC32MRDY_bm));
+
+
+	/* auto kalibierung ein */
+	DFLLRC32M.CTRL = DFLL_ENABLE_bm;
+
+	/*I/O Protection*/
+	CCP = CCP_IOREG_gc;
+	/*Clock auf 32Mhz einstellen*/
+	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;
+
+	
+
+}
+
+int main(void) {
 	uint16_t Address;
 	uint16_t Size;
 	
 	uint16_t buffer_address;
 	unsigned char x;
 	
-	asm volatile(
-		"eor r1,r1    \n\t"
-		"out 0x3f, r0 \n\t"
-		"out 0x3e, %B0\n\t"
-		"out 0x3d, %A0\n\t"
-		::"w" (RAMEND)
-	);
-
-#ifdef TURN_OFF_WATCHDOG
-	//disable watchdog (it is NOT turned off on mega 644 through reset)
-	wdt_reset();
-	MCUSR = 0;
-	_WD_CONTROL_REG = _BV(_WD_CHANGE_BIT) | _BV(WDE);
-	_WD_CONTROL_REG = 0;
-#endif
-
+	sync_osc();
+	
+	PORT_LED.DIRSET = (1<<BIT_LED);
+	//PORT_LED.OUTSET = (1<<BIT_LED);
+	
+	
 	//don't use library function to read eeprom
 	//because it wouldn't end up in bootloader section
 	//EEAR = EEPR_ADDR_NODE;
@@ -94,9 +104,9 @@ void bootloader(void) {
 	//Station_id = EEDR;
 
 	Station_id = 5;
-
-	can_init();
 	
+	can_init();
+		
 	Tx_msg.addr_src = Station_id;
 	Tx_msg.addr_dst = 0;
 	Tx_msg.port_src = PORT_MGT;
@@ -110,14 +120,14 @@ void bootloader(void) {
 	#if defined(TOGGLE_MCP_LED)
 		unsigned char toggle = 0x1C;
 	#elif defined(TOGGLE_PORT_LED)
-		DDR_LED |= (1<<BIT_LED);
+		PORT_LED.DIRSET = (1<<BIT_LED);
 	#endif
 	while (count--) {
 		#if defined(TOGGLE_MCP_LED)
 			mcp_write(BFPCTRL, toggle);
 			toggle ^= 0x10;
 		#elif defined(TOGGLE_PORT_LED)
-			PORT_LED ^= (1<<BIT_LED);
+			PORT_LED.OUT ^= (1<<BIT_LED);
 		#endif
 		_delay_ms(100);
 		
@@ -127,7 +137,8 @@ void bootloader(void) {
 	}
 	
 	start_app:
-	asm volatile(JUMP_OPCODE " __vectors\r\t");
+	main();
+	asm volatile(JUMP_OPCODE " 0\r\t");
 	
 	sdo_server:
 	
@@ -143,11 +154,11 @@ void bootloader(void) {
 			if (msg->cmd == SDO_CMD_READ) {
 				switch (msg->index) {
 					case 0xFF00:	//device information
-						my_memcpy_P(sizeof(Device_info_msg), Tx_msg.data, Device_info_msg);
+						my_memcpy_P(Tx_msg.data, Device_info_msg, sizeof(Device_info_msg));
 						Tx_msg.dlc = sizeof(Device_info_msg);
 						break;
 					case 0xFF01:	//upload flash
-						my_memcpy_P(sizeof(Flash_info_msg), Tx_msg.data, Flash_info_msg);
+						my_memcpy_P(Tx_msg.data, Flash_info_msg, sizeof(Flash_info_msg));
 						Tx_msg.dlc = sizeof(Flash_info_msg);
 						break;
 					case 0xFF02:
@@ -178,7 +189,7 @@ void bootloader(void) {
 
 	programm:
 
-	buffer_address = 0;
+	//buffer_address = 0;
 	
 	while (1) {
 		while (!can_get_nb());
@@ -186,18 +197,24 @@ void bootloader(void) {
 			//boot_rww_enable ();
 			goto sdo_server;
 		} else {
-			for (x = 0; x < 8; x++) {
+			for (x = 0; x < 4; x++) {
+				
 				//boot_page_fill(Address, ((sdo_data_message*)Rx_msg.data)->data[x]);
-				//Address += 2;
-				data_buffer[buffer_address++] = Rx_msg.data[x];
+				SP_WaitForSPM();
+
+				SP_LoadFlashWord(0ul + Address, ((sdo_data_message*)Rx_msg.data)->data[x]);
+				Address += 2;
+				//data_buffer[buffer_address++] = Rx_msg.data[x];
 			}
 
-			if ((buffer_address % SPM_PAGESIZE) == 0) {
+			if ((Address % SPM_PAGESIZE) == 0) {
 				
-				SP_LoadFlashPage(data_buffer);
-				
-				SP_EraseWriteApplicationPage(Address);
-				
+				//SP_LoadFlashPage(data_buffer);
+				SP_WaitForSPM();
+				SP_EraseWriteApplicationPage(0ul + Address - SPM_PAGESIZE);
+				SP_WaitForSPM();
+				//Address += SPM_PAGESIZE;
+				//buffer_address = 0;
 				
 				//boot_page_erase (Address - SPM_PAGESIZE);
 				//boot_spm_busy_wait ();      // Wait until the memory is erased.

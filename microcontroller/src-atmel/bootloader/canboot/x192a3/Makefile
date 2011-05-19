@@ -1,11 +1,9 @@
 
 
-MCU_TARGET     = atxmega128a3
+MCU_TARGET     = atxmega192a3
 
-BOOTLOADER_START = 0x7C00
+BOOTLOADER_START = 0x30000
 
-HFUSE = 0xc4
-LFUSE = 0x2f
 
 -include xmega_canboot_lib/makefile.inc
 

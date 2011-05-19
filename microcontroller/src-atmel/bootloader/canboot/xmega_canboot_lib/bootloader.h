@@ -1,6 +1,5 @@
 //#include <avr/boot.h>
 #include "sp_driver.h"
-#define 	BOOTLOADER_SECTION   __attribute__ ((section (".bootloader")))
 
 extern unsigned char Station_id;
 
@@ -30,5 +29,4 @@ extern unsigned char Station_id;
 #define SDO_TYPE_STRING_RW 0x81
 #define SDO_TYPE_STRING_WO 0x82
 
-void bootloader(void) BOOTLOADER_SECTION __attribute__ ((naked));
 

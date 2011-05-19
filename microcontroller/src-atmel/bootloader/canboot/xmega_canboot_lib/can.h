@@ -1,8 +1,6 @@
 #ifndef CAN_H
 #define CAN_H
 
-//#include <avr/boot.h>
-#define 	BOOTLOADER_SECTION   __attribute__ ((section (".bootloader")))
 
 /*****************************************************************************
  * Simple CAN Library
@@ -40,14 +38,14 @@ extern can_message Rx_msg, Tx_msg;
  * MCP
  */
 
-void mcp_write(unsigned char reg, unsigned char data) BOOTLOADER_SECTION;
+void mcp_write(unsigned char reg, unsigned char data);
 
 /*****************************************************************************
  * Management
  */
 
-void can_init() BOOTLOADER_SECTION;
-void can_setmode(can_mode_t) BOOTLOADER_SECTION;
+void can_init();
+void can_setmode(can_mode_t);
 #define BFPCTRL 0x0C
 
 
@@ -55,15 +53,15 @@ void can_setmode(can_mode_t) BOOTLOADER_SECTION;
  * Sending
  */
 
-can_message * can_buffer_get()BOOTLOADER_SECTION;
-void can_transmit()BOOTLOADER_SECTION;
+can_message * can_buffer_get();
+void can_transmit();
 
 
 /*****************************************************************************
  * Receiving
  */
 
-unsigned char can_get_nb()BOOTLOADER_SECTION;
+unsigned char can_get_nb();
 
 // this is only needed for Interrupt driven Version
 #ifndef CAN_INTERRUPT
