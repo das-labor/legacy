@@ -1,7 +1,7 @@
 
 DIRECTORY      = xmega_canboot_lib
 PRG            = bootloader
-SRC            = $(DIRECTORY)/bootloader.c $(DIRECTORY)/can.c $(DIRECTORY)/main.c $(DIRECTORY)/spi.c $(DIRECTORY)/util.c
+SRC            = $(DIRECTORY)/bootloader.c $(DIRECTORY)/can.c $(DIRECTORY)/main.c $(DIRECTORY)/spi.c $(DIRECTORY)/util.c $(DIRECTORY)/flash_a3revb_workaround.c
 ASM_OBJ        = $(DIRECTORY)/sp_driver.o
 OPTIMIZE       = -Os -fshort-enums
 
