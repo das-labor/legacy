@@ -1,7 +1,7 @@
 
 #include <string.h>
 
-#include "../gui_lib/gui.h"
+#include "../config.h"
 
 #ifdef AVR
 	#include <stdlib.h>
@@ -10,6 +10,9 @@
 	#include "../can_pc/can.h"
 	#include <malloc.h>
 #endif
+
+#include "../util_lib/list.h"
+
 
 #include "netvar.h"
 
