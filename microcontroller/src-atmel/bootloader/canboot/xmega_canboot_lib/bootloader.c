@@ -18,6 +18,7 @@
 #include "can.h"
 #include "util.h"
 
+#include "flash_a3revb_workaround.h"
 
 unsigned char Station_id;
 
@@ -84,6 +85,8 @@ void sync_osc() {
 
 }
 
+uint8_t can_address EEMEM = 5;
+
 int main(void) {
 	uint16_t Address;
 	uint16_t Size;
@@ -92,18 +95,9 @@ int main(void) {
 	unsigned char x;
 	
 	sync_osc();
+	init_workaround();	
 	
-	PORT_LED.DIRSET = (1<<BIT_LED);
-	//PORT_LED.OUTSET = (1<<BIT_LED);
-	
-	
-	//don't use library function to read eeprom
-	//because it wouldn't end up in bootloader section
-	//EEAR = EEPR_ADDR_NODE;
-	//EECR = (1<<EERE);
-	//Station_id = EEDR;
-
-	Station_id = 5;
+	Station_id = eeprom_read_byte(0);
 	
 	can_init();
 		
@@ -115,13 +109,14 @@ int main(void) {
 	Tx_msg.data[0] = FKT_MGT_AWAKE;
 	
 	can_transmit();
-	
-	unsigned char count = 20;
+
 	#if defined(TOGGLE_MCP_LED)
 		unsigned char toggle = 0x1C;
 	#elif defined(TOGGLE_PORT_LED)
 		PORT_LED.DIRSET = (1<<BIT_LED);
 	#endif
+	
+	unsigned char count = 20;
 	while (count--) {
 		#if defined(TOGGLE_MCP_LED)
 			mcp_write(BFPCTRL, toggle);
@@ -137,7 +132,7 @@ int main(void) {
 	}
 	
 	start_app:
-	main();
+	
 	asm volatile(JUMP_OPCODE " 0\r\t");
 	
 	sdo_server:
@@ -188,8 +183,7 @@ int main(void) {
 	}
 
 	programm:
-
-	//buffer_address = 0;
+	ClearFlashBuffer();
 	
 	while (1) {
 		while (!can_get_nb());
@@ -198,28 +192,12 @@ int main(void) {
 			goto sdo_server;
 		} else {
 			for (x = 0; x < 4; x++) {
-				
-				//boot_page_fill(Address, ((sdo_data_message*)Rx_msg.data)->data[x]);
-				SP_WaitForSPM();
-
-				SP_LoadFlashWord(0ul + Address, ((sdo_data_message*)Rx_msg.data)->data[x]);
+				LoadFlashWord(Address, ((sdo_data_message*)Rx_msg.data)->data[x]);
 				Address += 2;
-				//data_buffer[buffer_address++] = Rx_msg.data[x];
 			}
 
 			if ((Address % SPM_PAGESIZE) == 0) {
-				
-				//SP_LoadFlashPage(data_buffer);
-				SP_WaitForSPM();
-				SP_EraseWriteApplicationPage(0ul + Address - SPM_PAGESIZE);
-				SP_WaitForSPM();
-				//Address += SPM_PAGESIZE;
-				//buffer_address = 0;
-				
-				//boot_page_erase (Address - SPM_PAGESIZE);
-				//boot_spm_busy_wait ();      // Wait until the memory is erased.
-				//boot_page_write (Address - SPM_PAGESIZE);     // Store buffer in flash page.
-				//boot_spm_busy_wait();       // Wait until the memory is written.
+				EraseWriteApplicationPage(Address - SPM_PAGESIZE);
 			}
 
 			can_transmit();		//this will repeat the ACK message

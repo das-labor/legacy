@@ -538,7 +538,7 @@ SP_EraseFlashBuffer:
 	in	r19, RAMPZ                          ; Save RAMPZ, which is restored in SP_CommonSPM.
 	ldi	r20, NVM_CMD_ERASE_FLASH_BUFFER_gc  ; Prepare NVM command in R20.
 	jmp	SP_CommonSPM                        ; Jump to common SPM code.
-
+	
 
 
 ; ---
@@ -774,9 +774,14 @@ SP_CommonLPM:
 ;     Nothing.
 ; ---
 
-.section .BOOT, "ax"
+/* .section .BOOT, "ax" */
+
+#define WORKAROUND
 
 SP_CommonSPM:
+#ifdef WORKAROUND
+	jmp SP_CommonSPM_workaround
+#endif
 	movw	ZL, r24          ; Load R25:R24 into Z.
 	sts	NVM_CMD, r20     ; Load prepared command into NVM Command register.
 	ldi	r18, CCP_SPM_gc  ; Prepare Protect SPM signature in R18
@@ -785,7 +790,54 @@ SP_CommonSPM:
 	clr	r1               ; Clear R1 for GCC _zero_reg_ to function properly.
 	out	RAMPZ, r19       ; Restore RAMPZ register.
 	ret
-	
-	
-; END OF FILE
 
+
+; ---
+; This routine is called by SP_WriteApplicationPage and contains common code
+; for executing an SPM command, including sleep instruction for workaround and the return statement itself.
+;
+; If the operation (SPM command) requires the R1:R0 registers to be
+; prepared, this must be done before jumping to this routine.
+;
+; Input:
+;     R1:R0    - Optional input to SPM command.
+;     R25:R24  R17:R16  - Low bytes of Z pointer.
+;     R20      - NVM Command code.
+;
+; Returns:
+;     Nothing.
+; ---
+
+SP_CommonSPM_workaround:
+	movw	ZL, r24          ; Load R25:R24 into Z.
+	sts	NVM_CMD, r20     ; Load prepared command into NVM Command register.
+	push	r20
+	push	r21
+	push	r22
+	
+	/*Make sure that the high level interrupt is enabled, so that the device wakes.
+	This is just a safety feature to prevent the device from going to permenanly sleep,
+	if it is forgotten to do the correct settings before calling this function*/
+	ldi	r22, PMIC_HILVLEN_bm
+	sts	PMIC_CTRL, r22
+	
+	ldi	r20, NVM_SPMLVL0_bm | NVM_SPMLVL1_bm
+	/* Set sleep enabled */
+	ldi	r21,SLEEP_SEN_bm 
+	sts	SLEEP_CTRL,r21
+	ldi	r18, CCP_SPM_gc  ; Prepare Protect SPM signature in R18.
+	sts	CCP, r18         ; Enable SPM operation (this disables interrupts for 4 cycles).
+	
+	spm                      ; Self-program.
+	
+	sts	NVM_INTCTRL,r20  
+	/* Sleep before 2.5uS has passed */
+	SLEEP
+	clr	r1               ; Clear R1 for GCC _zero_reg_ to function properly.
+	out	RAMPZ, r19       ; Restore RAMPZ register.
+	pop	r22
+	pop	r21
+	pop	r20
+	ret
+
+; END OF FILE
