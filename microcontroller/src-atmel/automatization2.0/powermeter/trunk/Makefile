@@ -1,4 +1,4 @@
-OBJ = main.o
+OBJ = main.o adc_driver.o
 
 # Default values
 OUT           ?= main
