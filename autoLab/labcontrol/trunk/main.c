@@ -6,6 +6,8 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+
 
 #include "can.h"
 #include "cann.h"
@@ -172,6 +174,7 @@ int main(int argc, char *argv[])
 
 done:
 	//cann_close(0);
+	usleep(1000); //sleep a little, so last data on socket can be sent before closing
 	close(conn->fd);
 	//cann_close_errors();
 	free(conn);
