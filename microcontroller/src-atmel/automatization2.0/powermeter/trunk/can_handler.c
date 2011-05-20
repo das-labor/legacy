@@ -1,21 +1,10 @@
 
-#ifdef AVR
-	#include <avr/io.h>
-	#include <avr/wdt.h>
-	#include <avr/eeprom.h>
-	#include <util/delay.h>
-	#include "can/can.h"
-	#include "can/lap.h"
-#else
-	#include <stdint.h>
-	#include <stdio.h>
-	uint8_t dummy;
-	#define TCCR2 printf("reset\r\n"); dummy
-	#define wdt_enable(a)
-	#define eeprom_read_byte(a) 0x88
-	#include "can_pc/can.h"
-	#include "can_pc/lap.h"
-#endif
+#include <avr/io.h>
+#include <avr/wdt.h>
+#include <avr/eeprom.h>
+#include <util/delay.h>
+#include "can/can.h"
+#include "can/lap.h"
 
 #include "can_handler.h"
 
@@ -34,8 +23,10 @@ void can_handler()
 				switch (rx_msg->data[0])
 				{
 					case FKT_MGT_RESET:
-						TCCR2 = 0;
-						wdt_enable(0);
+						/*I/O Protection*/
+						CCP = CCP_IOREG_gc;
+						//Reset
+						RST.CTRL = RST_SWRST_bm;
 						while (1);
 					case FKT_MGT_PING:
 						msg.addr_src = myaddr;

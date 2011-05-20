@@ -1,6 +1,7 @@
 
 
 #define XMEGA
+#define AVR
 
 #define MCP_CS_PORT   PORTD
 #define MCP_CS_BIT        4
