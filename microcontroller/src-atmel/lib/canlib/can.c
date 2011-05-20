@@ -8,6 +8,22 @@
 #include "spi.h"
 #include "../config.h"
 
+
+//for backwards compatibility. Please use MCP_CS_PORT from now on!
+#ifndef MCP_CS_PORT
+	#warning please use MCP_CS_PORT and MCP_CS_BIT instead of MCP_CMD_PORT and MCP_CS !
+	#define MCP_CS_PORT MCP_CMD_PORT
+	#define MCP_CS_BIT  MCP_CS
+#endif
+
+#ifdef XMEGA
+	#define SET_CS()   MCP_CS_PORT.OUTSET = _BV(MCP_CS_BIT)
+	#define CLEAR_CS() MCP_CS_PORT.OUTCLR = _BV(MCP_CS_BIT)	
+#else
+	#define SET_CS()   MCP_CS_PORT |= _BV(MCP_CS_BIT)
+	#define CLEAR_CS() MCP_CS_PORT &= ~_BV(MCP_CS_BIT)
+#endif
+
 typedef struct
 {
 	can_message msg;
@@ -29,21 +45,21 @@ unsigned char mcp_read(unsigned char reg);
 static unsigned char mcp_status()
 {
 	unsigned char d;
-	MCP_CMD_PORT &= ~_BV(MCP_CS);
+	CLEAR_CS();
 	spi_send(READ_STATUS);
 	d = spi_send(0);
-	MCP_CMD_PORT |= _BV(MCP_CS);
+	SET_CS();
 	return d;
 }
 
 static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val)
 {
-	MCP_CMD_PORT &= ~_BV(MCP_CS);
+	CLEAR_CS();
 	spi_send(BIT_MODIFY);
 	spi_send(reg);
 	spi_send(mask);
 	spi_send(val);
-	MCP_CMD_PORT |= _BV(MCP_CS);
+	SET_CS();
 }
 
 //load a message to mcp2515 and start transmission
@@ -51,7 +67,7 @@ void message_load(can_message_x * msg)
 {
 	unsigned char x;
 	
-	MCP_CMD_PORT &= ~_BV(MCP_CS);
+	CLEAR_CS();
 	spi_send(WRITE);
 	spi_send(TXB0SIDH);
 
@@ -71,12 +87,12 @@ void message_load(can_message_x * msg)
 	for(x=0;x<msg->msg.dlc;x++){
 		spi_send(msg->msg.data[x]);
 	}
-	MCP_CMD_PORT |= _BV(MCP_CS);
-	MCP_CMD_PORT &= ~_BV(MCP_CS);
+	SET_CS();
+	CLEAR_CS();
 	spi_send(WRITE);
 	spi_send(TXB0CTRL);
 	spi_send((1<<TXREQ));
-	MCP_CMD_PORT |= _BV(MCP_CS);
+	SET_CS();
 }
 
 //get a message from mcp2515 and disable RX interrupt Condition
@@ -85,7 +101,7 @@ void message_fetch(can_message_x * msg)
 	unsigned char tmp1, tmp2, tmp3;
 	unsigned char x;
 
-	MCP_CMD_PORT &= ~_BV(MCP_CS);
+	CLEAR_CS();
 	spi_send(READ);
 	spi_send(RXB0SIDH);
 	
@@ -111,7 +127,7 @@ void message_fetch(can_message_x * msg)
 	{
 		msg->msg.data[x] = spi_send(0);
 	}
-	MCP_CMD_PORT |= _BV(MCP_CS);
+	SET_CS();
 	
 	mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
 }
@@ -171,28 +187,28 @@ ISR (MCP_INT_VEC)
 
 static void mcp_reset()
 {
-	MCP_CMD_PORT &= ~_BV(MCP_CS);
+	CLEAR_CS();
 	spi_send(RESET);
-	MCP_CMD_PORT |= _BV(MCP_CS);
+	SET_CS();
 }
 
 void mcp_write(unsigned char reg, unsigned char data)
 {
-	MCP_CMD_PORT &= ~_BV(MCP_CS);
+	CLEAR_CS();
 	spi_send(WRITE);
 	spi_send(reg);
 	spi_send(data);
-	MCP_CMD_PORT |= _BV(MCP_CS);
+	SET_CS();
 }
 
 unsigned char mcp_read(unsigned char reg)
 {
 	unsigned char d;
-	MCP_CMD_PORT &= ~_BV(MCP_CS);
+	CLEAR_CS();
 	spi_send(READ);
 	spi_send(reg);
 	d = spi_send(0);
-	MCP_CMD_PORT |= _BV(MCP_CS);
+	SET_CS();
 	return d;
 }
 
@@ -228,11 +244,17 @@ void can_setled(unsigned char led, unsigned char state)
 
 void can_init()
 {
+#ifdef XMEGA
 	//set Slave select DDR to output
-	DDR(MCP_CMD_PORT) |= _BV(MCP_CS);
+	MCP_CS_PORT.DIRSET = _BV(MCP_CS_BIT);
 	//set Slave select high
-	MCP_CMD_PORT      |= _BV(MCP_CS);
-
+	MCP_CS_PORT.OUTSET = _BV(MCP_CS_BIT);	
+#else
+	//set Slave select DDR to output
+	DDR(MCP_CS_PORT) |= _BV(MCP_CS_BIT);
+	//set Slave select high
+	MCP_CS_PORT      |= _BV(MCP_CS_BIT);
+#endif
 	
 #ifdef CAN_INTERRUPT	
 	unsigned char x;
@@ -381,7 +403,11 @@ can_message_x RX_MESSAGE, TX_MESSAGE;
 can_message * can_get_nb()
 {
 	//check the pin, that the MCP's Interrup output connects to
-	if (SPI_REG_PIN_MCP_INT & _BV(SPI_PIN_MCP_INT))
+#ifdef XMEGA
+	if (SPI_REG_PIN_MCP_INT.IN & _BV(SPI_PIN_MCP_INT))
+#else
+	if (SPI_REG_PIN_MCP_INT    & _BV(SPI_PIN_MCP_INT))
+#endif
 	{
 		return 0;
 	} else
@@ -403,8 +429,12 @@ can_message * can_get_nb()
 can_message * can_get()
 {
 	//wait while the MCP doesn't generate an RX Interrupt
-	while (SPI_REG_PIN_MCP_INT & (1<<SPI_PIN_MCP_INT)) { };
-	
+#ifdef XMEGA
+	while (SPI_REG_PIN_MCP_INT.IN & _BV(SPI_PIN_MCP_INT));
+#else
+	while (SPI_REG_PIN_MCP_INT    & _BV(SPI_PIN_MCP_INT));
+#endif
+
 	message_fetch(&RX_MESSAGE);
 	return &(RX_MESSAGE.msg);
 }

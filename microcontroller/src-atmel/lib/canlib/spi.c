@@ -3,7 +3,6 @@
 #include "spi.h"
 #include "../config.h"
 
-
 #if defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega8__) | defined(__AVR_ATmega88__)
 	#define AVR_SS_BIT PB2
 	#define AVR_MOSI_BIT PB3
@@ -19,27 +18,43 @@
 	#define AVR_MOSI_BIT PB2
 	#define AVR_MISO_BIT PB3
 	#define AVR_SCK_BIT PB1
-#else
+#endif
+
+#ifndef AVR_SS_BIT
 	#error The AVR_SS_BIT is not defined for your AVR. Please add your AVR here.
 #endif
 
 
 void spi_init()
 {
+#ifdef XMEGA
+	/* configure MOSI, SCK, lines as outputs */
+	AVR_SPI_PORT.OUTSET = _BV(AVR_MOSI_BIT) | _BV(AVR_SCK_BIT) | _BV(AVR_SS_BIT); // mosi, sck, avr-ss to output
+	
+	XMEGA_SPI.CTRL = SPI_ENABLE_bm | SPI_MASTER_bm ;
 
+#else	
 	/* configure MOSI, SCK, lines as outputs */
 	DDRB |= _BV(AVR_MOSI_BIT) | _BV(AVR_SCK_BIT) | _BV(AVR_SS_BIT); // mosi, sck, avr-ss to output
 
 	SPCR = _BV(MSTR) | _BV(SPE); // Master Mode,  Enable SPI
 	SPSR = _BV(SPI2X); // Double speed on
+#endif
+
 }
 
 
 
 uint8_t spi_send(uint8_t data)
 {
+#ifdef XMEGA
+	XMEGA_SPI.DATA = data;
+	while (!((XMEGA_SPI.STATUS) & SPI_IF_bm));
+	return(XMEGA_SPI.DATA);
+#else
 	SPDR = data;
 	while (!(SPSR & _BV(SPIF)));
 	return SPDR;
+#endif
 }
 

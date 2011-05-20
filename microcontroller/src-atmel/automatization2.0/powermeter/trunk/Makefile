@@ -1,4 +1,4 @@
-OBJ = main.o adc_driver.o
+OBJ = main.o adc_driver.o can/can.o can/spi.o can_handler.o
 
 # Default values
 OUT           ?= main
