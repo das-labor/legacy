@@ -29,7 +29,7 @@ int main(void)
 	sync_osc();
 
 	PORTC.DIR = LED_RED | LED_GRUEN | LED_BLAU;  // LED Ports als Ausgang
-	PORTC.OUT |= LED_RED | LED_GRUEN | LED_BLAU; // LEDS aus
+	PORTC.OUT |= LED_RED | 0 | LED_BLAU; // LEDS aus
 	
 	while (1) {
 		
