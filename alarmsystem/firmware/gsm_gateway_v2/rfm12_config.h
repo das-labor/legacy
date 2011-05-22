@@ -53,16 +53,16 @@
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRB
 #define PORT_SS PORTB
-#define BIT_SS 0
+#define BIT_SS 3
 
 //SPI port
 #define DDR_SPI DDRB
 #define PORT_SPI PORTB
 #define PIN_SPI PINB
-#define BIT_MOSI 3
-#define BIT_MISO 4
-#define BIT_SCK  5
-#define BIT_SPI_SS 2
+#define BIT_MOSI 5
+#define BIT_MISO 6
+#define BIT_SCK  7
+#define BIT_SPI_SS 4
 //this is the hardware SS pin of the AVR - it 
 //needs to be set to output for the spi-interface to work 
 //correctly, independently of the CS pin used for the RFM12
@@ -134,7 +134,7 @@ FIXME: noreturn stuff here
  **/
 #define RFM12_LIVECTRL 0
 #define RFM12_NORETURNS 0
-#define RFM12_NOCOLLISIONDETECTION 0
+#define RFM12_NOCOLLISIONDETECTION 1
 #define RFM12_TRANSMIT_ONLY 0
 #define RFM12_SPI_SOFTWARE 0
 #define RFM12_USE_POLLING 0
@@ -142,7 +142,7 @@ FIXME: noreturn stuff here
 #define RFM12_TRANSMIT_ASK 0
 #define RFM12_USE_WAKEUP_TIMER 0
 #define RFM12_LOW_POWER 0
-#define RFM12_BE_RUDE 0
+#define RFM12_BE_RUDE 1
 
 /*
  * UART DEBUGGING
