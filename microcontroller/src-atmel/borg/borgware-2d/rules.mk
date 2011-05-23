@@ -17,8 +17,7 @@ OBJECTS += $(patsubst %.S,obj_avr/%.o,${ASRC})
 	@ $(CC) -o $@ $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -c $<
 
 objects_avr: $(OBJECTS)
-	@ echo "writing object ineventory"
-	@ echo $(OBJECTS) > obj_avr/.objects
+	@ if [ -d obj_avr ]; then echo "writing object inventory" ; echo $(OBJECTS) > obj_avr/.objects ; fi
 
 ##############################################################################
 # rules for buildung simulator objects
