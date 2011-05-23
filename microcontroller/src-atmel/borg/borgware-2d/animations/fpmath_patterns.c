@@ -45,9 +45,9 @@ static double dist(double x1, double y1, double x2, double y2)
  * Draws an animated two dimensional graph for a given function f(x,y,t).
  * @param t_start start value for the function's time variable
  * @param t_stop stop value for the function's time variable
- * @param t_delta value by which the functions timing variable gets incremented
+ * @param t_delta value by which the function's timing variable gets incremented
  * @param frame_delay frame delay in ms
- * @param fpPattern function which generates a pattern depending x, y, t
+ * @param fpPattern function which generates a pattern depending on x, y, t
  */
 static void fpmath_pattern(double const t_start,
                            double const t_stop,
@@ -68,7 +68,7 @@ static void fpmath_pattern(double const t_start,
 				unsigned char color = fpPattern(x, y, t);
 				for (uint8_t p = NUMPLANE; p--;)
 				{
-					if (p == (color - 1))
+					if (p <= (color - 1))
 					{
 						BUFFER[p][y][x / 8] |= shl_table[x % 8U];
 					}
