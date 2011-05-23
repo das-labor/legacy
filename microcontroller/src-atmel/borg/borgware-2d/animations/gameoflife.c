@@ -59,7 +59,7 @@
 #define LOOP_DETECT_BUFFER_SIZE 8U
 
 #ifndef GOL_DELAY
-#define GOL_DELAY 1 /* milliseconds */
+#define GOL_DELAY 100 /* milliseconds */
 #endif
 
 #ifndef GOL_CYCLES
@@ -170,8 +170,10 @@ void nextiteration(field_t dest, field_t src) {
 /******************************************************************************/
 
 #ifdef BITSTUFFED
-static void pfprint(field_t pf) {
-	memcpy(pixmap[NUMPLANE - 1], pf, sizeof(field_t));
+void pfprint(field_t pf) {
+	for (uint8_t i = NUMPLANE; i--;) {
+		memcpy(pixmap[i], pf, sizeof(field_t));
+	}
 }
 #else
 void pfprint(field_t pf) {
@@ -292,7 +294,6 @@ void gameoflife() {
 	/* the main part */
 	pfprint(pf1);
 	for (cycle = 1; cycle < GOL_CYCLES; ++cycle) {
-		wait(100);
 		DEBUG_BYTE(0, (uint8_t)(GOL_CYCLES-cycle) & 0xff); DEBUG_BYTE(1, SREG);
 		wait(GOL_DELAY);
 		pfcopy(pf2, pf1);
