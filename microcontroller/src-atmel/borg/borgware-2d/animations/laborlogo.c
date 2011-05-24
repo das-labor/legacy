@@ -69,5 +69,5 @@ static uint8_t laborlogo_getChunk(unsigned char const nBitPlane,
 
 void laborlogo()
 {
-	bitmap_scroll(48, 48, 1, 400, 75, laborlogo_getChunk);
+	bitmap_scroll(48, 48, 2, 400, 75, laborlogo_getChunk);
 }
