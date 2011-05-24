@@ -54,7 +54,7 @@ static unsigned char bitmap_getAlignedChunk(bitmap_t const *const pBitmap,
 
 	unsigned char nChunk = 0xFF;
 	unsigned char nMask = 1;
-	unsigned char nAlignment = x % 8;
+	unsigned char const nAlignment = x % 8;
 
 	// we have to go through every bit plane
 	for (unsigned char  i = 0; i < pBitmap->nBitPlanes; ++i)
@@ -101,32 +101,43 @@ static void bitmap_drawViewport(bitmap_t const *const pBitmap,
 {
 	assert(nX <= pBitmap->nXDomain);
 	assert(nY <= pBitmap->nYDomain);
-	unsigned char nBitmapHwPlanes = (1 << pBitmap->nBitPlanes) - 1;
-	unsigned char nPlanes = nBitmapHwPlanes > NUMPLANE ?
-			NUMPLANE : nBitmapHwPlanes;
 
 	for (unsigned char y = 0; y < pBitmap->nViewportHeight; ++y)
 	{
 		for (unsigned char x = 0; x < pBitmap->nViewportWidth; x += 8)
 		{
-			for (unsigned char p = NUMPLANE - nPlanes; p < NUMPLANE; ++p)
+			for (unsigned char p = NUMPLANE; p--;)
 			{
+				// retrieve a chunk which can be copied into the frame buffer
 				unsigned char nChunk;
-#if ((NUM_COLS % 8) != 0)
+#if ((NUM_COLS % 8) == 0)
+				// borg widths which are a multiple of 8 allow for a straight
+				// forward chunk retrieval
+				nChunk = bitmap_getAlignedChunk(pBitmap, p, nX + x, nY + y);
+#else
+				// in case the borg width is not a multiple of 8 some shifting
+				// is required to cover those bits who really affect the display
 				if ((x + nX) > (8 - NUM_COLS % 8))
-                {
+				{
 					nChunk = bitmap_getAlignedChunk(pBitmap, p,
 							nX + x - (8 - NUM_COLS % 8), nY + y);
-                }
-                else
-                {
-                    nChunk = bitmap_getAlignedChunk(pBitmap, p,
-                    		nX, nY + y) >> (8 - NUM_COLS % 8);
-                }
-#else
-				nChunk = bitmap_getAlignedChunk(pBitmap, p, nX + x, nY + y);
+				}
+				else
+				{
+					nChunk = bitmap_getAlignedChunk(pBitmap, p,
+							nX, nY + y) >> (8 - NUM_COLS % 8);
+				}
 #endif
-				pixmap[p][y][pBitmap->nChunkCount - 1 - (x / 8)] = nChunk;
+				// determine correct column within frame buffer
+				uint8_t const nCol = pBitmap->nChunkCount - 1 - (x / 8);
+				// copy chunk into corresponding frame buffer plane
+				pixmap[p][y][nCol] = nChunk;
+				// if a bit in plane p + 1 is set, the corresponding bit in p
+				// has to be set as well
+				if (p < (NUMPLANE - 1))
+				{
+					pixmap[p][y][nCol] |= pixmap[p + 1][y][nCol];
+				}
 			}
 		}
 	}
