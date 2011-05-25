@@ -3,6 +3,7 @@
 #define H_CONTAINER   0x11
 #define END_CONTAINER 0x1f
 #define CAN_BUTTON    0x20
+#define GRAPH_VIEW    0x30
 
 void menu_browser_set_dir (uint8_t * dir_data);
 void menu_browser_init ();

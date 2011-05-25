@@ -6,6 +6,7 @@
 #include "touchscreen.h"
 #include "menu_browser.h"
 
+/*
 uint8_t test_dir[] = {
 	V_CONTAINER,
 		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
@@ -39,7 +40,12 @@ uint8_t test_dir[] = {
 	END_CONTAINER,
 	0
 };
+*/
 
+uint8_t test_dir[] = {
+	GRAPH_VIEW, 'H','a','l','l','o',0, 0x23,0
+
+};
 
 
 

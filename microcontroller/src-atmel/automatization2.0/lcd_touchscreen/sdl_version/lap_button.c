@@ -31,7 +31,7 @@ void lap_button_nv_handler(netvar_desc * nd, void * ref){
 	lap_button_t * s = (lap_button_t*) ref;
 	s->state = nd->data[0];
 	//printf("nv_handler nd=%X, ref=%X\r\n", nd, ref);
-	s->draw(s, 0);
+	s->draw((gui_element_t *)s, 0);
 }
 
 void lap_button_delete (gui_element_t *self) {
