@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 #include "rectangle.h"
-#include "list.h"
+#include "../util_lib/list.h"
 #include "graphics.h"
 
 //needed for touchscreen ///////////////////////////////////////////////////////
@@ -92,6 +92,35 @@ void gui_button_set_on_screen (gui_element_t *self, uint8_t state);
 void gui_button_touch_handler (gui_element_t *self, touch_event_t t);
 void gui_button_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff);
 gui_button_t * new_gui_button(); //constructor
+
+////////////////////////////////////////////////////////////////////////////////
+
+//graph view////////////////////////////////////////////////////////////////////
+typedef struct {
+	void(*draw)(gui_element_t * self, uint8_t redraw);
+	void(*set_on_screen)(gui_element_t *self, uint8_t state);
+	void(*touch_handler)(gui_element_t *self, touch_event_t t);
+	void(*update_position)(gui_element_t *self, int16_t x_diff, int16_t y_diff); //moves an element and all sub elements.
+	void(*delete)(gui_element_t *self);
+	rectangle_t box;//gui element sets height and width, container sets x and y.
+
+	char * text;
+	icon_t * icon;
+	
+	//graph data
+	uint8_t idx;
+	uint16_t data_size;
+	uint16_t * data;
+	
+	
+	
+} gui_graph_view_t;
+
+void gui_graph_view_draw (gui_element_t * self, uint8_t redraw);
+void gui_graph_view_set_on_screen (gui_element_t *self, uint8_t state);
+void gui_graph_view_touch_handler (gui_element_t *self, touch_event_t t);
+void gui_graph_view_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff);
+gui_graph_view_t * new_gui_graph_view(char * txt, uint8_t idx); //constructor
 
 ////////////////////////////////////////////////////////////////////////////////
 

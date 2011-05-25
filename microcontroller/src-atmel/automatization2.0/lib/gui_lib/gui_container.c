@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "gui.h"
-#include "list.h"
+#include "../util_lib/list.h"
 
 
 void gui_container_add (gui_container_t * c, gui_element_t * e) {
