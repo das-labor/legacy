@@ -23,6 +23,9 @@
 	#include "can/lap.h"
 #endif
 
+#define CAN_HANDLER_C
+
+#include "netvar/netvar.h"
 
 #include "can_handler.h"
 

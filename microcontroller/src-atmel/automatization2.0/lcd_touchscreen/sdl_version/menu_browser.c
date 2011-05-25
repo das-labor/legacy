@@ -71,6 +71,16 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 				gui_container_add(akt_container, (gui_element_t *) new_container);
 
 			} break;
+			case GRAPH_VIEW: {
+				char * txt = (char *) dir_data;
+				dir_data += strlen(txt) + 1;
+				uint8_t idx = *dir_data;
+				dir_data += 1;
+				gui_graph_view_t * b = new_gui_graph_view(txt, idx);
+				b->box.w = 100;
+				b->box.h = 100;
+				gui_container_add(akt_container,(gui_element_t *) b);
+			} break;
 			
 		}
 	}

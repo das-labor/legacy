@@ -13,6 +13,7 @@
 #include "../can_handler.h"
 #include "../gui_lib/gui.h"
 #include "../netvar/netvar.h"
+#include "virtual_display.h"
 
 #define BPP 4
 #define DEPTH 32
@@ -30,7 +31,7 @@ int threadFunktion(void *nichtVerwendet)
 		can_handler();
 
 		netvar_handle_events();
-		sleep(10);
+		SDL_Delay(10);
 	}
 
     printf("Thread beendet sich.\n");
@@ -45,7 +46,7 @@ int WinMain(int argc, char* argv[])
 	SDL_Surface *screen;
 	SDL_Event event;
 	
-	debug_level = 10;
+	debug_level = 0;
 	
 	int keypress = 0;
 	
@@ -100,7 +101,7 @@ int WinMain(int argc, char* argv[])
 		}else{
 			touch_state = (pixel){-1,-1};
 		}
-		sleep(15);
+		SDL_Delay(10);
 	}
 	
 	quit_thread = 1;
