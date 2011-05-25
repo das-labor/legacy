@@ -52,7 +52,7 @@ struct in_addr *atoaddr(char *address) {
 void cann_listen(int port)
 {
 	struct sockaddr_in serv_addr;
-	int ret, flags;
+	int ret;
 	char one=1; 
 
 	#ifndef USE_WINSOCK
@@ -74,6 +74,7 @@ void cann_listen(int port)
 	debug_assert( ret >= 0, "Could not bind listening socket"  );
 	
 	#ifndef USE_WINSOCK
+		int flags;
 		flags = fcntl( listen_socket, F_GETFL, 0 );
 		fcntl( listen_socket, F_SETFL, flags | O_NDELAY );
 	#endif
@@ -112,7 +113,7 @@ cann_conn_t *cann_connect(char *server, int port)
 	        /* Tell the user that we could not find a usable */
 	        /* Winsock DLL.                                  */
 	        printf("WSAStartup failed with error: %d\n", err);
-	        return 1;
+	        exit(EXIT_FAILURE);
 	    } 
 	#endif
 
@@ -316,7 +317,7 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 {
 	int ret; 
 	unsigned char val; 
-	static enum {STATE_START, STATE_LEN, STATE_PAYLOAD} state = STATE_START;
+	//static enum {STATE_START, STATE_LEN, STATE_PAYLOAD} state = STATE_START;
 
 	// sanity
 	debug_assert( !(client->error), 
