@@ -295,10 +295,6 @@ void can_init()
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
 
-	// configure IRQ
-	// this only configures the INT Output of the mcp2515, not the int on the Atmel
-	mcp_write(CANINTE, (1<<RX0IE));
-
 	can_setfilter();
 	can_setmode(normal);
 
@@ -379,14 +375,14 @@ can_message * can_buffer_get()
 //start transmitting can messages, and mark message msg as transmittable
 void can_transmit(can_message* msg2)
 {
-	can_message_x* msg=(can_message_x*) (((char*)msg2)-1);
+	can_message_x* msg=(can_message_x*) msg2;
 	if (msg2)
 	{
 		msg->flags |= 0x01;
 	}
 	if (!TX_INT)
 	{
-		if (((can_message_x*)&TX_BUFFER[TX_TAIL])->flags & 0x01)
+		if (TX_BUFFER[TX_TAIL].flags & 0x01)
 		{
 			((can_message_x*)&TX_BUFFER[TX_TAIL])->flags &= ~0x01;
 			TX_INT = 1;
