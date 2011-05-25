@@ -1,5 +1,6 @@
 
 #include <stdint.h>
+#include "../util_lib/list.h"
 
 typedef struct {
 	uint16_t idx;
