@@ -10,10 +10,10 @@
 void gui_graph_view_draw (gui_element_t * self, uint8_t redraw) {
 	gui_graph_view_t * s = (gui_graph_view_t*) self;
 
-	g_set_draw_color(1);		
+	g_set_draw_color(0);		
 	g_fill_rectangle   (&s->box);
 	
-	g_set_draw_color(0);	
+	g_set_draw_color(1);	
 	g_draw_rectangle   (&s->box);
 
 	rectangle_t r = s->box;
@@ -71,5 +71,6 @@ gui_graph_view_t * new_gui_graph_view(char * txt, uint8_t idx){
 	b->icon = 0;
 	b->text = txt;
 	b->idx = idx;
+	b->data_size = 0;
 	return b;
 }
