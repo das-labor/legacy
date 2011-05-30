@@ -79,6 +79,10 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 				gui_graph_view_t * b = new_gui_graph_view(txt, idx);
 				b->box.w = 100;
 				b->box.h = 100;
+				b->data_size = 64;
+				b->data = malloc(128);
+				uint8_t x;
+				for(x=0;x<64;x++)b->data[x] = x;
 				gui_container_add(akt_container,(gui_element_t *) b);
 			} break;
 			

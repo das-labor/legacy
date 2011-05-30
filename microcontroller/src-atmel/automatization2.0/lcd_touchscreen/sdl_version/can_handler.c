@@ -56,9 +56,15 @@ void can_handler()
 			}
 			else if (rx_msg->port_dst == 0x37)
 			{
-				printf("netvar received\r\n");
+				//printf("netvar received\r\n");
 				netvar_received(rx_msg);
 			}
+			else if (rx_msg->port_dst == 0x38)
+			{
+				//printf("netvar received\r\n");
+				netvar_bulk_received(rx_msg);
+			}
+			
 		}
 	}
 }
