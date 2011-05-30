@@ -147,7 +147,7 @@ uint16_t ADC_ResultCh_GetWord(ADC_CH_t * adc_ch)
 	adc_ch->INTFLAGS = ADC_CH_CHIF_bm;
 
 	/* Return result register contents*/
-	return adc_ch->RES;;
+	return adc_ch->RES;
 }
 
 
@@ -407,7 +407,7 @@ void adc_init(){
  	offset = ADC_Offset_Get_Signed(&ADCA, &ADCA.CH0, false);
 	ADC_Disable(&ADCA);
 	
-	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN0_gc);
+	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
 	ADC_Ch_InputMux_Config(&ADCA.CH1, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
 
 	/* Setup sweep of all four virtual channels. */

@@ -42,6 +42,7 @@ void can_handler()
 			//printf("netvar received\r\n");
 			netvar_received(rx_msg);
 		}
+		can_free(rx_msg);
 	}
 }
 

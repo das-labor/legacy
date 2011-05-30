@@ -1,7 +1,7 @@
 OBJ = main.o adc_driver.o can/can.o can/spi.o can_handler.o netvar/netvar.o util_lib/list.o
 
 # Default values
-OUT           ?= main
+OUT           ?= image
 MCU_TARGET    ?= atxmega192a3
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
@@ -15,8 +15,8 @@ LDFLAGS        = -Wl,-Map,$(OUT).map
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:image.hex
-ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
+#FLASHCMD      ?= avrdude -c avrisp2 -P usb -p $(MCU_TARGET) -e -U flash:w:image.hex
+FLASHCMD       = lapcontrol flash 5 image.hex
 
 #############################################################################
 # Rules
