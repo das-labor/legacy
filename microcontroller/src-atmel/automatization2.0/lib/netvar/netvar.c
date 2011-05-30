@@ -102,7 +102,13 @@ netvar_desc * new_netvar(uint16_t idx, uint8_t sidx, uint8_t size ){
 	nd->idx = idx;
 	nd->sidx = sidx;
 	nd->size = size;
-	nd->data = malloc(size);
+	if(size <= 5){
+		//normal netvar - data is malloced during lifetime
+		nd->data = malloc(size);
+	}else{
+		//bulk netvar. the data is malloced on reception
+		nd->data = 0;
+	}
 	nd->flags = 0;
 	nd->handlers = 0;
 	return nd;
@@ -121,8 +127,6 @@ netvar_desc * netvar_register(uint16_t idx, uint8_t sidx, uint8_t size){
 		netvar_insert(i, idx, sidx, nd);
 		return nd;
 	}
-
-
 }
 
 //adds handler for incoming netvar, which will be called with the user supplied reference as argument.
@@ -138,6 +142,19 @@ void netvar_add_handler(netvar_desc * nd, void (*fkt)(netvar_desc *, void *), vo
 	list_append(nd->handlers, hd);	
 }
 
+//calls handlers on nd if any
+void nd_call_handlers(netvar_desc * nd){
+	if(nd->handlers){
+		//printf("calling handlers for %d, %X\r\n", i, nd->handlers);
+		list_iterator_t it;
+		list_foreach_begin(&it, nd->handlers);
+		handler_descriptor_t * hd;
+		while(((hd = list_foreach(&it, nd->handlers)) != 0)){
+			//printf("calling %X, ref=%X\r\n", hd->fkt, hd->ref );
+			hd->fkt(nd, hd->ref);
+		}
+	}
+}
 
 typedef struct{
 	uint8_t data[8];
@@ -186,6 +203,53 @@ void in_fifo_store(netvar_desc * nd, void * data){
 }
 
 
+
+uint8_t bulk_state;
+#define BS_IDLE    0
+#define BS_RECEIVE 1
+
+uint8_t       akt_bulk_addr;
+netvar_desc * akt_bulk_nd;
+uint16_t      akt_bulk_size;
+uint16_t      akt_bulk_received;
+
+char * bulk_data;
+
+
+//called when netvar on bulk port is received
+void netvar_bulk_received(can_message * msg){
+	if(bulk_state == BS_RECEIVE){
+		if(msg->addr_src == akt_bulk_addr){
+			akt_bulk_received += 8;
+			memcpy(bulk_data, msg->data, 8);
+			if(akt_bulk_received >= akt_bulk_size){
+				akt_bulk_nd->data = bulk_data; //pass malloced buffer to handlers in nd data field
+				nd_call_handlers(akt_bulk_nd); //call the handlers - the data is ony valid during the handler
+				free(bulk_data);               //free the data buffer again. handler must make local copy if it still needs the data.
+				akt_bulk_nd->data = 0;
+				bulk_state = BS_IDLE;
+			}
+		}
+	}
+}
+
+//called from netvar received if nd indicates bulk netvar.
+//set the bulk receiver up to receive the data from that address
+void netvar_bulk_begin(netvar_desc * nd, uint8_t src_addr, uint16_t size){
+	if(bulk_state == BS_RECEIVE){
+		//drop ongoing transmission if any
+		free(bulk_data);
+		akt_bulk_nd->data = 0;
+	}
+	
+	akt_bulk_nd = nd;
+	akt_bulk_addr = src_addr;
+	akt_bulk_size = size;
+	akt_bulk_received = 0;
+	bulk_state = BS_RECEIVE;
+	bulk_data = malloc((size + 7) & ~ 7);
+}
+
 //called when can message on netvar port is received
 void netvar_received(can_message * msg){
 	uint16_t idx;
@@ -199,7 +263,12 @@ void netvar_received(can_message * msg){
 	
 	if(nd){
 		//found
-		in_fifo_store(nd, &msg->data[3]);
+		if(nd->size > 5){
+			uint16_t size = (((uint16_t)msg->data[4])<<8) | msg->data[3];
+			netvar_bulk_begin(nd, msg->addr_src, size);
+		}else{
+			in_fifo_store(nd, &msg->data[3]);
+		}
 	}
 }
 
@@ -254,16 +323,7 @@ void netvar_handle_events(){
 	//call event handlers if any
 	for (i = 0; i < event_table_size; i++ ) {
 		netvar_desc * nd = event_nd_table[in_buffer_select ^ 1][i];
-		if(nd->handlers){
-			//printf("calling handlers for %d, %X\r\n", i, nd->handlers);
-			list_iterator_t it;
-			list_foreach_begin(&it, nd->handlers);
-			handler_descriptor_t * hd;
-			while(((hd = list_foreach(&it, nd->handlers)) != 0)){
-				//printf("calling %X, ref=%X\r\n", hd->fkt, hd->ref );
-				hd->fkt(nd, hd->ref);
-			}
-		}
+		nd_call_handlers(nd);
 	}
 	
 	//handle in fifo
@@ -271,25 +331,11 @@ void netvar_handle_events(){
 		netvar_desc * nd = in_fifo_nd[in_fifo_tail];
 		memcpy(nd->data, in_fifo_data[in_fifo_tail].data, nd->size); //update netvar data from event data
 		
-		if(nd->handlers){
-			//printf("calling handlers for %d, %X\r\n", i, nd->handlers);
-			list_iterator_t it;
-			list_foreach_begin(&it, nd->handlers);
-			handler_descriptor_t * hd;
-			while(((hd = list_foreach(&it, nd->handlers)) != 0)){
-				//printf("calling %X, ref=%X\r\n", hd->fkt, hd->ref );
-				hd->fkt(nd, hd->ref);
-			}
-		}
+		nd_call_handlers(nd);
 	
 		in_fifo_tail++;
 		if(in_fifo_tail == IN_FIFO_SIZE){
 			in_fifo_tail = 0;
 		}
 	}
-	
-	
 }
-
-
-
