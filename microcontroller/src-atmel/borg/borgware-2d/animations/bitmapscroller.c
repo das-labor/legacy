@@ -156,8 +156,8 @@ static void bitmap_drawViewport(bitmap_t const *const pBitmap,
 static void bitmap_recalculateVector(bitmap_t const *const pBitmap,
                                      unsigned char const x,
                                      unsigned char const y,
-                                     char *const pdx,
-                                     char *const pdy)
+                                     signed char *const pdx,
+                                     signed char *const pdy)
 {
 	if (((x + *pdx) > (pBitmap->nXDomain)) || ((x + *pdx) < 0))
 	{
@@ -212,8 +212,8 @@ void bitmap_scroll(unsigned char const nWidth,
 	// initial starting point
 	unsigned char x = bitmap.nXDomain > 0 ? random8() % bitmap.nXDomain : 0;
 	unsigned char y = bitmap.nYDomain > 0 ? random8() % bitmap.nYDomain : 0;
-	char dx = 0;
-	char dy = 0;
+	signed char dx = 0;
+	signed char dy = 0;
 
 	// remove garbage from screen
 	clear_screen(0);
