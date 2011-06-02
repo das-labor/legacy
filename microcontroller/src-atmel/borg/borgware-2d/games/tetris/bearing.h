@@ -1,6 +1,8 @@
 #ifndef BEARING_H_
 #define BEARING_H_
 
+#include <stdint.h>
+
 enum tetris_bearing
 {
 	TETRIS_BEARING_0,

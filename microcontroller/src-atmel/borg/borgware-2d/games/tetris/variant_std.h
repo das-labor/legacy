@@ -2,7 +2,6 @@
 #define VARIANT_STD_H_
 
 #include <stdint.h>
-#include "../../config.h"
 #include "piece.h"
 #include "bearing.h"
 #include "input.h"
