@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include "bearing.h"
-#include "piece.h"
 #include "bucket.h"
 #include "variants.h"
 

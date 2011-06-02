@@ -4,9 +4,7 @@
 #include <assert.h>
 #include "../../compat/pgmspace.h"
 #include "../../joystick/joystick.h"
-#include "../../scrolltext/scrolltext.h"
 #include "../../util.h"
-#include "../../config.h"
 #include "bearing.h"
 #include "input.h"
 

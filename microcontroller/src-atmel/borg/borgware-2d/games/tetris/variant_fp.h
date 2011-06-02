@@ -2,7 +2,6 @@
 #define VARIANT_FP_H_
 
 #include <stdint.h>
-#include "bearing.h"
 #include "highscore.h"
 #include "variants.h"
 #include "input.h"
