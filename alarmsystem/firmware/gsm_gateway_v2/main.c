@@ -47,6 +47,12 @@ void timer0_init()
 	TCNT0 = 248; /* next overflow in 8 cycles */
 }
 
+void timer2_init (void)
+{
+	TCCR2 = _BV(CS22); /* /64 */
+	TIMSK |= _BV(TOIE2);
+}
+
 void send_packet (uint8_t in_dst, uint8_t in_cmd, uint8_t in_len, uint8_t *in_data)
 {
 	uint8_t txbuf[16], i, k=0;
@@ -156,13 +162,14 @@ void process_packet ()
 	rfm12_rx_clear();
 }
 
-ISR(TIMER0_OVF_vect) 
+ISR(TIMER2_OVF_vect) 
 {
-	TCNT0 = 248; /* next overflow in 8 cycles (ca. 1ms) */
+	TCNT2 = 5; /* next in 1ms */
+
 	gtime.ms++;
-	
-	if (!(gtime.ms % 42))
-		gtime.ms++;
+
+	if (gtime.ms % 64 == 0 )
+		cron_tick();
 	
 	if (gtime.ms < 1000)
 		return;
@@ -170,11 +177,6 @@ ISR(TIMER0_OVF_vect)
 	gtime.ms = 0;
 	gtime.s++;
 
-	if (gtime.s % 10 == 0)
-	{
-		uint8_t txbuf[8];
-		send_packet (ADDR_BCAST, CMD_ALIVE, 5, txbuf);
-	}
 
 	if (gtime.s < 60)
 		return;
