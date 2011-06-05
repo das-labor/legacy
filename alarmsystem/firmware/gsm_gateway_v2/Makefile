@@ -1,5 +1,5 @@
 PRG            = alarm_client
-OBJ            = main.o rfm12.o cellphone.o uart.o onewire.o ds18x20.o crc8.o
+OBJ            = main.o rfm12.o cellphone.o uart.o onewire.o ds18x20.o crc8.o cron. cron.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
