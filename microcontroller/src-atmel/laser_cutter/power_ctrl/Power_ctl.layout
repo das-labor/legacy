@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Release" />
+	<File name="adc.c" open="0" top="0" tabpos="4">
+		<Cursor position="192" topLine="0" />
+	</File>
+	<File name="adc.h" open="0" top="0" tabpos="3">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="hardware.h" open="1" top="1" tabpos="5">
+		<Cursor position="1536" topLine="54" />
+	</File>
+	<File name="ioport.h" open="1" top="0" tabpos="2">
+		<Cursor position="486" topLine="0" />
+	</File>
+	<File name="main.c" open="1" top="0" tabpos="1">
+		<Cursor position="2192" topLine="93" />
+	</File>
+	<File name="pulse_isr.c" open="1" top="0" tabpos="3">
+		<Cursor position="672" topLine="22" />
+	</File>
+</CodeBlocks_layout_file>

@@ -19,13 +19,20 @@ void init_pulse(void) {
     fire_process_running=0;
 }
 
+/**
+    Startet den Feuerzyklus, wenn
+    command_fire gesetzt ist
+    oder wenn
+    FIRE_IJ auf Masse gezogen wird
+*/
+
 ISR(TIMER0_COMP_vect) {
     static uint16_t ticks=0;
 
 
    if (!fire_process_running) {
-        if (command_fire) {
-            ticks = 1;
+        if (command_fire || ( INPUT(FIRE_IN) == 0)   ) {
+            ticks = TICK_CHARGE_START;
             fire_process_running = 1;
         } else {
             if (command_charge) {
@@ -33,7 +40,6 @@ ISR(TIMER0_COMP_vect) {
             } else {
                 OUTPUT_ON(NT_INHIBIT);
             }
-
             return; //Beendet die ISR, wenn Prozess nicht läuft
         }
     }
