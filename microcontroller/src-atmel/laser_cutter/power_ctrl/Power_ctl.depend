@@ -1,0 +1,45 @@
+# depslib dependency file v1.0
+1307377610 source:c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\power_ctrl\main.c
+	<avr/interrupt.h>
+	"uart/uart.h"
+	"ioport.h"
+	"../lib/com/com.h"
+	"pulse_isr.h"
+	"adc.h"
+	"hardware.h"
+
+1307373461 c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\power_ctrl\uart\uart.h
+	"../config.h"
+	<inttypes.h>
+	<avr/pgmspace.h>
+
+1303747882 c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\power_ctrl\config.h
+
+1303747882 c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\power_ctrl\ioport.h
+
+1304022227 c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\lib\com\com.h
+
+1307373455 c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\power_ctrl\pulse_isr.h
+
+1304022227 c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\power_ctrl\adc.h
+
+1307377461 c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\power_ctrl\hardware.h
+
+1307380441 source:c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\power_ctrl\pulse_isr.c
+	<avr/io.h>
+	<avr/interrupt.h>
+	"ioport.h"
+	"pulse_isr.h"
+	"hardware.h"
+
+1304022227 source:c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\power_ctrl\adc.c
+	<avr/io.h>
+	<avr/interrupt.h>
+	"adc.h"
+
+1303747885 source:c:\users\jan\documents\avr\laborsvn\microcontroller\src-atmel\laser_cutter\power_ctrl\uart\uart.c
+	<avr/io.h>
+	<avr/interrupt.h>
+	<stdlib.h>
+	"uart.h"
+

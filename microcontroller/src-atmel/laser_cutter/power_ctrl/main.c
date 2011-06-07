@@ -106,6 +106,8 @@ void io_init(){
     SET_DDR(NT_INHIBIT);
 	OUTPUT_ON(NT_INHIBIT);  //Netzteil gestoppt
 
+    OUTPUT_ON(FIRE_IN);     //Pullup an
+
 	SET_DDR(FIRE);
 
 	SET_DDR(NT_POWER);
@@ -200,7 +202,7 @@ void slave_com(){
 
 				uart_putc(stat);
 				uart_putc(0);
-				
+
 				if(poll_num == 0){
 					put_uint16(power_u_ist);
 				}else if(poll_num == 1){
@@ -238,7 +240,7 @@ void set_outputs(){
 	}else{
 		CLEAR_SHIFT_PORT(REL_PUMPE);
 	}
-	
+
 	if(state_main_on){
 		SET_SHIFT_PORT(REL_NT_CONTROL);
 		SET_SHIFT_PORT(REL_SIMMER);
@@ -270,5 +272,6 @@ int main(){
 		slave_com();
 		statemachine();
 		set_outputs();
+
 	}
 }

@@ -68,6 +68,12 @@
 #define PWM_RESERVE_PORT        D
 #define PWM_RESERVE_BIT         4
 
+
+//Eingang für externen Feuerbefehl
+#define FIRE_IN_PORT        A
+#define FIRE_IN_BIT         5
+
+
 //ADC7: U_IST
 //über Spannungteiler 15V/2.36V
 
