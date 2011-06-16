@@ -8,11 +8,11 @@
 
 typedef struct
 {
-  uint8_t h_sync_wait_perc; //percentage of viewfield to wait after H_SYNC
-  uint8_t v_sync_wait_perc; //percentage of viewfield to wait after V_SYNC
+  uint16_t h_sync_wait_perc; //percentage of viewfield to wait after H_SYNC
+  uint16_t v_sync_wait_perc; //percentage of viewfield to wait after V_SYNC
 
-  uint8_t h_pixel_perc; //percentage of viewfield
-  uint8_t v_pixel_perc; //percentage of viewfield
+  uint16_t h_pixel_perc; //percentage of viewfield
+  uint16_t v_pixel_perc; //percentage of viewfield
 	
   uint8_t h_sync_wait_pre; //prescaler for waiting after H_SYNC received
   uint16_t h_sync_wait; //time for waiting after H_SYNC received
@@ -43,7 +43,7 @@ typedef struct
 } Videoengine_t;
 
 
-volatile Videoengine_t ve;
+
 
 //function prototypes
 
@@ -68,3 +68,4 @@ void ve_calc_h_pixel_clk(void);
 
 void ve_calc_v_pixel_clk(void);
 
+uint8_t ve_gammacorrection(uint8_t val,uint8_t gamma, uint8_t maxval);
