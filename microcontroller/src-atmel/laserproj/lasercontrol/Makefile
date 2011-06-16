@@ -1,4 +1,4 @@
-OBJ =  main.o uart.o ks0108.o kb.o ICcom.o
+OBJ =  main.o uart.o iccom.o eeprom.o
 
 # Default values
 OUT           ?= image
@@ -19,8 +19,8 @@ FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:image.hex
 ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
 
 #############################################################################
-# Rules
-all: $(OUT).elf lst text eeprom
+# Rules  
+all: $(OUT).elf lst text
 
 clean:
 	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec 
