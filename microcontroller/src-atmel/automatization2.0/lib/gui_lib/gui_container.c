@@ -13,15 +13,20 @@ void gui_container_add (gui_container_t * c, gui_element_t * e) {
 	list_append(&c->childs, e);
 	
 	if (c->orientation == ORIENTATION_HORIZONTAL) {
+		//add new element on right side of container
 		e->update_position(e, c->box.x + c->pos, c->box.y);
-		c->pos += e->box.w-1;
-		if(e->box.h > c->box.h) c->box.h = e->box.h;
-		c->box.w = c->pos;
+		c->pos += e->box.w-1; //increment position for adding next element
+		if(e->box.h > c->box.h) c->box.h = e->box.h; //increase height to height of element
+		if(c->box.w < c->pos){
+			c->box.w = c->pos; //increase width of container if not larger allready
+		}
 	} else {
 		e->update_position(e, c->box.x, c->box.y + c->pos);
 		c->pos += e->box.h-1;
 		if(e->box.w > c->box.w) c->box.w = e->box.w;
-		c->box.h = c->pos;
+		if(c->box.h < c->pos){
+			c->box.h = c->pos;
+		}
 	}
 	
 	if (c->on_screen) {
@@ -129,7 +134,8 @@ void gui_container_touch_handler (gui_element_t *self, touch_event_t t) {
 	
 	gui_element_t * child;
 	if( (child = child_at(s, t.x, t.y)) != 0){
-		child->touch_handler(child, t);
+		if(child->touch_handler != 0)
+			child->touch_handler(child, t);
 	}
 }
 
