@@ -37,8 +37,8 @@
 // enabled
 #define UART0_RX_BUFFER_SIZE 64         // UART0 receive buffer size
 #define UART0_TX_BUFFER_SIZE 128        // UART0 transmit buffer size
-#define UART1_RX_BUFFER_SIZE 128        // UART1 receive buffer size
-#define UART1_TX_BUFFER_SIZE 128        // UART1 transmit buffer size
+#define UART1_RX_BUFFER_SIZE 64        // UART1 receive buffer size
+#define UART1_TX_BUFFER_SIZE 64        // UART1 transmit buffer size
 
 ///////////////////////////////////////////////////////////////////////////////
 // use the following macros to determine the 'baud' parameter values
@@ -389,6 +389,20 @@ void uart1TxFlush(void);
  *****************************************************************************/
 int uart1Getch(void);
 
+/******************************************************************************
+ *
+ * Function Name: uart1rxqueuelength()
+ *
+ * Description:  
+ *    This function returns uart1 RX queue length
+ * Calling Sequence: 
+ *    void
+ *
+ * Returns:
+ *    length on success, -1 if int mode isn't used
+ *
+ *****************************************************************************/
+int uart1rxqueuelength(void);
 #endif
 
 #endif

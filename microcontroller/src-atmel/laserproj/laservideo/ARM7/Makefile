@@ -63,7 +63,7 @@ SRC = $(TARGET).c
 
 # List C source files here which must be compiled in ARM-Mode.
 # use file-extension c for "c-only"-files
-SRCARM = uartISR.c uart.c sysTime.c armVIC.c timer.c videoengine.c ICcom.c
+SRCARM = uartISR.c uart.c sysTime.c armVIC.c timer.c videoengine.c iccom.c tests.c menu.c printf_P.c
 
 # List C++ source files here.
 # use file-extension cpp for C++-files
@@ -89,7 +89,7 @@ ASRCARM = crt0.S
 # Optimization level, can be [0, 1, 2, 3, s]. 
 # 0 = turn off optimization. s = optimize for size.
 # (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
-OPT = s
+OPT = 2
 #OPT = 0
 
 # Debugging format.

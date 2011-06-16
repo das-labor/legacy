@@ -82,13 +82,18 @@
 #define MEMMAP_USER_RAM_MODE      (1<<1)  // Interrupt vectors are re-mapped to Static RAM.
 
 /* UART0 BAUDRATE */
-#define HOST_BAUD0 921600
+#define HOST_BAUD0 115200
 /* UART1 BAUDRATE */
-#define HOST_BAUD1 115200
+#define HOST_BAUD1 38400
 /* Video engine */
 #define VIDEO_BUFFER_SIZE 4096  //set video buffer size
 /*define OUTPORT*/
-#define OUTPORT FIO0PIN
+#define OUTPORT FIO0PINU  //P0.16 ... bit 15 to P0.31. 
+
+#define CLKPIN  8 //connect CLK to this pin
+#define CLK_HIGH FIO0SETU = (1<<CLKPIN)
+#define CLK_LOW FIO0CLRU =(1<<CLKPIN)
+#define CLK_PULSE CLK_HIGH;__asm("nop");CLK_LOW
 
 #define LEDPIN  14
 #define LEDMASK (1<<LEDPIN);

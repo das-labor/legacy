@@ -623,4 +623,26 @@ int uart1Getch(void)
 #endif
 }
 
+/******************************************************************************
+ *
+ * Function Name: uart1rxqueuelength()
+ *
+ * Description:  
+ *    This function returns uart1 RX queue length
+ * Calling Sequence: 
+ *    void
+ *
+ * Returns:
+ *    length on success, -1 if int mode isn't used
+ *
+ *****************************************************************************/
+int uart1rxqueuelength(void)
+{
+#ifdef UART1_RX_INT_MODE
+   return (uint16_t) (uart1_rx_insert_idx - uart1_rx_extract_idx);
+
+#else
+  return -1;
+#endif
+}
 #endif
