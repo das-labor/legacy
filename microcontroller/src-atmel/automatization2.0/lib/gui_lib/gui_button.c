@@ -24,8 +24,9 @@ void gui_button_draw (gui_element_t * self, uint8_t redraw) {
 		g_set_draw_color(1);
 	}
 	
-	g_draw_rectangle   (&s->box);
-
+	if (s->frame_size & 0x80) {
+		g_draw_rectangle(&s->box);
+	}
 	rectangle_t r = s->box;
 	
 	if(s->icon){
@@ -82,6 +83,7 @@ gui_button_t * new_gui_button(){
 	b->icon = 0;
 	b->state = 0;
 	b->click_handler = 0;
+	b->frame_size = 0x80;
 	return b;
 }
 
