@@ -3,6 +3,7 @@
 
 #include "icon.h"
 #include "rectangle.h"
+#include "fonts/font.h"
 
 
 void init_dc_com();
@@ -17,6 +18,7 @@ void g_draw_string(uint16_t x, uint16_t y, const char *str);
 
 
 void g_set_draw_color(uint8_t color);
+void g_set_draw_font(font * new_font);
 void g_clear_screen();
 
 void g_draw_rectangle(rectangle_t *r) ;

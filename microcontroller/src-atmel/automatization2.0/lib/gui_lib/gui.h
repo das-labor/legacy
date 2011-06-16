@@ -80,6 +80,7 @@ typedef struct {
 	void(*delete)(gui_element_t *self);
 	rectangle_t box;//gui element sets height and width, container sets x and y.
 
+	uint8_t frame_size;//how many pixels frame? 0x80+num draws bounding box
 	char * text;
 	icon_t * icon;
 	uint8_t state;
