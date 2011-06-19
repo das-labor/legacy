@@ -114,4 +114,6 @@ int main(int argc, char * argv[]){
 	
 	fprintf(ofp, "\t}\n");
 	fprintf(ofp, "};\n");
+	
+	return 0;
 }
