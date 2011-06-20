@@ -35,8 +35,8 @@ typedef struct
   uint32_t frame_time;
   uint32_t frame_time_avr;
 
-  uint8_t frame_cnt;	//frame counter
-  uint8_t frame_cnt_avr; //average frame counter
+  uint16_t frame_cnt;	//frame counter
+  uint16_t frame_cnt_avr; //average frame counter
 	
   uint8_t videobuffer[VIDEO_BUFFER_SIZE];
 	
@@ -51,7 +51,6 @@ void ve_init(void);
 
 void ve_setpixel(uint16_t h_pos,uint16_t v_pos, uint8_t pixel);
 
-
 void ve_set_new_resolution_v(uint16_t res_v);
 
 void ve_set_new_resolution_h(uint16_t res_h);
@@ -64,8 +63,5 @@ void ve_set_pixel_perc_h(uint16_t pixel_h);
 
 void ve_set_pixel_perc_v(uint16_t pixel_v);
 
-void ve_calc_h_pixel_clk(void);
-
-void ve_calc_v_pixel_clk(void);
 
 uint8_t ve_gammacorrection(uint8_t val,uint8_t gamma, uint8_t maxval);

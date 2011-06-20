@@ -12,26 +12,22 @@
 
 volatile Videoengine_t ve;
 
-/*
-ve.frame_time_avr
+inline static void ve_calc_h_pixel_clk(void);
+
+inline static void ve_calc_v_pixel_clk(void);
 
 
-*/
-
-void ve_calc_h_pixel_clk(void)
+inline static void ve_calc_h_pixel_clk(void)
 {
 	uint32_t i=0;
-	uint32_t j=0;
 	
 	if(ve.h_line_time_avr > 0){
 		i=(ve.h_line_time_avr * ve.h_pixel_perc)/100;
-		j=(ve.h_line_time_avr * ve.h_sync_wait_perc)/100;
-
-		if(j > ve.h_line_time_avr) //check if MR0 might be out of range (should never happen)
-			j = ve.h_line_time_avr -1;
+		ve.h_sync_wait=(ve.h_line_time_avr * ve.h_sync_wait_perc)/100;
 
 		/* calculate prescaler */
-		ve.h_sync_wait_pre=0;
+	//no prescaler, we have 32 bit 
+		/*
 		if(j > 0x0000ffff){
 			if(j > 0x000fffff){
 				ve.h_sync_wait_pre=0x00ff;
@@ -39,33 +35,33 @@ void ve_calc_h_pixel_clk(void)
 			}else{
 				ve.h_sync_wait_pre=0x000f;
 				ve.h_sync_wait=(j>>4);
-				
 			}
 		}
-
-		
+		else
+		{
+			ve.h_sync_wait_pre=0;
+			ve.h_sync_wait=j;
+		}
+		*/
 		/* used to calculate pixel clock */
-		if((uint32_t)(i/ve.h_pixel_end_val) <= 0x0000ffff)
-			ve.h_pixel_clk_pre=(i/ve.h_pixel_end_val);
+		if((uint32_t)(i/ve.h_pixel_end_val) < 0x00010000)
+			ve.h_pixel_clk_pre=(i/ve.h_pixel_end_val)-1;
 		else
 			ve.h_pixel_clk_pre=0xffff;
 	}
 }
 
-void ve_calc_v_pixel_clk(void)
+inline static void ve_calc_v_pixel_clk(void)
 {
 	uint32_t i=0;
-	uint32_t j=0;
 	
 	if(ve.frame_time_avr > 0){
 		i=(ve.frame_time_avr * ve.v_pixel_perc)/100;
-		j=(ve.frame_time_avr * ve.v_sync_wait_perc)/100;
-
-		if(j > ve.frame_time_avr) //check if MR0 might be out of range (should never happen)
-			j = ve.frame_time_avr -1;
+		ve.v_sync_wait=(ve.frame_time_avr * ve.v_sync_wait_perc)/100;
 		
 		/* calculate prescaler */
-		ve.v_sync_wait_pre=0;
+//no prescaler, we have 32 bit 
+		/*
 		if(j > 0x0000ffff){
 			if(j > 0x000fffff){
 				ve.v_sync_wait_pre=0x00ff;
@@ -75,10 +71,15 @@ void ve_calc_v_pixel_clk(void)
 				ve.v_sync_wait=(j>>4);
 			}
 		}
-		
+		else
+		{
+			ve.v_sync_wait_pre=0;
+			ve.v_sync_wait=j;
+		}
+		*/
 		/* used to calculate pixel clock */
-		if((uint32_t)(i/ve.v_pixel_end_val) <= 0x0000ffff)
-			ve.v_pixel_clk_pre=(i/ve.v_pixel_end_val);
+		if((uint32_t)(i/ve.v_pixel_end_val) < 0x00010000)
+			ve.v_pixel_clk_pre=(i/ve.v_pixel_end_val)-1;
 		else
 			ve.v_pixel_clk_pre=0xffff;
 		
@@ -91,6 +92,10 @@ void ve_set_new_resolution_h(uint16_t res_h)
 		if(res_h * ve.v_pixel_end_val < VIDEO_BUFFER_SIZE)		//does it fit into video memory
 		{
 			ve.h_pixel_end_val = res_h;
+		}
+		else
+		{
+			ve.h_pixel_end_val = (VIDEO_BUFFER_SIZE / ve.v_pixel_end_val)-1;
 		}
 	}
 	else
@@ -105,6 +110,10 @@ void ve_set_new_resolution_v(uint16_t res_v)
 		if(res_v * ve.h_pixel_end_val < VIDEO_BUFFER_SIZE)		//does it fit into video memory
 		{
 			ve.v_pixel_end_val = res_v;
+		}
+		else
+		{
+			ve.v_pixel_end_val = (VIDEO_BUFFER_SIZE / ve.h_pixel_end_val)-1;
 		}
 	}
 	else
@@ -121,17 +130,17 @@ void ve_init(void)
 	ve_set_new_resolution_v(ve.v_pixel_end_val);
 	ve_set_new_resolution_h(ve.h_pixel_end_val);
 		
-	if(ve.h_sync_wait_perc>100)
-		ve.h_sync_wait_perc=100;
+	if(ve.h_sync_wait_perc>99)
+		ve.h_sync_wait_perc=99;
 
-	if(ve.v_sync_wait_perc>100)
-		ve.v_sync_wait_perc=100;
+	if(ve.v_sync_wait_perc>99)
+		ve.v_sync_wait_perc=99;
 
-	if(ve.h_pixel_perc>(100-ve.h_sync_wait_perc))
-		ve.h_pixel_perc=100-ve.h_sync_wait_perc;
+	if(ve.h_pixel_perc>99)
+		ve.h_pixel_perc=99;
 
-	if(ve.v_pixel_perc>(100-ve.v_sync_wait_perc))
-		ve.v_pixel_perc=100-ve.v_sync_wait_perc;
+	if(ve.v_pixel_perc>99)
+		ve.v_pixel_perc=99;
 
 	ve_calc_v_pixel_clk();
 	ve_calc_h_pixel_clk();
@@ -182,6 +191,13 @@ void ve_setpixel(uint16_t h_pos,uint16_t v_pos, uint8_t pixel)
 	if((h_pos < ve.h_pixel_end_val) && (v_pos < ve.v_pixel_end_val))
 		ve.videobuffer[h_pos+(v_pos*ve.v_pixel_end_val)] =pixel;//ve_gammacorrection(pixel,0.7f,200);
 }
+
+uint8_t ve_getpixel(uint16_t h_pos,uint16_t v_pos, uint8_t pixel)
+{
+	if((h_pos < ve.h_pixel_end_val) && (v_pos < ve.v_pixel_end_val))
+		return ve.videobuffer[h_pos+(v_pos*ve.v_pixel_end_val)];//ve_gammacorrection(pixel,0.7f,200);
+}
+
 #if 0
 uint8_t ve_gammacorrection(uint8_t val,uint8_t gamma, uint8_t maxval)
 {
