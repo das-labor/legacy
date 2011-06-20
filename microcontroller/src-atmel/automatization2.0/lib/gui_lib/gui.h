@@ -37,6 +37,12 @@ struct gui_element_t_s {
 ////////////////////////////////////////////////////////////////////////////////
 
 
+//handler types for conevnience ////////////////////////////////////////////////
+
+typedef void(*touch_handler_t)(gui_element_t *self, touch_event_t t)  ;
+typedef void(*click_handler_t)(gui_element_t *)                       ;
+
+
 //gui container ////////////////////////////////////////////////////////////////
 //it can put elements beside each other in horizontal or vertical direction.
 //the border size can be defined, and a frame can be drawn or not.
@@ -62,6 +68,7 @@ typedef struct {
 #define ORIENTATION_VERTICAL 1
 
 gui_container_t * new_gui_container();  //constructor
+void gui_container_init(gui_container_t * c);
 void gui_container_add (gui_container_t * c, gui_element_t * e);
 void gui_container_delete_all_childs (gui_container_t * self);
 void gui_container_draw (gui_element_t * self, uint8_t redraw);
