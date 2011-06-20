@@ -63,7 +63,7 @@ SRC = $(TARGET).c
 
 # List C source files here which must be compiled in ARM-Mode.
 # use file-extension c for "c-only"-files
-SRCARM = uartISR.c uart.c sysTime.c armVIC.c timer.c videoengine.c iccom.c tests.c menu.c printf_P.c
+SRCARM = uartISR.c uart.c sysTime.c armVIC.c timer.c videoengine.c iccom.c menu.c printf_P.c
 
 # List C++ source files here.
 # use file-extension cpp for C++-files
