@@ -188,7 +188,7 @@ void start_timer2(void)
 	DDRD|=_BV(PD7); //make OC2 output
 	TCCR2=_BV(COM20)|_BV(WGM21)|_BV(CS22)|_BV(CS21);		//toggle on OCR match, Clear on OCR match, prescaler 1:256
 	TCNT2=0;	//clear timer2
-	OCR2= 78; //set to 800 hz toggle
+	OCR2= 39; //set to 800 hz toggle
 }
 
 void stop_timer2(void)
