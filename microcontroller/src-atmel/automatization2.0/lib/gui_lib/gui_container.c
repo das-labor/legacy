@@ -160,10 +160,8 @@ void gui_container_delete (gui_element_t * self) {
 	free (s);
 }
 
-
-//constructor
-gui_container_t * new_gui_container(){
-	gui_container_t * c = malloc(sizeof(gui_container_t));
+//constructor for subclasses (no malloc)
+void gui_container_init(gui_container_t * c){
 	c->draw = gui_container_draw;
 	c->set_on_screen = gui_container_set_on_screen;
 	c->update_position = gui_container_update_position;
@@ -175,5 +173,11 @@ gui_container_t * new_gui_container(){
 	c->frame_size = 0;
 	init_list(&c->childs);
 	c->pos = 0;
+}
+
+//constructor
+gui_container_t * new_gui_container(){
+	gui_container_t * c = malloc(sizeof(gui_container_t));
+	gui_container_init(c);
 	return c;
 }
