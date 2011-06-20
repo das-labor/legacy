@@ -1,6 +1,8 @@
 #ifndef JOYSTICK_H
 #define JOYSTICK_H
 
+#include "../config.h"
+
 extern unsigned char waitForFire;
 void joy_init();
 
