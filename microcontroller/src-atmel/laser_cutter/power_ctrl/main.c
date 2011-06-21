@@ -40,7 +40,7 @@ uint16_t simmer_i_ist;
 uint16_t simmer_u;
 
 uint16_t fire_period = 1000;
-
+volatile uint8_t fire_in_buffer = 0;
 
 #define CS_WAIT_SYNC     0
 #define CS_CMD1          1
@@ -268,6 +268,13 @@ int main(){
 	while(1){
 		//442 adc val = 1400V
 		power_u_ist = (53 * adc_uwave) / 16;
+
+        //Merken, wenn wir einen
+        if (INPUT(FIRE_IN) == 0) {
+                cli();
+                fire_in_buffer |= 1;
+                sei();
+        }
 
 		slave_com();
 		statemachine();

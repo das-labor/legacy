@@ -9,6 +9,7 @@
 extern uint16_t fire_period;
 extern uint8_t command_fire;
 extern uint8_t command_charge;
+volatile extern uint8_t  fire_in_buffer;
 
 volatile uint8_t fire_process_running = 0;    //Zeigt an, dass die Feuerprozess läuft
 
@@ -31,7 +32,8 @@ ISR(TIMER0_COMP_vect) {
 
 
    if (!fire_process_running) {
-        if (command_fire || ( INPUT(FIRE_IN) == 0)   ) {
+        if (command_fire || ( fire_in_buffer == 1)   ) {
+            fire_in_buffer =0;  //Merker wieder löschen
             ticks = TICK_CHARGE_START;
             fire_process_running = 1;
         } else {
