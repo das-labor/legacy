@@ -85,7 +85,7 @@
 #define CLEAR_SHIFT_PORT(m) shift_port &= ~m; shift_update()
 
 //Ausgänge des Schieberegisters
-#define REL_NT_CONTROL (1<<7) //R1   Ladegerät Steuerung (Schieberegister QH,Bit 7)
+#define REL_NT_CONTROL (1<<7) //R1   Ladegerät Steuerung (Schieberegister QH,Bit 7) //Geht im Moment an bei Main-Power
 #define REL_NT_POWER   (1<<6) //R2   Ladegerät Leistung (Schieberegister QG, Bit 6)
 #define REL_SIMMER     (1<<5) //R3   Simmernetzteil (Scheiberegister GF, Bit 5)
 #define REL_PUMPE      (1<<4) //R4   Pumpe
