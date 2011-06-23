@@ -23,6 +23,7 @@ include "obj_speek.php";
 include "obj_sound.php";
 include "obj_muell.php";
 include "obj_lightbasteldetail.php";
+include "obj_jingels.php";
 
 $objlist = array();
 $sortedobjects = array();
@@ -189,6 +190,11 @@ $ctrlelement_muell->setdisplayname("Muell - An diesm Tag rausstellen - Abholung 
 array_push($objlist,$ctrlelement_muell);
 $encap_muell = new c_identifier($ctrlelement_muell);
 
+$ctrlelement_jingels = new c_jingels();
+$ctrlelement_jingels->setdisplayname("Jingels for every situation");
+array_push($objlist,$ctrlelement_jingels);
+$encap_jingels = new c_identifier($ctrlelement_jingels);
+
 
 
 
@@ -305,6 +311,7 @@ $spielzeug->addcontentOBJ($encap_moodbar);
 $spielzeug->addcontentOBJ($encap_lsborg);
 $spielzeug->addcontentOBJ($encap_treppenblink);
 $spielzeug->addcontentOBJ($encap_speach);
+$spielzeug->addcontentOBJ($encap_jingels);
 
 $weblabinterface->addcontentOBJ($encap_stylepannel);
 $weblabinterface->addcontentOBJ($encap_stylebg);
