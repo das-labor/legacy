@@ -145,7 +145,7 @@ class c_jingels extends c_content{
 	  }
 	  $this->content .= "</select></td><td>";
 	  for($i=0;$i < sizeof($this->validstages); $i++){
-	      $this->content .= "<input type=\"image\" src=\"icons/".$this->validstages[$i]."_romm.png\" onclick=\"".$this->myid."_cmd('".$subdir."',document.getElementsByName('".$subdir."')[0].options[document.getElementsByName('".$subdir."')[0].options.selectedIndex].value,'".$this->validstages[$i]."');\">";
+	      $this->content .= "<input type=\"image\" src=\"icons/".$this->validstages[$i]."_room.png\" onclick=\"".$this->myid."_cmd('".$subdir."',document.getElementsByName('".$subdir."')[0].options[document.getElementsByName('".$subdir."')[0].options.selectedIndex].value,'".$this->validstages[$i]."');\">";
 	  }
 	  $this->content .= "</td></td></tr>";
 	}
