@@ -128,6 +128,7 @@ class c_jingels extends c_content{
   protected function initContent()
   {
     $this->content  = "<div>";
+    $this->content .= "<input type=\"image\" src=\"icons/stop_h.png\" onclick=\"".$this->myid."_cmd('stopall','','');\">";
     $this->content  = "<table width=\"100\"><tr>";
     if ($dh = opendir($this->basedir)) {
       while (($subdir = readdir($dh)) !== false) {
