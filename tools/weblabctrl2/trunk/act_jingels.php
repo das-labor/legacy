@@ -6,13 +6,18 @@ $narf="1234567890";
 if($_GET["doit"])
   {
     $myobj = new c_jingels();
-#    var_dump($myobj->getValidModes());
-    $cmd = $myobj->isvalidmode($myobj->getBasedir()."/".$_GET["subdir"]."/".$_GET["file"]);
-    $stage = $myobj->isvalidstage($_GET["stage"]);
-    if( $cmd !== "hacker") {
-      exec("(./exec_timeout.sh 60 mplayer -ao pulse:kvm:".$stage." '".$myobj->getBasedir()."/".$_GET["subdir"]."/".$_GET["file"]."') &");
+    if( $_GET["subdir"] == 'stopall'){
+      exec("(./exec_timeout.sh 5 killall mplayer) &");
+    }
+    else {
+      $cmd = $myobj->isvalidmode($myobj->getBasedir()."/".$_GET["subdir"]."/".$_GET["file"]);
+      $stage = $myobj->isvalidstage($_GET["stage"]);
+      if( $cmd !== "hacker") {
+	exec("(./exec_timeout.sh 60 mplayer -ao pulse:kvm:".$stage." '".$myobj->getBasedir()."/".$_GET["subdir"]."/".$_GET["file"]."') &");
+      }
     }
     file_put_contents($file, serialize( $localstate )); 
+
    
   }
 echo "<html>";
