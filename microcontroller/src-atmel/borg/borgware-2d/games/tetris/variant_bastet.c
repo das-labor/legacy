@@ -171,7 +171,7 @@ static int16_t tetris_bastet_evaluateMove(tetris_bastet_variant_t *pBastet,
 			pPiece, pBastet->pStartingRow[nColumn + 3], nColumn);
 
 	// in case the prediction fails we return the lowest possible score
-	if (nDeepestRow <= TETRIS_BUCKET_INVALIDROW)
+	if (nDeepestRow <= TETRIS_BUCKET_INVALID)
 	{
 		return -32766;
 	}

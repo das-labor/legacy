@@ -13,9 +13,9 @@
  * defines *
  ***********/
 
-#define TETRIS_BUCKET_INVALIDROW -4
-#define TETRIS_BUCKET_MAX_COLUMNS (INT8_MAX - 4)
-#define TETRIS_BUCKET_MAX_ROWS
+#define TETRIS_BUCKET_INVALID -4
+#define TETRIS_BUCKET_MAX_COLUMNS 16
+#define TETRIS_BUCKET_MAX_ROWS (INT8_MAX - 4)
 
 
 /*********
