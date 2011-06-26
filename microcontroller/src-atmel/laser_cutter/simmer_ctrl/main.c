@@ -1,4 +1,4 @@
-
+#include <util/delay.h>
 #include <avr/interrupt.h>
 #include "uart/uart.h"
 #include "ioport.h"
@@ -72,7 +72,7 @@ void slave_com(){
 				break;
 			case CS_CHK2:
 				chk2 = c;
-				if( (cmd1 == (chk1 ^ 0xff)) && (cmd2 == (chk2 ^ 0xff)) ) {								
+				if( (cmd1 == (chk1 ^ 0xff)) && (cmd2 == (chk2 ^ 0xff)) ) {
 					state_main_on      = (cmd1 & MSK_MAIN_CMD)     ? 1:0;
 					command_auto       = (cmd1 & MSK_AUTO_CMD)     ? 1:0;
 					command_zuenden    = (cmd1 & MSK_ZUEND_CMD)    ? 1:0;
@@ -81,7 +81,7 @@ void slave_com(){
 				}
 				com_state = CS_SIMMER_SOLL_L;
 				break;
-				
+
 			case CS_SIMMER_SOLL_L:
 				tmp = c;
 				com_state = CS_SIMMER_SOLL_H;
@@ -101,18 +101,18 @@ void slave_com(){
 				break;
 			case CS_PERIOD_H:
 				com_state = CS_SLAVE1_REQ;
-				break;					
+				break;
 			case CS_SLAVE1_REQ:{
 				uint8_t stat;
 				stat =   (state_500V_psu        ? MSK_500V_PSU_STATE  : 0)
 	        			|(state_zuenden         ? MSK_ZUEND_STATE     : 0)
 	        			|(state_simmer_psu      ? MSK_SIMMER_STATE    : 0);
-	        			
+
 				poll_num = c & 0x0f;
-				
+
 				uart_putc(stat);
 				if(poll_num == 0){
-					put_uint16(simmer_i_ist);	
+					put_uint16(simmer_i_ist);
 				}else if(poll_num == 1){
 					put_uint16(simmer_u);
 				}
@@ -122,7 +122,7 @@ void slave_com(){
 				com_state = CS_WAIT_SYNC;
 				break;
 		}
-	}	
+	}
 }
 
 void statemachine (){
@@ -159,19 +159,22 @@ void set_outputs(){
 	}else{
 		OUTPUT_ON(SIMMER);
 	}
+
+	if(command_zuenden && (! old_zuenden)){
+	    OUTPUT_OFF(PSU_500V);
+		OUTPUT_ON(ZUENDUNG);
+		_delay_ms(1);
+		OUTPUT_OFF(ZUENDUNG);
+		_delay_ms(1);
+	}
+	old_zuenden = command_zuenden;
+
 	if(state_500V_psu){
 		OUTPUT_ON(PSU_500V);
 	}else{
 		OUTPUT_OFF(PSU_500V);
 	}
 
-	if(command_zuenden && (! old_zuenden)){
-		OUTPUT_ON(ZUENDUNG);
-	}else{
-		OUTPUT_OFF(ZUENDUNG);
-	}
-	old_zuenden = command_zuenden;
-	
 	OCR1A = (simmer_i_soll * 192) / 256 ;
 }
 
@@ -179,7 +182,7 @@ void io_init(){
 	SET_DDR(SIMMER);
 	SET_DDR(PSU_500V);
 	SET_DDR(ZUENDUNG);
-	
+
 }
 
 
@@ -187,7 +190,7 @@ void io_init(){
 void pwm_init(){
 	TCCR1A = (1<<COM1A1) | (1<<WGM10); //Fast PWM 8 bit
 	TCCR1B = (1<<WGM12)  | (1<<CS10) ; //clk/1
-	OCR1A  = 0; // current off 
+	OCR1A  = 0; // current off
 	SET_DDR(OCR1A);
 }
 
@@ -196,10 +199,10 @@ int main(){
 	pwm_init();
 	uart_init();
 	init_adc();
-	
+
 	sei();
-	
-	
+
+
 	while(1){
 		simmer_i_ist = (35 * adc_i) / 128;
 		if(simmer_i_ist > 20){
@@ -207,9 +210,9 @@ int main(){
 		}else{
 			state_zuenden = 0;
 		}
-	
+
 		slave_com();
 		statemachine();
-		set_outputs();	
+		set_outputs();
 	}
 }
