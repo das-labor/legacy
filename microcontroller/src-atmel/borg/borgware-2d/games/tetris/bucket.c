@@ -107,14 +107,14 @@ static void tetris_bucket_hoverStatus(tetris_bucket_t *pBucket)
 tetris_bucket_t *tetris_bucket_construct(int8_t nWidth,
                                          int8_t nHeight)
 {
-	assert((nWidth >= 4) && (nWidth <= 16));
-	assert((nHeight >= 4) && (nHeight <= 124));
+	assert((nWidth >= 4) && (nWidth <= TETRIS_BUCKET_MAX_COLUMNS));
+	assert((nHeight >= 4) && (nHeight <= TETRIS_BUCKET_MAX_ROWS));
 
 	// allocating memory
 	tetris_bucket_t *pBucket =
 			(tetris_bucket_t *)malloc(sizeof(tetris_bucket_t));
 	assert(pBucket != NULL);
-	pBucket->dump = (uint16_t*) calloc(nHeight, sizeof(uint16_t));
+	pBucket->dump = (uint16_t *)calloc(nHeight, sizeof(uint16_t));
 	assert(pBucket->dump != NULL);
 
 	// setting requested attributes
@@ -355,8 +355,8 @@ int8_t tetris_bucket_predictDeepestRow(tetris_bucket_t *pBucket,
 {
 	assert(pBucket != NULL);
 	assert(pPiece != NULL);
-	assert(nStartRow >= -1 && nStartRow < pBucket->nHeight);
-	assert(nColumn >= -3 && nColumn < pBucket->nWidth);
+	assert(nStartRow > TETRIS_BUCKET_INVALID && nStartRow < pBucket->nHeight);
+	assert(nColumn > TETRIS_BUCKET_INVALID && nColumn < pBucket->nWidth);
 
 	// exchange current piece of the bucket (to use its collision detection)
 	tetris_piece_t *pActualPiece = pBucket->pPiece;
@@ -376,7 +376,7 @@ int8_t tetris_bucket_predictDeepestRow(tetris_bucket_t *pBucket,
 		// bucket overflow?
 		if (nStartRow < 0 && ((0xFFFF >> (((4 + nStartRow) * 4))) & nMap))
 		{
-			nStartRow = TETRIS_BUCKET_INVALIDROW;
+			nStartRow = TETRIS_BUCKET_INVALID;
 		}
 	}
 
@@ -394,8 +394,8 @@ int8_t tetris_bucket_predictCompleteLines(tetris_bucket_t *pBucket,
 {
 	assert(pBucket != NULL);
 	assert(pPiece != NULL);
-	assert(nRow > -4 && nRow < pBucket->nHeight);
-	assert(nColumn > -4 && nColumn < pBucket->nWidth);
+	assert(nRow > TETRIS_BUCKET_INVALID && nRow < pBucket->nHeight);
+	assert(nColumn > TETRIS_BUCKET_INVALID && nColumn < pBucket->nWidth);
 
 	// initialization
 	int8_t nCompleteRows = 0;
@@ -433,8 +433,8 @@ uint16_t* tetris_bucket_predictBottomRow(tetris_bucket_iterator_t *pIt,
 	assert(pIt != NULL);
 	assert(pBucket != NULL);
 	assert(pPiece != NULL);
-	assert(nRow > -4 && nRow < pBucket->nHeight);
-	assert(nColumn > -4 && nColumn < pBucket->nWidth);
+	assert(nRow > TETRIS_BUCKET_INVALID && nRow < pBucket->nHeight);
+	assert(nColumn > TETRIS_BUCKET_INVALID && nColumn < pBucket->nWidth);
 
 	pIt->pBucket = pBucket;
 	pIt->nCurrentRow = pBucket->nHeight - 1;
