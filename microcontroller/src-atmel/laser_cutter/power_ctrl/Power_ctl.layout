@@ -7,6 +7,9 @@
 	<File name="adc.h" open="0" top="0" tabpos="3">
 		<Cursor position="0" topLine="0" />
 	</File>
+	<File name="config.h" open="1" top="0" tabpos="8">
+		<Cursor position="0" topLine="0" />
+	</File>
 	<File name="hardware.h" open="1" top="0" tabpos="4">
 		<Cursor position="1230" topLine="24" />
 	</File>
@@ -14,12 +17,18 @@
 		<Cursor position="486" topLine="0" />
 	</File>
 	<File name="main.c" open="1" top="0" tabpos="1">
-		<Cursor position="5878" topLine="261" />
+		<Cursor position="0" topLine="51" />
 	</File>
-	<File name="pulse_isr.c" open="1" top="1" tabpos="3">
-		<Cursor position="231" topLine="0" />
+	<File name="pulse_isr.c" open="1" top="0" tabpos="3">
+		<Cursor position="1248" topLine="35" />
 	</File>
 	<File name="pulse_isr.h" open="1" top="0" tabpos="5">
 		<Cursor position="378" topLine="0" />
+	</File>
+	<File name="uart\uart.c" open="1" top="0" tabpos="6">
+		<Cursor position="261" topLine="3" />
+	</File>
+	<File name="uart\uart.h" open="1" top="0" tabpos="7">
+		<Cursor position="356" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>
