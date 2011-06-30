@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# AvrStudio Solution File, Format Version 11.00
+Project("{D1100916-62DA-4D80-A9B4-55A1E7CCEEB3}") = "Zuendung", "Zuendung\Zuendung.avrgccproj", "{543E171E-83B2-4AE1-A8EC-5A1FBE570A01}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{543E171E-83B2-4AE1-A8EC-5A1FBE570A01}.Debug|AVR.ActiveCfg = Debug|AVR
+		{543E171E-83B2-4AE1-A8EC-5A1FBE570A01}.Debug|AVR.Build.0 = Debug|AVR
+		{543E171E-83B2-4AE1-A8EC-5A1FBE570A01}.Release|AVR.ActiveCfg = Release|AVR
+		{543E171E-83B2-4AE1-A8EC-5A1FBE570A01}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
