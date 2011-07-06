@@ -22,16 +22,16 @@ volatile int8_t enc_delta;				// -128 ... 127
 volatile uint8_t start, menu, activate, fire,over;
 
 //EEPROM******************************
-uint16_t EEMEM eeprom_delay;
-uint16_t EEMEM eeprom_radius;
+uint16_t EEMEM eeprom_delay = 50;
+uint16_t EEMEM eeprom_radius = 25;
 
-uint16_t EEMEM eeprom_delay_1;
-uint16_t EEMEM eeprom_delay_2;
-uint16_t EEMEM eeprom_delay_3;
+uint16_t EEMEM eeprom_delay_1 = 50;
+uint16_t EEMEM eeprom_delay_2 = 50;
+uint16_t EEMEM eeprom_delay_3 = 50;
 
-uint16_t EEMEM eeprom_radius_1;
-uint16_t EEMEM eeprom_radius_2;
-uint16_t EEMEM eeprom_radius_3;
+uint16_t EEMEM eeprom_radius_1 = 25;
+uint16_t EEMEM eeprom_radius_2 = 25;
+uint16_t EEMEM eeprom_radius_3 = 25;
 //************************************
 
 void encode_init( void )
@@ -68,14 +68,14 @@ void splash_screen(){
 void handle_display(){
 	static int16_t val = 1;
 	static int16_t val_old = 1;
-	static temp;
+	static int16_t temp;
 	char s[7];
 	val += encode_read()/2;
 
-	if(!ENABLE){
+	
 	lcd_clear();
 	lcd_setcursor(0,1);
-	}	
+		
 		
 	//Hauptmenu********************************
 	if (menu == MENU_MAIN){
@@ -130,10 +130,16 @@ void handle_display(){
 	//*****************************************		
 	
 	//Enabled-Menü*************************
-	if (menu == MENU_START && !ENABLE){
+	if (menu == MENU_START){
 		start = 1;
 		
-		lcd_string("!READY!");
+		if (!ENABLE){
+			lcd_string("!READY!");
+		}
+		else
+		{
+			lcd_string("!ENABLED!");	 
+		}		
 		
 		if (!delay_count){
 			lcd_setcursor(0,2);
@@ -146,7 +152,7 @@ void handle_display(){
 	//*****************************************	
 	
 	//Speichern-Laden-Menü*******************
-	if (menu == MENU_SAVE | menu == MENU_LOAD){
+	if (menu == MENU_SAVE || menu == MENU_LOAD){
 		if (val > PARAM_MAX) val = PARAM_MAX;
 		if (val <  1) val =  1;
 		lcd_string("Parametersatz:");
@@ -329,12 +335,14 @@ int main(void)
 	sei();
     while(1)
     {
-		cli();
+		
 		
 		if(ticks >= 200 && !delay_count){
 			ticks = 0;
 			handle_display();
 		}
+		
+		cli();
 		
 		taster = !(TASTER);
 		if(taster && (!old_taster)){
@@ -346,26 +354,18 @@ int main(void)
 			x_pos = radius;
 			y_pos = radius;
 		}		
-		if (start==1 && delay_count){
-			
-			xb = x_pos - radius;
-			yb = y_pos - radius;
-			distance = (xb * xb );
-			distance = distance + (yb * yb);
-			if (distance >= radius_q || fire)
-			{
-			OVER_ON;		
-			}			
-		}
+		
+		xb = x_pos - radius;
+		yb = y_pos - radius;
+		distance = (xb * xb );
+		distance = distance + (yb * yb);
+		
+		
 		if (ticks == 190){
-			OVER_OFF;
+			OVER_OFF;	
 		}			
 				
 		if (start==1 && !delay_count){
-			xb = x_pos - radius;
-			yb = y_pos - radius;
-			distance = (xb * xb );
-			distance = distance + (yb * yb);
 			if (distance >= radius_q || fire)
 			{	
 				fire = 0;
@@ -377,6 +377,12 @@ int main(void)
 				y_pos = radius;
 			}
 		}	
+		else if (start==1 && delay_count){
+			if (distance >= radius_q || fire)
+			{
+				OVER_ON;		
+			}		
+		}
 		
 		old_taster = taster;	
 		sei();
@@ -392,7 +398,7 @@ ISR(INT0_vect) //X-Achse
 	{
 		x_pos++;
 	}
-	else
+	else  if (!DIR_X && ENABLE)
 	{
 		x_pos--;
 	}
@@ -406,7 +412,7 @@ ISR(INT1_vect) //Y-Achse
 	{
 		y_pos++;
 	}
-	else
+	else if (!DIR_Y && ENABLE)
 	{
 		y_pos--;
 	}	
