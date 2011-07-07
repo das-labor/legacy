@@ -19,11 +19,13 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 #include <avr/io.h>
+#ifndef F_CPU
  #define F_CPU 20000000
-// #define F_CPU 16000000         /* Oszillator-Frequenz in Hz */
+// #define F_CPU 16000000         /* system osc frequency in Hz */
+#endif
 
 #define UART0_I 1 /* set this to '1' if you want to use the first uart, otherwise set to '0' */
-#define UART0_BAUD_RATE 38400 /* baudrate for uart0 */
+#define UART0_BAUD_RATE 115200 /* baudrate for uart0 */
 #define UART0_STOPBITS  UART_STOPBITS_1 /* stopbit configuration for uart0 */
 #define UART0_DATABITS  UART_DATABITS_8 /* databit configuration for uart0 */
 #define UART0_PARATY    UART_PARATY_NONE /* paraty configuration for uart0 */
