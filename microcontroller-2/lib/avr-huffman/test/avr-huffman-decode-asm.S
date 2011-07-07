@@ -81,6 +81,8 @@ TREE_PTR_1 = 17
 huffman_dec_byte:
 	push r28
 	push r29
+	push TREE_PTR_0
+	push TREE_PTR_1
 	movw r30, r24
 	ld  r28, Z
 	ldd r29, Z+1
@@ -97,6 +99,8 @@ return_0xffff:
 	ser r25
 	ser r24
 restore_Y_return:
+	pop TREE_PTR_1
+	pop TREE_PTR_0
 	pop r29
 	pop r28
 	ret
@@ -105,8 +109,6 @@ restore_Y_return:
 	ld  r28, Z
 	ldd r29, Z+1
 5: /* tree is there and pointed to by Y */
-	push TREE_PTR_0
-	push TREE_PTR_1
 	movw TREE_PTR_0, r30
 6:
 	movw r26, TREE_PTR_0
@@ -123,7 +125,7 @@ load_right:
 	ldd r24, Y+2
 post_load_dec:
 	andi r25, 0x0f
-	breq 8f /* value found */
+	breq restore_Y_return /* value found */
 	cpi r25, 0x0f
 	brne link_found
 	cpi r24, 0xff
@@ -133,19 +135,13 @@ link_found:
 	add NODE_PTR_0, r24
 	adc NODE_PTR_1, r25
 	rjmp 6b
-8:
-	pop TREE_PTR_1
-  	pop TREE_PTR_0
-  	rjmp restore_Y_return
 9:
 	movw r30, TREE_PTR_0
 	ld r24, Z+
 	ld r25, Z+
 	call free
-
-	pop TREE_PTR_1
-	pop TREE_PTR_0
 	rjmp return_0xffff
+
 /******************************************************************************/
 /* void huffman_dec_init(huffman_dec_ctx_t* ctx, uint16_t(*rb_func)(uint16_t))
  *  param ctx:     r24:r25
@@ -319,22 +315,14 @@ tree_build_end:
 	std Y+0, r23
 ;	clr r24
 90:
-	pop_range 9, 17
-;	pop_range 28, 29
-;	ret
+	pop_range 9, 15
 	rjmp restore_Y_return
 
 read_byte:
 	movw r26, CTX_0
 	adiw r26, 4
-	rcall read_byte_core
-	sbrs r25, 0
-	ret
-1:
-	ldi r24, 1
-	pop r30 /* remove old return addr from stack */
-	pop r30
-	rjmp 90b
+;	rcall read_byte_core
+;----
 
 read_byte_core:
 	ld r30, X+
@@ -349,12 +337,21 @@ read_byte_core:
 	adiw r30, 0
 	brne 2f
 	movw r30, r22
-	lpm
+	lpm r24, Z
+	clr r25
 	ret
 #endif
 2:
 	movw r24, r22
-	ijmp
+	icall
+;----
+	sbrs r25, 0
+	ret
+1:
+	ldi r24, 1
+	pop r30 /* remove old return addr from stack */
+	pop r30
+	rjmp 90b
 
 
 /******************************************************************************/
