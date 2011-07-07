@@ -93,11 +93,14 @@ huffman_dec_byte:
 	pop r30
 	tst r24
 	breq 2f
+return_0xffff:
 	ser r25
 	ser r24
+restore_Y_return:
 	pop r29
 	pop r28
 	ret
+
 2: /* tree has been build successfuly */
 	ld  r28, Z
 	ldd r29, Z+1
@@ -130,23 +133,19 @@ link_found:
 	add NODE_PTR_0, r24
 	adc NODE_PTR_1, r25
 	rjmp 6b
-8:	pop TREE_PTR_1
-	pop TREE_PTR_0
-	pop r29
-	pop r28
-	ret
+8:
+	pop TREE_PTR_1
+  	pop TREE_PTR_0
+  	rjmp restore_Y_return
 9:
 	movw r30, TREE_PTR_0
 	ld r24, Z+
 	ld r25, Z+
 	call free
-;	movw r30, TREE_PTR_0 ; xxx
-;	st Z+, r1       ; xxx
-;	st Z+, r1       ; xxx
-	ser r25
-	ser r24
-	rjmp 8b
 
+	pop TREE_PTR_1
+	pop TREE_PTR_0
+	rjmp return_0xffff
 /******************************************************************************/
 /* void huffman_dec_init(huffman_dec_ctx_t* ctx, uint16_t(*rb_func)(uint16_t))
  *  param ctx:     r24:r25
@@ -197,8 +196,8 @@ NODE_PTR_0       = 28
 NODE_PTR_1       = 29
 .global build_tree
 build_tree:
-	push_range 9, 17
 	push_range 28, 29
+	push_range 9, 17
 	movw CTX_0, r24
 	rcall read_byte
 	cpi r24, 0xC0
@@ -221,6 +220,7 @@ build_tree:
 	rol r25        /* (leaf_count-1)*3 */
 	add r24, T_0
 	adc r25, T_1
+	sbiw r24, 3
 	clr r23
 	ldi r22, 1
 	call calloc
@@ -319,9 +319,10 @@ tree_build_end:
 	std Y+0, r23
 ;	clr r24
 90:
-	pop_range 28, 29
 	pop_range 9, 17
-	ret
+;	pop_range 28, 29
+;	ret
+	rjmp restore_Y_return
 
 read_byte:
 	movw r26, CTX_0
