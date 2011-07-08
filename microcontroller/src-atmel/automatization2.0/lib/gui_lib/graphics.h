@@ -26,6 +26,7 @@ void g_fill_rectangle(rectangle_t *r);
 void g_draw_string_in_rect(rectangle_t *r, const char *str);
 void g_draw_string_in_rect_vert(rectangle_t *r, const char *str);
 
+int g_get_last_text_height();
 
 void g_draw_cross(uint16_t x, uint16_t y);
 

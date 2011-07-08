@@ -103,6 +103,36 @@ gui_button_t * new_gui_button(); //constructor
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
+//a slider//////////////////////////////////////////////////////////////////////
+
+typedef struct {
+	void(*draw)(gui_element_t * self, uint8_t redraw);
+	void(*set_on_screen)(gui_element_t *self, uint8_t state);
+	void(*touch_handler)(gui_element_t *self, touch_event_t t);
+	void(*update_position)(gui_element_t *self, int16_t x_diff, int16_t y_diff); //moves an element and all sub elements.
+	void(*delete)(gui_element_t *self);
+	rectangle_t box;//gui element sets height and width, container sets x and y.
+
+	void(*value_changed)(gui_element_t * self, int16_t value);
+	uint8_t orientation;//horizontal or vertical
+	char * text;
+	icon_t * icon;
+	int16_t value;
+	int16_t min_value;
+	int16_t max_value;
+	rectangle_t range_rectangle;
+} gui_slider_t;
+
+void gui_slider_draw (gui_element_t * self, uint8_t redraw);
+void gui_slider_set_on_screen (gui_element_t *self, uint8_t state);
+void gui_slider_touch_handler (gui_element_t *self, touch_event_t t);
+void gui_slider_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff);
+gui_slider_t * new_gui_slider(); //constructor
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 //graph view////////////////////////////////////////////////////////////////////
 typedef struct {
 	void(*draw)(gui_element_t * self, uint8_t redraw);
@@ -119,9 +149,6 @@ typedef struct {
 	uint8_t idx;
 	uint16_t data_size;
 	uint16_t * data;
-	
-	
-	
 } gui_graph_view_t;
 
 void gui_graph_view_draw (gui_element_t * self, uint8_t redraw);
