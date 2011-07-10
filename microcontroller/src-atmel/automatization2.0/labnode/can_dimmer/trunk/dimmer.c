@@ -70,8 +70,8 @@ ISR(TIMER1_COMPB_vect) {
 	if (state == 0) { //state = 0 means the timer is at MAX_VAL
 		if (!update_in_progress) {
 			//transfer the control information from main programm to interrupt
-            //if it is not being updated from the main programm at the moment.
-            uint8_t x;
+			//if it is not being updated from the main programm at the moment.
+			uint8_t x;
 			for (x = 0; x < NUM_CHANNELS; x++) {
 				channels[x] = channels_sorted[x];
 				dim_vals[x] = dim_vals_sorted[x];
@@ -79,9 +79,9 @@ ISR(TIMER1_COMPB_vect) {
 		}
 		next = 0;
 		
-        //turn the outputs full on, if dim_max is set. Otherwise
-        //this is the time for turn off of the output (timer at MAX_VAL)
-        if (dim_max[0]) PORTA |= _BV(PA4); else PORTA &= ~_BV(PA4);
+		//turn the outputs full on, if dim_max is set. Otherwise
+		//this is the time for turn off of the output (timer at MAX_VAL)
+		if (dim_max[0]) PORTA |= _BV(PA4); else PORTA &= ~_BV(PA4);
 		if (dim_max[1]) PORTA |= _BV(PA5); else PORTA &= ~_BV(PA5);
 		if (dim_max[2]) PORTC |= _BV(PC4); else PORTC &= ~_BV(PC4);
 		if (dim_max[3]) PORTC |= _BV(PC5); else PORTC &= ~_BV(PC5);
@@ -126,13 +126,12 @@ void dimmer_init() {
 	DDRA |= _BV(PA4) | _BV(PA5);
 	DDRC |= _BV(PC4) | _BV(PC5);
 
-	
-    TCCR1B |= _BV(ICNC1) | _BV(WGM12) | _BV(CS12); //CTC (TOP = OCR1A), clk/256
-	
-    //The output comapre A is the period of the timer.
-    //thereby it runs at exactly 100Hz and stays synchronus with the mains frequency
-    //even if an ICP pulse should be missing
-    OCR1A = 625;
+	TCCR1B |= _BV(ICNC1) | _BV(WGM12) | _BV(CS12); //CTC (TOP = OCR1A), clk/256
+
+	//The output comapre A is the period of the timer.
+	//thereby it runs at exactly 100Hz and stays synchronus with the mains frequency
+	//even if an ICP pulse should be missing
+	OCR1A = 625;
 
 	OCR1B = MAX_VAL;
 
@@ -141,15 +140,15 @@ void dimmer_init() {
 
 
 void set_dimmer(uint8_t channel, uint8_t bright) {
-    //this is the API to the dimmer module.
-    //it calculates the dim_vals for the respective brightnes
-    //and applys the dim_max flag for channels at maximum brightnes (255)
-    // bright   dim_val   dim_max
-    //   0        512        0
-    //   .         .         0
-    //   .         .         0
-    //  254        4         0
-    //  255        2         1
+	//this is the API to the dimmer module.
+	//it calculates the dim_vals for the respective brightnes
+	//and applys the dim_max flag for channels at maximum brightnes (255)
+	// bright   dim_val   dim_max
+	//   0        512        0
+	//   .         .         0
+	//   .         .         0
+	//  254        4         0
+	//  255        2         1
 
 	if (channel == 3) bright = (bright>128) ? 255:0;//only allow full or no brighnes for evg on channel 3
 
@@ -160,14 +159,14 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 	update_in_progress = 1;
 
 
-    //now we enter the new dim_val into the sorted list dim_vals_sorted.
-    //the respective channel is stored in channels_sorted.
-    //example:
-    // dim_vals_sorted    channels_sorted
-    //        150                3         
-    //        400                1
-    //        500                2
-    //        625                0
+	//now we enter the new dim_val into the sorted list dim_vals_sorted.
+	//the respective channel is stored in channels_sorted.
+	//example:
+	// dim_vals_sorted    channels_sorted
+	//        150                3         
+	//        400                1
+	//        500                2
+	//        625                0
 
 	uint8_t x;
 	//remove channel from list
@@ -198,4 +197,3 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 	}
 	update_in_progress = 0;
 }
-
