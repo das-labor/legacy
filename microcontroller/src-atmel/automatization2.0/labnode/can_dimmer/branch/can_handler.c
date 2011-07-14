@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
+#include <avr/pgmspace.h> 
 
 #include "can/can.h"
 #include "can_handler.h"
@@ -13,16 +14,35 @@ uint8_t myaddr;
 void twi_get(uint8_t *p);
 uint8_t status[10][10];
 
+#define VIRT_PWM_MAXVAL 255 //4096
+
 uint8_t virt_pwm_dir = 0;
-uint8_t virt_pwm_val = 255;
+uint8_t virt_pwm_val = VIRT_PWM_MAXVAL;
 uint8_t virt_stat = 0;
 
-void virt_pwm_set_all(uint8_t val) {
+//lookuptable for gamma corretiob
+const uint8_t exptab[256] PROGMEM =
+{
+0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,5,5,
+5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,7,7,7,7,7,7,8,8,8,8,8,8,9,9,9,9,9,10,10,10,
+10,10,11,11,11,11,12,12,12,12,13,13,13,14,14,14,14,15,15,15,16,16,16,17,
+17,18,18,18,19,19,20,20,21,21,21,22,22,23,23,24,24,25,25,26,27,27,28,28,
+29,30,30,31,32,32,33,34,35,35,36,37,38,39,39,40,41,42,43,44,45,46,47,48,
+49,50,51,52,53,55,56,57,58,59,61,62,63,65,66,68,69,71,72,74,76,77,79,81,
+82,84,86,88,90,92,94,96,98,100,102,105,107,109,112,114,117,119,122,124,
+127,130,133,136,139,142,145,148,151,155,158,162,165,169,172,176,180,184,
+188,192,196,201,205,210,214,219,224,229,234,239,244,250,255,
+};
 
-	set_dimmer(0, val);
-	set_dimmer(1, val);
-	set_dimmer(2, val);
-	set_dimmer(3, val);
+void virt_pwm_set_all(uint8_t val) {
+	//do gammacorrection
+	uint8_t gammacor = pgm_read_byte(exptab+val);
+	
+	set_dimmer(0, gammacor);
+	set_dimmer(1, gammacor);
+	set_dimmer(2, gammacor);
+	set_dimmer(3, (255-pgm_read_byte(exptab+255-val)));
 }
 
 
@@ -58,26 +78,69 @@ extern void can_handler()
 			{
 				switch (rx_msg->data[0]) {
 					case 0: //C_SW: ALL ON/ ALL OFF
-						if (virt_stat==0)
-							virt_stat = 255;
-						else 
+						switch (virt_stat++){
+						case 0:
+								
+							PORTC &= ~_BV(PC5);	//disable triac (EVG)
+		
+							set_dimmer(0, 255);	//lamps on, tube off
+							set_dimmer(1, 255);
+							set_dimmer(2, 255);
+							set_dimmer(3, 255);
+							break;
+						case 1:
+						
+							PORTC |= _BV(PC5);	//activate triac (EVG)
+								
+							set_dimmer(0, 0);	//lamps off, tube on
+							set_dimmer(1, 0);
+							set_dimmer(2, 0);
+							set_dimmer(3, 0);
+							break;
+						case 2:
+						
+							PORTC |= _BV(PC5);	//activate triac (EVG)
+								
+							set_dimmer(0, 255);	//lamps on, tube on
+							set_dimmer(1, 255);
+							set_dimmer(2, 255);
+							set_dimmer(3, 0);
+							break;
+						case 3:
+						
+							PORTC &= ~_BV(PC5);	//disable triac (EVG)
+							set_dimmer(0, 0);	//lamps off, tube off
+							set_dimmer(1, 0);
+							set_dimmer(2, 0);
+							set_dimmer(3, 255);
 							virt_stat = 0;
-						set_dimmer(0, virt_stat);
-						set_dimmer(1, virt_stat);
-						set_dimmer(2, virt_stat);
-						set_dimmer(3, virt_stat);
+							break;
+						}
+					
+						
 						break;
 					case 1://C_PWM:	set LAMP rx_msg->data[1] to rx_msg->data[2] 
-						if (rx_msg->data[1] < 5)
-							set_dimmer(rx_msg->data[1], rx_msg->data[2]);
-						//else if (rx_msg->data[1] == 4)
-						//	OCR0 = rx_msg->data[2];
+
+						if (rx_msg->data[1] < 4)
+						{
+							if (rx_msg->data[1] == 3)	//channel 3
+							{
+								set_dimmer(3, (255-rx_msg->data[2]));	//invert neon tube
+								
+								if(rx_msg->data[2] == 0)	//lamp off ?
+					   				PORTC &= ~_BV(PC5);	//disable triac (EVG)
+				   				else
+									PORTC |= _BV(PC5);	//activate triac (EVG)
+
+							}else	set_dimmer(rx_msg->data[1], rx_msg->data[2]);
+							
+						}
 						break;
 					case 2://PWM_MOD
 
 						if (virt_pwm_dir == 1)
 						{
-							if (virt_pwm_val == 255)
+							if (virt_pwm_val == VIRT_PWM_MAXVAL)
 							{
 								virt_pwm_dir = 0;
 							} else
