@@ -1,14 +1,10 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 
 #define NUM_CHANNELS 4
 #define MAX_VAL 550
-
-//synchronize to zero cross
-ISR(TIMER1_CAPT_vect) {
-	TCNT1 = 620;
-}
 
 volatile uint8_t update_in_progress;
 uint8_t dim_max[NUM_CHANNELS];
@@ -16,6 +12,10 @@ uint8_t dim_max[NUM_CHANNELS];
 uint16_t dim_vals_sorted[NUM_CHANNELS];
 uint8_t channels_sorted[NUM_CHANNELS];
 
+//synchronize to zero cross
+ISR(TIMER1_CAPT_vect) {
+	TCNT1 = 620;
+}
 
 ISR(TIMER1_COMPB_vect) {
 	static uint8_t state;
@@ -100,16 +100,6 @@ void dimmer_init() {
 
 
 void set_dimmer(uint8_t channel, uint8_t bright) {
-
-	//only allow full or no brighnes for evg on channel 3
-	//bright == 0 on channel3 -> max brightness on lamp
-	if (channel == 3)
-	{
-		if(bright > 245)
-			PORTC &= ~_BV(PC5);	//disable triac
-		else
-			PORTC |= _BV(PC5);	//activate triac
-	}
 	
 	uint16_t dimval = 512 - bright * 2;
 	
