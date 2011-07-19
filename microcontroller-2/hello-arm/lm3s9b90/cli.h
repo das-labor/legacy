@@ -41,10 +41,10 @@ typedef struct {
 #define CLI_OPTION_MANP 0x02
 
 typedef struct {
-	char*        cmd_name;      /* string containing the function name */
-	char*        cmd_param_str; /* param descriptor string */
+	const char*        cmd_name;      /* string containing the function name */
+	const char*        cmd_param_str; /* param descriptor string */
 	void_fpt     cmd_function;  /* function pointer */
-	cmdoption_t* options;
+	const cmdoption_t* options;
 } cmdlist_entry_t;
 
 extern cli_rx_fpt cli_rx;

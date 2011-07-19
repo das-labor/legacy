@@ -34,22 +34,30 @@ LINKERSCRIPT = lm3s9b90.ld
 MAPFILE = main.map
 DEP_DIR = deps/
 
-CFLAGS = -mthumb -mcpu=cortex-m3 \
-         -O0 \
+CFLAGS = -mthumb -mcpu=cortex-m3 -Wa,-mthumb \
+         -O0   \
          -ffunction-sections -fdata-sections \
          -MMD -MF$(DEP_DIR)$(patsubst %.o,%.d,$(notdir $@)) \
-         -std=gnu99 -Wall -pedantic -gdwarf-2 
+         -std=gnu99 -Wall -pedantic # -gdwarf-2 
 		
-CLDFLAGS = -gdwarf-2 -Wl,--entry=reset_isr -Wl,--gc-sections -Wl,-Map=main.map -lc -lgcc \
-          -T $(LINKERSCRIPT) -mthumb -mcpu=cortex-m3
-LDFLAGS = -gdwarf-2 --entry=reset_isr --gc-sections -Map=$(MAPFILE) -lc -lgcc \
-          -T $(LINKERSCRIPT) -mthumb -mcpu=cortex-m3
+CLDFLAGS =  -mthumb -mcpu=cortex-m3 -march=arm7v-m -Wa,-mthumb \
+            -Wl,--thumb-entry=reset_isr -Wl,--gc-sections -Wl,-Map=main.map \
+            -lc -lgcc \
+            -T $(LINKERSCRIPT)  
+LDFLAGS = $(CLDFLAGS)
 
 PREFIX = arm-none-eabi-#
 CC=$(PREFIX)gcc
 LD=$(PREFIX)ld
 AS=$(PREFIX)as
 GDB=$(PREFIX)gdb
+OBJCOPY=$(PREFIX)objcopy
+OPENOCD=openocd
+
+TARGET_BIN = $(patsubst %.elf,%.bin,$(TARGET))
+
+%.bin: %.elf
+	$(OBJCOPY) -O binary $< $@
 
 all: $(TARGET)
 
@@ -58,15 +66,22 @@ $(TARGET): $(OBJECTS)
 
 .PHONY: clean
 clean:
-	rm -f *.o $(TARGET) $(MAPFILE)
+	rm -f *.o $(TARGET) $(TARGET_BIN) $(MAPFILE)
 
 .PHONY: depclean
 depclean: clean
 	rm -f $(DEP_DIR)*.d
 	
+	
 .PHONY: flash	
-flash: $(TARGET)
-	$(GDB) -x gdb-flash $(TARGET)
+flash: $(TARGET_BIN)
+	$(OPENOCD) -f openocd.cfg \
+	-c "init" \
+	-c "halt" \
+	-c "flash write_image erase ./$(TARGET_BIN) 0 bin" \
+	-c "reset run" \
+	-c "shutdown"
+	
 	
 #-------------------------------------------------------------------------------
 # dependency inclusion

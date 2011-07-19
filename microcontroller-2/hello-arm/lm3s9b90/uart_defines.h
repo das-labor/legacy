@@ -23,7 +23,8 @@
 #define UART_0 0
 #define UART_1 1
 #define UART_2 2
-#define UART_MAX 2
+#define UART_3 3
+#define UART_MAX 3
 
 #define UART_DATABITS_5 0
 #define UART_DATABITS_6 1

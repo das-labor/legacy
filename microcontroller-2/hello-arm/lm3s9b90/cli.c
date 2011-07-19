@@ -285,13 +285,13 @@ int8_t search_and_call(char* cmd, uint32_t maxcmdlength, const cmdlist_entry_t* 
 	return 1;	 
 }
 
-static const
+static
 uint16_t max_cmd_length(const cmdlist_entry_t* cmdlist){
 	uint16_t t,ret=0;
-	char* str;
+	const char* str;
 	for(;;){
 		str = cmdlist->cmd_name;
-		cmdlist += 1;
+		++cmdlist;
 		if(str==NULL){
 			return ret;
 		}
@@ -305,7 +305,7 @@ uint16_t max_cmd_length(const cmdlist_entry_t* cmdlist){
 uint8_t cli_completion(char* buffer, uint16_t maxcmdlength, const cmdlist_entry_t* cmdlist){
 	uint8_t i=0;
 	char ref[maxcmdlength+1];
-	char* itemstr;
+	const char* itemstr;
 	ref[0]='\0';
 	/* check if we are behind the first word */
 	while(buffer[i]){
@@ -316,7 +316,7 @@ uint8_t cli_completion(char* buffer, uint16_t maxcmdlength, const cmdlist_entry_
 		itemstr = cmdlist->cmd_name;
 		if(itemstr==NULL)
 			break;
-		cmdlist += 1;
+		++cmdlist;
 		if(!strncmp(buffer, itemstr, i)){
 			if(!ref[0]){
 				strcpy(ref, itemstr);
@@ -332,7 +332,7 @@ uint8_t cli_completion(char* buffer, uint16_t maxcmdlength, const cmdlist_entry_
 }
 
 void cli_option_listing(char* buffer, const cmdlist_entry_t* cmdlist){
-	char* itemstr;
+	const char* itemstr;
 	uint16_t len=strlen(buffer);
 	for(;;){
 		itemstr = cmdlist->cmd_name;
