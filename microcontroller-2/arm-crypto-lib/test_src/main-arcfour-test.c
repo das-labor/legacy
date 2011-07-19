@@ -20,16 +20,7 @@
  * arcfour (RC4 compatible) test-suit
  * 
 */
-
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include "config.h"
-#include "cli.h"
-#include "dump.h"
-#include "uart_lowlevel.h"
-#include "sysclock.h"
-#include "hw_gptm.h"
+#include "main-test-common.h"
 
 #include "arcfour.h"
 #include "scal_arcfour.h"
@@ -38,19 +29,9 @@
 #include "nessie_stream_test.h"
 #include "performance_test.h"
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
 
 const char* algo_name = "Arcfour";
 
-void uart0_putc(char byte){
-	uart_putc(UART_0, byte);
-}
-
-char uart0_getc(void){
-	return uart_getc(UART_0);
-}
 
 /*****************************************************************************
  *  additional validation-functions											 *
@@ -104,22 +85,10 @@ const cmdlist_entry_t cmdlist[] = {
 };
 
 int main (void){
-	sysclk_set_freq(SYS_FREQ);
-	sysclk_mosc_verify_enable();
-	uart_init(UART_0, 115200, 8, UART_PARATY_NONE, UART_STOPBITS_ONE);
-	gptm_set_timer_32periodic(TIMER0);
-
-	cli_rx = uart0_getc;
-	cli_tx = uart0_putc;
+	main_setup();
 	
 	for(;;){
-		cli_putstr("\r\n\r\nARM-Crypto-Lib VS (");
-		cli_putstr(algo_name);
-		cli_putstr("; ");
-		cli_putstr(__DATE__);
-		cli_putc(' ');
-		cli_putstr(__TIME__);
-		cli_putstr(")\r\nloaded and running\r\n");
+		welcome_msg(algo_name);
 		cmd_interface(cmdlist);
 	}
 }
