@@ -19,12 +19,18 @@
 =end
 
 def skip_header(file)
+  i=0
   begin
+    i += 1
     l = file.gets().strip
-  end until /[*]{10,}.*/.match(l)
-  begin
-    l = file.gets().strip
-  end until /[*]{10,}.*/.match(l)
+  end until i>10 or m=/[*]{10,}.*/.match(l)
+  if(!m)
+    file.seek(0, IO::SEEK_SET)
+  else
+    begin
+      l = file.gets().strip
+    end until /[*]{10,}.*/.match(l)
+  end
   begin
     l = file.gets().strip
   end until /[=]{5,}.*/.match(l)
