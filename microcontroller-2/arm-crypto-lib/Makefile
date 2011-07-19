@@ -146,6 +146,10 @@ $(foreach algo, $(ALGORITHMS), $(eval $(call TestBin_TEMPLATE, \
 
 #-------------------------------------------------------------------------------
 
+%.bin: %.elf
+	@echo "[objcopy]: $@"
+	@$(OBJCOPY) -O binary $< $@
+	
 %.hex: %.elf
 	@echo "[objcopy]: $@"
 	@$(OBJCOPY) -j .text -j .data -O ihex $< $@
@@ -155,12 +159,12 @@ $(foreach algo, $(ALGORITHMS), $(eval $(call TestBin_TEMPLATE, \
 define Flash_Template
 $(1)_FLASH: $(2)
 	@echo "[flash]: $(2)"
-	@$(FLASHCMD)$(call first,$(2))
+	@$(call FLASHCMD, $(call first,$(2)))
 endef
 
 $(foreach algo, $(ALGORITHMS), $(eval $(call Flash_Template, \
     $(algo), \
-    $(BIN_DIR)$(call lc, $(algo))/$(TEST_DIR)main-$(call lc, $(algo))-test.elf \
+    $(BIN_DIR)$(call lc, $(algo))/$(TEST_DIR)main-$(call lc, $(algo))-test.bin \
 )))
 
 #-------------------------------------------------------------------------------
