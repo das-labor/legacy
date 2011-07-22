@@ -13,11 +13,17 @@
 #include "../util_lib/list.h"
 #include "graphics.h"
 
+
+
 //needed for touchscreen ///////////////////////////////////////////////////////
+#define TOUCH_FLAG_DOWN    0x01
+#define TOUCH_FLAG_UP      0x02
+#define TOUCH_FLAG_LEAVE   0x04
+
 typedef struct{
 	uint16_t x;
 	uint16_t y;
-	uint8_t click;
+	uint8_t flags;
 }touch_event_t;
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -36,11 +42,15 @@ struct gui_element_t_s {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-
 //handler types for conevnience ////////////////////////////////////////////////
 
 typedef void(*touch_handler_t)(gui_element_t *self, touch_event_t t)  ;
 typedef void(*click_handler_t)(gui_element_t *)                       ;
+////////////////////////////////////////////////////////////////////////////////
+
+//the innermost touchhandler saves itself here so we can implement mouse up
+//and leave events
+gui_element_t * last_touched_gui_element;
 
 
 //gui container ////////////////////////////////////////////////////////////////
