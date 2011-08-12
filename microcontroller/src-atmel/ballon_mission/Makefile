@@ -1,9 +1,9 @@
 PRG            = image
-OBJ            = main.o uart/uart.o pixel.o borg_hw.o 7seg.o uart1.o
-MCU_TARGET     = atmega644p
+OBJ            = main.o at45db.o spi.o uart/uart.o
+MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
-DEFS           = -DF_CPU=8000000
+DEFS           = -DF_CPU=16000000
 LIBS           =
 
 # You should not have to change anything below here.
