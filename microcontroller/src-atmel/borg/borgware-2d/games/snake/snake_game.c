@@ -108,15 +108,15 @@ static void snake_drawBorder(void)
 		setpixel((pixel){NUM_COLS -1, i}, SNAKE_COLOR_BORDER);
 	}
 #else
-	for (uint8_t x = MAX_COLS; x--;)
+	for (uint8_t x = NUM_COLS; x--;)
 	{
 		setpixel((pixel){x, 0}, SNAKE_COLOR_BORDER);
 		setpixel((pixel){x, NUM_ROWS - 1}, SNAKE_COLOR_BORDER);
 	}
-	for (uint8_t y = MAX_ROWS; y--;)
+	for (uint8_t y = NUM_ROWS; y--;)
 	{
 		setpixel((pixel){0, y}, SNAKE_COLOR_BORDER);
-		setpixel((pixel){NUM_COLS -1, y}, SNAKE_COLOR_BORDER);
+		setpixel((pixel){NUM_COLS - 1, y}, SNAKE_COLOR_BORDER);
 	}
 #endif
 }
