@@ -146,25 +146,13 @@ void tetris_std_removedLines(void *pVariantData,
 	tetris_standard_variant_t *pStdVariant =
 			(tetris_standard_variant_t *)pVariantData;
 	uint8_t nLines = tetris_bucket_calculateLines(nRowMask);
+	assert(nLines <= 4);
 	pStdVariant->nLines += nLines;
 	pStdVariant->nLevel = ((pStdVariant->nLines / 10) < TETRIS_INPUT_LEVELS) ?
 		(pStdVariant->nLines / 10) : (TETRIS_INPUT_LEVELS - 1);
 
-	switch (nLines)
-	{
-	case 1:
-		pStdVariant->nScore += 50;
-		break;
-	case 2:
-		pStdVariant->nScore += 150;
-		break;
-	case 3:
-		pStdVariant->nScore += 250;
-		break;
-	case 4:
-		pStdVariant->nScore += 400;
-		break;
-	}
+	static uint16_t const nScoreTable[] PROGMEM = {0, 50, 150, 250, 400};
+	pStdVariant->nScore += pgm_read_word(&nScoreTable[nLines]);
 }
 
 

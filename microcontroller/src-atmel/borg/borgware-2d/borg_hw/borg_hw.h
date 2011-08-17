@@ -1,8 +1,7 @@
 #ifndef BORG_HW_H
 #define BORG_HW_H
 
-//Linebytes gibt die Zahl der Bytes pro Zeile in der
-//Pixmap an, also Spaltenzahl/8 aufgerundet
+// LINEBYTES holds the amount of bytes per line within the framebuffer (pixmap)
 #define LINEBYTES (((NUM_COLS-1)/8)+1)
 
 

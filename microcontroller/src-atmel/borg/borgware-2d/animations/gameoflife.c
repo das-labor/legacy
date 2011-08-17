@@ -106,7 +106,7 @@ typedef uint8_t field_t[FIELD_YSIZE][FIELD_XSIZE];
 
 /******************************************************************************/
 
-void setcell(field_t pf, coord_t x, coord_t y, cell_t value) {
+static void setcell(field_t pf, coord_t x, coord_t y, cell_t value) {
 	if (value != dead) {
 		pf[y][x / 8] |= shl_table[x & 7];
 	} else {
@@ -144,25 +144,23 @@ void nextiteration(field_t dest, field_t src) {
 	uint8_t tc;
 	for (y = YSIZE; y--;) {
 		for (x = XSIZE; x--;) {
+			cell_t cell;
 			tc = countsurroundingalive(src, x, y);
 			switch (tc) {
-//			case 0:
-//			case 1:
-//				/* dead */
-//				setcell(dest, x,y, dead);
 			case 2:
 				/* keep */
-				setcell(dest, x, y, getcell(src, x, y));
+				continue;
 				break;
 			case 3:
 				/* alive */
-				setcell(dest, x, y, alive);
+				cell = alive;
 				break;
 			default:
 				/* dead */
-				setcell(dest, x, y, dead);
+				cell = dead;
 				break;
 			}
+			setcell(dest, x, y, cell);
 		}
 	}
 }

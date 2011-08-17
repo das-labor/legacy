@@ -1,15 +1,15 @@
-
 #include"../autoconf.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include "borg_hw.h"
 
-/* Steckerbelegung Flachbandkabel am Panel
- * (die Nummerierung ist in wirklichkeit umgekehrt)
+
+/* pinout of the ribbon cable connected to the panel
+ * (the numbering is actually upside down)
  * 
  * 1-3		GND
- * 4		+5V für Logic
+ * 4		+5V for logic
  * 5-8		+12V
  * 9-10		GND
  * 11		CP3
@@ -21,7 +21,7 @@
  * 17-18	GND
  * 19-26	D0-D7
  *
- * Und nochmal richtigrum:
+ * and now the right way round:
  * 1 		D7
  * 2 		D6
  * 3 		D5
@@ -49,22 +49,20 @@
  * 25		GND
  * 26		GND
  *
- * Es werden 4 40374 Latches benutzt. Nr. 1,2 und 4 treiben vom Datenbus
- * in Richtung Panel, Nr. 3 treibt von den Tastenausgängen auf den Datenbus.
- * Die EOs von 1,2 und 4 liegen fest auf GND.
+ * Four 40374 latches are used. No. 1, 2 and 4 drive from the data bus to the
+ * panel, no. 3 drives from the button outputs to the data bus. The EOs of
+ * 1, 2 and 4 are hardwired to GND.
  *
- * Die LEDs sind in einer 12*16 Matrix angeordnet
- * Die Werte für die LED spalten Werden mit CP1 und CP2 in die 
- * Latches übernommen (insgesammt 16 Spalten)
- * Die Nummer der Zeile wird beim löschen von /show übernommen.
+ * The LEDs are aligned to a 12*16 matrix. The values for the LED columns are
+ * passed to the latches via CP1 und CP2 (16 columns total). The index of the
+ * row is passed during the deletion of "/show".
  *
- * Die Tasten sind in einer 8*8 Matrix angeordnet.
- * Über Latch 4 werden die Zeilen einzeln auf high gesetzt, über 
- * Latch 3 können dann die Spalten gelesen werden.
- * 
+ * The buttons are aligned to an 8*8 matrix. The rows get separately set to
+ * "high" via latch 4. The columns can then be read via latch 3.
  */
 
-//Datenport für das Panel
+
+// data port for the panel
 #define COLPORT  PORTC
 #define COLDDR   DDRC
 #define COLPIN	PINC
@@ -72,7 +70,7 @@
 #define CTRLPORT PORTD
 #define CTRLDDR   DDRD
 
-// PINs on CTRLPORT
+// pins on CTRLPORT
 #define PIN_EO3  PD7
 #define PIN_CP4  PD2
 #define PIN_SHOW PD3
@@ -80,84 +78,88 @@
 #define PIN_CP2  PD5
 #define PIN_CP3  PD6
 
-//Der Puffer, in dem das aktuelle Bild gespeichert wird
+
+// buffer which holds the currently shown frame
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 volatile uint8_t keys[8];
 
+
 inline void busywait() {
 	//unsigned char i;
-	//for(i=0;i<20;i++){
+	//for(i=0; i < 20; i++){
 	//	asm volatile("nop");
 	//}
 }
 
 
-//Eine Zeile anzeigen
+// display a row
 inline void rowshow(unsigned char row, unsigned char plane){
-	CTRLPORT |= (1<<PIN_SHOW);//blank
-	
-	COLPORT  = pixmap[plane][row][0];
+	CTRLPORT |= (1 << PIN_SHOW); //blank
+
+	COLPORT = pixmap[plane][row][0];
 	busywait();
-	CTRLPORT |=  (1<<PIN_CP1);
+	CTRLPORT |= (1 << PIN_CP1);
 	busywait();
-	CTRLPORT &= ~(1<<PIN_CP1);
+	CTRLPORT &= ~(1 << PIN_CP1);
 	busywait();
 
-	COLPORT  = pixmap[plane][row][1];
+	COLPORT = pixmap[plane][row][1];
 	busywait();
-	CTRLPORT |=  (1<<PIN_CP2);
+	CTRLPORT |= (1 << PIN_CP2);
 	busywait();
-	CTRLPORT &= ~(1<<PIN_CP2);
+	CTRLPORT &= ~(1 << PIN_CP2);
 	busywait();
 
-	COLPORT  = row;
+	COLPORT = row;
 	busywait();
-	CTRLPORT &= ~(1<<PIN_SHOW);
+	CTRLPORT &= ~(1 << PIN_SHOW);
 }
+
 
 inline void checkkeys(uint8_t row){
 	static uint8_t mask;
-	if(row == 0){
+	if (row == 0) {
 		mask = 1;
-	}else{
+	} else {
 		//read keyboard cols into latch
 		COLDDR = 0;
-		CTRLPORT &= ~(1<<PIN_EO3);
-		CTRLPORT |= (1<<PIN_CP3);
+		CTRLPORT &= ~(1 << PIN_EO3);
+		CTRLPORT |= (1 << PIN_CP3);
 		busywait();
-		CTRLPORT &= ~(1<<PIN_CP3);
+		CTRLPORT &= ~(1 << PIN_CP3);
 		busywait();
-		keys[row-1] = COLPIN;
-		CTRLPORT |= (1<<PIN_EO3);
+		keys[row - 1] = COLPIN;
+		CTRLPORT |= (1 << PIN_EO3);
 		busywait();
 		COLDDR = 0xFF;
 	}
-	
-	COLPORT  = mask;
+
+	COLPORT = mask;
 	mask <<= 1;
 	busywait();
-	CTRLPORT |= (1<<PIN_CP4);
+	CTRLPORT |= (1 << PIN_CP4);
 	busywait();
-	CTRLPORT &= ~(1<<PIN_CP4);
+	CTRLPORT &= ~(1 << PIN_CP4);
 }
 
-//Dieser Interrupt wird je nach Ebene mit 50kHz 31,25kHz oder 12,5kHz ausgeführt
+
+// depending on the plane this interrupt gets triggered at 50 kHz, 31.25 kHz or
+// 12.5 kHz
 SIGNAL(SIG_OUTPUT_COMPARE0)
 {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
-	
 
-	//Watchdog zurücksetzen
+	// reset watchdog
 	wdt_reset();
 	
-	//Die aktuelle Zeile in der aktuellen Ebene ausgeben
+	// output current row according to current plane
 	rowshow(row, plane);
 
 	if( (plane == 2) && (row<9) ) checkkeys(row);
 	
-	//Zeile und Ebene inkrementieren
+	// increment both row and plane
 	if(++row == NUM_ROWS){
 		row = 0;
 		if(++plane==NUMPLANE) plane=0;
@@ -184,37 +186,38 @@ void timer0_off(){
 }
 
 
-// Den Timer, der denn Interrupt auslöst, initialisieren
+// initialize timer which triggers the interrupt
 void timer0_on(){
-/* 	TCCR0: FOC0 WGM00 COM01 COM00 WGM01 CS02 CS01 CS00
-		CS02 CS01 CS00
-		 0    0    0	       stop
-		 0    0    1       clk
-		 0    1    0       clk/8
-		 0    1    1       clk/64
-		 1    0    0       clk/256
-		 1    0    1       clk/1024
-	
-*/
-	TCCR0 = 0x0C;	// CTC Mode, clk/64
-	TCNT0 = 0;	// reset timer
-	OCR0  = 20;	// Compare with this value
-	TIMSK = 0x02;	// Compare match Interrupt on
+	/* 	TCCR0: FOC0 WGM00 COM01 COM00 WGM01 CS02 CS01 CS00
+	  CS02 CS01 CS00
+	   0    0    0       stop
+	   0    0    1       clk
+	   0    1    0       clk/8
+	   0    1    1       clk/64
+	   1    0    0       clk/256
+	   1    0    1       clk/1024
+	*/
+	TCCR0 = 0x0C; // CTC Mode, clk/64
+	TCNT0 = 0;    // reset timer
+	OCR0  = 20;   // compare with this value
+	TIMSK = 0x02; // compare match Interrupt on
 }
+
 
 void borg_hw_init(){
 	//Pins am Zeilenport auf Ausgang
-	CTRLPORT |= (1<<PIN_EO3)|(1<<PIN_SHOW);
-	CTRLDDR  |= (1<<PIN_EO3) | (1<<PIN_CP4) | (1<<PIN_SHOW) | (1<<PIN_CP1) | (1<<PIN_CP2) | (1<<PIN_CP3);
-	
-	//Alle Spalten erstmal aus
-	//Spalten Ports auf Ausgang
-	COLDDR  = 0xFF;
+	CTRLPORT |= (1 << PIN_EO3) | (1 << PIN_SHOW);
+	CTRLDDR |= (1 << PIN_EO3) | (1 << PIN_CP4) | (1 << PIN_SHOW)
+			| (1 << PIN_CP1) | (1 << PIN_CP2) | (1 << PIN_CP3);
+
+	// switch off all columns for now
+	// switch column ports to output mode
+	COLDDR = 0xFF;
 	COLPORT = 0x00;
-	
+
 	timer0_on();
 
-	//Watchdog Timer aktivieren
+	// activate watchdog timer
 	wdt_reset();
-	wdt_enable(0x00);	// 17ms Watchdog
+	wdt_enable(0x00); // 17ms watchdog
 }
