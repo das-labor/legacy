@@ -15,10 +15,16 @@ void twi_get(uint8_t *p);
 uint8_t status[10][10];
 
 #define VIRT_PWM_MAXVAL 255 //4096
+#define NUM_CHANNELS 4
 
 uint8_t virt_pwm_dir = 0;
 uint8_t virt_pwm_val = VIRT_PWM_MAXVAL;
 uint8_t virt_stat = 0;
+
+extern void start_counter(uint16_t countdown);
+extern uint8_t get_counter_status(void);
+
+extern void enable_channel(uint8_t channel, uint8_t enable);
 
 //lookuptable for gamma corretiob
 const uint8_t exptab[256] PROGMEM =
@@ -37,11 +43,10 @@ const uint8_t exptab[256] PROGMEM =
 
 void virt_pwm_set_all(uint8_t val) {
 	//do gammacorrection
-	uint8_t gammacor = pgm_read_byte(exptab+val);
 	
-	set_dimmer(0, gammacor);
-	set_dimmer(1, gammacor);
-	set_dimmer(2, gammacor);
+	set_dimmer(0, val);
+	set_dimmer(1, val);
+	set_dimmer(2, val);
 	set_dimmer(3, (255-pgm_read_byte(exptab+255-val)));
 }
 
@@ -78,62 +83,74 @@ extern void can_handler()
 			{
 				switch (rx_msg->data[0]) {
 					case 0: //C_SW: ALL ON/ ALL OFF
-						switch (virt_stat++){
-						case 0:
-								
-							PORTC &= ~_BV(PC5);	//disable triac (EVG)
-		
-							set_dimmer(0, 255);	//lamps on, tube off
-							set_dimmer(1, 255);
-							set_dimmer(2, 255);
-							set_dimmer(3, 255);
-							break;
-						case 1:
-						
-							PORTC |= _BV(PC5);	//activate triac (EVG)
-								
-							set_dimmer(0, 0);	//lamps off, tube on
-							set_dimmer(1, 0);
-							set_dimmer(2, 0);
-							set_dimmer(3, 0);
-							break;
-						case 2:
-						
-							PORTC |= _BV(PC5);	//activate triac (EVG)
-								
-							set_dimmer(0, 255);	//lamps on, tube on
-							set_dimmer(1, 255);
-							set_dimmer(2, 255);
-							set_dimmer(3, 0);
-							break;
-						case 3:
-						
-							PORTC &= ~_BV(PC5);	//disable triac (EVG)
-							set_dimmer(0, 0);	//lamps off, tube off
-							set_dimmer(1, 0);
-							set_dimmer(2, 0);
-							set_dimmer(3, 255);
-							virt_stat = 0;
-							break;
+						//check if the button was pressed in the last $seconds
+						//if yes continue, if not just toggle the lights
+						if(!get_counter_status()){	//button wasn't pressed in the last $seconds
+							//if virt_stat == 1 lights are on
+							//if virt_stat == 2 lights are on
+							//if virt_stat == 3 lights are on
+							//if virt_stat == 0 lights are off
+							if(virt_stat)	//turn all lamps off
+							{
+								enable_channel(0,0);
+								enable_channel(1,0);
+								enable_channel(2,0);
+								enable_channel(3,0);
+								virt_stat=3;
+							}
+							else	//turn all lamps on
+							{
+								enable_channel(0,1);
+								enable_channel(1,1);
+								enable_channel(2,1);
+								enable_channel(3,1);
+								virt_stat=3;
+							}
+							
+							
 						}
-					
-						
+							switch (virt_stat++){
+							case 0:
+								
+								enable_channel(0,1);
+								enable_channel(1,1);
+								enable_channel(2,1);
+								enable_channel(3,0);
+								break;
+							case 1:
+							
+								enable_channel(0,0);
+								enable_channel(1,0);
+								enable_channel(2,0);
+								enable_channel(3,1);
+								break;
+							case 2:
+								
+								enable_channel(0,1);
+								enable_channel(1,1);
+								enable_channel(2,1);
+								enable_channel(3,1);
+								break;
+							case 3:
+								
+								enable_channel(0,0);
+								enable_channel(1,0);
+								enable_channel(2,0);
+								enable_channel(3,0);
+								virt_stat = 0;
+								break;
+							}
+
+						start_counter(305);	//countdown 5 seconds
 						break;
 					case 1://C_PWM:	set LAMP rx_msg->data[1] to rx_msg->data[2] 
 
-						if (rx_msg->data[1] < 4)
+						if (rx_msg->data[1] < NUM_CHANNELS)
 						{
 							if (rx_msg->data[1] == 3)	//channel 3
-							{
-								set_dimmer(3, (255-rx_msg->data[2]));	//invert neon tube
-								
-								if(rx_msg->data[2] == 0)	//lamp off ?
-					   				PORTC &= ~_BV(PC5);	//disable triac (EVG)
-				   				else
-									PORTC |= _BV(PC5);	//activate triac (EVG)
-
-							}else	set_dimmer(rx_msg->data[1], rx_msg->data[2]);
-							
+								set_dimmer(3, 255-rx_msg->data[2]);	//invert neon tube
+							else	
+								set_dimmer(rx_msg->data[1], rx_msg->data[2]);
 						}
 						break;
 					case 2://PWM_MOD
@@ -165,6 +182,17 @@ extern void can_handler()
 						else
 							virt_pwm_dir = 1;
 						break;
+					
+					case 4: //C_TOGGLE
+						if (rx_msg->data[1] < NUM_CHANNELS)
+						{
+								if(rx_msg->data[2])	//lamp on
+									enable_channel((rx_msg->data[1]),1);
+								else
+									enable_channel((rx_msg->data[1]),0);
+						}
+						break;					
+					
 				}
 			}
 		}
