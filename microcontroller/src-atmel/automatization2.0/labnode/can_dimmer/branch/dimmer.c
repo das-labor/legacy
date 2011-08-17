@@ -12,6 +12,9 @@ uint8_t dim_max[NUM_CHANNELS];
 uint16_t dim_vals_sorted[NUM_CHANNELS];
 uint8_t channels_sorted[NUM_CHANNELS];
 
+volatile uint8_t channels_active[NUM_CHANNELS];
+
+
 //synchronize to zero cross
 ISR(TIMER1_CAPT_vect) {
 	TCNT1 = 620;
@@ -48,12 +51,14 @@ ISR(TIMER1_COMPB_vect) {
 	} else {
 		handle_next:
 		//check which channel needs to be activated
+
 		switch (channels[next]) {
-			case 0: PORTA |= _BV(PA4); break;
-			case 1: PORTA |= _BV(PA5); break;
-			case 2: PORTC |= _BV(PC4); break;
-			case 3: PORTD |= _BV(PD5); break;
+			case 0: if(channels_active[0])PORTA |= _BV(PA4); break;
+			case 1: if(channels_active[1])PORTA |= _BV(PA5); break;
+			case 2: if(channels_active[2])PORTC |= _BV(PC4); break;
+			case 3: if(channels_active[3])PORTD |= _BV(PD5); break;
 		}
+
 		next++;
 		if ((next != NUM_CHANNELS) && (dim_vals[next] != MAX_VAL)) {
 			OCR1B = dim_vals[next];
@@ -76,6 +81,7 @@ void dimmer_init() {
 	for (x = 0; x < NUM_CHANNELS; x++) {
 		channels_sorted[x] = x;
 		dim_vals_sorted[x] = MAX_VAL;
+		channels_active[x] = 0;
 	}
 
 	//set soft-PWM ports to output
@@ -90,6 +96,8 @@ void dimmer_init() {
 	PORTD &= ~_BV(PD5);
 	PORTC &= ~_BV(PC5);
 
+	PORTD |= _BV(PD6);	//pull up an Zero-Cross-Detection-Input-Pin
+	
 	TCCR1B |= _BV(ICNC1) | _BV(WGM12) | _BV(CS12); //CTC (TOP = OCR1A), clk/256
 	OCR1A = 625;
 
@@ -101,18 +109,24 @@ void dimmer_init() {
 
 void set_dimmer(uint8_t channel, uint8_t bright) {
 	
+	if(channel > (NUM_CHANNELS -1))
+		return;
+	
 	uint16_t dimval = 512 - bright * 2;
 	
-	if (!bright) dimval = MAX_VAL;
+	if (!bright)
+		dimval = MAX_VAL;
+	
 	if (bright == 255) 
 	{
 		dim_max[channel] = 1;
 		//enable port if max_brightness == always on
+		
 		switch (channel) {
-			case 0: PORTA |= _BV(PA4); break;
-			case 1: PORTA |= _BV(PA5); break;
-			case 2: PORTC |= _BV(PC4); break;
-			case 3: PORTD |= _BV(PD5); break;
+			case 0: if(channels_active[0])PORTA |= _BV(PA4); break;
+			case 1: if(channels_active[1])PORTA |= _BV(PA5); break;
+			case 2: if(channels_active[2])PORTC |= _BV(PC4); break;
+			case 3: if(channels_active[3])PORTD |= _BV(PD5); break;
 		}
 		dimval = MAX_VAL;	//no need for soft-PWM, ports are always on
 	}
@@ -151,3 +165,31 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 	update_in_progress = 0;
 }
 
+void enable_channel(uint8_t channel, uint8_t enable)
+{	
+	if(channel < NUM_CHANNELS)
+	{
+		channels_active[channel]=enable;
+		if(enable){
+			if(dim_max[channel])
+			{
+				switch (channel) {
+					case 0: PORTA |= _BV(PA4); break;
+					case 1: PORTA |= _BV(PA5); break;
+					case 2: PORTC |= _BV(PC4); break;
+					case 3: PORTD |= _BV(PD5); break;
+				}
+			}
+			if(channel == 3)
+				PORTC |= _BV(PC5);	//activate triac (EVG)
+		}
+		else
+		switch (channel) {
+			case 0: PORTA &= ~_BV(PA4); break;
+			case 1: PORTA &= ~_BV(PA5); break;
+			case 2: PORTC &= ~_BV(PC4); break;
+			case 3: PORTC &= ~_BV(PC5);	break; //disable triac (EVG)
+		}
+			
+	}
+}	
