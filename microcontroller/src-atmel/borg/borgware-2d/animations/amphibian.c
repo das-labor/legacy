@@ -128,31 +128,13 @@ static uint8_t amphibian_getChunk(unsigned char const nBitPlane,
 		  {0x06, 0x30, 0xC6},
 		  {0x07, 0xF0, 0xFE}}};
 
+	static uint8_t const nOffsetTable[] PROGMEM =
+			{UINT8_MAX, 0, 4, 8, 12, 8, 4, 0};
+	uint8_t const nOffset = pgm_read_byte(&nOffsetTable[(nFrame >> 1) % 8]);
 
 	if ((nChunkX <= 2) && (nChunkY >= 2) && (nChunkY <= 5)
-			&& (((nFrame >> 1) % 8) != 0))
+			&& (nOffset != UINT8_MAX))
 	{
-		uint8_t nOffset;
-		switch ((nFrame >> 1) % 8)
-		{
-		case 1:
-		case 7:
-			nOffset = 0;
-			break;
-		case 2:
-		case 6:
-			nOffset = 4;
-			break;
-		case 3:
-		case 5:
-			nOffset = 8;
-			break;
-		case 4:
-		default:
-			nOffset = 12;
-			break;
-		}
-
 		return pgm_read_byte(&aEye[nBitPlane][nChunkY-2+nOffset][nChunkX]);
 	}
 	else
