@@ -1,6 +1,6 @@
 # Makefile for the ARM-Crypto-Lib project
 #
-#    This file is part of the AVR-Crypto-Lib.
+#    This file is part of the ARM-Crypto-Lib.
 #    Copyright (C) 2010 Daniel Otte (daniel.otte@rub.de)
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ ENCODINGS      :=
 SIGNATURE      :=
 PK_CIPHERS     :=
 AUX            :=
-
+LIB_ALGOS      :=
 
 # we use the gnu make standard library
 include gmsl
@@ -40,18 +40,50 @@ GLOBAL_INCDIR := ./ $(TESTSRC_DIR)
 # inclusion of make stubs
 include mkfiles/*.mk
 
-#-------------------------------------------------------------------------------
-ALGORITHMS = $(BLOCK_CIPHERS) $(STREAM_CIPHERS) $(HASHES) $(PRNGS) $(MACS) \
-			 $(ENCODINGS) $(SIGNATURE) $(PK_CIPHERS) $(AUX)
-ALGORITHMS_OBJ = $(patsubst %,%_OBJ, $(ALGORITHMS))
-ALGORITHMS_TEST_BIN = $(patsubst %,%_TEST_BIN, $(ALGORITHMS))
-
-#-------------------------------------------------------------------------------
-# define binary object in $(BIN_DIR)$(ALGO)/<obj>
 define Assert_Template
 $(1) = $(2)
 endef
 
+define Add_Template
+$(1) += $(2)
+endef
+
+#-------------------------------------------------------------------------------
+ALGORITHMS = $(BLOCK_CIPHERS) $(STREAM_CIPHERS) $(HASHES) $(PRNGS) $(MACS) \
+			 $(ENCODINGS) $(SIGNATURE) $(PK_CIPHERS) $(AUX)
+ALGORITHMS_OBJ = $(patsubst %,%_OBJ, $(ALGORITHMS))
+ALGORITHMS_TESTBIN = $(patsubst %,%_TESTBIN, $(ALGORITHMS))
+
+LIB_OBJECTS := 
+LIB_SRCDIRS := 
+LIB_DEFINES :=
+
+$(foreach a, $(LIB_ALGOS), $(eval $(call Add_Template, \
+  LIB_OBJECTS, \
+  $($(a)_OBJ)  \
+)))
+LIB_OBJECTS := $(addprefix $(BIN_DIR)$(LIB_DIR), $(sort $(LIB_OBJECTS)))
+
+$(foreach a, $(LIB_ALGOS), $(eval $(call Add_Template, \
+  LIB_SRCDIRS, \
+  $($(a)_DIR)  \
+)))
+
+$(foreach a, $(LIB_ALGOS), $(eval $(call Add_Template, \
+  LIB_SRCDIRS, \
+  $($(a)_INCDIR)  \
+)))
+LIB_SRCDIRS := $(sort $(LIB_SRCDIRS)) 
+
+$(foreach a, $(LIB_ALGOS), $(eval $(call Add_Template, \
+  LIB_DEFINES, \
+  $($(a)_DEF)  \
+)))
+LIB_DEFINES := $(sort $(LIB_DEFINES)) 
+
+
+#-------------------------------------------------------------------------------
+# define binary object in $(BIN_DIR)$(ALGO)/<obj>
 $(foreach a, $(ALGORITHMS), $(eval $(call Assert_Template, \
     $(a)_BINOBJ, \
     $(addprefix $(BIN_DIR)$(call lc,$(a))/,$($(a)_OBJ)) \
@@ -59,7 +91,7 @@ $(foreach a, $(ALGORITHMS), $(eval $(call Assert_Template, \
 
 $(foreach a, $(ALGORITHMS), $(eval $(call Assert_Template, \
     $(a)_TESTBINOBJ, \
-    $(addprefix $(BIN_DIR)$(call lc,$(a))/$(TEST_DIR),$($(a)_TEST_BIN)) \
+    $(addprefix $(BIN_DIR)$(call lc,$(a))/$(TEST_DIR),$($(a)_TESTBIN)) \
 )))
 
 
@@ -100,7 +132,7 @@ $(foreach a, $(ALGORITHMS), \
 )
 
 $(foreach a, $(ALGORITHMS), \
-  $(foreach b, $($(a)_TEST_BIN), \
+  $(foreach b, $($(a)_TESTBIN), \
     $(eval $(call TargetSource_Template, \
       $(BIN_DIR)$(call lc, $(a))/$(TEST_DIR)$(b), \
       $(call find_source_file, $(b), $($(a)_DIR) $($(a)_INCDIR) $(GLOBAL_INCDIR) ),\
@@ -110,15 +142,26 @@ $(foreach a, $(ALGORITHMS), \
   ) \
 )
 
+$(foreach a, $(LIB_OBJECTS), \
+  $(eval $(call TargetSource_Template, \
+    $(a), \
+    $(call find_source_file, $(notdir $(a)), $(LIB_SRCDIRS) ),\
+    $(LIB_SRCDIRS) $(GLOBAL_INCDIR), \
+    $(LIB_DEFINES) \
+    ) \
+  ) \
+)
+
 #-------------------------------------------------------------------------------
 
 define MainTestElf_Template
 $(1): $(2) $(3)
 	@echo "[ld]: $(1)"
-	@$(CC) $(CFLAGS_A) $(LDFLAGS)$(patsubst %.elf,%.map,$(1)) -o \
+	@mkdir -p $(dir $(1))
+	$(CC) $(CFLAGS_A) $(LDFLAGS)$(patsubst %.elf,%.map,$(1)) -o \
 	$(1) \
 	$(2) $(3) \
-	$(LIBS)
+	$(addprefix -l, $(LIBS))
 endef
 
 $(foreach a, $(ALGORITHMS), \
@@ -205,7 +248,7 @@ blockcipher_size: $(foreach algo, $(BLOCK_CIPHERS), $(algo)_SIZE)
 #-------------------------------------------------------------------------------
 
 .PHONY: tests
-tests: $(foreach a, $(ALGORITHMS), $(a)_TEST_BIN)
+tests: $(foreach a, $(ALGORITHMS), $(a)_TESTBIN)
 
 #-------------------------------------------------------------------------------
 
@@ -257,6 +300,31 @@ encodings: $(foreach algo, $(ENCODINGS), $(algo)_OBJ)
 aux: $(foreach algo, $(AUX), $(algo)_OBJ)
 
 
+
+
+.PHONY: lib_info
+lib_info:
+	@echo "LIB_ALGOS ="
+	@echo  $(foreach a, $(LIB_ALGOS), '\t$(a)\n')
+	@echo "LIB_OBJECTS ="
+	@echo  $(foreach a, $(LIB_OBJECTS), '\t$(a)\n')
+	@echo "LIB_SRCDIRS ="
+	@echo  $(foreach a, $(LIB_SRCDIRS), '\t$(a)\n')
+
+$(BIN_DIR)$(LIB_DIR)$(LIB_NAME): $(LIB_OBJECTS)
+	@echo "[rm]:  old $@"
+	@$(RM) -f $@
+	@echo "[chmod]: <objects>"
+	@$(CHMOD) 644 $^
+#	$(CHGRP) root $^
+#	$(CHOWN) root $^
+	@echo "[ar]:  $@ <-- <objects>"
+	@$(AR) qc $@ $^
+
+.PHONY: lib
+lib: $(BIN_DIR)$(LIB_DIR)$(LIB_NAME)
+
+
 #-------------------------------------------------------------------------------
 
 
@@ -286,6 +354,7 @@ info:
 	@echo " targets:"
 	@echo "  all                - all algorithm cores"
 	@echo "  cores              - all algorithm cores"
+	@echo "  lib                - make library archive"
 	@echo "  listings           - all algorithm core listings"
 	@echo "  tests              - all algorithm test programs"
 	@echo "  stats              - all algorithm size statistics"
@@ -313,11 +382,13 @@ info:
 
 .PHONY: clean
 clean:
-	rm -rf $(BIN_DIR)*
+	@echo "[rm]:  $(BIN_DIR)*"
+	@$(RM) -rf $(BIN_DIR)*
 
 .PHONY: depclean
 depclean: clean
-	rm -f $(DEP_DIR)*.d
+	@echo "[rm]:  $(DEP_DIR)*.d"
+	@$(RM) -f $(DEP_DIR)*.d
 
 #-------------------------------------------------------------------------------
 # dependency inclusion
