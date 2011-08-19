@@ -202,10 +202,9 @@ const uint8_t shiftkeyinv_permtab[] = {
 #define ROTTABLE_INV  0x3F7E
 /******************************************************************************/
 
-void permute(uint8_t *ptable, const uint8_t *in, uint8_t *out){
-	uint8_t ib, ob; /* in-bytes and out-bytes */
+void permute(const uint8_t *ptable, const uint8_t *in, uint8_t *out){
+	uint8_t ob; /* in-bytes and out-bytes */
 	uint8_t byte, bit; /* counter for bit and byte */
-	ib = ptable[0];
 	ob = ptable[1];
 	ptable = &(ptable[2]);
 	for(byte=0; byte<ob; ++byte){
