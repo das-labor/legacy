@@ -106,7 +106,8 @@ extern void can_handler()
 								enable_channel(3,1);
 								virt_stat=3;
 							}
-							
+							start_counter(305);	//countdown 5 seconds
+							break;
 							
 						}
 							switch (virt_stat++){
