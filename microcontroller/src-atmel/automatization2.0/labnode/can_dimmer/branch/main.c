@@ -81,10 +81,10 @@ int main(void)
 	dimmer_init();
 	
 	//enable all channels, set maximum brightness
-	set_dimmer(0, 255);
-	set_dimmer(1, 255);
-	set_dimmer(2, 255);
-	set_dimmer(3, 255); //neon tube is inverted
+	set_dimmer(0, 127);
+	set_dimmer(1, 127);
+	set_dimmer(2, 127);
+	set_dimmer(3, 127); //neon tube is inverted
 	
 
   //allow interrupts
