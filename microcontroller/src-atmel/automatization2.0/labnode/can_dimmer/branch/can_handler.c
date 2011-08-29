@@ -96,7 +96,7 @@ extern void can_handler()
 								enable_channel(1,0);
 								enable_channel(2,0);
 								enable_channel(3,0);
-								virt_stat=3;
+								virt_stat=0;
 							}
 							else	//turn all lamps on
 							{
@@ -106,10 +106,8 @@ extern void can_handler()
 								enable_channel(3,1);
 								virt_stat=3;
 							}
-							start_counter(305);	//countdown 5 seconds
-							break;
 							
-						}
+						}else{
 							switch (virt_stat++){
 							case 0:
 								
@@ -141,7 +139,7 @@ extern void can_handler()
 								virt_stat = 0;
 								break;
 							}
-
+						}
 						start_counter(305);	//countdown 5 seconds
 						break;
 					case 1://C_PWM:	set LAMP rx_msg->data[1] to rx_msg->data[2] 
