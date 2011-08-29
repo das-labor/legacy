@@ -56,3 +56,9 @@ Ablauf:
 
 
 
+Anm.: 
+ im LaborOrga SVN liegt unter
+ /documents/allg.Verein/DATEV-KontenrahmenVereine/ ein pdf-dokument
+ mit den aktuellen StandardRahmenKonto Nummern. Es bietet sich an dort
+ nach Sinnvollen Konten zu suchen.
+
