@@ -9,7 +9,7 @@
  * The following animations were developed by Martin Herweg (hence the name)
  * as a personal aid for getting familiar with programming the Borg.
  *
- * Although these animations are rarely used among Borg owner's, we left them in
+ * Although these animations are rarely used among Borg owners, we left them in
  * because of their simplicity in hopes that a novice Borg developer may find
  * them useful.
  */
@@ -70,7 +70,7 @@ static void line(pixel p1,
  * @param h height of the rectangle
  * @param color brightness level of the rectangle
  */
-static void filled_rectangle(pixel p,
+static void filled_rectangle(pixel const p,
                              unsigned char const w,
                              unsigned char const h,
                              unsigned char const color)
@@ -106,7 +106,7 @@ static void checkbox()
 	line ((pixel){0, 7}, (pixel){7, 0}, color);
 	wait (delay * 3);
 
-	// shift image to the right (shift_pximap_l() really shifts to right)
+	// shift image to the right (shift_pximap_l() really shifts to the right)
 	for (unsigned char x = NUM_COLS; x--;)
 	{
 		shift_pixmap_l();
