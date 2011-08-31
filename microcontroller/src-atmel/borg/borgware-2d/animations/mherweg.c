@@ -5,186 +5,186 @@
 #include "../util.h"
 
 
-#define RANDOM8(x) random8(x)
+/*
+ * The following animations were developed by Martin Herweg (hence the name)
+ * as a personal aid for getting familiar with programming the Borg.
+ *
+ * Although these animations are rarely used among Borg owner's, we left them in
+ * because of their simplicity in hopes that a novice Borg developer may find
+ * them useful.
+ */
+
+
+// macro for simplifying flash memory access
 #define PGM(x) pgm_read_byte(&(x))
 
 
-// straight or non straight line from one point to the other
-// value=brightness
-static void line(pixel p1, pixel p2, unsigned char value)
+// use 8 bit operands where feasible
+#if NUM_ROWS < 127 && NUM_COLS < 127
+	typedef signed char operand_t;
+#else
+	typedef int operand_t;
+#endif
+
+
+/**
+ * An implementation of Bresenham's line drawing algorithm.
+ * @param p1 first coordinate of the line
+ * @param p2 second coordinate of the line
+ * @param color brightness level of the line
+ */
+static void line(pixel p1,
+                 pixel const p2,
+                 unsigned char const color)
 {
-	char dx, dy, stepx, stepy, fraction;
+	operand_t const dx = p1.x < p2.x ? p2.x - p1.x : p1.x - p2.x;
+	operand_t const sx = p1.x < p2.x ? 1 : -1;
+	operand_t const dy = p1.y < p2.y ? p2.y - p1.y : p1.y - p2.y;
+	operand_t const sy = p1.y < p2.y ? 1 : -1;
+	operand_t error = dx - dy;
 
-	dy = p2.y - p1.y;
-	dx = p2.x - p1.x;
-
-	if (dy < 0)
+	while(1)
 	{
-		dy = -dy;
-		stepy = -1;
-	}
-	else
-	{
-		stepy = 1;
-	}
-
-	if (dx < 0)
-	{
-		dx = -dx;
-		stepx = -1;
-	}
-	else
-	{
-		stepx = 1;
-	}
-
-	dx <<= 1;
-	dy <<= 1;
-
-	setpixel(p1, value);
-	if (dx > dy)
-	{
-		fraction = dy - (dx >> 1);
-		while (p1.x != p2.x)
+		setpixel(p1, color);
+		if ((p1.x == p2.x) && (p1.y == p2.y))
+			break;
+		operand_t const error2 = 2 * error;
+		if (error2 > -dy)
 		{
-			if (fraction >= 0)
-			{
-				p1.y += stepy;
-				fraction -= dx;
-			}
-			p1.x += stepx;
-			fraction += dy;
-			setpixel(p1, value);
+			error -= dy;
+			p1.x += sx;
 		}
-	}
-	else
-	{
-		fraction = dx - (dy >> 1);
-		while (p1.y != p2.y)
+		if (error2 < dx)
 		{
-			if (fraction >= 0)
-			{
-				p1.x += stepx;
-				fraction -= dy;
-			}
-			p1.y += stepy;
-			fraction += dx;
-			setpixel(p1, value);
+			error += dx;
+			p1.y += sy;
 		}
 	}
 }
 
 
-// filled_rectangle p1=upper right corner, w=width, h=height ,
-// value=brightness
-static void filled_rectangle(pixel p1,
-                             unsigned char w,
-                             unsigned char h,
-                             unsigned char value)
+/**
+ * Draws a rectangle at the given coordinates.
+ * @param p coordinate of the rectangle's upper right corner
+ * @param w width of the rectangle
+ * @param h height of the rectangle
+ * @param color brightness level of the rectangle
+ */
+static void filled_rectangle(pixel p,
+                             unsigned char const w,
+                             unsigned char const h,
+                             unsigned char const color)
 {
-	unsigned char y;
-	for (y = p1.y; y < (p1.y + h); y++)
+	// emulate the rectangle via consecutive drawn lines
+	for (unsigned char y = p.y; y < (p.y + h); ++y)
 	{
-		line((pixel){p1.x,y}, (pixel){(p1.x+w-1),y}, value);
+		line((pixel){p.x, y}, (pixel){p.x + w - 1, y}, color);
 	}
 }
 
 
-void checkbox()
+/**
+ * Draws a checkbox like figure.
+ */
+static void checkbox()
 {
-	unsigned char x, delay = 250;
+	// some parameters regarding appearance and timing
+	unsigned char const color = NUMPLANE; // brightest color
+	int const delay = 250, shiftdelay = 30;
 
-	// quadrat aus linien
-	line((pixel){0, 0}, (pixel){7, 0}, 3);
-	wait (delay);
-	line ((pixel){7, 0}, (pixel){7, 7}, 3);
-	wait (delay);
-	line ((pixel){7, 7}, (pixel){0, 7}, 3);
-	wait (delay);
-	line ((pixel){0, 7}, (pixel){0, 0}, 3);
-	wait (delay);
+	// draw a surrounding square
+	static pixel const square[] = {{0, 0}, {7, 0}, {7, 7}, {0, 7}, {0, 0}};
+	for (unsigned char i = 0; i < 4; ++i)
+	{
+		line(square[i], square[i + 1], color);
+		wait(delay);
+	}
 
-	// 2 diagonale lininen
-	line ((pixel){7, 7}, (pixel){0, 0}, 3);
+	// draw two diagonal lines
+	line ((pixel){7, 7}, (pixel){0, 0}, color);
 	wait (delay);
-	line ((pixel){0, 7}, (pixel){7, 0}, 3);
+	line ((pixel){0, 7}, (pixel){7, 0}, color);
 	wait (delay * 3);
 
-	for (x = NUM_COLS; x--;)
+	// shift image to the right (shift_pximap_l() really shifts to right)
+	for (unsigned char x = NUM_COLS; x--;)
 	{
-		// shift image right
-		shift_pixmap_l ();
-		wait (30);
+		shift_pixmap_l();
+		wait (shiftdelay);
 	}
 }
 
 
-void movinglines()
+/**
+ * Animated lines walking over the screen.
+ */
+static void movinglines()
 {
-	unsigned char x, y, n;
+	// some parameters regarding appearance and timing
+	unsigned char const color = NUMPLANE; // brightest color
+	unsigned char const blank = 0;
+	int const delay = 100;
 
-	line((pixel){NUM_COLS - 1, NUM_ROWS - 1}, (pixel){NUM_COLS - 1, 0}, 3);
-
-	// linie wandert nach rechts
-	for (x = 0; x < NUM_COLS; x++)
+	// a line walking to the right
+	line((pixel){NUM_COLS - 1, NUM_ROWS - 1}, (pixel){NUM_COLS - 1, 0}, color);
+	for (unsigned char x = 0; x < NUM_COLS; x++)
 	{
-		shift_pixmap_l ();
-		wait (100);
+		shift_pixmap_l();
+		wait (delay);
 	}
 
-	// von unten nach oben
-	for (y = NUM_ROWS; y--;)
+	// a line walking from the lower to the upper border
+	for (unsigned char y = NUM_ROWS; y--;)
 	{
-		line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, 3);
-		wait (100);
-		line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, 0);
-		//wait(10);
+		line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, color);
+		wait (delay);
+		line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, blank);
 	}
 
-	// eine linie von rechts nach links und 1-8 mal von oben nach unten
-	// je nach display format das ganze 4 mal
-	for (n = 0; n < 4; n++)
+	// quickly moving cross hairs
+	for (unsigned char n = 0; n < 4; n++)
 	{
-		for (x = 0; x < NUM_COLS - 1; x++)
+		for (unsigned char x = 0; x < NUM_COLS - 1; x++)
 		{
-			y = x % NUM_ROWS;
-			line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, 3);
-			line ((pixel){x, 0}, (pixel){x, NUM_ROWS - 1}, 3);
-			wait (50);
-
-			line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, 0);
-			line ((pixel){x, 0}, (pixel){x, NUM_ROWS - 1}, 0);
-			//wait(10);
+			unsigned char y = x % NUM_ROWS;
+			line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, color);
+			line ((pixel){x, 0}, (pixel){x, NUM_ROWS - 1}, color);
+			wait (delay / 2);
+			line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, blank);
+			line ((pixel){x, 0}, (pixel){x, NUM_ROWS - 1}, blank);
 		}
 	}
 }
 
 
-//rechteckmuster mit helligkeitsstufen
-void rectangle1()
+/**
+ * Draws a gradient colored square.
+ */
+static void rectangle1()
 {
-	unsigned char x, value, xcenter, ycenter, size;
-	unsigned int delay = 500;
+	// we want a centered square
+	unsigned char const xcenter = NUM_COLS / 2, ycenter = NUM_ROWS / 2;
+	// it should be as big as the borg's height
+	unsigned char size = NUM_ROWS;
+	// darkest color as a starting point for the gradient
+	unsigned char color = 0;
+	// wait about 500 ms between each frame
+	int const delay = 500;
 
-	xcenter = NUM_COLS / 2;
-	ycenter = NUM_ROWS / 2;
-
+	// create a gradient by drawing shrinking rectangles on top of each other
 	clear_screen(0);
-
-	size = NUM_ROWS;
-	value = 3;
-
-	for (x = 8; x > 0; x--)
+	for (unsigned char x = 8; x > 0; x--)
 	{
-
-		if (value < NUMPLANE)
-			value++;
-		else
-			value = 0;
-
+		// draw the rectangle and wait for a moment
 		filled_rectangle((pixel){(xcenter - x), (ycenter - x)},
-				size, size, value);
+				size, size, color);
 		wait (delay);
+
+		// iterate through all colors periodically
+		++color;
+		color %= (NUMPLANE + 1);
+
+		// shrink the dimensions of the succeeding rectangle
 		size -= 2;
 	}
 
@@ -192,65 +192,93 @@ void rectangle1()
 }
 
 
-// zufallsrechtecke
-void rectangles()
+/**
+ * Draws randomly placed rectangles.
+ */
+static void rectangles()
 {
-	unsigned char value, n, x, y, h, w;
-	clear_screen(0);
-
-	for (n = 0; n < 60; n++)
+	unsigned char const blank = 0;
+	clear_screen(blank);
+	for (unsigned char n = 0; n < 60; n++)
 	{
-		x = RANDOM8() % NUM_COLS;
-		y = RANDOM8() % NUM_ROWS;
-		h = RANDOM8() % NUM_COLS / 2;
-		w = RANDOM8() % NUM_ROWS / 2;
-		value = RANDOM8() % (NUMPLANE + 1);
+		// randomly chosen position, dimension and color
+		unsigned char const x = random8() % NUM_COLS;
+		unsigned char const y = random8() % NUM_ROWS;
+		unsigned char const h = random8() % NUM_COLS / 2;
+		unsigned char const w = random8() % NUM_ROWS / 2;
+		unsigned char const color = random8() % (NUMPLANE + 1);
 
-		filled_rectangle((pixel){x, y}, w, h, value);
-		wait (500 + RANDOM8 () % 3000);
+		filled_rectangle((pixel){x, y}, w, h, color);
+
+		// wait between 500 and 750 ms
+		wait (500 + random8());
 	}
 }
 
 
-// schräge linien die aufblitzen
-void lines1()
+/**
+ * Draws flashing slanted lines.
+ */
+static void lines1()
 {
-	unsigned char value, n, x, y, h, w;
-	unsigned int delay = 500;
-	clear_screen(0);
-
-	for (n = 0; n < 200; n++)
+	unsigned char const blank = 0;
+	clear_screen(blank);
+	for (unsigned char n = 0; n < 200; n++)
 	{
-		x = RANDOM8() % NUM_COLS;
-		y = RANDOM8() % NUM_ROWS;
-		h = RANDOM8() % NUM_COLS;
-		w = RANDOM8() % NUM_ROWS;
-		value = RANDOM8() % (NUMPLANE + 1);
+		// randomly chosen position, dimension and color
+		unsigned char const x = random8() % NUM_COLS;
+		unsigned char const y = random8() % NUM_ROWS;
+		unsigned char const h = random8() % NUM_COLS;
+		unsigned char const w = random8() % NUM_ROWS;
+		unsigned char const color = random8() % (NUMPLANE + 1);
 
-		line((pixel){x, y}, (pixel){w, h}, value);
-		wait (RANDOM8 () % delay);
-		line ((pixel){x, y}, (pixel){w, h}, 0);
+		line((pixel){x, y}, (pixel){w, h}, color);
+		wait(random8()); // wait up to 250 ms
+		line((pixel){x, y}, (pixel){w, h}, blank);
 	}
 }
 
 
-// random dots
-void dots1()
+/**
+ * Draws randomly placed dots.
+ */
+static void dots1()
 {
-	unsigned char n, x, y;
-	clear_screen(0);
+	// some parameters regarding appearance and timing
+	int const glimmer_delay = 100;
+	unsigned char const blank = 0;
+	clear_screen(blank);
 
-	for (n = 50; n--;)
+	// draw up to 50 dots
+	for (unsigned char n = 50; n--;)
 	{
-		x = RANDOM8() % NUM_COLS;
-		y = RANDOM8() % NUM_ROWS;
+		// random coordinates
+		unsigned char x = random8() % NUM_COLS;
+		unsigned char y = random8() % NUM_ROWS;
 
+		// those dots are glimmering
 		static unsigned char const color[5] PROGMEM = {1, 2, 3, 2, 1};
 		for (unsigned char i = 0; i < 5; ++i)
 		{
 			setpixel ((pixel){x, y}, PGM(color[i]));
-			wait(100);
+			wait(glimmer_delay);
 		}
-		wait ((RANDOM8 () % 255) * 10);
+
+		// wait up to 2500 ms until the next dot is drawn
+		wait (random8() * 10);
 	}
+}
+
+
+/**
+ * Go through all of Martin's animations.
+ */
+void mherweg()
+{
+	lines1();
+	dots1();
+	movinglines();
+	checkbox();
+	rectangle1();
+	rectangles();
 }
