@@ -150,12 +150,7 @@ void display_loop(){
 
 #ifdef ANIMATION_MHERWEG
 		case 13:
-			lines1();
-			dots1();
-			movinglines();
-			checkbox();
-			rectangle1();
-			rectangles();
+			mherweg();
 			break;
 #endif
 
