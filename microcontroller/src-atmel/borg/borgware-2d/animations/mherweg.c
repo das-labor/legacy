@@ -101,16 +101,16 @@ static void checkbox()
 	}
 
 	// draw two diagonal lines
-	line ((pixel){7, 7}, (pixel){0, 0}, color);
-	wait (delay);
-	line ((pixel){0, 7}, (pixel){7, 0}, color);
-	wait (delay * 3);
+	line((pixel){7, 7}, (pixel){0, 0}, color);
+	wait(delay);
+	line((pixel){0, 7}, (pixel){7, 0}, color);
+	wait(delay * 3);
 
 	// shift image to the right (shift_pximap_l() really shifts to the right)
 	for (unsigned char x = NUM_COLS; x--;)
 	{
 		shift_pixmap_l();
-		wait (shiftdelay);
+		wait(shiftdelay);
 	}
 }
 
@@ -130,15 +130,15 @@ static void movinglines()
 	for (unsigned char x = 0; x < NUM_COLS; x++)
 	{
 		shift_pixmap_l();
-		wait (delay);
+		wait(delay);
 	}
 
 	// a line walking from the lower to the upper border
 	for (unsigned char y = NUM_ROWS; y--;)
 	{
-		line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, color);
-		wait (delay);
-		line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, blank);
+		line((pixel){0, y}, (pixel){NUM_COLS - 1, y}, color);
+		wait(delay);
+		line((pixel){0, y}, (pixel){NUM_COLS - 1, y}, blank);
 	}
 
 	// quickly moving cross hairs
@@ -147,11 +147,11 @@ static void movinglines()
 		for (unsigned char x = 0; x < NUM_COLS - 1; x++)
 		{
 			unsigned char y = x % NUM_ROWS;
-			line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, color);
-			line ((pixel){x, 0}, (pixel){x, NUM_ROWS - 1}, color);
-			wait (delay / 2);
-			line ((pixel){0, y}, (pixel){NUM_COLS - 1, y}, blank);
-			line ((pixel){x, 0}, (pixel){x, NUM_ROWS - 1}, blank);
+			line((pixel){0, y}, (pixel){NUM_COLS - 1, y}, color);
+			line((pixel){x, 0}, (pixel){x, NUM_ROWS - 1}, color);
+			wait(delay / 2);
+			line((pixel){0, y}, (pixel){NUM_COLS - 1, y}, blank);
+			line((pixel){x, 0}, (pixel){x, NUM_ROWS - 1}, blank);
 		}
 	}
 }
@@ -178,7 +178,7 @@ static void rectangle1()
 		// draw the rectangle and wait for a moment
 		filled_rectangle((pixel){(xcenter - x), (ycenter - x)},
 				size, size, color);
-		wait (delay);
+		wait(delay);
 
 		// iterate through all colors periodically
 		++color;
@@ -188,7 +188,7 @@ static void rectangle1()
 		size -= 2;
 	}
 
-	wait (delay * 3);
+	wait(delay * 3);
 }
 
 
@@ -201,17 +201,18 @@ static void rectangles()
 	clear_screen(blank);
 	for (unsigned char n = 0; n < 60; n++)
 	{
-		// randomly chosen position, dimension and color
+		// randomly choose position, dimensions and color (the rectangle may
+		// exceed the actual screen size, only width and height have to be > 0)
 		unsigned char const x = random8() % NUM_COLS;
 		unsigned char const y = random8() % NUM_ROWS;
-		unsigned char const h = random8() % NUM_COLS / 2;
-		unsigned char const w = random8() % NUM_ROWS / 2;
+		unsigned char const w = random8() % (NUM_COLS / 2) + 1;
+		unsigned char const h = random8() % (NUM_ROWS / 2) + 1;
 		unsigned char const color = random8() % (NUMPLANE + 1);
 
 		filled_rectangle((pixel){x, y}, w, h, color);
 
 		// wait between 500 and 750 ms
-		wait (500 + random8());
+		wait(500 + random8());
 	}
 }
 
@@ -225,16 +226,16 @@ static void lines1()
 	clear_screen(blank);
 	for (unsigned char n = 0; n < 200; n++)
 	{
-		// randomly chosen position, dimension and color
-		unsigned char const x = random8() % NUM_COLS;
-		unsigned char const y = random8() % NUM_ROWS;
-		unsigned char const h = random8() % NUM_COLS;
-		unsigned char const w = random8() % NUM_ROWS;
+		// randomly choose position, length and color
+		unsigned char const x1 = random8() % NUM_COLS;
+		unsigned char const y1 = random8() % NUM_ROWS;
+		unsigned char const x2 = random8() % NUM_COLS;
+		unsigned char const y2 = random8() % NUM_ROWS;
 		unsigned char const color = random8() % (NUMPLANE + 1);
 
-		line((pixel){x, y}, (pixel){w, h}, color);
+		line((pixel){x1, y1}, (pixel){x2, y2}, color);
 		wait(random8()); // wait up to 250 ms
-		line((pixel){x, y}, (pixel){w, h}, blank);
+		line((pixel){x1, y1}, (pixel){x2, y2}, blank);
 	}
 }
 
@@ -260,12 +261,12 @@ static void dots1()
 		static unsigned char const color[5] PROGMEM = {1, 2, 3, 2, 1};
 		for (unsigned char i = 0; i < 5; ++i)
 		{
-			setpixel ((pixel){x, y}, PGM(color[i]));
+			setpixel((pixel){x, y}, PGM(color[i]));
 			wait(glimmer_delay);
 		}
 
-		// wait up to 2500 ms until the next dot is drawn
-		wait (random8() * 10);
+		// wait up to 2.5 seconds until the next dot is drawn
+		wait(random8() * 10);
 	}
 }
 
