@@ -25,33 +25,35 @@
 #include "../util.h"
 #include "../random/prng.h"
 
+
 void ltn_ant() {
 	clear_screen(0);
 
 	struct {
-		char x ,  y;
-		char dx, dy; /* Vector can only be: (0,1),(1,0),(0,-1),(-1,0) */
-		char ox, oy; /* Used to set old pixels so brightness 2 */
+		unsigned char  x,  y;
+		unsigned char ox, oy; /* Used to set old pixels so brightness 2 */
+		signed char   dx, dy; /* Vector can only be (0,1),(1,0),(0,-1),(-1,0) */
 	} ant; 
 		                    
-	char temp, i = 0;
-	uint16_t cycles = 500;
+	signed char temp;
+	unsigned int cycles = 500;
 
-	/* Random startposition and direction */
-	ant.x  = random8() % NUM_COLS;
-	ant.y  = random8() % NUM_ROWS;
+	/* Random start position and direction */
+	ant.x = random8() % NUM_COLS;
+	ant.y = random8() % NUM_ROWS;
 
-	/* Make sure we do have a valid vector */	
-	do {	
-		ant.dx = (random8() % 3) - 1;
+	/* Make sure we do have a valid vector */
+	ant.dx = (random8() % 3) - 1;
+	do {
 		ant.dy = (random8() % 3) - 1;
 	} while(ant.dx == ant.dy);
 
-	ant.ox = 0;
-	ant.oy = 0;
+	ant.ox = ant.x;
+	ant.oy = ant.y;
 
-	while(cycles != 0) { 
-		if(get_pixel((pixel) {ant.x, ant.y}) == 0) { /* If the pixel is not set turn it on */
+	while(cycles != 0) {
+		/* If the pixel is not set turn it on */
+		if(get_pixel((pixel) {ant.x, ant.y}) == 0) {
 			setpixel((pixel) {ant.x, ant.y}, 3);
 			
 			temp   = ant.dx;
@@ -59,10 +61,9 @@ void ltn_ant() {
 			ant.dy =  -temp; /* Turn 90 degrees to the right */
 			
 			/* Lets the last pixel be darker than the latest */
-			if(i == 1) 
+			if((ant.ox != ant.x) || (ant.oy != ant.y))
 				setpixel((pixel) {ant.ox, ant.oy}, 2);
-			else
-				i = 1;
+
 			ant.ox = ant.x;
 			ant.oy = ant.y;
 
@@ -76,21 +77,18 @@ void ltn_ant() {
 
 		wait(100);
 
-		ant.x += ant.dx;
-		ant.y += ant.dy;
+		/* Playing field is modeled after a torus */
+		if(ant.x == 0 && ant.dx < 0)
+			ant.x = NUM_COLS - 1;
+		else
+			ant.x = (ant.x + ant.dx) % UNUM_COLS;
 
-		/* The ant will appear on the oppisite side of the field if it would leave */
-		if(ant.x <= 0)
-			ant.x += (NUM_ROWS - 1);
-		if(ant.x >= NUM_ROWS)
-			ant.x -= (NUM_ROWS + 1);
-		if(ant.y <= 0)
-			ant.y += (NUM_COLS - 1);
-		if(ant.y >= NUM_COLS)
-			ant.y -= (NUM_COLS + 1);
+		if(ant.y == 0 && ant.dy < 0)
+			ant.y = NUM_ROWS - 1;
+		else
+			ant.y = (ant.y + ant.dy) % UNUM_ROWS;
 
 		cycles--;
 	}
 	wait(300);
-
 }
