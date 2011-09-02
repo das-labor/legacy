@@ -20,7 +20,7 @@
 
 
 // use 8 bit operands where feasible
-#if NUM_ROWS < 127 && NUM_COLS < 127
+#if NUM_ROWS < 64 && NUM_COLS < 64
 	typedef signed char operand_t;
 #else
 	typedef int operand_t;
@@ -265,7 +265,7 @@ static void dots1()
 			wait(glimmer_delay);
 		}
 
-		// wait up to 2.5 seconds until the next dot is drawn
+		// wait up to 2.5 seconds before the next dot is drawn
 		wait(random8() * 10);
 	}
 }
