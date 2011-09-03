@@ -1,13 +1,14 @@
 
 #include "../config.h"
+#include "../compat/pgmspace.h"
 #include "../random/prng.h"
 #include "../pixel.h"
 #include "../util.h"
 
 #define RANDOM8() (random8())
 
-#ifdef ANIMATION_TESTS
 
+#ifdef ANIMATION_TESTS
 void test_level(unsigned char level){
 	for (unsigned char y=NUM_ROWS;y--;){
 		for (unsigned char x=NUM_COLS;x--;){
@@ -42,50 +43,26 @@ void test_palette2(){
 		wait(30);
 	}
 }
-
 #endif
 
+
 #ifdef ANIMATION_SPIRALE
-
-static void walk(cursor_t* cur, unsigned char steps, unsigned int delay){
-	unsigned char x;
-	for(x=steps;x--;){
-		set_cursor(cur, next_pixel(cur->pos, cur->dir));
-		wait(delay);
-	}
-}
-
-void spirale(unsigned int delay){
+void spirale(int delay) {
 	clear_screen(0);
+	static signed char const delta[5] PROGMEM = {0, -1, 0, 1, 0};
+	unsigned char length[2] = {NUM_ROWS, NUM_COLS - 1};
+	unsigned char x = NUM_COLS - 1, y = NUM_ROWS;
+	unsigned char i = 0;
 
-	cursor_t cur;
-	cur.dir = right;
-	cur.mode = set;
-	set_cursor (&cur, (pixel){NUM_COLS-1,0});
-	
-	unsigned char clearbit=0;
-	while(clearbit == 0){
-	
-		clearbit = 1;
-		while (!get_next_pixel(cur.pos, cur.dir)){
-			clearbit = 0;
-			walk(&cur, 1, delay);
+	while (length[i & 0x01] != 0) {
+		for (unsigned char j = 0; j < length[i & 0x01]; ++j) {
+			x += pgm_read_byte(&delta[i]);
+			y += pgm_read_byte(&delta[i + 1]);
+			setpixel((pixel){x, y}, 3);
+			wait(delay);
 		}
-		cur.dir = direction_r(cur.dir);
-	}
-
-	cur.mode = clear;
-	set_cursor(&cur, (pixel){(NUM_COLS/2)-1,(NUM_ROWS/2)-1});
-	
-	for(clearbit=0;clearbit==0;){
-		if( get_next_pixel(cur.pos, direction_r(cur.dir)) ){
-			cur.dir = direction_r(cur.dir);
-		}
-		if( get_next_pixel(cur.pos, cur.dir) == 1 ){
-			walk(&cur , 1, delay);
-		}else{
-			clearbit = 1;
-		}
+		length[i++ & 0x01]--;
+		i %= 4;
 	}
 }
 #endif
@@ -112,11 +89,10 @@ unsigned char i, j, x;
 
 #ifdef ANIMATION_SCHACHBRETT
 void schachbrett(unsigned char times){
-	clear_screen(0);
-	for (unsigned char i = times; i--;) {
+	while (times--) {
 		for (unsigned char row = 0; row < NUM_ROWS; ++row) {
 			for (unsigned char col = 0; col < NUM_COLS; ++col) {
-				setpixel( (pixel){col, row}, ((i ^ row ^ col) & 0x01) ? 0:3 );
+				setpixel((pixel){col, row}, (times ^ row ^ col) & 0x01 ? 0 : 3);
 			}
 		}
 		wait(200);
@@ -127,7 +103,6 @@ void schachbrett(unsigned char times){
 
 #ifdef ANIMATION_FEUER
 #define FEUER_Y (NUM_ROWS + 3)
-
 void feuer()
 {
 	unsigned char y, x;
@@ -161,6 +136,7 @@ void feuer()
 	}
 }
 #endif
+
 
 #ifdef ANIMATION_RANDOM_BRIGHT
 /**
