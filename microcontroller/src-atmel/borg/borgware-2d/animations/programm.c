@@ -47,22 +47,45 @@ void test_palette2(){
 
 
 #ifdef ANIMATION_SPIRALE
-void spirale(int delay) {
-	clear_screen(0);
-	static signed char const delta[5] PROGMEM = {0, -1, 0, 1, 0};
-	unsigned char length[2] = {NUM_ROWS, NUM_COLS - 1};
-	unsigned char x = NUM_COLS - 1, y = NUM_ROWS;
-	unsigned char i = 0;
+static void walk(cursor_t* cur, unsigned char steps, unsigned int delay){
+	unsigned char x;
+	for(x=steps;x--;){
+		set_cursor(cur, next_pixel(cur->pos, cur->dir));
+		wait(delay);
+	}
+}
 
-	while (length[i & 0x01] != 0) {
-		for (unsigned char j = 0; j < length[i & 0x01]; ++j) {
-			x += pgm_read_byte(&delta[i]);
-			y += pgm_read_byte(&delta[i + 1]);
-			setpixel((pixel){x, y}, 3);
-			wait(delay);
+void spirale(unsigned int delay){
+	clear_screen(0);
+
+	cursor_t cur;
+	cur.dir = right;
+	cur.mode = set;
+	set_cursor (&cur, (pixel){NUM_COLS-1,0});
+
+	unsigned char clearbit=0;
+	while(clearbit == 0){
+
+		clearbit = 1;
+		while (!get_next_pixel(cur.pos, cur.dir)){
+			clearbit = 0;
+			walk(&cur, 1, delay);
 		}
-		length[i++ & 0x01]--;
-		i %= 4;
+		cur.dir = direction_r(cur.dir);
+	}
+
+	cur.mode = clear;
+	set_cursor(&cur, (pixel){(NUM_COLS/2)-1,(NUM_ROWS/2)-1});
+
+	for(clearbit=0;clearbit==0;){
+		if( get_next_pixel(cur.pos, direction_r(cur.dir)) ){
+			cur.dir = direction_r(cur.dir);
+		}
+		if( get_next_pixel(cur.pos, cur.dir) == 1 ){
+			walk(&cur , 1, delay);
+		}else{
+			clearbit = 1;
+		}
 	}
 }
 #endif
