@@ -6,15 +6,7 @@
 #include "amphibian.h"
 
 
-static uint8_t amphibian_getChunk(unsigned char const nBitPlane,
-                                  unsigned char const nChunkX,
-                                  unsigned char const nChunkY,
-                                  unsigned int const nFrame)
-{
-	assert(nChunkX < 6);
-	assert(nChunkY < 38);
-
-	static uint8_t aBitmap [2][38][6] PROGMEM =
+	static const uint8_t aBitmap [2][38][6] PROGMEM =
 		{{{0x00, 0x00, 0x24, 0x00, 0x00, 0x00}, // bit plane 0
 		  {0x00, 0x20, 0x3C, 0x00, 0x00, 0x00},
 		  {0x07, 0x30, 0x47, 0x00, 0x00, 0x00},
@@ -93,7 +85,7 @@ static uint8_t amphibian_getChunk(unsigned char const nBitPlane,
 		  {0x00, 0x00, 0x60, 0x00, 0x00, 0x00},
 		  {0x00, 0x00, 0x80, 0x00, 0x00, 0x00}}};
 
-	static uint8_t aEye[2][16][3] PROGMEM =
+	static const uint8_t aEye[2][16][3] PROGMEM =
 		{{{0x07, 0xF0, 0x67},    // frame 1 (bit plane 0)
 		  {0x03, 0xC0, 0xC3},
 		  {0x04, 0x19, 0xA7},
@@ -127,6 +119,14 @@ static uint8_t amphibian_getChunk(unsigned char const nBitPlane,
 		  {0x06, 0x10, 0x82},
 		  {0x06, 0x30, 0xC6},
 		  {0x07, 0xF0, 0xFE}}};
+
+static uint8_t amphibian_getChunk(unsigned char const nBitPlane,
+                                  unsigned char const nChunkX,
+                                  unsigned char const nChunkY,
+                                  unsigned int const nFrame)
+{
+	assert(nChunkX < 6);
+	assert(nChunkY < 38);
 
 	static uint8_t const nOffsetTable[] PROGMEM =
 			{UINT8_MAX, 0, 4, 8, 12, 8, 4, 0};

@@ -21,7 +21,7 @@
 
 #ifdef MENU_SUPPORT
 // First Person Tetris icon, MSB is leftmost pixel
-static uint8_t tetrisfp_icon[8] PROGMEM =
+static const uint8_t tetrisfp_icon[8] PROGMEM =
 		{ 0xee, 0x89, 0xee, 0x88, 0x88, 0x20, 0x2c, 0x6c };
 game_descriptor_t tetrisfp_game_descriptor
 		__attribute__((section(".game_descriptors"))) =
