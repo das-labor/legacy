@@ -6,7 +6,7 @@
 #include "amphibian.h"
 
 
-static uint8_t const aBitmap [2][38][6] PROGMEM =
+static uint8_t const aAmphBitmap [2][38][6] PROGMEM =
 	{{{0x00, 0x00, 0x24, 0x00, 0x00, 0x00}, // bit plane 0
 	  {0x00, 0x20, 0x3C, 0x00, 0x00, 0x00},
 	  {0x07, 0x30, 0x47, 0x00, 0x00, 0x00},
@@ -85,7 +85,7 @@ static uint8_t const aBitmap [2][38][6] PROGMEM =
 	  {0x00, 0x00, 0x60, 0x00, 0x00, 0x00},
 	  {0x00, 0x00, 0x80, 0x00, 0x00, 0x00}}};
 
-static uint8_t const aEye[2][16][3] PROGMEM =
+static uint8_t const aAmphEye[2][16][3] PROGMEM =
 	{{{0x07, 0xF0, 0x67},    // frame 1 (bit plane 0)
 	  {0x03, 0xC0, 0xC3},
 	  {0x04, 0x19, 0xA7},
@@ -135,11 +135,11 @@ static uint8_t amphibian_getChunk(unsigned char const nBitPlane,
 	if ((nChunkX <= 2) && (nChunkY >= 2) && (nChunkY <= 5)
 			&& (nOffset != UINT8_MAX))
 	{
-		return pgm_read_byte(&aEye[nBitPlane][nChunkY-2+nOffset][nChunkX]);
+		return pgm_read_byte(&aAmphEye[nBitPlane][nChunkY-2+nOffset][nChunkX]);
 	}
 	else
 	{
-		return pgm_read_byte(&aBitmap[nBitPlane][nChunkY][nChunkX]);
+		return pgm_read_byte(&aAmphBitmap[nBitPlane][nChunkY][nChunkX]);
 	}
 }
 
