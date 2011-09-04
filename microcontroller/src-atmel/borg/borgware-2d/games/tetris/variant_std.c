@@ -34,7 +34,7 @@
 #ifdef GAME_TETRIS
 #ifdef MENU_SUPPORT
 // Tetris icon, MSB is leftmost pixel
-static const uint8_t tetris_icon[8] PROGMEM =
+static uint8_t const tetris_icon[8] PROGMEM =
 		{ 0x0f, 0x0f, 0xc3, 0xdb, 0xdb, 0xc3, 0xf0, 0xf0 };
 game_descriptor_t tetris_game_descriptor
 		__attribute__((section(".game_descriptors"))) =
