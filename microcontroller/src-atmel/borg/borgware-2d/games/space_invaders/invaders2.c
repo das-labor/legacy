@@ -12,7 +12,7 @@ void borg_invaders();
 
 #ifdef MENU_SUPPORT
 // MSB is leftmost pixel
-static uint8_t icon[8] PROGMEM =
+static const uint8_t icon[8] PROGMEM =
 	 {0x66, 0x18, 0x3c, 0x5a, 0xff, 0xbd, 0xa5, 0x18}; // Invaders icon
 
 game_descriptor_t invaders_game_descriptor __attribute__((section(".game_descriptors"))) ={

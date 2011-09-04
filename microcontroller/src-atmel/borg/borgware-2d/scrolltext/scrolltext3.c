@@ -22,12 +22,12 @@
 font fonts[MAX_FONTS];
 #define MAX_SPECIALCOLORS 3
 
-unsigned char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2, 1, 1,
+unsigned const char PROGMEM colorTable[MAX_SPECIALCOLORS*NUM_ROWS] = {1, 1, 2, 3, 3, 2, 1, 1,
                                                                 3, 3, 2, 1, 1, 2, 3, 3,
                                                                 3, 3, 2, 2, 3, 3, 2, 2
 };
 
-char default_text[] PROGMEM = SCROLLTEXT_TEXT;
+const char default_text[] PROGMEM = SCROLLTEXT_TEXT;
 char scrolltext_text[SCROLLTEXT_BUFFER_SIZE];
 
 /* Konzept
