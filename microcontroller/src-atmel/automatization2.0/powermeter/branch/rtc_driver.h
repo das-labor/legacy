@@ -140,7 +140,7 @@
  */
 #define RTC_GetCompareValue()    ( RTC.COMP )
 
-
+#define RTC_CYCLES_1S     1024
 /* Prototyping of functions. Documentation is found in source file. */
 
 void RTC_Initialize( uint16_t period,
@@ -153,6 +153,8 @@ void RTC_SetIntLevels( RTC_OVFINTLVL_t ovfIntLevel,
                        RTC_COMPINTLVL_t compIntLevel );
 void RTC_SetAlarm( uint16_t alarmTimeout );
 void RTC_SetPrescaler( RTC_PRESCALER_t prescaler );
+
+void RTC_Init(void);
 
 uint8_t RTC_getSeconds(void);
 uint8_t RTC_getMinutes(void);

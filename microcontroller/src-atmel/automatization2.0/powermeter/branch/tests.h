@@ -68,7 +68,7 @@ typedef struct
 } powermeter_t;
 
 
-volatile powermeter_t powermeter;
+static volatile powermeter_t powermeter;
 
 int powermeter_SetSampleratePerPeriod(uint16_t samples);
 
@@ -76,4 +76,4 @@ int powermeter_Start(void);
 
 void powermeter_Stop(void);
 
-
+void powermeter_docalculations();

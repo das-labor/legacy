@@ -59,8 +59,7 @@
 
 #include "config.h"
 #include "rtc_driver.h"
-
-#define RTC_CYCLES_1S     1024
+#include "led_driver.h"
 
 /*! \brief This function initializes the RTC with period, initial count,
  *         compare value and clock prescaler.
@@ -212,7 +211,6 @@ static time_t time;
 ISR(RTC_OVF_vect)
 {
 
-	//PORTC.OUT ^= LED_RED;
 	time.second++;
 	if(time.second == 60){
 		time.second=0;
@@ -265,7 +263,7 @@ uint8_t RTC_getYears(void)
 
 void RTC_seconds_int(void)
 {
-		PORTC.OUTCLR = LED_GREEN;
+	LED_off();
 	//can transmit
 }
 

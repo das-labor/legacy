@@ -1,4 +1,4 @@
-OBJ = main.o ursartC1_driver.o adc_driver.o rtc_driver.o dma_driver.o tests.o event_system_driver.c tc_driver.o can/can.o can/spi.o can_handler.o netvar/netvar.o util_lib/list.o
+OBJ = led_driver.o main.o ursartC1_driver.o adc_driver.o rtc_driver.o dma_driver.o tests.o event_system_driver.c tc_driver.o can/can.o can/spi.o can_handler.o util_lib/list.o
 
 # Default values
 OUT           ?= image
