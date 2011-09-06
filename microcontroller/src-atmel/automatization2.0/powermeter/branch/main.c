@@ -6,16 +6,15 @@
 #include "can_handler.h"
 #include "can/spi.h"
 #include "can/can.h"
-#include "adc_driver.h"
+//#include "adc_driver.h"
 #include "rtc_driver.h"
-#include "tc_driver.h"
-#include "dma_driver.h"
+//#include "tc_driver.h"
+//#include "dma_driver.h"
 #include "ursartC1_driver.h"
+#include "led_driver.h"
 #include "tests.h"
-
-extern uint16_t DMA_ADC0;
-extern uint16_t DMA_ADC1;
-extern uint16_t DMA_ADC2;
+#include "event_system_driver.h"
+#include "error_handler.h"
 
 
 void sync_osc() {
@@ -28,7 +27,7 @@ void sync_osc() {
 	while (!(OSC.STATUS & OSC_RC32MRDY_bm));
 
 	/* auto kalibierung ein */
-//	DFLLRC32M.CTRL = DFLL_ENABLE_bm;
+	DFLLRC32M.CTRL = DFLL_ENABLE_bm;
 
 	/* CLK Bus prescaler */
    /* n=(CLK.PSCTRL & (~(CLK_PSADIV_gm | CLK_PSBCDIV1_bm | CLK_PSBCDIV0_bm))) |
@@ -50,12 +49,17 @@ void start_mcp_clock(){
 	TCD0.PER = 1;
 	TCD0.CCC = 1;
 	TCD0.CNT = 0;
-	TCD0.CTRLA = 1; //clk/1
+#if F_MCP == 16000000
+	TCD0.CTRLA = 1; //clk/2
+#elif F_MCP == 8000000
+	TCD0.CTRLA = 2; //clk/2
+#endif
+	
 }
 
 
 #define PORT_GRAPH 0x36
-
+/*
 void send_graph(uint8_t id, uint16_t * data, uint16_t len){
 	static can_message msg = {0, 0, PORT_GRAPH, PORT_GRAPH, 4, {}};
 	can_message * txmsg;
@@ -82,110 +86,63 @@ void send_graph(uint8_t id, uint16_t * data, uint16_t len){
 		can_transmit(txmsg);
 	}
 
-}
+}*/
 
 void Interrupt_Init(void)
 {
-	//enable ROUND ROBIN !!!!
+	//enable ROUND ROBIN,enable MED_LVL & LOW_LVL interrupts !!!!
 	uint8_t tmp= PMIC_RREN_bm|PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
 	/*I/O Protection*/
 	CCP = CCP_IOREG_gc;
 	PMIC.CTRL = tmp; 
 
-	sei();
+	sei();	//global allow interrupts
 }
 
 int main(void)
 {
-	PORTC.DIRSET = LED_RED | LED_GREEN | LED_BLUE;  // LED Ports als Ausgang
+	LED_initPORTC();  // LED Ports als Ausgang
+	LED_isrunning();	//set green LED
 	
-	//PORTC.OUT |= LED_GREEN; // LEDS an
-	PORTC.OUT |= LED_GREEN; // LEDS an
+	sync_osc();		//start 32Mhz clock
+#if DEBUGMODE
+    InitializeUSARTC1();	//init USARTC1 (for debuging)	
+	sendUSARTC1_putstr("DEBUG Interface\n\r");
+#endif
+	start_mcp_clock();	//start PWM, 16Mhz/8Mhz CLK for MCP
+	spi_init();		//init SPI
+	can_init();		//init MCP (CAN)
+	read_can_addr();	//init CAN
+	//RTC_Init();	//init Real-Time-Clock
+	//Interrupt_Init();	//init the Interruptsystem
+	//Eventsystem_init();	//setup eventsystem
 	
 
-	sync_osc();
-	start_mcp_clock();
-	spi_init();
-	can_init();
-	read_can_addr();
-	
-    InitializeUSARTC1();
-	RTC_Init();
-	
-	Interrupt_Init();
-	
-	sendUSARTC1_putstr("DEBUG Interface\n\r");
-	
 	
 	uint32_t x;
-	uint16_t i;
-	
-	char buf[9];
+	while (1) {
+		//spi_send(0xAA);
+		can_handler();
+		LED_on();		//turn status LED on
+	}
 	
 	powermeter_SetSampleratePerPeriod(4);
 	powermeter_Start();
 	
-	void * up;
-	void * ip;
-
 	while (1) {
 		can_handler();
+		powermeter_docalculations();
 		
-		{	//check if calculations has to be done
-			if(powermeter.startCalculations == 2)
-			{
-				powermeter.startCalculations = 0;
+		//if(getERROR())		//check for errors
+		//	LED_error_on()	//turn red LED on
+		//else
+			LED_on();		//turn status LED on
 
-				up = (void*)&powermeter.samplebuffer[powermeter.samplebuffer_page].u[0];
-				ip =  (void*)&powermeter.samplebuffer[powermeter.samplebuffer_page].i1[0];
-				
-				/*for(i = 0;i < powermeter.ADCSampleBufferSize - (3 * sizeof(uint16_t));i+=(3*sizeof(uint16_t)))
-				{*/
-	
-				/*	powermeter.powerdraw.c1.Ueff += *((uint16_t*)(up + i));
-					powermeter.powerdraw.c2.Ueff += *((uint16_t*)(up + i + sizeof(uint16_t)));
-					powermeter.powerdraw.c3.Ueff += *((uint16_t*)(up + i + sizeof(uint16_t)*2));
-
-					powermeter.powerdraw.c1.Ieff += *((uint16_t*)(ip + i));
-					powermeter.powerdraw.c2.Ieff += *((uint16_t*)(ip + i + sizeof(uint16_t)));
-					powermeter.powerdraw.c3.Ieff += *((uint16_t*)(ip + i + sizeof(uint16_t)*2));	*/
-/*
-					itoa(*((uint16_t*)(up + i)),buf[0],10);
-					sendUSARTC1_putstr(buf[0]);
-					sendUSARTC1_putstr(" \n");
-					itoa( *((uint16_t*)(up + i + sizeof(uint16_t))),buf[0],10);
-					sendUSARTC1_putstr(buf[0]);
-					sendUSARTC1_putstr(" \n");
-					itoa(*((uint16_t*)(up + i + sizeof(uint16_t)*2)),buf[0],10);
-					sendUSARTC1_putstr(buf[0]);
-					sendUSARTC1_putstr(" \n");
-	
-					itoa(*((uint16_t*)(ip + i )),buf[0],10);
-					sendUSARTC1_putstr(buf[0]);
-					sendUSARTC1_putstr(" \n");
-					itoa(*((uint16_t*)(ip + i + sizeof(uint16_t))),buf[0],10);
-					sendUSARTC1_putstr(buf[0]);
-					sendUSARTC1_putstr(" \n");
-					itoa(*((uint16_t*)(ip + i + sizeof(uint16_t)*2)),buf[0],10);
-					sendUSARTC1_putstr(buf[0]);
-					sendUSARTC1_putstr(" \n");
-				}*/
-				
-			//flip page
-			if(powermeter.samplebuffer_page)
-				powermeter.samplebuffer_page=0;
-			else
-				powermeter.samplebuffer_page=1;
-			}
-		}
-
-
-		PORTC.OUTSET = LED_GREEN;	//set green LED, disable once a second (keep alive)
-		PORTC.OUTCLR = LED_RED;	//clear RED LED, enable on transfer
-		/*x++;
-		if(x == 1000000){
+		
+	/*	
+		x++;
+		if(x == 200000){
 			x = 0;
-			
 		}*/
 	}
 }

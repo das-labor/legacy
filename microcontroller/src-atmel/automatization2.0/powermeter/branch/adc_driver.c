@@ -401,9 +401,9 @@ void adc_init(){
 
 
    	/* Get offset value for ADC A. */
-   /*	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN1_gc);*/
+   	/*	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN1_gc);*/
 
-/*	ADC_Enable(&ADCA);*/
+	/*	ADC_Enable(&ADCA);*/
 	/* Wait until common mode voltage is stable. Default clk is 2MHz and
 	 * therefore below the maximum frequency to use this function. */
 	/*ADC_Wait_32MHz(&ADCA);
@@ -418,9 +418,11 @@ void adc_init(){
 	ADC_SweepChannels_Config(&ADCA, ADC_SWEEP_012_gc |
 	              ADC_EVSEL_0123_gc |
 	              ADC_EVACT_SWEEP_gc);
-	
-  //  ADC_Ch_Interrupts_Config(&ADCA.CH0,ADC_CH_INTMODE_COMPLETE_gc, ADC_CH_INTLVL_LO_gc);
 
+	
+  	/*  ADC_Ch_Interrupts_Config(&ADCA.CH0,ADC_CH_INTMODE_COMPLETE_gc, ADC_CH_INTLVL_LO_gc);
+		Interrupts aren't used atm
+	*/
 	
 	/* Move stored calibration values to ADC B. */
 	ADC_CalibrationValues_Load(&ADCB);
@@ -447,9 +449,9 @@ void adc_init(){
 
 
    	/* Get offset value for ADC A. */
-   /*	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN1_gc);*/
+   	/*	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN1_gc);*/
 
-/*	ADC_Enable(&ADCA);*/
+	/*	ADC_Enable(&ADCA);*/
 	/* Wait until common mode voltage is stable. Default clk is 2MHz and
 	 * therefore below the maximum frequency to use this function. */
 	/*ADC_Wait_32MHz(&ADCA);

@@ -173,7 +173,7 @@
  *  \param  _eventMode      Select event trigger mode.
  *                          Use ADC_EVACT_t type.
  */
-#define ADC_Events_Config(_adc, _eventChannels, _eventMode)                    \                                                                           
+#define ADC_Events_Config(_adc, _eventChannels, _eventMode)                    \
 	(_adc)->EVCTRL = ((_adc)->EVCTRL & (~(ADC_EVSEL_gm | ADC_EVACT_gm))) | \
 	                 ((uint8_t) _eventChannels | _eventMode)
 

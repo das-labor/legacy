@@ -379,20 +379,20 @@ void DMA_StartTransfer( volatile DMA_CH_t * channel )
 void DMA0_init(volatile void * destAddr, volatile uint16_t blockSize,volatile uint16_t count )
 {
 	DMA_SetupBlock( &DMA.CH0,					//channel 0
-                   	&ADCA.CH0RES,				//source-addr
+                   	(void*)&ADCA.CH0RES,				//source-addr
                   	DMA_CH_SRCRELOAD_BLOCK_gc,	//srcDirection reload after each block
 					DMA_CH_SRCDIR_INC_gc,		//srcDirection increment after each byte
-                   	destAddr,						//set destAddr
+                   	(void*)destAddr,						//set destAddr
                   	DMA_CH_DESTRELOAD_TRANSACTION_gc,		//reload destAddr after transaction
 					DMA_CH_DESTDIR_INC_gc, 		//destDirection increment destination memory addr
                     blockSize,							//blockSize in bytes >= burstlen
                     DMA_CH_BURSTLEN_2BYTE_gc,	//burstMode 2byte per burst
-                    count,							//repeatcount infinite
-                    true );						//repeat false
+                    count,							//repeat count times
+                    true );						//repeat
 
    	DMA_SetTriggerSource(&DMA.CH0, DMA_CH_TRIGSRC_ADCA_CH2_gc);	//Trigger on ADCA_CH2
    
-	DMA_EnableSingleShot(&DMA.CH0);
+	DMA_DisableSingleShot(&DMA.CH0);	//copy one Block on every Trigger
 	DMA_EnableChannel(&DMA.CH0);
    	DMA_Enable();
 }
@@ -400,20 +400,20 @@ void DMA0_init(volatile void * destAddr, volatile uint16_t blockSize,volatile ui
 void DMA1_init(volatile void * destAddr, volatile uint16_t blockSize,volatile uint16_t count  )
 {
 	DMA_SetupBlock( &DMA.CH1,					//channel 1
-                   	&ADCB.CH0RES,				//source-addr
-                  	DMA_CH_SRCRELOAD_BLOCK_gc,	//srcDirection reload after each transaction
+                    (void*)&ADCB.CH0RES,				//source-addr
+                  	DMA_CH_SRCRELOAD_BLOCK_gc,	//srcDirection reload after each block
 					DMA_CH_SRCDIR_INC_gc,		//srcDirection increment after each byte
-                   	destAddr,						//set destAddr
+                   	(void*)destAddr,						//set destAddr
                   	DMA_CH_DESTRELOAD_TRANSACTION_gc,		//reload destAddr after transaction
 					DMA_CH_DESTDIR_INC_gc, 		//destDirection increment destination memory addr
                     blockSize,							//blockSize in bytes >= burstlen
                     DMA_CH_BURSTLEN_2BYTE_gc,	//burstMode 2byte per burst
-                    count,							//repeatcount infinite
-                    true );						//repeat false
+                    count,							//repeat count times
+                    true );						//repeat
 
    	DMA_SetTriggerSource(&DMA.CH1, DMA_CH_TRIGSRC_ADCB_CH2_gc);	//Trigger on ADCB_CH2
    
-	DMA_EnableSingleShot(&DMA.CH1);
+	DMA_DisableSingleShot(&DMA.CH1);	//copy one Block on every Trigger
 	DMA_EnableChannel(&DMA.CH1);
    	DMA_Enable();
 }
