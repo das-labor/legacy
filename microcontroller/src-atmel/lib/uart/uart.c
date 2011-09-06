@@ -31,8 +31,8 @@
 	#define TXCIE TXCIE0
 	#define RXC RXC0
 	#define UDRE UDRE0
-	#define UART_UDRE_VECTOR USART_UDRE_vect
-	#define UART_RECV_VECTOR USART_RX_vect
+	#define UART_UDRE_VECTOR USART0_UDRE_vect
+	#define UART_RECV_VECTOR USART0_RX_vect
 #elif defined(__AVR_ATmega8__) | defined(__AVR_ATmega32__) 
 	#define UART_UDRE_VECTOR USART_UDRE_vect
 	#define UART_RECV_VECTOR USART_RXC_vect
