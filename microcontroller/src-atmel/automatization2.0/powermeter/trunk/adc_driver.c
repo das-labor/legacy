@@ -65,7 +65,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 #include "adc_driver.h"
-
+#include "config.h"
 
 /*! \brief This function get the calibration data from the production calibration.
  *
@@ -376,51 +376,113 @@ uint8_t SP_ReadCalibrationByte( uint8_t index )
 volatile int8_t offset;
 
 void adc_init(){
-/* Move stored calibration values to ADC A. */
+	/* Move stored calibration values to ADC A. */
 	ADC_CalibrationValues_Load(&ADCA);
 
 	/* Set up ADC A to have signed conversion mode and 12 bit resolution. */
   	ADC_ConvMode_and_Resolution_Config(&ADCA, ADC_ConvMode_Signed, ADC_RESOLUTION_12BIT_gc);
 
 	/* Set sample rate. */
-	ADC_Prescaler_Config(&ADCA, ADC_PRESCALER_DIV32_gc);
+	ADC_Prescaler_Config(&ADCA, ADC_PRESCALER_DIV32_gc);	// 1 MSPs
 
-	/* Set reference voltage on ADC A to be 1.00 V.*/
+	/* Set reference voltage on ADC A to external reference pin on PORTA .*/
 	ADC_Reference_Config(&ADCA, ADC_REFSEL_AREFA_gc);
 
-	/* Setup channel 0 with different inputs. */
-	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH0,
-	                                 ADC_CH_INPUTMODE_DIFF_gc,
-	                                 ADC_DRIVER_CH_GAIN_NONE);
-	/* Setup channel 1 with different inputs. */
-	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH1,
-	                                 ADC_CH_INPUTMODE_DIFF_gc,
-	                                 ADC_DRIVER_CH_GAIN_NONE);
+	/* Differential Input signed -> 0V ==-2048, Vref/2 ==0, Vref ==+2048 
+	no Gain to improve messurement */
+	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH0, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
+	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH1, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
+	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH2, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
+	
+	/*Set Positive and Negative Pins for each Channel */
+	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
+	ADC_Ch_InputMux_Config(&ADCA.CH1, ADC_CH_MUXPOS_PIN3_gc, ADC_CH_MUXNEG_PIN0_gc);
+	ADC_Ch_InputMux_Config(&ADCA.CH2, ADC_CH_MUXPOS_PIN4_gc, ADC_CH_MUXNEG_PIN0_gc);
+
 
    	/* Get offset value for ADC A. */
-   	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN1_gc);
+   	/*	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN1_gc);*/
 
-	ADC_Enable(&ADCA);
+	/*	ADC_Enable(&ADCA);*/
 	/* Wait until common mode voltage is stable. Default clk is 2MHz and
 	 * therefore below the maximum frequency to use this function. */
-	ADC_Wait_8MHz(&ADCA);
+	/*ADC_Wait_32MHz(&ADCA);
  	offset = ADC_Offset_Get_Signed(&ADCA, &ADCA.CH0, false);
 	ADC_Disable(&ADCA);
 	
 	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
 	ADC_Ch_InputMux_Config(&ADCA.CH1, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
-
-	/* Setup sweep of all four virtual channels. */
-	ADC_SweepChannels_Config(&ADCA, ADC_SWEEP_01_gc);
+	*/
 	
-    /* Enable ADC A .*/
+	/* Setup sweep of all four virtual channels. */
+	ADC_SweepChannels_Config(&ADCA, ADC_SWEEP_012_gc |
+	              ADC_EVSEL_0123_gc |
+	              ADC_EVACT_SWEEP_gc);
+
+	
+  	/*  ADC_Ch_Interrupts_Config(&ADCA.CH0,ADC_CH_INTMODE_COMPLETE_gc, ADC_CH_INTLVL_LO_gc);
+		Interrupts aren't used atm
+	*/
+	
+	/* Move stored calibration values to ADC B. */
+	ADC_CalibrationValues_Load(&ADCB);
+
+	/* Set up ADC A to have signed conversion mode and 12 bit resolution. */
+  	ADC_ConvMode_and_Resolution_Config(&ADCB, ADC_ConvMode_Signed, ADC_RESOLUTION_12BIT_gc);
+
+	/* Set sample rate. */
+	ADC_Prescaler_Config(&ADCB, ADC_PRESCALER_DIV32_gc);	// 1 MSPs
+
+	/* Set reference voltage on ADC A to external reference pin on PORTA .*/
+	ADC_Reference_Config(&ADCB, ADC_REFSEL_AREFA_gc);
+
+	/* Differential Input signed -> 0V ==-2048, Vref/2 ==0, Vref ==+2048 
+	no Gain to improve messurement */
+	ADC_Ch_InputMode_and_Gain_Config(&ADCB.CH0, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
+	ADC_Ch_InputMode_and_Gain_Config(&ADCB.CH1, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
+	ADC_Ch_InputMode_and_Gain_Config(&ADCB.CH2, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
+	
+	/*Set Positive and Negative Pins for each Channel */
+	ADC_Ch_InputMux_Config(&ADCB.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
+	ADC_Ch_InputMux_Config(&ADCB.CH1, ADC_CH_MUXPOS_PIN3_gc, ADC_CH_MUXNEG_PIN0_gc);
+	ADC_Ch_InputMux_Config(&ADCB.CH2, ADC_CH_MUXPOS_PIN4_gc, ADC_CH_MUXNEG_PIN0_gc);
+
+
+   	/* Get offset value for ADC A. */
+   	/*	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN1_gc);*/
+
+	/*	ADC_Enable(&ADCA);*/
+	/* Wait until common mode voltage is stable. Default clk is 2MHz and
+	 * therefore below the maximum frequency to use this function. */
+	/*ADC_Wait_32MHz(&ADCA);
+ 	offset = ADC_Offset_Get_Signed(&ADCA, &ADCA.CH0, false);
+	ADC_Disable(&ADCA);
+	
+	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
+	ADC_Ch_InputMux_Config(&ADCA.CH1, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
+	*/
+	
+	//ADC_Events_Config(&ADCA, ADC_EVSEL_0123_gc, ADC_EVACT_CH0_gc);
+	
+	/* Setup sweep of all four virtual channels. */
+	ADC_SweepChannels_Config(&ADCB, ADC_SWEEP_012_gc |
+	              ADC_EVSEL_0123_gc |
+	              ADC_EVACT_SWEEP_gc);
+	
+ 	/* Enable ADC A .*/
 	ADC_Enable(&ADCA);
 
 	/* Wait until common mode voltage is stable. Default clk is 2MHz and
 	 * therefore below the maximum frequency to use this function. */
-	ADC_Wait_8MHz(&ADCA);
+	ADC_Wait_32MHz(&ADCA);
 	
-	/* Enable free running mode. */
-	ADC_FreeRunning_Enable(&ADCA);
+	
+    /* Enable ADC B .*/
+	ADC_Enable(&ADCB);
+
+	/* Wait until common mode voltage is stable. Default clk is 2MHz and
+	 * therefore below the maximum frequency to use this function. */
+	ADC_Wait_32MHz(&ADCB);
 
 }
+

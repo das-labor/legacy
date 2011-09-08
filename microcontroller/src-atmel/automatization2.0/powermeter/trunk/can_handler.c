@@ -5,6 +5,7 @@
 #include <util/delay.h>
 #include "can/can.h"
 #include "can/lap.h"
+#include "string.h"
 
 #include "can_handler.h"
 
@@ -14,6 +15,7 @@ void can_handler()
 {
 	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 	can_message *rx_msg;
+	can_message * txmsg;
 	if ((rx_msg = can_get_nb()) != 0) //get next canmessage in rx_msg
 	{
 		if ((rx_msg->addr_dst == myaddr))
@@ -31,7 +33,10 @@ void can_handler()
 					case FKT_MGT_PING:
 						msg.addr_src = myaddr;
 						msg.addr_dst = rx_msg->addr_src;
-						can_transmit(&msg);
+
+						txmsg = can_buffer_get();
+						memcpy(txmsg, &msg, sizeof(can_message));
+						can_transmit(txmsg);
 						break;
 				}
 			}
