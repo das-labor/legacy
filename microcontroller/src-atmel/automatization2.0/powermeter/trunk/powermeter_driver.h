@@ -75,3 +75,5 @@ void powermeter_docalculations();
 int powermeter_createDATAPACKET(void* can_packet);
 
 void powermeter_clearBuf();
+
+void memsetv(void *p,uint8_t value, uint16_t size);

@@ -11,6 +11,7 @@
 #include "led_driver.h"
 #include "rtc_driver.h"
 #include "powermeter_driver.h"
+#include "error_handler.h"
 
 #include "config.h"
 
@@ -210,7 +211,7 @@ void powermeter_docalculations()
 		up = (int*)&powermeter->samplebuffer[powermeter->samplebuffer_page].u[0];
 		ip = (int*)&powermeter->samplebuffer[powermeter->samplebuffer_page].i1[0];
 		
-		 uint16_t x;
+		uint16_t x;
 		for(x = 0;x < powermeter->ADCSampesPerPeriod;x++)
 		{
 #if !DEBUGMODE
@@ -219,10 +220,10 @@ void powermeter_docalculations()
 			i = (long)(*ip);
 #endif
 #if DEBUGMODE
-			itoa(*((int*)up),&buf[0],10);
+			itoa(*up,&buf[0],10);
 			sendUSARTC1_putstr(&buf[0]);
 			sendUSARTC1_putstr(" \n");
-			itoa(*((int*)ip),&buf[0],10);
+			itoa(*ip,&buf[0],10);
 			sendUSARTC1_putstr(&buf[0]);
 			sendUSARTC1_putstr(" \n");
 #endif
@@ -238,10 +239,10 @@ void powermeter_docalculations()
 			i = (long)(*ip);			
 #endif
 #if DEBUGMODE
-			itoa(*((int*)up),&buf[0],10);
+			itoa(*up,&buf[0],10);
 			sendUSARTC1_putstr(&buf[0]);
 			sendUSARTC1_putstr(" \n");
-			itoa(*((int*)ip),&buf[0],10);
+			itoa(*ip,&buf[0],10);
 			sendUSARTC1_putstr(&buf[0]);
 			sendUSARTC1_putstr(" \n");
 #endif
@@ -256,10 +257,10 @@ void powermeter_docalculations()
 			i = (long)(*ip);
 #endif
 #if DEBUGMODE
-			itoa(*((int*)up),&buf[0],10);
+			itoa(*up,&buf[0],10);
 			sendUSARTC1_putstr(&buf[0]);
 			sendUSARTC1_putstr(" \n");
-			itoa(*((int*)ip),&buf[0],10);
+			itoa(*ip,&buf[0],10);
 			sendUSARTC1_putstr(&buf[0]);
 			sendUSARTC1_putstr(" \n");
 #endif
@@ -304,7 +305,7 @@ void powermeter_docalculations()
 		powermeter->powerdrawPerSecond->c3.Ieff += sqrt(powermeter->powerdraw->c3.Ieff) / powermeter->ADCSampleBufferSize;
 		
 		//clear powermeter->powerdraw
-		//memset(powermeter->powerdraw,0x00,sizeof(powermeter_channel_t));
+		memsetv(powermeter->powerdraw,0,sizeof(powermeter_channel_t));
 
 
 #endif
@@ -315,8 +316,8 @@ void powermeter_docalculations()
 	else
 		powermeter->samplebuffer_page=1;
 
-	//if(powermeter->startCalculations > 2)
-		//setERROR(ERROR_SR_TOHIGH);
+	if(powermeter->startCalculations > 2)
+		setERROR(ERROR_SR_TOHIGH);
 
 #if DEBUGMODE
 		sendUSARTC1_putstr("endCalculations\n\r");
@@ -327,7 +328,7 @@ void powermeter_docalculations()
 	
 	if(powermeter->startCalculations > 2)
 	{
-		//setERROR(ERROR_SR_TOHIGH);
+		setERROR(ERROR_SR_TOHIGH);
 		powermeter->startCalculations = 0;
 	}
 }
@@ -342,4 +343,15 @@ void powermeter_clearBuf()
 {
 	//mark powermeter->powerdrawPerSecond to be cleared
 	powermeter->clearpowerdrawPerSecond = 1;
+}
+
+void memsetv(void *p,uint8_t value, uint16_t size)
+{
+	if(!p || !size)
+		return;
+	uint16_t cnt;
+	for(cnt=0;cnt<size;cnt++){
+		*((uint8_t*)p)=value;
+		p++;
+	}
 }
