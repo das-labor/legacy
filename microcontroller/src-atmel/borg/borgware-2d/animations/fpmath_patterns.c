@@ -1,6 +1,5 @@
 #include <math.h> // Floating point math is dog slow on AVR, but I don't care.
 #include <string.h>
-#include <stdint.h>
 #include "../config.h"
 #include "../pixel.h"
 #include "../util.h"
@@ -68,7 +67,7 @@ static void fpmath_pattern(double const t_start,
 				unsigned char const mask = shl_table[x % 8U];
 				unsigned char const x8 = x / 8u;
 				unsigned char const color = fpPattern(x, y, t);
-				for (uint8_t p = 0; p < NUMPLANE; ++p)
+				for (unsigned char p = 0; p < NUMPLANE; ++p)
 				{
 					if (p <= (color - 1))
 					{
