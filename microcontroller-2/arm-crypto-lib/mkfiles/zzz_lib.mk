@@ -32,4 +32,7 @@ LIB_ALGOS:= \
     SKEIN_C \
     TDES \
     TRIVIUM \
-    XTEA_C 
+    XTEA_C \
+    HFAL_HMAC \
+    BCAL_BASIC \
+    SCAL_BASIC 
