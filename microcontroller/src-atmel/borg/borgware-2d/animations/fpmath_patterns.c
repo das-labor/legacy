@@ -6,7 +6,7 @@
 #include "../util.h"
 #include "fpmath_patterns.h"
 
-#undef DOUBLE_BUFFERING
+#define DOUBLE_BUFFERING
 #ifdef DOUBLE_BUFFERING
 #define BUFFER pixmap_buffer
 #else
@@ -65,16 +65,18 @@ static void fpmath_pattern(double const t_start,
 		{
 			for (unsigned char x = 0; x < NUM_COLS; ++x)
 			{
-				unsigned char color = fpPattern(x, y, t);
-				for (uint8_t p = NUMPLANE; p--;)
+				unsigned char const mask = shl_table[x % 8U];
+				unsigned char const x8 = x / 8u;
+				unsigned char const color = fpPattern(x, y, t);
+				for (uint8_t p = 0; p < NUMPLANE; ++p)
 				{
 					if (p <= (color - 1))
 					{
-						BUFFER[p][y][x / 8] |= shl_table[x % 8U];
+						BUFFER[p][y][x8] |= mask;
 					}
 					else
 					{
-						BUFFER[p][y][x / 8] &= ~shl_table[x % 8U];
+						BUFFER[p][y][x8] &= ~mask;
 					}
 				}
 			}
