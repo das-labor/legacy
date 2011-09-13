@@ -11,7 +11,7 @@
 
 typedef struct{
 	void(*run)(void);
-	uint8_t * icon;
+	uint8_t const *icon;
 }game_descriptor_t;
 
 
