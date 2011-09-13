@@ -65,17 +65,17 @@ static void fpmath_pattern(double const t_start,
 			for (unsigned char x = 0; x < NUM_COLS; ++x)
 			{
 				unsigned char const mask = shl_table[x % 8U];
-				unsigned char const x8 = x / 8u;
+				unsigned char const x_8 = x / 8u;
 				unsigned char const color = fpPattern(x, y, t);
 				for (unsigned char p = 0; p < NUMPLANE; ++p)
 				{
 					if (p <= (color - 1))
 					{
-						BUFFER[p][y][x8] |= mask;
+						BUFFER[p][y][x_8] |= mask;
 					}
 					else
 					{
-						BUFFER[p][y][x8] &= ~mask;
+						BUFFER[p][y][x_8] &= ~mask;
 					}
 				}
 			}
@@ -96,8 +96,21 @@ static void fpmath_pattern(double const t_start,
  */
 static unsigned char fpmath_plasma(unsigned char x, unsigned char y, double t)
 {
-	return (sin(x * PLASMA_X + t) + sin(dist(x, y, NUM_COLS * sin(t) + NUM_COLS,
-			NUM_ROWS * cos(t) + NUM_ROWS) * PLASMA_X) + 2) * (NUMPLANE - 1) / 2;
+	static double fFunc1[NUM_COLS];
+	static double fFunc2CosArg;
+	static double fFunc2SinArg;
+	if (x == 0 && y == 0)
+	{
+		fFunc2CosArg = NUM_ROWS * cos(t) + NUM_ROWS;
+		fFunc2SinArg = NUM_COLS * sin(t) + NUM_COLS;
+	}
+	if (y == 0)
+	{
+		fFunc1[x] = sin(x * PLASMA_X + t);
+	}
+
+	return (fFunc1[x] + sin(dist(x, y, fFunc2SinArg, fFunc2CosArg) * PLASMA_X)
+			+ 2) * (NUMPLANE - 1) / 2;
 }
 
 void plasma(void)
@@ -117,8 +130,16 @@ void plasma(void)
  */
 static unsigned char fpmath_psycho(unsigned char x, unsigned char y, double t)
 {
-	return (sin(dist(x, y, NUM_COLS * cos(t), NUM_ROWS * sin(t)) - t * 10) + 1)
-			* (NUMPLANE - 1);
+	static double fCosinus;
+	static double fSinus;
+	static double t10;
+	if (x == 0 && y == 0)
+	{
+		fCosinus = NUM_COLS * cos(t);
+		fSinus = NUM_ROWS * sin(t);
+		t10 = t * 10;
+	}
+	return (sin(dist(x, y, fCosinus, fSinus) - t10) + 1) * (NUMPLANE - 1);
 }
 
 void psychedelic(void)
