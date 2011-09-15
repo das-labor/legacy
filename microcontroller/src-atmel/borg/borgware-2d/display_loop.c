@@ -15,6 +15,7 @@
 #include "animations/amphibian.h"
 #include "animations/laborlogo.h"
 #include "animations/27c3.h"
+#include "animations/outofspec.h"
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
 #include "borg_hw/borg_hw.h"
@@ -178,14 +179,20 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_PLASMA
+#ifdef ANIMATION_LOGO_OOS
 		case 18:
+			logo_OutOfSpec();
+			break;
+#endif
+
+#ifdef ANIMATION_PLASMA
+		case 19:
 			plasma();
 			break;
 #endif
 
 #ifdef ANIMATION_PSYCHEDELIC
-		case 19:
+		case 20:
 			psychedelic();
 			break;
 #endif
