@@ -8,7 +8,7 @@ comment "Animations"
 	dep_bool "Feuer"         ANIMATION_FEUER         $RANDOM_SUPPORT
 	dep_bool "Matrix"        ANIMATION_MATRIX        $RANDOM_SUPPORT
 	dep_bool "Random Bright" ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
-	dep_bool "Stonefly"	     ANIMATION_STONEFLY      $GAME_TETRIS_CORE
+	dep_bool "Stonefly"	 ANIMATION_STONEFLY      $GAME_TETRIS_CORE
 	dep_bool "Flying Dots"	 ANIMATION_FLYINGDOTS    $RANDOM_SUPPORT
 	dep_bool "Game of Life"  ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
 	dep_bool "Breakout Demo" ANIMATION_BREAKOUT      $GAME_BREAKOUT
@@ -16,9 +16,10 @@ comment "Animations"
 	dep_bool "Langton Ant"   ANIMATION_LTN_ANT       $RANDOM_SUPPORT
 
 	dep_bool_menu "Bitmap Scroller" ANIMATION_BMSCROLLER y $RANDOM_SUPPORT
-		dep_bool "LABOR Logo"    ANIMATION_LABORLOGO     $ANIMATION_BMSCROLLER
-		dep_bool "Amphibian"     ANIMATION_AMPHIBIAN     $ANIMATION_BMSCROLLER
-		dep_bool "27c3 Logo"     ANIMATION_LOGO_27C3     $ANIMATION_BMSCROLLER
+		dep_bool "LABOR Logo"       ANIMATION_LABORLOGO $ANIMATION_BMSCROLLER
+		dep_bool "Amphibian"        ANIMATION_AMPHIBIAN $ANIMATION_BMSCROLLER
+		dep_bool "27c3 Logo"        ANIMATION_LOGO_27C3 $ANIMATION_BMSCROLLER
+		dep_bool "Out of Spec Logo" ANIMATION_LOGO_OOS  $ANIMATION_BMSCROLLER
 	endmenu
 
 	bool "Plasma"            ANIMATION_PLASMA
