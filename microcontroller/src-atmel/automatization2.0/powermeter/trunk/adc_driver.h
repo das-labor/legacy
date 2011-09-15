@@ -355,7 +355,8 @@ uint8_t  ADC_ResultCh_GetHighByte(ADC_CH_t * adc_ch);
 void ADC_Wait_8MHz(ADC_t * adc);
 void ADC_Wait_32MHz(ADC_t * adc);
 
-void adc_init();
+
+void adc_init(int8_t *offsetA,int8_t *offsetB);
 
 /*! Deprecated functions: Compatibility with previous application note version.
  *  These functions will be removed in later releases of the driver
