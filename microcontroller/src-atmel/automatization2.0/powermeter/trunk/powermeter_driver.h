@@ -7,29 +7,19 @@
 #include "avr_compiler.h"
 #include "config.h"
 
-#define IN_PROGRESS 0
-#define LAST_SECOND 1
-#define LAST_MINUTE 2
-#define LAST_HOUR 3
-#define LAST_DAY 4
-#define LAST_MONTH 5
-#define LAST_YEAR 6
-#define GLOBAL 7 		//counter that wont reset
-#define CHANNEL_A 8		//counter reset on read
-#define CHANNEL_B 9		//counter reset on read
-
-
-#if POWERMETER_SAMPLEBUFF * 18 > 15500
-	#error to less RAM, decrease POWERMETER_SAMPLEBUFF
-#endif
+typedef struct
+{
+	int32_t Ueff;	
+	int32_t Ieff;
+	int32_t P;
+	int32_t S;
+} powermeter_data_t;
 
 typedef struct
 {
-	long Ueff;	
-	long Ieff;
-	long P;
-	long S;
-} powermeter_data_t;
+	int8_t offsetA;
+	int8_t offsetB;
+} powermeter_adc_offset_t;
 
 typedef struct
 {
@@ -41,30 +31,28 @@ typedef struct
 
 typedef struct
 {
-	int u[POWERMETER_SAMPLEBUFF * 3];
-	int i1[POWERMETER_SAMPLEBUFF * 3];
-	int i2[POWERMETER_SAMPLEBUFF * 3];
+	int16_t u[POWERMETER_SAMPLEBUFF * 3];
+	int16_t i1[POWERMETER_SAMPLEBUFF * 3];
+	int16_t i2[POWERMETER_SAMPLEBUFF * 3];
 } samplebuffer_t;
 
 typedef struct
 {
 	uint16_t ADCSamplesPerSecond;		//samples per second
-	uint16_t ADCSampleBufferSize;
-	uint16_t ADCSampesPerPeriod;
+	uint16_t ADCSampleBufferSize;		//buffersize in Bytes
+	uint16_t ADCSampesPerPeriod;		//samples per period
+	powermeter_adc_offset_t ADCoffset;	//ADC offset (+-2)
+	powermeter_channel_t powerdraw;
+	powermeter_channel_t powerdrawPerSecond;
 
-	powermeter_channel_t *powerdraw;
-	powermeter_channel_t *powerdrawPerSecond;
-	uint8_t clearpowerdrawPerSecond;	//0 if locked, 1 if unlocked
-	uint8_t isrunning;	//0 or 1 if runnning
-	uint8_t startCalculations;		//if 1 main should start calculating
-	uint8_t samplebuffer_page;		//0 or 1 depending on current page
+	uint8_t isrunning;				//0 or 1 if runnning
+	volatile uint8_t startCalculations;		//if equal 2 main should start calculating
+	volatile uint8_t samplebuffer_page;		//0 or 1 depending on current page
 	samplebuffer_t samplebuffer[2];	//this are two pages, each having three channel-buffers, holding the RAW ADC data
 } powermeter_t;
 
 
 int powermeter_SetSampleratePerPeriod(uint16_t samples);
-
-void powermeter_Init();
 
 int powermeter_Start(void);
 
@@ -72,8 +60,10 @@ void powermeter_Stop(void);
 
 void powermeter_docalculations();
 
-int powermeter_createDATAPACKET(void* can_packet);
+void powermeter_clearpowerdraw();
 
-void powermeter_clearBuf();
-
+void powermeter_clearpowerdrawPerSecond();
+#if 0
 void memsetv(void *p,uint8_t value, uint16_t size);
+#endif
+extern powermeter_t powermeter;

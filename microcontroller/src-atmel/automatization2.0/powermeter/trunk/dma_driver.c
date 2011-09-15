@@ -58,7 +58,6 @@
 
 #include "dma_driver.h"
 
-
 /*! \brief This function configures the double buffering feature of the DMA.
  *
  *  Channel pair 0/1 and/or channel pair 2/3 can
@@ -376,13 +375,13 @@ void DMA_StartTransfer( volatile DMA_CH_t * channel )
 }
 
 
-void DMA0_init(volatile void * destAddr, volatile uint16_t blockSize,volatile uint16_t count )
+void DMA0_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count )
 {
 	DMA_SetupBlock( &DMA.CH0,					//channel 0
                    	(void*)&ADCA.CH0RES,				//source-addr
                   	DMA_CH_SRCRELOAD_BLOCK_gc,	//srcDirection reload after each block
 					DMA_CH_SRCDIR_INC_gc,		//srcDirection increment after each byte
-                   	(void*)destAddr,						//set destAddr
+                   	(void *)destAddr,						//set destAddr
                   	DMA_CH_DESTRELOAD_TRANSACTION_gc,		//reload destAddr after transaction
 					DMA_CH_DESTDIR_INC_gc, 		//destDirection increment destination memory addr
                     blockSize,							//blockSize in bytes >= burstlen
@@ -397,7 +396,7 @@ void DMA0_init(volatile void * destAddr, volatile uint16_t blockSize,volatile ui
    	DMA_Enable();
 }
 
-void DMA1_init(volatile void * destAddr, volatile uint16_t blockSize,volatile uint16_t count  )
+void DMA1_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count  )
 {
 	DMA_SetupBlock( &DMA.CH1,					//channel 1
                     (void*)&ADCB.CH0RES,				//source-addr

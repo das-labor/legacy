@@ -66,8 +66,9 @@
  *****************************************************************************/
 
 #include "avr_compiler.h"
+#include "ursartC1_driver.h"
 #include "tc_driver.h"
-
+#include "config.h"
 /*! \brief Configures clock source for the Timer/Counter 0.
  *
  *  This function clears the old clock source setting of the Timer/Counter and
@@ -445,9 +446,14 @@ void TC1_Reset( volatile TC1_t * tc )
 void TC1_init(volatile uint32_t eventsPerSecond){
 
 	if(eventsPerSecond > 0xF42400)		//greater than 16000000Hz ?
-		return;
 #if DEBUGMODE
-		sendUSARTC1_putstr("TC1\n\rTCC1 ");
+		sendUSARTC1_putstr("TC1 aborted\n\r");
+#else
+		return;
+#endif
+	TC1_Reset(&TCC1);
+#if DEBUGMODE
+		sendUSARTC1_putstr("TCC1 =");
 		char buf[9];
 #endif
 		
@@ -458,7 +464,7 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		TC_SetPeriod( &TCC1,TC1_TOP);
 		
 #if DEBUGMODE
-		itoa(TCC1,&buf[0],10);
+		utoa(TCC1.PER,&buf[0],10);
 		sendUSARTC1_putstr(&buf[0]);
 		sendUSARTC1_putstr(" DIV1\n\r");
 #endif
@@ -472,7 +478,7 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		/* Set period ( TOP value ). */
 		TC_SetPeriod( &TCC1,TC1_TOP);
 #if DEBUGMODE
-		itoa(TCC1,&buf[0],10);
+		utoa(TCC1.PER,&buf[0],10);
 		sendUSARTC1_putstr(&buf[0]);
 		sendUSARTC1_putstr(" DIV2\n\r");
 #endif
@@ -486,7 +492,7 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		/* Set period ( TOP value ). */
 		TC_SetPeriod( &TCC1,TC1_TOP);
 #if DEBUGMODE
-		itoa(TCC1,&buf[0],10);
+		utoa(TCC1.PER,&buf[0],10);
 		sendUSARTC1_putstr(&buf[0]);
 		sendUSARTC1_putstr(" DIV4\n\r");
 #endif
@@ -500,7 +506,7 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		/* Set period ( TOP value ). */
 		TC_SetPeriod( &TCC1,TC1_TOP);
 #if DEBUGMODE
-		itoa(TCC1,&buf[0],10);
+		utoa(TCC1.PER,&buf[0],10);
 		sendUSARTC1_putstr(&buf[0]);
 		sendUSARTC1_putstr(" DIV8\n\r");
 #endif
@@ -513,7 +519,7 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		/* Set period ( TOP value ). */
 		TC_SetPeriod( &TCC1,TC1_TOP);
 #if DEBUGMODE
-		itoa(TCC1,&buf[0],10);
+		utoa(TCC1.PER,&buf[0],10);
 		sendUSARTC1_putstr(&buf[0]);
 		sendUSARTC1_putstr(" DIV64\n\r");
 #endif
@@ -526,7 +532,7 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		/* Set period ( TOP value ). */
 		TC_SetPeriod( &TCC1,TC1_TOP);
 #if DEBUGMODE
-		itoa(TCC1,&buf[0],10);
+		utoa(TCC1.PER,&buf[0],10);
 		sendUSARTC1_putstr(&buf[0]);
 		sendUSARTC1_putstr(" DIV256\n\r");
 #endif

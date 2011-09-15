@@ -79,16 +79,23 @@ int main(void)
 	Interrupt_Init();
 
  	setERROR(0);
+	can_send_packet=0;
 
-	powermeter_Init();
+	
 	powermeter_SetSampleratePerPeriod(64);
 	powermeter_Start();
 
+#if DEBUGMODE
+		sendUSARTC1_putstr("entering main-loop\n\r");
+#endif
 	uint16_t x;
 	while (1) {
 		can_handler();
 		powermeter_docalculations();
-		
+		if(can_send_packet){
+			can_createDATAPACKET();
+			can_send_packet=0;
+		}
 		
 		if((RTC.CNT & 0x00ff) >= x)
 			x=RTC.CNT;

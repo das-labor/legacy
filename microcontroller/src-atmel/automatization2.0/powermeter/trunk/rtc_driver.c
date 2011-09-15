@@ -190,9 +190,7 @@ void RTC_Init(void)
 	RTC_Initialize( RTC_CYCLES_1S, 0, 0, RTC_PRESCALER_DIV1_gc );
 
 	/* Enable overflow interrupt. */
-	//RTC_SetIntLevels( RTC_OVFINTLVL_LO_gc, RTC_COMPINTLVL_OFF_gc );
-
-
+	RTC_SetIntLevels( RTC_OVFINTLVL_LO_gc, RTC_COMPINTLVL_OFF_gc );
 
 }
 
@@ -261,10 +259,11 @@ uint8_t RTC_getYears(void)
 	return time.year;
 }
 
+volatile uint8_t can_send_packet;
 void RTC_seconds_int(void)
 {
-	
-
+	//can transmit
+	can_send_packet=1;
 }
 
 void RTC_minutes_int(void)
