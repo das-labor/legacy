@@ -80,7 +80,6 @@ int main(void)
 
  	setERROR(0);
 	can_send_packet=0;
-
 	
 	powermeter_SetSampleratePerPeriod(64);
 	powermeter_Start();

@@ -412,9 +412,8 @@ void adc_init(int8_t *offsetA,int8_t *offsetB){
 	
 	/* Setup sweep of three virtual channels. */
 	ADC_SweepChannels_Config(&ADCA, ADC_SWEEP_012_gc |
-	              ADC_EVSEL_0123_gc |
+	              ADC_EVSEL_7_gc |
 	              ADC_EVACT_SWEEP_gc);
-
 	
   	/*  ADC_Ch_Interrupts_Config(&ADCA.CH0,ADC_CH_INTMODE_COMPLETE_gc, ADC_CH_INTLVL_LO_gc);
 		Interrupts aren't used atm
@@ -460,18 +459,19 @@ void adc_init(int8_t *offsetA,int8_t *offsetB){
 	
 	/* Setup sweep of three virtual channels. */
 	ADC_SweepChannels_Config(&ADCB, ADC_SWEEP_012_gc |
-	              ADC_EVSEL_0123_gc |
+	              ADC_EVSEL_7_gc |
 	              ADC_EVACT_SWEEP_gc);
+
 	
  	/* Enable ADC A .*/
 	ADC_Enable(&ADCA);
 
-	 /* Enable ADC B .*/
-	ADC_Enable(&ADCB);
-	
 	/* Wait until common mode voltage is stable. Default clk is 2MHz and
 	 * therefore below the maximum frequency to use this function. */
 	ADC_Wait_32MHz(&ADCA);
+	
+	 /* Enable ADC B .*/
+	ADC_Enable(&ADCB);
 	
 	/* Wait until common mode voltage is stable. Default clk is 2MHz and
 	 * therefore below the maximum frequency to use this function. */

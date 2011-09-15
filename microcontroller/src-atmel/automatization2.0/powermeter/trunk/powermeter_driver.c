@@ -93,9 +93,9 @@ int powermeter_SetSampleratePerPeriod(uint16_t samples)
 	if(!samples)
 		return -1;
 	//configure Timer1 to generate 50//60 * samples events * 3	(3 channels, 50Hz/60hz)
-	powermeter.ADCSampesPerPeriod = samples;
-	powermeter.ADCSamplesPerSecond = samples *3 ;//* NET_FREQ * 3;
-	powermeter.ADCSampleBufferSize = samples * 3 * sizeof(uint16_t);
+		powermeter.ADCSampesPerPeriod = samples;
+		powermeter.ADCSamplesPerSecond = samples * NET_FREQ * 3;
+		powermeter.ADCSampleBufferSize = samples * 3 * sizeof(uint16_t);
 #if DEBUGMODE
 		sendUSARTC1_putstr("ADCSamplesPerPeriod");
 
@@ -184,7 +184,7 @@ int powermeter_Start()
 #if DEBUGMODE
 	sendUSARTC1_putstr("LED set to blue\n\r");
 #endif
-		TC1_init(powermeter.ADCSamplesPerSecond);		//set timer1 to trigger ADCSamplesPerSecond times per second
+	TC1_init(powermeter.ADCSamplesPerSecond);		//set timer1 to trigger ADCSamplesPerSecond times per second
 #if DEBUGMODE
 	sendUSARTC1_putstr("TC1 init complete\n\r");
 #endif	

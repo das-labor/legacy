@@ -377,8 +377,10 @@ void DMA_StartTransfer( volatile DMA_CH_t * channel )
 
 void DMA0_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count )
 {
+	DMA_Enable();
+	DMA_SetPriority(DMA_PRIMODE_RR0123_gc);	//dma mode round robin
 	DMA_SetupBlock( &DMA.CH0,					//channel 0
-                   	(void*)&ADCA.CH0RES,				//source-addr
+                   	(const void*)&ADCA.CH0RES,				//source-addr
                   	DMA_CH_SRCRELOAD_BLOCK_gc,	//srcDirection reload after each block
 					DMA_CH_SRCDIR_INC_gc,		//srcDirection increment after each byte
                    	(void *)destAddr,						//set destAddr
@@ -389,17 +391,17 @@ void DMA0_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uin
                     count,							//repeat count times
                     true );						//repeat
 
-   	DMA_SetTriggerSource(&DMA.CH0, DMA_CH_TRIGSRC_ADCA_CH2_gc);	//Trigger on ADCA_CH2
+   	DMA_SetTriggerSource(&DMA.CH0,  DMA_CH_TRIGSRC_EVSYS_CH0_gc);//DMA_CH_TRIGSRC_ADCA_CH2_gc);	//Trigger on ADCA_CH2
    
 	DMA_DisableSingleShot(&DMA.CH0);	//copy one Block on every Trigger
 	DMA_EnableChannel(&DMA.CH0);
-   	DMA_Enable();
 }
 
 void DMA1_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count  )
 {
+	DMA_Enable();
 	DMA_SetupBlock( &DMA.CH1,					//channel 1
-                    (void*)&ADCB.CH0RES,				//source-addr
+                    (const void*)&ADCB.CH0RES,				//source-addr
                   	DMA_CH_SRCRELOAD_BLOCK_gc,	//srcDirection reload after each block
 					DMA_CH_SRCDIR_INC_gc,		//srcDirection increment after each byte
                    	(void*)destAddr,						//set destAddr
@@ -410,9 +412,8 @@ void DMA1_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uin
                     count,							//repeat count times
                     true );						//repeat
 
-   	DMA_SetTriggerSource(&DMA.CH1, DMA_CH_TRIGSRC_ADCB_CH2_gc);	//Trigger on ADCB_CH2
+   	DMA_SetTriggerSource(&DMA.CH1,  DMA_CH_TRIGSRC_EVSYS_CH1_gc); //DMA_CH_TRIGSRC_ADCB_CH2_gc);	//Trigger on ADCB_CH2
    
 	DMA_DisableSingleShot(&DMA.CH1);	//copy one Block on every Trigger
 	DMA_EnableChannel(&DMA.CH1);
-   	DMA_Enable();
 }

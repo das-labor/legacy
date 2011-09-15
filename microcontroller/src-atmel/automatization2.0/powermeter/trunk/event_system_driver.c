@@ -190,8 +190,8 @@ void EVSYS_ManualTrigger( uint8_t dataMask, uint8_t strobeMask )
 void Eventsystem_init( void )
 {
 	/* Select multiplexer input. */
-	EVSYS_SetEventSource( 0, EVSYS_CHMUX_TCC1_OVF_gc );	//event 0 Timer1CC1_OVF
-	EVSYS_SetEventSource( 7, EVSYS_CHMUX_ADCA_CH2_gc );	//event 1 = ADCA_CH2
-	EVSYS_SetEventSource( 6, EVSYS_CHMUX_ADCB_CH2_gc );	//event 1 = ADCB_CH2
+	EVSYS_SetEventSource( 7, EVSYS_CHMUX_TCC1_OVF_gc );	//event 7 Timer1CC1_OVF
+	EVSYS_SetEventSource( 0, EVSYS_CHMUX_ADCA_CH2_gc );	//event 0 = ADCA_CH2
+	EVSYS_SetEventSource( 1, EVSYS_CHMUX_ADCB_CH2_gc );	//event 1 = ADCB_CH2
 }
 
