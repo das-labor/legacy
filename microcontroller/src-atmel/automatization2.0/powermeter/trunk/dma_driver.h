@@ -119,6 +119,6 @@ void DMA_EnableSingleShot( volatile DMA_CH_t * channel );
 void DMA_DisableSingleShot( volatile DMA_CH_t * channel );
 void DMA_SetTriggerSource( volatile DMA_CH_t * channel, uint8_t trigger );
 void DMA_StartTransfer( volatile DMA_CH_t * channel );
-void DMA0_init(volatile void * destAddr, volatile uint16_t blockSize,volatile uint16_t count);
-void DMA1_init(volatile void * destAddr, volatile uint16_t blockSize,volatile uint16_t count);
+void DMA0_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count);
+void DMA1_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count);
 #endif

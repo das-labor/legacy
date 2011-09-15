@@ -166,6 +166,8 @@ void RTC_minutes_int(void);
 void RTC_hours_int(void);
 void RTC_days_int(void);
 void RTC_year_int(void);
+
+extern volatile uint8_t can_send_packet;
 /*! This is the interrupt vector declaration. Copy it to your
  *  program code if you want to use it. Leave commented if it's not
  *  used to avoid overhead when compiling.
