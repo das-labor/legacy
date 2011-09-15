@@ -320,7 +320,7 @@ int8_t ADC_Offset_Get_Signed(ADC_t * adc, ADC_CH_t *ch, bool oversampling)
     if (oversampling)
     {
       int16_t offset=0;
-      for (int i=0; i<4; i++)
+      for (int i=0; i<8; i++)
       {
         /* Do one conversion to find offset. */
         ADC_Ch_Conversion_Start(ch);
@@ -373,9 +373,7 @@ uint8_t SP_ReadCalibrationByte( uint8_t index )
 
 #endif
 
-volatile int8_t offset;
-
-void adc_init(){
+void adc_init(int8_t *offsetA,int8_t *offsetB){
 	/* Move stored calibration values to ADC A. */
 	ADC_CalibrationValues_Load(&ADCA);
 
@@ -393,28 +391,26 @@ void adc_init(){
 	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH0, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
 	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH1, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
 	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH2, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
-	
+
+#if ADC_OFFSET_CAL
+	/* Get offset value for ADC A. */
+   	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN2_gc);
+
+	ADC_Enable(&ADCA);
+	/* Wait until common mode voltage is stable. Default clk is 2MHz and
+	 * therefore below the maximum frequency to use this function. */
+	ADC_Wait_32MHz(&ADCA);
+ 	*offsetA = (int8_t)ADC_Offset_Get_Signed(&ADCA, &ADCA.CH0, false);
+	ADC_Disable(&ADCA);
+#else
+	*offsetA=0;
+#endif
 	/*Set Positive and Negative Pins for each Channel */
 	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
 	ADC_Ch_InputMux_Config(&ADCA.CH1, ADC_CH_MUXPOS_PIN3_gc, ADC_CH_MUXNEG_PIN0_gc);
 	ADC_Ch_InputMux_Config(&ADCA.CH2, ADC_CH_MUXPOS_PIN4_gc, ADC_CH_MUXNEG_PIN0_gc);
-
-
-   	/* Get offset value for ADC A. */
-   	/*	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN1_gc);*/
-
-	/*	ADC_Enable(&ADCA);*/
-	/* Wait until common mode voltage is stable. Default clk is 2MHz and
-	 * therefore below the maximum frequency to use this function. */
-	/*ADC_Wait_32MHz(&ADCA);
- 	offset = ADC_Offset_Get_Signed(&ADCA, &ADCA.CH0, false);
-	ADC_Disable(&ADCA);
 	
-	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
-	ADC_Ch_InputMux_Config(&ADCA.CH1, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
-	*/
-	
-	/* Setup sweep of all four virtual channels. */
+	/* Setup sweep of three virtual channels. */
 	ADC_SweepChannels_Config(&ADCA, ADC_SWEEP_012_gc |
 	              ADC_EVSEL_0123_gc |
 	              ADC_EVACT_SWEEP_gc);
@@ -441,30 +437,28 @@ void adc_init(){
 	ADC_Ch_InputMode_and_Gain_Config(&ADCB.CH0, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
 	ADC_Ch_InputMode_and_Gain_Config(&ADCB.CH1, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
 	ADC_Ch_InputMode_and_Gain_Config(&ADCB.CH2, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
-	
+
+#if ADC_OFFSET_CAL
+	/* Get offset value for ADC B. */
+   	ADC_Ch_InputMux_Config(&ADCB.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN2_gc);
+
+	ADC_Enable(&ADCB);
+	/* Wait until common mode voltage is stable. Default clk is 2MHz and
+	 * therefore below the maximum frequency to use this function. */
+	ADC_Wait_32MHz(&ADCB);
+ 	*offsetB = (int8_t)ADC_Offset_Get_Signed(&ADCB, &ADCB.CH0, false);
+	ADC_Disable(&ADCB);
+#else
+	*offsetB=0;
+#endif	
 	/*Set Positive and Negative Pins for each Channel */
 	ADC_Ch_InputMux_Config(&ADCB.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
 	ADC_Ch_InputMux_Config(&ADCB.CH1, ADC_CH_MUXPOS_PIN3_gc, ADC_CH_MUXNEG_PIN0_gc);
 	ADC_Ch_InputMux_Config(&ADCB.CH2, ADC_CH_MUXPOS_PIN4_gc, ADC_CH_MUXNEG_PIN0_gc);
 
-
-   	/* Get offset value for ADC A. */
-   	/*	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN1_gc, ADC_CH_MUXNEG_PIN1_gc);*/
-
-	/*	ADC_Enable(&ADCA);*/
-	/* Wait until common mode voltage is stable. Default clk is 2MHz and
-	 * therefore below the maximum frequency to use this function. */
-	/*ADC_Wait_32MHz(&ADCA);
- 	offset = ADC_Offset_Get_Signed(&ADCA, &ADCA.CH0, false);
-	ADC_Disable(&ADCA);
-	
-	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
-	ADC_Ch_InputMux_Config(&ADCA.CH1, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
-	*/
-	
 	//ADC_Events_Config(&ADCA, ADC_EVSEL_0123_gc, ADC_EVACT_CH0_gc);
 	
-	/* Setup sweep of all four virtual channels. */
+	/* Setup sweep of three virtual channels. */
 	ADC_SweepChannels_Config(&ADCB, ADC_SWEEP_012_gc |
 	              ADC_EVSEL_0123_gc |
 	              ADC_EVACT_SWEEP_gc);
@@ -472,14 +466,13 @@ void adc_init(){
  	/* Enable ADC A .*/
 	ADC_Enable(&ADCA);
 
+	 /* Enable ADC B .*/
+	ADC_Enable(&ADCB);
+	
 	/* Wait until common mode voltage is stable. Default clk is 2MHz and
 	 * therefore below the maximum frequency to use this function. */
 	ADC_Wait_32MHz(&ADCA);
 	
-	
-    /* Enable ADC B .*/
-	ADC_Enable(&ADCB);
-
 	/* Wait until common mode voltage is stable. Default clk is 2MHz and
 	 * therefore below the maximum frequency to use this function. */
 	ADC_Wait_32MHz(&ADCB);
