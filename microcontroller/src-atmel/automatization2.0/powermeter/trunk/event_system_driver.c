@@ -176,22 +176,3 @@ void EVSYS_ManualTrigger( uint8_t dataMask, uint8_t strobeMask )
 	EVSYS.DATA = dataMask;
 	EVSYS.STROBE = strobeMask;
 }
-
-
-/*! \brief Example 2 from the application note.
- *
- *  This function implements example 2, "Sweep of 4 ADC Channels on
- *  Timer/Counter Overflow" section of the application note AVR1001.
- *
- *  The example shows how to set up the sweep of 4 ADC channels on a
- *  Timer/Counter TCC0 overflow event. More information of set up
- *  of ADC can be found in the application note AVR1300.
- */
-void Eventsystem_init( void )
-{
-	/* Select multiplexer input. */
-	EVSYS_SetEventSource( 7, EVSYS_CHMUX_TCC1_OVF_gc );	//event 7 Timer1CC1_OVF
-	EVSYS_SetEventSource( 0, EVSYS_CHMUX_ADCA_CH2_gc );	//event 0 = ADCA_CH2
-	EVSYS_SetEventSource( 1, EVSYS_CHMUX_ADCB_CH2_gc );	//event 1 = ADCB_CH2
-}
-

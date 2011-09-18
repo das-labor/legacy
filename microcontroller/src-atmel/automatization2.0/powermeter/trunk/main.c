@@ -48,6 +48,22 @@ void start_mcp_clock(){
 	
 }
 
+void Eventsystem_init( void )
+{
+	/* Select multiplexer input. */
+	EVSYS_SetEventSource( 0, EVSYS_CHMUX_TCC1_OVF_gc );	//event Timer1CC1_OVF
+	EVSYS_SetEventSource( 2, EVSYS_CHMUX_OFF_gc);
+ 	EVSYS_SetEventSource( 3, EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 4, EVSYS_CHMUX_OFF_gc);
+ 	EVSYS_SetEventSource( 5, EVSYS_CHMUX_OFF_gc);
+ 	EVSYS_SetEventSource( 1, EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 6, EVSYS_CHMUX_OFF_gc);
+        EVSYS_SetEventSource( 7, EVSYS_CHMUX_OFF_gc);
+//	not neccessary ???
+//	EVSYS_SetEventSource( 6, EVSYS_CHMUX_ADCA_CH2_gc );	//event ADCA_CH2
+//	EVSYS_SetEventSource( 7, EVSYS_CHMUX_ADCB_CH2_gc );	//event ADCB_CH2
+}
+
 void Interrupt_Init(void)
 {
 	//enable ROUND ROBIN,enable MED_LVL & LOW_LVL interrupts !!!!
@@ -91,16 +107,24 @@ int main(void)
 	while (1) {
 		can_handler();
 		powermeter_docalculations();
-		if(can_send_packet){
-			can_createDATAPACKET();
-			can_send_packet=0;
-		}
 		
 		if((RTC.CNT & 0x00ff) >= x)
 			x=RTC.CNT;
 		else
 		{		//this is executed 4 times per second
+			if(can_send_packet)
 			x=0;
+	
+			if(can_send_packet == 2){
+                        	can_createDATAPACKET();
+                        	can_send_packet=0;
+                	}
+			 
+			if(can_send_packet == 1){
+                        can_createDATAPACKET();
+                        can_send_packet=2;
+                }
+
 			ERROR_blink();
 		}
 	}

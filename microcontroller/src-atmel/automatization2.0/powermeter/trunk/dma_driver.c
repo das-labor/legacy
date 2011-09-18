@@ -26,8 +26,8 @@
  *      Atmel Corporation: http://www.atmel.com \n
  *      Support email: avr@atmel.com
  *
- * $Revision: 1569 $
- * $Date: 2008-04-22 13:03:43 +0200 (ti, 22 apr 2008) $  \n
+ * $Revision: 2593 $
+ * $Date: 2009-07-17 15:22:29 +0200 (fr, 17 jul 2009) $  \n
  *
  * Copyright (c) 2008, Atmel Corporation All rights reserved.
  *
@@ -57,6 +57,21 @@
  *****************************************************************************/
 
 #include "dma_driver.h"
+
+
+/*! \brief This function forces a software reset of the DMA module.
+ *
+ *  All registers will be set to their default values. If the DMA
+ *  module is enabled, it must and will be disabled before being reset.
+ *  It will not be enabled afterwards.
+ */
+void DMA_Reset( void )                 
+{	                            
+	DMA.CTRL &= ~DMA_ENABLE_bm;
+	DMA.CTRL |= DMA_RESET_bm;   
+	while (DMA.CTRL & DMA_RESET_bm);	// Wait until reset is completed
+}
+
 
 /*! \brief This function configures the double buffering feature of the DMA.
  *
@@ -298,13 +313,13 @@ void DMA_SetupBlock( volatile DMA_CH_t * channel,
                      uint8_t repeatCount,
                      bool useRepeat )
 {
-	channel->SRCADDR0 = (( (uint16_t) srcAddr) >> 0*8 ) & 0xFF;
-	channel->SRCADDR1 = (( (uint16_t) srcAddr) >> 1*8 ) & 0xFF;
-	channel->SRCADDR2 = 0;
+	channel->SRCADDR0 = (( (uint32_t) srcAddr) >> 0*8 ) & 0xFF;
+	channel->SRCADDR1 = (( (uint32_t) srcAddr) >> 1*8 ) & 0xFF;
+	channel->SRCADDR2 = (( (uint32_t) srcAddr) >> 2*8 ) & 0xFF;
 
-	channel->DESTADDR0 = (( (uint16_t) destAddr) >> 0*8 ) & 0xFF;
-	channel->DESTADDR1 = (( (uint16_t) destAddr) >> 1*8 ) & 0xFF;
-	channel->DESTADDR2 = 0;
+	channel->DESTADDR0 = (( (uint32_t) destAddr) >> 0*8 ) & 0xFF;
+	channel->DESTADDR1 = (( (uint32_t) destAddr) >> 1*8 ) & 0xFF;
+	channel->DESTADDR2 = (( (uint32_t) destAddr) >> 2*8 ) & 0xFF;
 
 	channel->ADDRCTRL = (uint8_t) srcReload | srcDirection |
 	                              destReload | destDirection;
@@ -372,48 +387,4 @@ void DMA_SetTriggerSource( volatile DMA_CH_t * channel, uint8_t trigger )
 void DMA_StartTransfer( volatile DMA_CH_t * channel )
 {
 	channel->CTRLA |= DMA_CH_TRFREQ_bm;
-}
-
-
-void DMA0_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count )
-{
-	DMA_Enable();
-	DMA_SetPriority(DMA_PRIMODE_RR0123_gc);	//dma mode round robin
-	DMA_SetupBlock( &DMA.CH0,					//channel 0
-                   	(const void*)&ADCA.CH0RES,				//source-addr
-                  	DMA_CH_SRCRELOAD_BLOCK_gc,	//srcDirection reload after each block
-					DMA_CH_SRCDIR_INC_gc,		//srcDirection increment after each byte
-                   	(void *)destAddr,						//set destAddr
-                  	DMA_CH_DESTRELOAD_TRANSACTION_gc,		//reload destAddr after transaction
-					DMA_CH_DESTDIR_INC_gc, 		//destDirection increment destination memory addr
-                    blockSize,							//blockSize in bytes >= burstlen
-                    DMA_CH_BURSTLEN_2BYTE_gc,	//burstMode 2byte per burst
-                    count,							//repeat count times
-                    true );						//repeat
-
-   	DMA_SetTriggerSource(&DMA.CH0,  DMA_CH_TRIGSRC_EVSYS_CH0_gc);//DMA_CH_TRIGSRC_ADCA_CH2_gc);	//Trigger on ADCA_CH2
-   
-	DMA_DisableSingleShot(&DMA.CH0);	//copy one Block on every Trigger
-	DMA_EnableChannel(&DMA.CH0);
-}
-
-void DMA1_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count  )
-{
-	DMA_Enable();
-	DMA_SetupBlock( &DMA.CH1,					//channel 1
-                    (const void*)&ADCB.CH0RES,				//source-addr
-                  	DMA_CH_SRCRELOAD_BLOCK_gc,	//srcDirection reload after each block
-					DMA_CH_SRCDIR_INC_gc,		//srcDirection increment after each byte
-                   	(void*)destAddr,						//set destAddr
-                  	DMA_CH_DESTRELOAD_TRANSACTION_gc,		//reload destAddr after transaction
-					DMA_CH_DESTDIR_INC_gc, 		//destDirection increment destination memory addr
-                    blockSize,							//blockSize in bytes >= burstlen
-                    DMA_CH_BURSTLEN_2BYTE_gc,	//burstMode 2byte per burst
-                    count,							//repeat count times
-                    true );						//repeat
-
-   	DMA_SetTriggerSource(&DMA.CH1,  DMA_CH_TRIGSRC_EVSYS_CH1_gc); //DMA_CH_TRIGSRC_ADCB_CH2_gc);	//Trigger on ADCB_CH2
-   
-	DMA_DisableSingleShot(&DMA.CH1);	//copy one Block on every Trigger
-	DMA_EnableChannel(&DMA.CH1);
 }

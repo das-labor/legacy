@@ -27,8 +27,8 @@
  *      Atmel Corporation: http://www.atmel.com \n
  *      Support email: avr@atmel.com
  *
- * $Revision: 1653 $
- * $Date: 2008-05-21 10:26:08 +0200 (on, 21 mai 2008) $  \n
+ * $Revision: 2593 $
+ * $Date: 2009-07-17 15:22:29 +0200 (fr, 17 jul 2009) $  \n
  *
  * Copyright (c) 2008, Atmel Corporation All rights reserved.
  *
@@ -75,21 +75,10 @@
  */
 #define DMA_Disable()   ( DMA.CTRL &= ~DMA_ENABLE_bm )
 
-/*! \brief This function forces a software reset of the DMA module.
- *
- *  All registers will be set to their default values. If the DMA
- *  module is enabled, it must and will be disabled before being reset.
- *  It will not be enabled afterwards.
- */
-#define DMA_Reset()                 \
-{	                            \
-	DMA.CTRL &= ~DMA_ENABLE_bm; \
-	DMA.CTRL |= DMA_RESET_bm;   \
-	DMA.CTRL &= ~DMA_RESET_bm   \
-}
+
 
 /*! Prototyping of functions. */
-
+void DMA_Reset( void );
 void DMA_ConfigDoubleBuffering( DMA_DBUFMODE_t dbufMode );
 void DMA_SetPriority( DMA_PRIMODE_t priMode );
 uint8_t DMA_CH_IsOngoing( volatile DMA_CH_t * channel );
@@ -119,6 +108,5 @@ void DMA_EnableSingleShot( volatile DMA_CH_t * channel );
 void DMA_DisableSingleShot( volatile DMA_CH_t * channel );
 void DMA_SetTriggerSource( volatile DMA_CH_t * channel, uint8_t trigger );
 void DMA_StartTransfer( volatile DMA_CH_t * channel );
-void DMA0_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count);
-void DMA1_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count);
+
 #endif

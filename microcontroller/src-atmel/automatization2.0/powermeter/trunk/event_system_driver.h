@@ -70,5 +70,5 @@ bool EVSYS_SetEventChannelParameters( uint8_t eventChannel,
 bool EVSYS_SetEventChannelFilter( uint8_t eventChannel,
                                   EVSYS_DIGFILT_t filterCoefficient );
 void EVSYS_ManualTrigger( uint8_t dataMask, uint8_t strobeMask );
-void Eventsystem_init( void );
+
 #endif
