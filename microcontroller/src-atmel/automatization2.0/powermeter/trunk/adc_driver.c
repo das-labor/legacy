@@ -35,8 +35,8 @@
  *      Atmel Corporation: http://www.atmel.com \n
  *      Support email: avr@atmel.com
  *
- * $Revision: 2793 $
- * $Date: 2009-09-21 11:12:00 +0200 (ma, 21 sep 2009) $  \n
+ * $Revision: 2564 $
+ * $Date: 2009-07-06 17:45:56 +0200 (ma, 06 jul 2009) $  \n
  *
  * Copyright (c) 2008, Atmel Corporation All rights reserved.
  *
@@ -65,7 +65,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 #include "adc_driver.h"
-#include "config.h"
+
 
 /*! \brief This function get the calibration data from the production calibration.
  *
@@ -76,11 +76,11 @@
  */
 void ADC_CalibrationValues_Load(ADC_t * adc)
 {
-	if(&ADCA == adc){
-		 /* Get ADCACAL0 from production signature . */
+	if (&ADCA == adc) {
+		/* Get ADCACAL0 from production signature . */
 		adc->CALL = SP_ReadCalibrationByte( PROD_SIGNATURES_START + ADCACAL0_offset );
 		adc->CALH = SP_ReadCalibrationByte( PROD_SIGNATURES_START + ADCACAL1_offset );
-	}else {
+	} else {
 		/* Get ADCBCAL0 from production signature  */
 		adc->CALL = SP_ReadCalibrationByte( PROD_SIGNATURES_START + ADCBCAL0_offset );
 		adc->CALH = SP_ReadCalibrationByte( PROD_SIGNATURES_START + ADCBCAL1_offset );
@@ -99,7 +99,7 @@ void ADC_CalibrationValues_Load(ADC_t * adc)
  */
 uint16_t ADC_ResultCh_GetWord_Unsigned(ADC_CH_t * adc_ch, uint8_t offset)
 {
-  	uint16_t answer;
+	uint16_t answer;
 
 	/* Clear interrupt flag.*/
 	adc_ch->INTFLAGS = ADC_CH_CHIF_bm;
@@ -117,12 +117,12 @@ uint16_t ADC_ResultCh_GetWord_Unsigned(ADC_CH_t * adc_ch, uint8_t offset)
  *      When the conversion result is ready this funciton reads out the result.
  *
  *  \param  adc_ch  Pointer to ADC channel register section.
- *  \param  signedOffset  Offset value to subtract.
+ *  \param  offset  Offset value to subtract.
  *  \return  The signed Conversion result with the offset substracted.
  */
 int16_t ADC_ResultCh_GetWord_Signed(ADC_CH_t * adc_ch, int8_t signedOffset)
 {
-  	int16_t answer;
+	int16_t answer;
 
 	/* Clear interrupt flag.*/
 	adc_ch->INTFLAGS = ADC_CH_CHIF_bm;
@@ -147,7 +147,7 @@ uint16_t ADC_ResultCh_GetWord(ADC_CH_t * adc_ch)
 	adc_ch->INTFLAGS = ADC_CH_CHIF_bm;
 
 	/* Return result register contents*/
-	return adc_ch->RES;
+	return adc_ch->RES;;
 }
 
 
@@ -207,8 +207,8 @@ uint8_t ADC_ResultCh_GetHighByte(ADC_CH_t * adc_ch)
  */
 void ADC_Wait_8MHz(ADC_t * adc)
 {
-  	/* Store old prescaler value. */
-  	uint8_t prescaler_val = adc->PRESCALER;
+	/* Store old prescaler value. */
+	uint8_t prescaler_val = adc->PRESCALER;
 
 	/* Set prescaler value to minimum value. */
 	adc->PRESCALER = ADC_PRESCALER_DIV4_gc;
@@ -239,8 +239,8 @@ void ADC_Wait_8MHz(ADC_t * adc)
  */
 void ADC_Wait_32MHz(ADC_t * adc)
 {
-  	/* Store old prescaler value. */
-  	uint8_t prescaler_val = adc->PRESCALER;
+	/* Store old prescaler value. */
+	uint8_t prescaler_val = adc->PRESCALER;
 
 	/* Set prescaler value to minimum value. */
 	adc->PRESCALER = ADC_PRESCALER_DIV8_gc;
@@ -252,10 +252,10 @@ void ADC_Wait_32MHz(ADC_t * adc)
 	adc->PRESCALER = prescaler_val;
 }
 
-/*! \brief This function gets the offset of the ADC when it is configured in unsigned mode
+/*! \brief This function get the offset of the ADC when it is configured in unsigned mode
  *
  *   This function does one or several measurements to determine the offset of
- *   the ADC. 
+ *   the ADC.
  *
  *  \note The ADC must be configured and enabled before this function is run.
  *
@@ -270,39 +270,35 @@ void ADC_Wait_32MHz(ADC_t * adc)
  */
 uint8_t ADC_Offset_Get_Unsigned(ADC_t * adc, ADC_CH_t *ch, bool oversampling)
 {
-    if (oversampling)
-    {
-      uint16_t offset=0;
-      for (int i=0; i<4; i++)
-      {
-        /* Do one conversion to find offset. */
-        ADC_Ch_Conversion_Start(ch);
-    
-        do{
-        }while(!ADC_Ch_Conversion_Complete(ch));
-        offset += ADC_ResultCh_GetWord_Unsigned(ch, 0x00);
-      }
-      return ((uint8_t)(offset>>2));
-    }
-    else
-    {        
-      uint8_t offset=0;
-      
-      /* Do one conversion to find offset. */
-      ADC_Ch_Conversion_Start(ch);
-  
-      do{
-      }while(!ADC_Ch_Conversion_Complete(ch));
-      offset = (uint8_t)ADC_ResultCh_GetWord(ch);
-      
-      return offset;
-    }
+	if (oversampling) {
+		uint16_t offset=0;
+		for (int i=0; i<4; i++) {
+			/* Do one conversion to find offset. */
+			ADC_Ch_Conversion_Start(ch);
+
+			do{
+			} while (!ADC_Ch_Conversion_Complete(ch));
+			offset += ADC_ResultCh_GetWord_Unsigned(ch, 0x00);
+		}
+		return ((uint8_t)(offset>>2));
+	} else {
+		uint8_t offset=0;
+
+		/* Do one conversion to find offset. */
+		ADC_Ch_Conversion_Start(ch);
+
+		do{
+		} while (!ADC_Ch_Conversion_Complete(ch));
+		offset = (uint8_t)ADC_ResultCh_GetWord(ch);
+
+		return offset;
+	}
 }
 
-/*! \brief This function gets the offset of the ADC when it is configured in signed mode
+/*! \brief This function get the offset of the ADC when it is configured in signed mode
  *
  *   This function does one or several measurements to determine the offset of
- *   the ADC. 
+ *   the ADC.
  *
  *  \note The ADC must be configured and enabled before this function is run.
  *
@@ -317,36 +313,32 @@ uint8_t ADC_Offset_Get_Unsigned(ADC_t * adc, ADC_CH_t *ch, bool oversampling)
  */
 int8_t ADC_Offset_Get_Signed(ADC_t * adc, ADC_CH_t *ch, bool oversampling)
 {
-    if (oversampling)
-    {
-      int16_t offset=0;
-      for (int i=0; i<8; i++)
-      {
-        /* Do one conversion to find offset. */
-        ADC_Ch_Conversion_Start(ch);
-    
-        do{
-        }while(!ADC_Ch_Conversion_Complete(ch));
-        offset += ADC_ResultCh_GetWord_Signed(ch, 0x00);
-      }
-      return ((int8_t)(offset/4));
-    }
-    else
-    {        
-      int8_t offset=0;
-      
-      /* Do one conversion to find offset. */
-      ADC_Ch_Conversion_Start(ch);
-  
-      do{
-      }while(!ADC_Ch_Conversion_Complete(ch));
-      offset = (uint8_t)ADC_ResultCh_GetWord_Signed(ch, 0x00);
-      
-      return offset;
-    }
+	if (oversampling) {
+		int16_t offset=0;
+		for (int i=0; i<4; i++) {
+			/* Do one conversion to find offset. */
+			ADC_Ch_Conversion_Start(ch);
+
+			do{
+			} while (!ADC_Ch_Conversion_Complete(ch));
+			offset += ADC_ResultCh_GetWord_Signed(ch, 0x00);
+		}
+		return ((int8_t)(offset/4));
+	} else {
+		int8_t offset=0;
+
+		/* Do one conversion to find offset. */
+		ADC_Ch_Conversion_Start(ch);
+
+		do{
+		} while (!ADC_Ch_Conversion_Complete(ch));
+		offset = (uint8_t)ADC_ResultCh_GetWord_Signed(ch, 0x00);
+
+		return offset;
+	}
 }
 
-               
+
 #ifdef __GNUC__
 
 /*! \brief Function for GCC to read out calibration byte.
@@ -363,119 +355,12 @@ uint8_t SP_ReadCalibrationByte( uint8_t index )
 
 	/* Load the NVM Command register to read the calibration row. */
 	NVM_CMD = NVM_CMD_READ_CALIB_ROW_gc;
- 	result = pgm_read_byte(index);
+	result = pgm_read_byte(index);
 
 	/* Clean up NVM Command register. */
- 	NVM_CMD = NVM_CMD_NO_OPERATION_gc;
+	NVM_CMD = NVM_CMD_NO_OPERATION_gc;
 
 	return result;
 }
 
 #endif
-
-void adc_init(int8_t *offsetA,int8_t *offsetB){
-	/* Move stored calibration values to ADC A. */
-	ADC_CalibrationValues_Load(&ADCA);
-
-	/* Set up ADC A to have signed conversion mode and 12 bit resolution. */
-  	ADC_ConvMode_and_Resolution_Config(&ADCA, ADC_ConvMode_Signed, ADC_RESOLUTION_12BIT_gc);
-
-	/* Set sample rate. */
-	ADC_Prescaler_Config(&ADCA, ADC_PRESCALER_DIV32_gc);	// 1 MSPs
-
-	/* Set reference voltage on ADC A to external reference pin on PORTA .*/
-	ADC_Reference_Config(&ADCA, ADC_REFSEL_AREFA_gc);
-
-	/* Differential Input signed -> 0V ==-2048, Vref/2 ==0, Vref ==+2048 
-	no Gain to improve messurement */
-	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH0, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
-	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH1, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
-	ADC_Ch_InputMode_and_Gain_Config(&ADCA.CH2, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
-
-#if ADC_OFFSET_CAL
-	/* Get offset value for ADC A. */
-   	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN2_gc);
-
-	ADC_Enable(&ADCA);
-	/* Wait until common mode voltage is stable. Default clk is 2MHz and
-	 * therefore below the maximum frequency to use this function. */
-	ADC_Wait_32MHz(&ADCA);
- 	*offsetA = (int8_t)ADC_Offset_Get_Signed(&ADCA, &ADCA.CH0, false);
-	ADC_Disable(&ADCA);
-#else
-	*offsetA=0;
-#endif
-	/*Set Positive and Negative Pins for each Channel */
-	ADC_Ch_InputMux_Config(&ADCA.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
-	ADC_Ch_InputMux_Config(&ADCA.CH1, ADC_CH_MUXPOS_PIN3_gc, ADC_CH_MUXNEG_PIN0_gc);
-	ADC_Ch_InputMux_Config(&ADCA.CH2, ADC_CH_MUXPOS_PIN4_gc, ADC_CH_MUXNEG_PIN0_gc);
-	
-	/* Setup sweep of three virtual channels. */
-	ADC_SweepChannels_Config(&ADCA, ADC_SWEEP_012_gc |
-	              ADC_EVSEL_7_gc |
-	              ADC_EVACT_SWEEP_gc);
-	
-  	/*  ADC_Ch_Interrupts_Config(&ADCA.CH0,ADC_CH_INTMODE_COMPLETE_gc, ADC_CH_INTLVL_LO_gc);
-		Interrupts aren't used atm
-	*/
-	
-	/* Move stored calibration values to ADC B. */
-	ADC_CalibrationValues_Load(&ADCB);
-
-	/* Set up ADC A to have signed conversion mode and 12 bit resolution. */
-  	ADC_ConvMode_and_Resolution_Config(&ADCB, ADC_ConvMode_Signed, ADC_RESOLUTION_12BIT_gc);
-
-	/* Set sample rate. */
-	ADC_Prescaler_Config(&ADCB, ADC_PRESCALER_DIV32_gc);	// 1 MSPs
-
-	/* Set reference voltage on ADC A to external reference pin on PORTA .*/
-	ADC_Reference_Config(&ADCB, ADC_REFSEL_AREFA_gc);
-
-	/* Differential Input signed -> 0V ==-2048, Vref/2 ==0, Vref ==+2048 
-	no Gain to improve messurement */
-	ADC_Ch_InputMode_and_Gain_Config(&ADCB.CH0, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
-	ADC_Ch_InputMode_and_Gain_Config(&ADCB.CH1, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
-	ADC_Ch_InputMode_and_Gain_Config(&ADCB.CH2, ADC_CH_INPUTMODE_DIFF_gc, ADC_DRIVER_CH_GAIN_NONE);
-
-#if ADC_OFFSET_CAL
-	/* Get offset value for ADC B. */
-   	ADC_Ch_InputMux_Config(&ADCB.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN2_gc);
-
-	ADC_Enable(&ADCB);
-	/* Wait until common mode voltage is stable. Default clk is 2MHz and
-	 * therefore below the maximum frequency to use this function. */
-	ADC_Wait_32MHz(&ADCB);
- 	*offsetB = (int8_t)ADC_Offset_Get_Signed(&ADCB, &ADCB.CH0, false);
-	ADC_Disable(&ADCB);
-#else
-	*offsetB=0;
-#endif	
-	/*Set Positive and Negative Pins for each Channel */
-	ADC_Ch_InputMux_Config(&ADCB.CH0, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
-	ADC_Ch_InputMux_Config(&ADCB.CH1, ADC_CH_MUXPOS_PIN3_gc, ADC_CH_MUXNEG_PIN0_gc);
-	ADC_Ch_InputMux_Config(&ADCB.CH2, ADC_CH_MUXPOS_PIN4_gc, ADC_CH_MUXNEG_PIN0_gc);
-
-	//ADC_Events_Config(&ADCA, ADC_EVSEL_0123_gc, ADC_EVACT_CH0_gc);
-	
-	/* Setup sweep of three virtual channels. */
-	ADC_SweepChannels_Config(&ADCB, ADC_SWEEP_012_gc |
-	              ADC_EVSEL_7_gc |
-	              ADC_EVACT_SWEEP_gc);
-
-	
- 	/* Enable ADC A .*/
-	ADC_Enable(&ADCA);
-
-	/* Wait until common mode voltage is stable. Default clk is 2MHz and
-	 * therefore below the maximum frequency to use this function. */
-	ADC_Wait_32MHz(&ADCA);
-	
-	 /* Enable ADC B .*/
-	ADC_Enable(&ADCB);
-	
-	/* Wait until common mode voltage is stable. Default clk is 2MHz and
-	 * therefore below the maximum frequency to use this function. */
-	ADC_Wait_32MHz(&ADCB);
-
-}
-

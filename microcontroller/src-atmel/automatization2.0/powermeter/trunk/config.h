@@ -11,9 +11,9 @@
 #define CAN_TX_BUFFER_SIZE 128
 #define CAN_RX_BUFFER_SIZE 32
 
-#define DEBUGMODE 1		//set to 1 for DEBUGMODE, otherwise 0
+#define DEBUGMODE 0		//set to 1 for DEBUGMODE, otherwise 0
 
-#define ADC_OFFSET_CAL 0
+#define ADC_OFFSET_CAL 1
 
 #define POWERMETER_SAMPLEBUFF 256		//this will use POWERMETER_SAMPLEBUFF*18 bytes of RAM
 

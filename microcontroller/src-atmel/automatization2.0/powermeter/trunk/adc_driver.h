@@ -28,8 +28,8 @@
  *      Atmel Corporation: http://www.atmel.com \n
  *      Support email: avr@atmel.com
  *
- * $Revision: 2644 $
- * $Date: 2009-08-04 12:37:51 +0200 (ti, 04 aug 2009) $  \n
+ * $Revision: 2564 $
+ * $Date: 2009-07-06 17:45:56 +0200 (ma, 06 jul 2009) $  \n
  *
  * Copyright (c) 2008, Atmel Corporation All rights reserved.
  *
@@ -112,13 +112,13 @@
 	((_adc)->CTRLB = ((_adc)->CTRLB & (~(ADC_RESOLUTION_gm|ADC_CONMODE_bm)))|  \
 		(_resolution| ( _signedMode? ADC_CONMODE_bm : 0)))
 
-/*! \brief Helper macro for increased readability with ADC_ConvMode_and_Resolution_Config
+/*! \brief Helper macro for readability for ADC_ConvMode_and_Resolution_Config
  *
  *  \sa  ADC_ConvMode_and_Resolution_Config
  */
 #define ADC_ConvMode_Signed true
 
-/*! \brief Helper macro for increased readability with ADC_ConvMode_and_Resolution_Config
+/*! \brief Helper macro for readability for ADC_ConvMode_and_Resolution_Config
  *
  *  \sa  ADC_ConvMode_and_Resolution_Config
  */
@@ -173,7 +173,7 @@
  *  \param  _eventMode      Select event trigger mode.
  *                          Use ADC_EVACT_t type.
  */
-#define ADC_Events_Config(_adc, _eventChannels, _eventMode)                    \
+#define ADC_Events_Config(_adc, _eventChannels, _eventMode)                \
 	(_adc)->EVCTRL = ((_adc)->EVCTRL & (~(ADC_EVSEL_gm | ADC_EVACT_gm))) | \
 	                 ((uint8_t) _eventChannels | _eventMode)
 
@@ -211,14 +211,6 @@
 	(_adc_ch)->CTRL = ((_adc_ch)->CTRL &                                   \
 	                  (~(ADC_CH_INPUTMODE_gm|ADC_CH_GAINFAC_gm))) |        \
 	                  ((uint8_t) _inputMode|_gain)
-
-
-/*! \brief Helper macro for increased readability with ADC_Ch_InputMode_and_Gain_Config
- *
- *  \sa  ADC_Ch_InputMode_and_Gain_Config
- */
-#define ADC_DRIVER_CH_GAIN_NONE ADC_CH_GAIN_1X_gc
-
 
 /*!  \brief This macro configures the Positiv and negativ inputs.
  *
@@ -275,7 +267,7 @@
 	((_adc)->CTRLB = (_adc)->CTRLB & (~ADC_FREERUN_bm))
 
 
-/*! \brief This macro starts one channel conversion
+/*! \brief This macro start one channel conversion
  *
  *  Use the ADC_GetWordResultCh or ADC_GetByteResultCh functions to
  *  retrieve the conversion result. This macro is not to be used
@@ -286,7 +278,7 @@
 #define ADC_Ch_Conversion_Start(_adc_ch) ((_adc_ch)->CTRL |= ADC_CH_START_bm)
 
 
-/*! \brief This macro starts multiple channel conversions
+/*! \brief This macro start multiple channel conversions
  *
  *  This macro starts a conversion for the channels selected by
  *  the channel mask parameter. Use the bit mask defines for each
@@ -355,31 +347,23 @@ uint8_t  ADC_ResultCh_GetHighByte(ADC_CH_t * adc_ch);
 void ADC_Wait_8MHz(ADC_t * adc);
 void ADC_Wait_32MHz(ADC_t * adc);
 
-
-void adc_init(int8_t *offsetA,int8_t *offsetB);
-
-/*! Deprecated functions: Compatibility with previous application note version.
- *  These functions will be removed in later releases of the driver
- * \name Deprecated functions
- */
-//@{
+/* Deprecated functions: Compatibility with previous application note version */
+#ifdef ADC_DRIVER_USE_DEPRECATED_FUNCTIONS
 #define ADC_Referance_Config(_adc, _convRef) ADC_Reference_Config(_adc, _convRef)
 #define ADC_CalibrationValues_Set(_adc) ADC_CalibrationValues_Load(_adc)
-//@}
+#endif
+
+#endif
 
 
-/*! Offset addresses for production signature row on which is not in current GCC  
- *  header files
- * \name GCC compatibility macros
- */
-//@{
+#define ADC_DRIVER_CH_GAIN_NONE ADC_CH_GAIN_1X_gc
+
+/* Offset addresses for production signature row on GCC */
 #ifndef ADCACAL0_offset
 
 #define ADCACAL0_offset 0x20
 #define ADCACAL1_offset 0x21
 #define ADCBCAL0_offset 0x24
 #define ADCBCAL1_offset 0x25
-#endif
-//@}
 
 #endif
