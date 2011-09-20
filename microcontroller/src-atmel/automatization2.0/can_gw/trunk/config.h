@@ -6,7 +6,7 @@
 
 // uart.[ch] defines
 #define UART_INTERRUPT
-#define UART_BAUD_RATE 57600
+#define UART_BAUD_RATE 115200
 #define UART_RXBUFSIZE 50
 #define UART_TXBUFSIZE 50
 //#define UART_LEDS
@@ -30,9 +30,9 @@
 #define SPI_PIN_MCP_INT      PD2
 
 
-//#define CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
-#define CAN_RX_BUFFER_SIZE 8	//only used for Interrupt
-#define CAN_TX_BUFFER_SIZE 8	//only used for Interrupt
+#define CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
+#define CAN_RX_BUFFER_SIZE 16	//only used for Interrupt
+#define CAN_TX_BUFFER_SIZE 16	//only used for Interrupt
 
 #define ENABLE_CAN_INT()   GICR |= (1<<INT0); \
         MCUCR |=  (1<<ISC01); \
