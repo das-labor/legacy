@@ -40,7 +40,7 @@ typedef struct
 {
 	uint16_t ADCSamplesPerSecond;		//samples per second
 	uint16_t ADCSampleBufferSize;		//buffersize in Bytes
-	uint16_t ADCSampesPerPeriod;		//samples per period
+	uint16_t ADCSamplesPerPeriod;		//samples per period
 	powermeter_adc_offset_t ADCoffset;	//ADC offset (+-2)
 	powermeter_channel_t powerdraw;
 	powermeter_channel_t powerdrawPerSecond;
