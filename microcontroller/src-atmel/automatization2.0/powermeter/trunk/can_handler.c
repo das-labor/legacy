@@ -9,10 +9,10 @@
 #include "powermeter_driver.h"
 
 #include "can_handler.h"
+#include "config.h"
 
 uint8_t myaddr;
-#define sendwithDELAY 0
-#define laborhack 1
+
 
 #if laborhack
 uint8_t laborcanbushack;

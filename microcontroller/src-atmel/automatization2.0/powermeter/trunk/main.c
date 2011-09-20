@@ -51,17 +51,17 @@ void start_mcp_clock(){
 void Eventsystem_init( void )
 {
 	/* Select multiplexer input. */
-	EVSYS_SetEventSource( 0, EVSYS_CHMUX_TCC1_OVF_gc );	//event Timer1CC1_OVF
+	EVSYS_SetEventSource( 7, EVSYS_CHMUX_TCC1_OVF_gc );	//event Timer1CC1_OVF
 	EVSYS_SetEventSource( 2, EVSYS_CHMUX_OFF_gc);
  	EVSYS_SetEventSource( 3, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 4, EVSYS_CHMUX_OFF_gc);
  	EVSYS_SetEventSource( 5, EVSYS_CHMUX_OFF_gc);
- 	EVSYS_SetEventSource( 1, EVSYS_CHMUX_OFF_gc);
+ 	//EVSYS_SetEventSource( 1, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 6, EVSYS_CHMUX_OFF_gc);
-        EVSYS_SetEventSource( 7, EVSYS_CHMUX_OFF_gc);
+        //EVSYS_SetEventSource( 0, EVSYS_CHMUX_OFF_gc);
 //	not neccessary ???
-//	EVSYS_SetEventSource( 6, EVSYS_CHMUX_ADCA_CH2_gc );	//event ADCA_CH2
-//	EVSYS_SetEventSource( 7, EVSYS_CHMUX_ADCB_CH2_gc );	//event ADCB_CH2
+	EVSYS_SetEventSource( 0, EVSYS_CHMUX_ADCA_CH2_gc );	//event ADCA_CH2
+	EVSYS_SetEventSource( 1, EVSYS_CHMUX_ADCB_CH2_gc );	//event ADCB_CH2
 }
 
 void Interrupt_Init(void)
@@ -87,7 +87,7 @@ int main(void)
 	can_init();
 	read_can_addr();
 	#if DEBUGMODE
-    InitializeUSARTC1();	//init USARTC1 (for debuging)	19200 8N1
+    	InitializeUSARTC1();	//init USARTC1 (for debuging)	19200 8N1
 	sendUSARTC1_putstr("DEBUG Interface\n\r");
 	#endif
 	
@@ -97,7 +97,7 @@ int main(void)
  	setERROR(0);
 	can_send_packet=0;
 	
-	powermeter_SetSampleratePerPeriod(64);
+	powermeter_SetSampleratePerPeriod(32);
 	powermeter_Start();
 
 #if DEBUGMODE
@@ -107,11 +107,18 @@ int main(void)
 	while (1) {
 		can_handler();
 		powermeter_docalculations();
+#if !laborhack
+		 if(can_send_packet){
+                        can_createDATAPACKET();
+                        can_send_packet=0;
+		}
+#endif
 		
 		if((RTC.CNT & 0x00ff) >= x)
 			x=RTC.CNT;
 		else
 		{		//this is executed 4 times per second
+#if laborhack
 			if(can_send_packet)
 			x=0;
 	
@@ -124,7 +131,7 @@ int main(void)
                         can_createDATAPACKET();
                         can_send_packet=2;
                 }
-
+#endif
 			ERROR_blink();
 		}
 	}

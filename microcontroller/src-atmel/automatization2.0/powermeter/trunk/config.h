@@ -11,10 +11,17 @@
 #define CAN_TX_BUFFER_SIZE 128
 #define CAN_RX_BUFFER_SIZE 32
 
+//CAN hacks
+#define sendwithDELAY 0
+#define laborhack 0
+
+//debugmode
 #define DEBUGMODE 0		//set to 1 for DEBUGMODE, otherwise 0
 
+//offset compensation for ADC
 #define ADC_OFFSET_CAL 1
 
+//powermeter samplebuffer size (allows up to POWERMETER_SAMPLEBUFF samples per period)
 #define POWERMETER_SAMPLEBUFF 256		//this will use POWERMETER_SAMPLEBUFF*18 bytes of RAM
 
 #define NET_FREQ 50		//set freq of Powerline
