@@ -1,0 +1,32 @@
+#define LED_READY PD3
+#define LED_CALIBRATING PC6
+#define LED_USBON PF4
+
+#define LED_READY_ON {PORTD |= _BV(LED_READY);}
+#define LED_READY_OFF {PORTD &= ~ _BV(LED_READY);}
+
+#define LED_CALIBRATING_ON {PORTC |= _BV(LED_CALIBRATING);}
+#define LED_CALIBRATING_OFF {PORTC &= ~ _BV(LED_CALIBRATING);}
+
+#define LED_USBON_ON {PORTF |= _BV(LED_USBON);}
+#define LED_USBON_OFF {PORTF &= ~ _BV(LED_USBON);}
+
+#define LASER_SUPPLY_EN PF0
+#define LASER_SUPPLY_ON  {PORTF |= _BV(LASER_SUPPLY_EN);}
+#define LASER_SUPPLY_OFF {PORTF &= ~_BV(LASER_SUPPLY_EN);}
+
+#define KEY_ON PD0
+#define KEY_START PD1
+
+#define KEY_ON_PIN (PIND & _BV(KEY_ON))
+#define KEY_ON_START (PIND & _BV(KEY_START))
+
+#define SUPPLY_SENSE PF6
+#define SUPPLY_SENSE_PIN (PINF & _BV(PF6))
+
+#define IH1 PB5
+#define IL1 PF7
+#define IH2 PB6
+#define IL2 PD5
+
+#define HSYNC PD2
