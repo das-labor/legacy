@@ -16,10 +16,29 @@ void main(){
 	ENABLE_INT0
 	CONFIGURE_INT3
 	ENABLE_INT3
+	CONFIGURE_INT6
+	
+	if(!SUPPLY_SENSE_PIN)
+	{
+		exposer.powersupply = 1;
+	}
+	else
+	{
+		exposer.powersupply = 0;
+	}
+	
+	laser_control_setmode(LASER_MODE_OFF);
+	
 	POWER_REDUCE	//shut down all hardware that isn't needed
 	sei();			//global allow interrupts
 	
 start:
+	LED_RUNNING_OFF
+	LED_READY_OFF
+	LED_CALIBRATING_OFF
+	exposer.start = 0;
+	exposer.running = 0;
+	
 	while(!exposer.running)
 	{
 		POWER_DOWN		//go to sleep mode
@@ -32,24 +51,59 @@ start:
 	{
 		POWER_DOWN		//go to sleep mode
 	}
-	exposer.start=0;
 	
 	//calibrate
 	LED_READY_OFF
 	LED_CALIBRATING_ON
-	
+	laser_control_setmode( LASER_MODE_INIT );
 	
 	//goto to idle mode
-
+	laser_control_setmode( LASER_MODE_IDLE );
+	
+	//move carriage to startline
+	
 	//wait for data
+	
 	LED_CALIBRATING_OFF
 	LED_RUNNING_ON
-	
+	laser_control_setmode( LASER_MODE_RUNNING );
 	//plot
 	while(exposer.running&exposer.powersupply){
-	
-	
+		
+		//get new usb data
+		
+		//active carriage motor
+		
+		CLEAR_ROT1_PIN
+		while(!ROT1_PIN)	//wait until 
+		{
+			for(uint8_t lineloops=0; lineloops < exposer.linerepeatcount; lineloops++)
+			{
+				//plot
+			
+				//if(ROT1_PIN)	//error, carriage driver is to fast
+					
+			}
+		
+		}
+		//stop carriage motor
+		
+		exposer.currentline++;
+		
+		while(!exposer.start)	//if stop button is pressed wait
+			asm volatile("nop");
+			
+		laser_control_setmode( LASER_MODE_RUNNING );
+		
+		//check if we reached the end
+		if(exposer.currentline >= exposer.endline)
+			exposer.running=0;
 	}
+	
+	laser_control_setmode(LASER_MODE_OFF);
+	//move carriage to start, if possible
+	if(exposer.powersupply)
+		carriage_tostart();
 	
 	LED_RUNNING_OFF
 	goto start;
@@ -96,6 +150,8 @@ ISR(INT1_vect)
 	else	//stop pressed
 	{
 		//goto idle mode
+		exposer.start = 0;
+		laser_control_setmode( LASER_MODE_IDLE );
 	}
 }
 
