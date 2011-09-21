@@ -1,16 +1,6 @@
-update=Thu 15 Sep 2011 04:29:51 PM CEST
+update=Wed 21 Sep 2011 11:17:15 AM CEST
 version=1
-last_client=eeschema
-[cvpcb]
-version=1
-NetITyp=0
-NetIExt=.net
-PkgIExt=.pkg
-NetDir=
-LibDir=
-NetType=0
-[cvpcb/libraries]
-EquName1=devcms
+last_client=cvpcb
 [pcbnew]
 version=1
 PadDrlX=320
@@ -66,7 +56,6 @@ MaxLnkS=3
 ShowRat=0
 ShowMRa=1
 [pcbnew/libraries]
-LibDir=
 LibName1=sockets
 LibName2=connect
 LibName3=discret
@@ -77,6 +66,8 @@ LibName7=display
 LibName8=valves
 LibName9=led
 LibName10=dip_sockets
+LibName11=rfm12
+LibDir=
 [general]
 version=1
 [eeschema]
@@ -143,3 +134,9 @@ LibName29=contrib
 LibName30=valves
 LibName31=regulator-lm2574
 LibName32=l6201ps
+LibName33=irf83xx
+[cvpcb]
+version=1
+NetIExt=net
+[cvpcb/libraries]
+EquName1=devcms
