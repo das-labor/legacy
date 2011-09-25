@@ -65,7 +65,11 @@
 #define ENABLE_INT6 EIMSK |=_BV(INT6);
 #define DISABLE_INT6 EIMSK &=~BV(INT6);
 #define CONFIGURE_INT6 EICRB|=_BV(ISC61);		//falling edge
- 
+
+
+#define ENABLE_USB_INT UDIEN = (1<<EORSTE)|(1<<SOFE);
+#define DISABLE_USB_INT UDIEN &= ~((1<<EORSTE)|(1<<SOFE));
+
 #define POWER_DOWN {SMCR |= _BV(SM1)|_BV(SE);SLEEP;}
 #define POWER_REDUCE {PRR0 = _BV(PRTWI)|_BV(PRADC); PRR1 = _BV(PRUSART1);}
 
@@ -77,3 +81,33 @@
 
 //hardware definition
 #define MASQ0MB11RR_MAX_FREQ 200
+
+#define EXPOSER_OFF 0
+#define EXPOSER_RUNNING _BV(1)
+#define EXPOSER_ON _BV(2)
+#define EXPOSER_USB_GO _BV(4)
+
+#define EXPOSER_IS_ON (exposer.status & EXPOSER_ON)
+#define EXPOSER_IS_RUNNING (exposer.status & EXPOSER_RUNNING)
+
+#define EXPOSER_BUFFER_SIZE 512
+typedef struct{
+	uint8_t bufferA[EXPOSER_BUFFER_SIZE];
+	uint8_t bufferB[EXPOSER_BUFFER_SIZE];
+}exposer_buffer_t;
+
+	
+typedef struct{
+	uint8_t status;
+	uint16_t currentline;	//TODO: uint32_t ??
+	uint16_t endline;
+	uint16_t fastforwardspeed;
+	uint16_t plotstartpos;
+	uint8_t linesperrotaryenctick;
+	uint16_t plotforwardspeed;
+	uint16_t backspeed;
+	exposer_buffer_t buffers;
+} exposer_t;
+
+
+extern exposer_t exposer;

@@ -23,7 +23,8 @@
 //IH2 <- OC1B
 
 #include "config.h"
-
+#include "carriage_driver.h"
+#include "avr/io.h"
 
 void bts7741g_stop()
 {

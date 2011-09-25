@@ -22,6 +22,9 @@ ISR(INT2_vect)
 		return;
 	}
 	//laser is running
+	
+	//increment loop counter
+	laser_driver.loops++;
 	//start plotting
 	INIT_SPI
 	ENABLE_SPI_INT
@@ -107,12 +110,20 @@ uint8_t laser_control_getmode()
 	return laser_driver.mode;
 }
 
-uint8_t laser_control_setaddr(uint8_t *address)
+void laser_control_setaddr(uint8_t *address)
 {
 	laser_driver.start_addr = address;
 }
 
-uint8_t laser_control_setbufsize(uint16_t buf)
+uint8_t laser_control_readloopcounter(void)
+{
+	uint8_t loops;
+	loops = laser_driver.loops;
+	laser_driver.loops = 0;
+	return loops;
+}
+
+void laser_control_setbufsize(uint16_t buf)
 {
 	laser_driver.buffer_length = buf;
 }
