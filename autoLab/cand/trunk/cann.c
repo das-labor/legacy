@@ -77,9 +77,8 @@ void cann_listen(int port)
 	fcntl( listen_socket, F_SETFL, flags | O_NDELAY );
 
 	/* specify queue */ 
-	listen(listen_socket, 5); 
+	listen(listen_socket, 5);
 	debug_assert( ret >= 0, "Could listen() listening socket"  );
-
 }
 
 /* open connect to cand */
@@ -119,11 +118,11 @@ cann_conn_t *cann_connect(char *server, int port)
 	// set some options on socket
 	fcntl(client->fd, F_SETFL, O_NONBLOCK);
 	int flag = 1;
-	setsockopt(client->fd,  
+	setsockopt(client->fd,
 		   IPPROTO_TCP,     /* set option at TCP level */
 		   TCP_NODELAY,     /* name of option */
 		   (char *) &flag,  /* the cast is historical cruft */
-	           sizeof(int));    /* length of option value */
+		   sizeof(int));    /* length of option value */
 
 	return client;
 }
@@ -153,7 +152,7 @@ cann_conn_t *cann_accept(fd_set *set)
 	cann_conn_t *client;
 
 	// activity on listen_socket?
-	if ( !FD_ISSET(listen_socket, set) ) 	
+	if ( !FD_ISSET(listen_socket, set) )
 		return NULL;
 
 	FD_CLR(listen_socket, set);
@@ -277,6 +276,17 @@ void cann_dumpconn()
 	}
 }
 
+void cann_conn_free(cann_conn_t* conn)
+{
+	if(conn->next != NULL)
+		cann_conn_free(conn->next);
+	
+	conn->next = NULL;
+	if(conn->rcv_ptr != NULL)
+		free(conn->rcv_ptr);
+	
+	free(conn);
+}
 
 
 /*****************************************************************************

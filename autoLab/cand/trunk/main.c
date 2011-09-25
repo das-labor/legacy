@@ -10,6 +10,7 @@
 #include <time.h>
 #include <locale.h>
 #include <langinfo.h>
+#include <signal.h>
 
 #include "cann.h"
 #include "debug.h"
@@ -27,8 +28,9 @@
 
 char *progname;
 char *serial; 
-char *logfile=NULL;
-char *scriptfile=NULL;
+char *logfile = NULL;
+char *scriptfile = NULL;
+char *debugfile = NULL;
 
 
 static char *optstring = "hdv::S:p:l:s:";
@@ -41,6 +43,7 @@ struct option longopts[] =
   { "port", required_argument, NULL, 'p' },
   { "logfile", required_argument, NULL, 'l'},
   { "scriptfile", required_argument, NULL, 's'},
+  { "debugfile", optional_argument, NULL, 'D'},
   { NULL, 0, NULL, 0 }
 };
 
@@ -54,18 +57,20 @@ void help()
    -S, --serial PORT       use specified serial port\n\
    -s, --scriptfile FILE   use a scripte file to execute cmds on package\n\
    -l, --logfile FILE      log every package to a logfile\n\
-   -p, --port PORT         use specified TCP/IP port (default: 2342)\n\n" );
+   -p, --port PORT         use specified TCP/IP port (default: 2342)\n\
+   -D, --debugfile FILE    log debug messages to this file\n\n" );
 }
 
 
-void hexdump(unsigned char * addr, int size){
-	unsigned char x=0, sbuf[3];
+void hexdump(unsigned char * addr, int size)
+{
+	unsigned char x = 0, sbuf[3];
 	
 	printf( "Size: %d\n", size);
-	while(size--){
-	  printf("%02x ", *addr++);
-		if(++x == 16){
-		  printf("\n");
+	while (size--) {
+		printf("%02x ", *addr++);
+		if (++x == 16) {
+			printf("\n");
 			x = 0;
 		}
 	}
@@ -74,158 +79,155 @@ void hexdump(unsigned char * addr, int size){
 
 void customscripts(rs232can_msg *msg)
 {
-  FILE *logFP;
-  FILE *scriptFP;
-  char tmpstr[80];
-  char tmpstr2[80];
-  time_t mytime;
-  char as_args[9][5];
-  struct tm *tm;
+	FILE *logFP;
+	FILE *scriptFP;
+	char tmpstr[80];
+	char tmpstr2[80];
+	time_t mytime;
+	char as_args[9][5];
+	struct tm *tm;
 
-  int result;
+	int result;
 
-  uint8_t i;
+	uint8_t i;
 
-  setlocale (LC_ALL, "C");
-  mytime = time(NULL);
-  tm = localtime(&mytime);
+	setlocale (LC_ALL, "C");
+	mytime = time(NULL);
+	tm = localtime(&mytime);
 
-  char line[300];
-  can_message_raw *in_msg = (can_message_raw*)(msg->data);
-  can_message_match match_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
-  can_message_match dec_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
+	char line[300];
+	can_message_raw *in_msg = (can_message_raw*)(msg->data);
+	can_message_match match_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
+	can_message_match dec_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
 
 
-  // decoding in_msg to readable format
-  dec_msg.addr_src = (uint8_t) (in_msg->id >> 8);
-  dec_msg.addr_dst = (uint8_t) (in_msg->id);
-  dec_msg.port_src = (uint8_t) ((in_msg->id >> 23) & 0x3f);
-  dec_msg.port_dst = (uint8_t) (((in_msg->id >> 16) & 0x0f) | ((in_msg->id >> 17) & 0x30));
-  dec_msg.dlc = in_msg->dlc;
-  for(i=0;i<dec_msg.dlc;i++)
-    {
-      dec_msg.data[i]=in_msg->data[i];
-    }
-
-  // logging to file - 'logfile' is global
-
-  strftime(tmpstr2,79,"%c",tm);
-
-  if ( logfile != NULL)
-    {
-      // open logfile to append - use logrotate
-      if ( (logFP=fopen(logfile,"a")) != NULL)
+	// decoding in_msg to readable format
+	dec_msg.addr_src = (uint8_t) (in_msg->id >> 8);
+	dec_msg.addr_dst = (uint8_t) (in_msg->id);
+	dec_msg.port_src = (uint8_t) ((in_msg->id >> 23) & 0x3f);
+	dec_msg.port_dst = (uint8_t) (((in_msg->id >> 16) & 0x0f) | ((in_msg->id >> 17) & 0x30));
+	dec_msg.dlc = in_msg->dlc;
+	for (i = 0; i < dec_msg.dlc; i++)
 	{
-	  memset(tmpstr,0,80);
-
-	  // print time and metadata to buffer
-	  result = snprintf(tmpstr,80,"%s : src: 0x%.2x:0x%.2x dst:0x%.2x:0x%.2x data: ", 
-			    tmpstr2, 
-			    dec_msg.addr_src,dec_msg.port_src,
-			    dec_msg.addr_dst,dec_msg.port_dst );
-	  // result must be in range - also snprintf limits range
-	  if(result<=80 && result>=0) 
-	    {
-	      // write to logfile
-	      fwrite(tmpstr,result,1,logFP);
-	      memset(tmpstr,0,80);
-	      memset(tmpstr2,0,80);
-
-	      for(i=0;i<dec_msg.dlc;i++)
-		{
-		  result = snprintf(tmpstr,80,"0x%.2x ",dec_msg.data[i]);
-		  if(result == 5)
-		    {
-		      // append the data
-		      fwrite(tmpstr,result,1,logFP);
-		    }
-		}
-	      // append newline
-	      fwrite("\n",1,1,logFP);
-	    }
-	  else 
-	    {
-	      // this should not happen
-	      fwrite("logfail\n",8,1,logFP);
-	    }
-	  fflush(logFP);
-	  fclose(logFP);
-	}
-    }
-
-
-  // 'scriptfile' is global
-  if ( scriptfile != NULL) 
-    {
-      if( (scriptFP=fopen(scriptfile,"r")) != NULL)
-	{  
-	  // we only support full match - on src/dst and dlc
-	  // example:
-	  // 0x00:0x00 0x00:0x00 0x04  -> command
-	  // src:srcport dst:dstport len -> executable
-	  while (fgets(line, 300, scriptFP) != NULL) 
-	    {
-	      // read instructions
-	      memset(tmpstr,0,80);
-	      memset(tmpstr2,0,80);
-  
-	      result = sscanf(line,"0x%hhx:0x%hhx 0x%hhx:0x%hhx 0x%hhx -> %s",
-			      &(match_msg.addr_src),&(match_msg.port_src),
-			      &(match_msg.addr_dst),&(match_msg.port_dst),
-			      &(match_msg.dlc),
-			      tmpstr2);
-	      memset(line,0,300);
-	      if(result !=6)
-		{
-		  // got a wrong line
-		  continue;
-		}
-	      // check for match
-	      if( (match_msg.addr_dst == dec_msg.addr_dst) && 
-		  (match_msg.addr_src == dec_msg.addr_src) && 
-		  (match_msg.port_dst == dec_msg.port_dst) && 
-		  (match_msg.port_src == dec_msg.port_src) && 
-		  (match_msg.dlc == dec_msg.dlc))
-		{
-		  // double fork a client to exec the command right under init
-		  if(vfork())
-		    {
-		      wait();// dump
-		    }
-		  else
-		    {
-		      //		      memset(as_args,0,45);
-
-		      // executing as a child
-		      if(vfork())
-			{
-			  _exit(0);
-			}
-		      else 
-			{
-			  snprintf(as_args[0],5,"0x%.2x",dec_msg.dlc);
-			  snprintf(as_args[1],5,"0x%.2x",dec_msg.data[0]);
-			  snprintf(as_args[2],5,"0x%.2x",dec_msg.data[1]);
-			  snprintf(as_args[3],5,"0x%.2x",dec_msg.data[2]);
-			  snprintf(as_args[4],5,"0x%.2x",dec_msg.data[3]);
-			  snprintf(as_args[5],5,"0x%.2x",dec_msg.data[4]);
-			  snprintf(as_args[6],5,"0x%.2x",dec_msg.data[5]);
-			  snprintf(as_args[7],5,"0x%.2x",dec_msg.data[6]);
-			  snprintf(as_args[8],5,"0x%.2x",dec_msg.data[7]);
-			  execl(tmpstr2,tmpstr2,
-				as_args[0],
-				as_args[1],as_args[2],as_args[3],as_args[4],
-				as_args[5],as_args[6],as_args[7],as_args[8],NULL);
-			}
-
-		    } 
-		}
-	      
-	    }
-	  fclose(scriptFP);
+		dec_msg.data[i] = in_msg->data[i];
 	}
 
-    }
+	// logging to file - 'logfile' is global
+
+	strftime(tmpstr2, 79, "%c", tm);
+
+	if ( logfile != NULL)
+	{
+		// open logfile to append - use logrotate
+		if ( (logFP=fopen(logfile,"a")) != NULL)
+		{
+			memset(tmpstr,0,80);
+
+			// print time and metadata to buffer
+			result = snprintf(tmpstr,80,"%s : src: 0x%.2x:0x%.2x dst:0x%.2x:0x%.2x data: ",
+				    tmpstr2, 
+				    dec_msg.addr_src,dec_msg.port_src,
+				    dec_msg.addr_dst,dec_msg.port_dst );
+			// result must be in range - also snprintf limits range
+			if (result <= 80 && result >= 0) 
+			{
+				// write to logfile
+				fwrite(tmpstr,result,1,logFP);
+				memset(tmpstr,0,80);
+				memset(tmpstr2,0,80);
+
+				for (i = 0; i < dec_msg.dlc; i++)
+				{
+					result = snprintf(tmpstr,80,"0x%.2x ",dec_msg.data[i]);
+					if (result == 5)
+					{
+						// append the data
+						fwrite(tmpstr,result,1,logFP);
+					}
+				}
+				// append newline
+				fwrite("\n",1,1,logFP);
+			}
+			else
+			{
+				// this should not happen
+				fwrite("logfail\n",8,1,logFP);
+			}
+			fflush(logFP);
+			fclose(logFP);
+		}
+	}
+
+
+	// 'scriptfile' is global
+	if ( scriptfile != NULL) 
+	{
+		if ( (scriptFP=fopen(scriptfile,"r")) != NULL)
+		{
+			// we only support full match - on src/dst and dlc
+			// example:
+			// 0x00:0x00 0x00:0x00 0x04  -> command
+			// src:srcport dst:dstport len -> executable
+			while (fgets(line, 300, scriptFP) != NULL) 
+			{
+			// read instructions
+				memset(tmpstr,0,80);
+				memset(tmpstr2,0,80);
+
+				result = sscanf(line,"0x%hhx:0x%hhx 0x%hhx:0x%hhx 0x%hhx -> %s",
+					 &(match_msg.addr_src),&(match_msg.port_src),
+					 &(match_msg.addr_dst),&(match_msg.port_dst),
+					 &(match_msg.dlc),
+					 tmpstr2);
+				memset(line,0,300);
+				if (result !=6)
+				{
+					// got a wrong line
+					continue;
+				}
+				// check for match
+				if ( (match_msg.addr_dst == dec_msg.addr_dst) && 
+					(match_msg.addr_src == dec_msg.addr_src) && 
+					(match_msg.port_dst == dec_msg.port_dst) && 
+					(match_msg.port_src == dec_msg.port_src) && 
+					(match_msg.dlc == dec_msg.dlc))
+				{
+					// double fork a client to exec the command right under init
+					if (vfork())
+					{
+						wait();// dump
+					}
+					else
+					{
+						//memset(as_args,0,45);
+
+						// executing as a child
+						if (vfork())
+						{
+							_exit(0);
+						}
+						else 
+						{
+							snprintf(as_args[0],5,"0x%.2x",dec_msg.dlc);
+							snprintf(as_args[1],5,"0x%.2x",dec_msg.data[0]);
+							snprintf(as_args[2],5,"0x%.2x",dec_msg.data[1]);
+							snprintf(as_args[3],5,"0x%.2x",dec_msg.data[2]);
+							snprintf(as_args[4],5,"0x%.2x",dec_msg.data[3]);
+							snprintf(as_args[5],5,"0x%.2x",dec_msg.data[4]);
+							snprintf(as_args[6],5,"0x%.2x",dec_msg.data[5]);
+							snprintf(as_args[7],5,"0x%.2x",dec_msg.data[6]);
+							snprintf(as_args[8],5,"0x%.2x",dec_msg.data[7]);
+							execl(tmpstr2,tmpstr2,
+							as_args[0],
+							as_args[1],as_args[2],as_args[3],as_args[4],
+							as_args[5],as_args[6],as_args[7],as_args[8],NULL);
+						}
+					}
+				}
+			}
+			fclose(scriptFP);
+		}
+	}
 
 }
 
@@ -235,11 +237,11 @@ void process_uart_msg()
 	debug( 10, "Activity on uart_fd" );
 
 	rs232can_msg *msg = canu_get_nb();
-	if(!msg) return;
+	if (!msg) return;
 	
 	debug(3, "Processing message from uart..." );
 	
-	if(msg->cmd != RS232CAN_PKT){
+	if (msg->cmd != RS232CAN_PKT) {
 		debug(0, "Whats going on? Received other than PKT type on Uart");
 		canu_free(msg);
 		return;
@@ -249,13 +251,11 @@ void process_uart_msg()
 
 	// foreach client
 	ac = cann_conns_head;
-	while(ac) {
-//XXX		if ( cann_match_filter(ac, msg) ) 
+	while (ac) {
+//XXX		if ( cann_match_filter(ac, msg) )
 		cann_transmit(ac, msg);
-		
 		ac = ac->next;
 	}
-	
 	canu_free(msg);
 	debug(3, "...processing done.");
 }
@@ -290,10 +290,9 @@ void process_client_msg( cann_conn_t *client )
 			// foreach client
 			ac = cann_conns_head;
 			while(ac) {
-//XXX				if ( cann_match_filter(ac, msg) ) 
+//XXX				if ( cann_match_filter(ac, msg) )
 				if ( ac != client )
 					cann_transmit(ac, msg);
-
 				ac = ac->next;
 			}
 	}
@@ -308,7 +307,7 @@ void new_client( cann_conn_t *client )
 
 void event_loop()
 {
-	for(;;) {
+	for (;;) {
 		int num;
 		int highfd = 0;;
 		fd_set rset;
@@ -340,17 +339,19 @@ void event_loop()
 
 		// check client activity 
 		//
-		while( client = cann_activity(&rset) ) {
+		while ( client = cann_activity(&rset) ) {
 			debug(5, "CANN actiity found" );
 			process_client_msg(client);
+			//cann_conn_free(client);
 		}
 
 		debug( 9, "AFTER CANN ACTIVITY" );
 		cann_dumpconn();
 
 		// new connections
-		if( client = cann_accept(&rset) ) {
+		if ( client = cann_accept(&rset) ) {
 			debug( 2, "===> New connection (fd=%d)", client->fd );
+			//cann_conn_free(client);
 		}
 
 		debug( 9, "AFTER CANN NEWCONN" );
@@ -365,12 +366,25 @@ void event_loop()
 	}
 }
 
+void signal_handler(int sig) {
+	cann_close_errors();
+	debug_close();
+	signal (sig, SIG_DFL);
+	if (sig == SIGQUIT)
+		exit();
+	else
+	raise (sig);
+}
 
 int main(int argc, char *argv[])
 {
 	int d = 0;                   // daemon
 	int tcpport  = 2342;         // TCP Port
 	int optc;
+
+	(void) signal(SIGTERM, signal_handler);
+	(void) signal(SIGKILL, signal_handler);
+	(void) signal(SIGSEGV, signal_handler);
 
 	progname = argv[0];
 
@@ -381,7 +395,7 @@ int main(int argc, char *argv[])
 				if (optarg)
 					debug_level = atoi(optarg);
 				else 
-					debug_level = 3;
+					debug_level = 0;
 				break;
 			case 'd':
 				d = 1;
@@ -395,23 +409,27 @@ int main(int argc, char *argv[])
 			case 'h':
 				help();
 				exit(0);
-		case 'l':
-		  logfile = optarg;
-		  break;
-		case 's':
-		  scriptfile = optarg;
-		  break;
+			case 'l':
+				logfile = optarg;
+				break;
+			case 's':
+				scriptfile = optarg;
+				break;
+			case 'D':
+				debugfile = optarg;
 			default:
 				help();
-				exit(1);
+				exit(EXIT_SUCCESS);
 		}
 	} // while
-
+	
+	init_debug(debugfile);
+	
 	// setup serial communication
 	if (serial) {
 		canu_init(serial);
 		debug(1, "Serial CAN communication established" );
-	};
+	}
 
 	// setup network socket
 	cann_listen(tcpport);
@@ -419,5 +437,5 @@ int main(int argc, char *argv[])
 
 	event_loop();  // does not return
 
-	return 1;  
+	return 1;
 }
