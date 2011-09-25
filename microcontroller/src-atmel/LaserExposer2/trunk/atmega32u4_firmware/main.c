@@ -1,10 +1,18 @@
 //Timer1 carriage driver control
 //Timer4 prism motor control
-//Timer0
+//Timer0 laser_driver sync timeout
+//Timer3 global prism_messurements
+
+#define EXPOSER_OFF 0
+#define EXPOSER_RUNNING _BV(1)
+#define EXPOSER_ON _BV(2)
 
 uint8_t exposer.status 
 		exposer.powersupply
 		exposer.start
+		exposer.currentline
+		exposer.endline
+		
 void main(){
 	CONFIGURE_LED_RUNNING		//set DDR
 	CONFIGURE_LED_USBON		//set DDR
@@ -14,18 +22,9 @@ void main(){
 	CONFIGURE_KEY_START	//enable int1 pullup
 	CONFIGURE_INT0
 	ENABLE_INT0
-	CONFIGURE_INT3
-	ENABLE_INT3
+	//CONFIGURE_INT3
+	//ENABLE_INT3
 	CONFIGURE_INT6
-	
-	if(!SUPPLY_SENSE_PIN)
-	{
-		exposer.powersupply = 1;
-	}
-	else
-	{
-		exposer.powersupply = 0;
-	}
 	
 	laser_control_setmode(LASER_MODE_OFF);
 	
@@ -36,10 +35,9 @@ start:
 	LED_RUNNING_OFF
 	LED_READY_OFF
 	LED_CALIBRATING_OFF
-	exposer.start = 0;
-	exposer.running = 0;
+	exposer.status = 0;
 	
-	while(!exposer.running)
+	while(!(exposer.status & EXPOSER_ON))
 	{
 		POWER_DOWN		//go to sleep mode
 	}
@@ -47,7 +45,7 @@ start:
 	//move carriage to start
 	LED_READY_ON
 	
-	while(!exposer.start)
+	while(!(exposer.status & EXPOSER_RUNNING))
 	{
 		POWER_DOWN		//go to sleep mode
 	}
@@ -68,7 +66,7 @@ start:
 	LED_RUNNING_ON
 	laser_control_setmode( LASER_MODE_RUNNING );
 	//plot
-	while(exposer.running&exposer.powersupply){
+	while(exposer.status && SUPPLY_SENSE_PIN){
 		
 		//get new usb data
 		
@@ -90,20 +88,26 @@ start:
 		
 		exposer.currentline++;
 		
-		while(!exposer.start)	//if stop button is pressed wait
+		while(!(exposer.status & EXPOSER_RUNNING))	//if stop button is pressed wait
 			asm volatile("nop");
 			
 		laser_control_setmode( LASER_MODE_RUNNING );
 		
 		//check if we reached the end
 		if(exposer.currentline >= exposer.endline)
-			exposer.running=0;
+			exposer.status &= ~(EXPOSER_RUNNING|EXPOSER_ON);
 	}
 	
 	laser_control_setmode(LASER_MODE_OFF);
 	//move carriage to start, if possible
-	if(exposer.powersupply)
+	if(SUPPLY_SENSE_PIN)
 		carriage_tostart();
+	//if this is true && !SUPPLY_SENSE_PIN then power has been switched off, goto error
+	if(exposer.status && !SUPPLY_SENSE_PIN)
+	{
+		//error handler
+		
+	}
 	
 	LED_RUNNING_OFF
 	goto start;
@@ -112,18 +116,19 @@ start:
 //Key On/Off pressed
 ISR(INT0_vect)
 {
-		if(!exposer.running)	//is off, turn on
+		if(!(exposer.status & EXPOSER_ON))	//is off, turn on
 		{
 			if(SUPPLY_SENSE_PIN)
 			{
-				exposer.running = 1;
+				exposer.status |= EXPOSER_ON;
 			}
 		}
 		else
 		{
-			exposer.running = 0;
+			exposer.status &= ~EXPOSER_OFF;
 		}
 }
+#if 0
 //TODO: needed ?
 //main supply sense
 ISR(INT3_vect)
@@ -137,21 +142,25 @@ ISR(INT3_vect)
 		exposer.powersupply = 0;
 	}
 }
+#endif
 
 //TODO: needed ?
 //start/stop button
 ISR(INT1_vect)
 {
 	//start pressed
-	if(!exposer.start)
+	if(exposer.status & EXPOSER_ON)
 	{
-		exposer.start = 1;
-	}
-	else	//stop pressed
-	{
-		//goto idle mode
-		exposer.start = 0;
-		laser_control_setmode( LASER_MODE_IDLE );
+		if(!(exposer.status & EXPOSER_RUNNING))
+		{
+			exposer.status |= EXPOSER_RUNNING;
+		}
+		else	//stop pressed
+		{
+			//goto idle mode
+			exposer.status &= ~EXPOSER_RUNNING;
+			laser_control_setmode( LASER_MODE_IDLE );
+		}
 	}
 }
 

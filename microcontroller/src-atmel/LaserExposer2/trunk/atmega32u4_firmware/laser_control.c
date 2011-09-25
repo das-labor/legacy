@@ -1,9 +1,11 @@
-typedef struct{
-	uint8_t idle;
-	uint8_t mode;
-}laser_driver_t;
+//laser_control.c
+//used hardware:
+//* Timer0
+//* Timer3
 
 laser_driver_t laser_driver;
+
+#include "laser_control.h"
 
 // HSYNC
 ISR(INT2_vect)
@@ -12,53 +14,71 @@ ISR(INT2_vect)
 	//check if laser is in
 	//* idle
 	//* running (if its not idle it must be running)
+	
+	START_TIMER0 	//set Timer0  to activate laser a few µs before it's crossing the detector again
+	
 	if(laser_driver.idle){ 
-		//set Timer0  to activate laser a few µs before it's crossing the detector again
-		START_TIMER0 
-		LASER_OFF;
+		FORCE_SPI_MOSI_LOW
 		return;
 	}
 	//laser is running
-	//TODO: start plotting ?
+	//start plotting
+	INIT_SPI
+	ENABLE_SPI_INT
+	laser_driver.addr=laser_driver.start_addr;	//copy buffer start address
+	SPDR=*laser_driver.addr;	//send out using spi
+	laser_driver.addr++;	//increment buffer address
+}
 
+//send the next byte over spi
+ISR(SPI_vect){
+	SPDR=*laser_driver.addr;
+	laser_driver.addr++;
+
+	/*	
+	asm volatile (
+		"L_dl1%=:" "\n\t"
+		"ld r2,  %a[addr]+"   "\n\t"	//r2 = *addr; addr++;
+		"out %[spi], r2" "\n\t"		//SPDR=r2;
+
+		 : [spi] "M" (_SFR_IO_ADDR (SPDR))	//spi data register
+		 : [cnt] "r" (bytestosend), [addr] "e" (addr)	
+		 : "r2", "memory"
+	   );*/
 }
 
 //this interrupt activates the laser  a few µs before it's crossing the detector again
 //only active in idle mode
 ISR(TIMER0_COMPA_vect)
 {
-	LASER_ALWAYS_ON;
+	DISABLE_SPI_INT		//stop sending over SPI
+	LASER_ALWAYS_ON		//turn on laser
 	//Timer0 off
 	STOP_TIMER0
 }
 
 void init_timer0()
 {
+	OCR0A = (laser_driver.buffer_length>>2);	//devide by 4, since Timer0 ist 4 times slower than SPI
 	TCCR0A=_BV(WGM1);	//no output change, simple CTC (OCRA clears TCNT)
 	TIMSK0=_BV(OCIE0A);	//enable OCR0A interrupt
 }
-
-#define ENABLE_INT2 EIMSK |=_BV(INT2);
-#define DISABLE_INT2 EIMSK &=~BV(INT2);
-#define CONFIGURE_INT2 EICRA|=_BV(ISC21);
- 
-#define LASER_MODE_OFF 0
-#define LASER_MODE_INIT 1
-#define LASER_MODE_IDLE 2
-#define LASER_MODE_RUNNING 4
 
 void laser_control_setmode(uint8_t mode)
 {
 	switch(mode)
 	{
 		case LASER_MODE_OFF:
-			LASER_OFF	//turn laser off
+			FORCE_SPI_MOSI_LOW	//turn laser off
+			DISABLE_SPI_INT
 			DISABLE_INT2
 			laser_driver.idle = 0;
 			laser_driver.mode = LASER_MODE_OFF;
 		break;
 		case LASER_MODE_INIT:
-			LASER_ALWAYS_ON	//turn laser on
+			//LASER_ALWAYS_ON	//turn laser on
+			DISABLE_SPI_INT
+			ENABLE_SPI
 			DISABLE_INT2
 			laser_driver.idle = 0;
 			laser_driver.mode = LASER_MODE_INIT;
@@ -87,7 +107,12 @@ uint8_t laser_control_getmode()
 	return laser_driver.mode;
 }
 
-#define START_TIMER0 TCCR0B=0;	//clock select
-#define STOP_TIMER0 TCCR0B=0;
-#define LASER_ALWAYS_ON {PORTB|=_BV(PB2);}	//TODO: use SPI modes
-#define LASER_OFF {PORTB&=_BV(PB2);}
+uint8_t laser_control_setaddr(uint8_t *address)
+{
+	laser_driver.start_addr = address;
+}
+
+uint8_t laser_control_setbufsize(uint16_t buf)
+{
+	laser_driver.buffer_length = buf;
+}
