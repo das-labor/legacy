@@ -69,7 +69,7 @@ cann_conn_t *cann_activity(fd_set *set);
  */
 rs232can_msg *cann_buffer_get();
 void cann_free(rs232can_msg *);
-
+void cann_conn_free(cann_conn_t* conn);
 
 /*****************************************************************************
  * rcv
