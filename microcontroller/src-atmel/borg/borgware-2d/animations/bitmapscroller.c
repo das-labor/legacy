@@ -25,17 +25,17 @@ typedef struct bitmap_t
 	unsigned char nXDomain;        /**< Last valid x-coordinate for viewport. */
 	unsigned char nYDomain;        /**< Last valid y-coordinate for viewport. */
 	unsigned char nChunkDomain;    /**< Last valid chunk for viewport. */
-	unsigned char nChunkCount;     /**< Amount of horiz. chunks of the bitmap. */
+	unsigned char nChunkCount;     /**< Amount of horiz. chunks of the bitmap.*/
 }
 bitmap_t;
 
 
 /**
  * This function generates an eight-by-one pixel chunk for a given pair of pixel
- * coordinates and a borg plane number. The resulting chunk can be copied
- * directly to the borg's frame buffer. It makes use of the user provided
- * "getChunk" function which in contrast only accepts chunk based coordinates
- * (resulting in chunks whose x-coordinates are always a multiple of eight) and
+ * coordinates and a borg plane index. The resulting chunk can be copied
+ * directly to the borg's frame buffer. It utilizes the user provided "getChunk"
+ * function which in contrast only accepts chunk based coordinates (resulting in
+ * chunks whose pixel based x-coordinates are always a multiple of eight) and
  * uses bit planes which defer from the plane scheme used by the borg's frame
  * buffer.
  * @param pBitmap The bitmap of interest.
@@ -55,25 +55,20 @@ static unsigned char bitmap_getAlignedChunk(bitmap_t const *const pBitmap,
 	unsigned char nChunk = 0xFF;
 	unsigned char nMask = 1;
 	unsigned char const nAlignment = x % 8;
+	unsigned char const x_8 = x / 8;
 
 	// we have to go through every bit plane
-	for (unsigned char  i = 0; i < pBitmap->nBitPlanes; ++i)
+	for (unsigned char i = pBitmap->nBitPlanes; i--;)
 	{
 		// generate chunk
 		unsigned char nPlaneChunk;
-		// if the given x-coordinate is aligned to a chunk coordinate we can
-		// reuse the result of the "getChunk" function directly.
-		if (nAlignment == 0)
-		{
-			nPlaneChunk = pBitmap->fpGetChunk(i, x/8, y, pBitmap->nFrame);
-		}
+		nPlaneChunk = pBitmap->fpGetChunk(i, x_8, y, pBitmap->nFrame)
+				<< nAlignment;
 		// in case of misalignment we combine two chunks with chunk based
 		// coordinates into one chunk which aligns to the given x-coordinate
-		else
+		if (nAlignment != 0)
 		{
-			nPlaneChunk = pBitmap->fpGetChunk(i, x/8, y, pBitmap->nFrame)
-					<< nAlignment;
-			nPlaneChunk |= pBitmap->fpGetChunk(i, x/8+1, y, pBitmap->nFrame)
+			nPlaneChunk |= pBitmap->fpGetChunk(i, x_8 + 1, y, pBitmap->nFrame)
 					>> (8 - nAlignment);
 		}
 
@@ -106,6 +101,9 @@ static void bitmap_drawViewport(bitmap_t const *const pBitmap,
 	{
 		for (unsigned char x = 0; x < pBitmap->nViewportWidth; x += 8)
 		{
+			// determine correct column within frame buffer
+			unsigned char const nCol = pBitmap->nChunkCount - 1 - (x / 8);
+
 			for (unsigned char p = NUMPLANE; p--;)
 			{
 				// retrieve a chunk which can be copied into the frame buffer
@@ -128,16 +126,14 @@ static void bitmap_drawViewport(bitmap_t const *const pBitmap,
 							nX, nY + y) >> (8 - NUM_COLS % 8);
 				}
 #endif
-				// determine correct column within frame buffer
-				uint8_t const nCol = pBitmap->nChunkCount - 1 - (x / 8);
-				// copy chunk into corresponding frame buffer plane
-				pixmap[p][y][nCol] = nChunk;
 				// if a bit in plane p + 1 is set, the corresponding bit in p
 				// has to be set as well
 				if (p < (NUMPLANE - 1))
 				{
-					pixmap[p][y][nCol] |= pixmap[p + 1][y][nCol];
+					nChunk |= pixmap[p + 1][y][nCol];
 				}
+				// copy chunk into corresponding frame buffer plane
+				pixmap[p][y][nCol] = nChunk;
 			}
 		}
 	}
@@ -214,9 +210,6 @@ void bitmap_scroll(unsigned char const nWidth,
 	unsigned char y = bitmap.nYDomain > 0 ? random8() % bitmap.nYDomain : 0;
 	signed char dx = 0;
 	signed char dy = 0;
-
-	// remove garbage from screen
-	clear_screen(0);
 
 	for (bitmap.nFrame = 0; bitmap.nFrame < nFrameCount; ++bitmap.nFrame)
 	{
