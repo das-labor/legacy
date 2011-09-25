@@ -1,3 +1,6 @@
+
+//Atmega port definitions
+
 #define LED_READY PB7
 #define LED_CALIBRATING PC6
 #define LED_USBON PF4
@@ -68,3 +71,9 @@
 
 #define ROT1_PIN (EIFR & _BV(INTF6))
 #define CLEAR_ROT1_PIN {EIFR &= ~_BV(INTF6);}
+
+#define HSYNC_PIN (EIFR & _BV(INTF2))
+#define CLEAR_HSYNC_PIN {EIFR &= ~_BV(INTF6);}
+
+//hardware definition
+#define MASQ0MB11RR_MAX_FREQ 200
