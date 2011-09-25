@@ -3,16 +3,14 @@
 //Timer0 laser_driver sync timeout
 //Timer3 global prism_messurements
 
-#define EXPOSER_OFF 0
-#define EXPOSER_RUNNING _BV(1)
-#define EXPOSER_ON _BV(2)
+#include "config.h"
+#include "laser_control.h"
+#include "carriage_driver.h"
+#include "prism_control.h"
+#include "serial.h"
 
-uint8_t exposer.status 
-		exposer.powersupply
-		exposer.start
-		exposer.currentline
-		exposer.endline
-		
+exposer_t exposer;
+
 void main(){
 	CONFIGURE_LED_RUNNING		//set DDR
 	CONFIGURE_LED_USBON		//set DDR
@@ -25,27 +23,45 @@ void main(){
 	//CONFIGURE_INT3
 	//ENABLE_INT3
 	CONFIGURE_INT6
-	
+	LED_USBON_OFF
+	LED_RUNNING_OFF
+	LED_CALIBRATING_OFF
+	LED_READY_OFF
 	laser_control_setmode(LASER_MODE_OFF);
-	
+		
 	POWER_REDUCE	//shut down all hardware that isn't needed
-	sei();			//global allow interrupts
+	usb_init();	//enable hardware usb interface
+	while (!usb_configured()) /* wait */ ;
+	{	
+	POWER_DOWN		//TODO: check if this is working
+	}
+	//sei();
+	LED_USBON_ON
 	
 start:
 	LED_RUNNING_OFF
 	LED_READY_OFF
 	LED_CALIBRATING_OFF
 	exposer.status = 0;
+	bts7741g_stop();
 	
-	while(!(exposer.status & EXPOSER_ON))
+	// wait for the user to run their terminal emulator program
+	// which sets DTR to indicate it is ready to receive.
+	while (!(usb_serial_get_control() & USB_SERIAL_DTR)) /* wait */ ;
+	usb_serial_flush_input();
+	// print a nice welcome message
+	serial_welcomemsg();
+	
+	while(!EXPOSER_IS_ON)
 	{
 		POWER_DOWN		//go to sleep mode
 	}
 	
 	//move carriage to start
 	LED_READY_ON
+	bts7741g_backwards(exposer.backspeed);		//move to start
 	
-	while(!(exposer.status & EXPOSER_RUNNING))
+	while(!EXPOSER_IS_RUNNING)
 	{
 		POWER_DOWN		//go to sleep mode
 	}
@@ -61,47 +77,102 @@ start:
 	//move carriage to startline
 	
 	//wait for data
+	while(!usb_configured())
+		asm volatile ("nop");
 	
+	while(!usb_serial_available())
+		asm volatile ("nop");
+		
+	serial_handledata();
+		
 	LED_CALIBRATING_OFF
 	LED_RUNNING_ON
+	
+	//active carriage motor
+	bts7741g_forward(exposer.fastforwardspeed);
+	//wait i rotaryencoder ticks (drive to plot start position)
+	for(uint16_t i=0;i<exposer.plotstartpos;i++)
+	{
+		CLEAR_ROT1_PIN
+		while(!ROT1_PIN)	//wait until rotary encoder tick
+			asm volatile("nop");
+	}
+	//stop carriage motor
+	bts7741g_stop();	
+	
+	//send current line
+	serial_sendcurrentline(exposer.plotstartpos);
+
+	//active laser
 	laser_control_setmode( LASER_MODE_RUNNING );
 	//plot
+	int16_t lineloops=0;
 	while(exposer.status && SUPPLY_SENSE_PIN){
 		
+		//check if stop button has been pressed
+		if(!EXPOSER_IS_RUNNING)
+		{
+			//don't plot, but idle
+			laser_control_setmode( LASER_MODE_IDLE );
+		
+			while(!EXPOSER_IS_RUNNING)	//if stop button is pressed wait
+				asm volatile("nop");
+		}
+		
 		//get new usb data
+		while(!usb_configured())
+			asm volatile ("nop");
+		
+		//update exposing time counter
+		lineloops = exposer.linesperrotaryenctick;
+		
+		//disable interrupts that are not neccessary
+		//needed: Timer0, SPI, INT2
+		disable_noncritical_ints();
 		
 		//active carriage motor
+		bts7741g_forward(exposer.plotforwardspeed);		//move forward
 		
-		CLEAR_ROT1_PIN
-		while(!ROT1_PIN)	//wait until 
-		{
-			for(uint8_t lineloops=0; lineloops < exposer.linerepeatcount; lineloops++)
-			{
-				//plot
-			
-				//if(ROT1_PIN)	//error, carriage driver is to fast
-					
-			}
-		
-		}
-		//stop carriage motor
-		
-		exposer.currentline++;
-		
-		while(!(exposer.status & EXPOSER_RUNNING))	//if stop button is pressed wait
-			asm volatile("nop");
-			
+		//back to plotting mode
 		laser_control_setmode( LASER_MODE_RUNNING );
 		
-		//check if we reached the end
+		CLEAR_ROT1_PIN
+		while(!ROT1_PIN)	//wait until rotary encoder tick
+		{
+			//is plotting here
+			asm volatile("nop");
+		}
+		//stop carriage motor
+		bts7741g_stop();
+		laser_control_setmode( LASER_MODE_IDLE );
+		
+		#if 0
+		//TODO: drive backwards until lineloops >= exposer.linesperrotaryenctick
+		lineloops -= laser_control_readloopcounter();
+		if(lineloops > 0)
+		#endif
+		
+		//enable interrupts that may be neccessary
+		enable_noncritical_ints();
+			
+		//increment the line counter
+		exposer.currentline++;
+		
+		//check if we reached the end of pcb
 		if(exposer.currentline >= exposer.endline)
 			exposer.status &= ~(EXPOSER_RUNNING|EXPOSER_ON);
+			
+		//check the light barriers
+		
 	}
 	
+	//shut down laser, in any case
 	laser_control_setmode(LASER_MODE_OFF);
+	
 	//move carriage to start, if possible
 	if(SUPPLY_SENSE_PIN)
 		carriage_tostart();
+		
 	//if this is true && !SUPPLY_SENSE_PIN then power has been switched off, goto error
 	if(exposer.status && !SUPPLY_SENSE_PIN)
 	{
@@ -116,7 +187,7 @@ start:
 //Key On/Off pressed
 ISR(INT0_vect)
 {
-		if(!(exposer.status & EXPOSER_ON))	//is off, turn on
+		if(!EXPOSER_IS_ON)	//is off, turn on
 		{
 			if(SUPPLY_SENSE_PIN)
 			{
@@ -128,30 +199,15 @@ ISR(INT0_vect)
 			exposer.status &= ~EXPOSER_OFF;
 		}
 }
-#if 0
-//TODO: needed ?
-//main supply sense
-ISR(INT3_vect)
-{
-	if(!SUPPLY_SENSE_PIN)
-	{
-		exposer.powersupply = 1;
-	}
-	else
-	{
-		exposer.powersupply = 0;
-	}
-}
-#endif
 
 //TODO: needed ?
 //start/stop button
 ISR(INT1_vect)
 {
 	//start pressed
-	if(exposer.status & EXPOSER_ON)
+	if(EXPOSER_IS_ON)
 	{
-		if(!(exposer.status & EXPOSER_RUNNING))
+		if(!EXPOSER_IS_RUNNING)
 		{
 			exposer.status |= EXPOSER_RUNNING;
 		}
@@ -170,3 +226,19 @@ void goto_sleep()
 	sei();
 	POWER_DOWN
 }
+
+void disable_noncritical_ints()
+{
+	DISABLE_INT0
+	DISABLE_INT1
+	DISABLE_USB_INT
+}
+
+void enable_noncritical_ints()
+{
+	ENABLE_INT0
+	ENABLE_INT1
+	ENABLE_USB
+}
+
+

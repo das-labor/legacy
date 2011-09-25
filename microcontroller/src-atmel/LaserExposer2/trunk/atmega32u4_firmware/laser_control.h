@@ -4,15 +4,19 @@ typedef struct{
 	uint8_t *addr;
 	uint16_t buffer_length;
 	uint8_t *start_addr;
+	uint8_t loops;
 }laser_driver_t;
 
 extern laser_driver_t laser_driver;
 
 void laser_control_setmode(uint8_t mode);
 void init_timer0();
+
 uint8_t laser_control_getmode();
-uint8_t laser_control_setaddr(uint8_t *address);
-uint8_t laser_control_setbufsize(uint16_t buf);
+void laser_control_setaddr(uint8_t *address);
+uint8_t laser_control_readloopcounter(void);
+void laser_control_setbufsize(uint16_t buf);
+
 
 #define LASER_MODE_OFF 0
 #define LASER_MODE_INIT 1
