@@ -13,9 +13,12 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "cann.h"
-
+#include "debug.h"
 
 int listen_socket;
 cann_conn_t *cann_conns_head = NULL;
@@ -158,7 +161,8 @@ cann_conn_t *cann_accept(fd_set *set)
 	FD_CLR(listen_socket, set);
 
 	// accept connection
-	int len, fd;
+	int fd;
+	socklen_t len;
 	struct sockaddr_in remote;
 	len = sizeof(struct sockaddr_in);
 	fd = accept(listen_socket, (struct sockaddr*)&remote, &len);
@@ -298,7 +302,6 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 {
 	int ret; 
 	unsigned char val; 
-	static enum {STATE_START, STATE_LEN, STATE_PAYLOAD} state = STATE_START;
 
 	// sanity
 	debug_assert( !(client->error), 
@@ -406,8 +409,6 @@ rs232can_msg *cann_get(cann_conn_t *client)
 /* transmit and free message */
 void cann_transmit(cann_conn_t *conn, rs232can_msg *msg)
 {
-	int len;
-
 	// sanity
 	if (conn->error) {
 		debug(5, "cann_transmit: not transmiting on errorous connection fd=%d", conn->fd);

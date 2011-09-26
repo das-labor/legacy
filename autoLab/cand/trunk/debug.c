@@ -10,7 +10,7 @@ int debug_level  = 0;
 int debug_syslog = 0;
 FILE *debugFP;
 
-void init_debug(char* debugfile)
+void debug_init(char* debugfile)
 {
 	if (debugfile) {
 		if ((debugFP = fopen(debugfile,"a")) == NULL)
@@ -23,7 +23,8 @@ void init_debug(char* debugfile)
 		debugFP = stderr;
 }
 
-void debug_close() {
+void debug_close()
+{
 	if (debugFP != NULL)
 		fclose(debugFP);
 }
@@ -56,8 +57,8 @@ void debug_perror( int level, char *format, ... )
 		fprintf(debugFP, "ERROR: ");
 
 	//debug
-	fprintf(debugFP, "1: %i\n", level);
-	fprintf(debugFP, "2: %u, %s\n", format, format);
+	//fprintf(debugFP, "1: %i\n", level);
+	//fprintf(debugFP, "2: %c, %s\n", format, format);
 
 	va_start(ap, format);
 	vfprintf(debugFP, format, ap);

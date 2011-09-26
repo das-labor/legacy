@@ -8,6 +8,11 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <sys/select.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include "debug.h"
 
 int uart_fd;
 
@@ -47,21 +52,21 @@ void uart_init(char *sport) {
 	// set serial options
 	tcgetattr(uart_fd, &options);
 
-	#if defined(__WINDOWS__) | defined(__CYGWIN__)
+//	#if defined(__WINDOWS__) | defined(__CYGWIN__)
 		/*
 		 * needed because cfsetspeed is not available on Windows. 
 		 */
 		cfsetispeed(&options, UART_BAUD_RATE);
 		cfsetospeed(&options, UART_BAUD_RATE);
-	#else
+//	#else
 		/*
 		* Replaced the above with the following in the hope that it fixes the init
 		* bug.
 		*/
-		cfsetspeed(&options, UART_BAUD_RATE);
-	#endif
+//		cfsetspeed(&options, UART_BAUD_RATE);
+//	#endif
 
-	options.c_cflag &= ~(PARENB | CSTOPB | CSIZE | CRTSCTS);
+	options.c_cflag &= ~(PARENB | CSTOPB | CSIZE);
 	options.c_cflag |= (CS8 | CLOCAL | CREAD);
 
 	options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);

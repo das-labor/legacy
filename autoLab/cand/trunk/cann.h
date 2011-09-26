@@ -89,5 +89,9 @@ rs232can_msg *cann_get(cann_conn_t *client);
 /* transmit and free message */
 void cann_transmit(cann_conn_t *connt, rs232can_msg *msg);
 
+
+void cann_dumpconn();
+void cann_close_errors();
+
 #endif
 

@@ -11,6 +11,7 @@
 #include <locale.h>
 #include <langinfo.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include "cann.h"
 #include "debug.h"
@@ -33,7 +34,7 @@ char *scriptfile = NULL;
 char *debugfile = NULL;
 
 
-static char *optstring = "hdv::S:p:l:s:";
+static char *optstring = "hdv::S:p:l:s:D:";
 struct option longopts[] =
 {
   { "help", no_argument, NULL, 'h' },
@@ -64,7 +65,7 @@ void help()
 
 void hexdump(unsigned char * addr, int size)
 {
-	unsigned char x = 0, sbuf[3];
+	unsigned char x = 0;
 	
 	printf( "Size: %d\n", size);
 	while (size--) {
@@ -263,7 +264,6 @@ void process_uart_msg()
 void process_client_msg( cann_conn_t *client )
 {
 	cann_conn_t *ac;
-	int x;
 
 	debug( 10, "Activity on client %d", client->fd );
 
@@ -371,7 +371,7 @@ void signal_handler(int sig) {
 	debug_close();
 	signal (sig, SIG_DFL);
 	if (sig == SIGQUIT)
-		exit();
+		exit(EXIT_SUCCESS);
 	else
 	raise (sig);
 }
@@ -417,13 +417,14 @@ int main(int argc, char *argv[])
 				break;
 			case 'D':
 				debugfile = optarg;
+				break;
 			default:
 				help();
 				exit(EXIT_SUCCESS);
 		}
 	} // while
 	
-	init_debug(debugfile);
+	debug_init(debugfile);
 	
 	// setup serial communication
 	if (serial) {
@@ -437,5 +438,5 @@ int main(int argc, char *argv[])
 
 	event_loop();  // does not return
 
-	return 1;
+	return EXIT_SUCCESS;
 }
