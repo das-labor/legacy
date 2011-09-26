@@ -91,9 +91,11 @@
 #define EXPOSER_IS_RUNNING (exposer.status & EXPOSER_RUNNING)
 
 #define EXPOSER_BUFFER_SIZE 512
+
 typedef struct{
-	uint8_t bufferA[EXPOSER_BUFFER_SIZE];
-	uint8_t bufferB[EXPOSER_BUFFER_SIZE];
+	uint8_t buffer[EXPOSER_BUFFER_SIZE];
+	uint16_t bitpointer;	//points to one bit in the buffer
+	uint8_t *bufpointer;
 }exposer_buffer_t;
 
 	
@@ -106,7 +108,8 @@ typedef struct{
 	uint8_t linesperrotaryenctick;
 	uint16_t plotforwardspeed;
 	uint16_t backspeed;
-	exposer_buffer_t buffers;
+	exposer_buffer_t bufferA;
+	exposer_buffer_t bufferB;
 } exposer_t;
 
 
