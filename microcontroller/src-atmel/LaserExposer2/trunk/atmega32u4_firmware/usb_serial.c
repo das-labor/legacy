@@ -347,6 +347,7 @@ int16_t usb_serial_getchar(void)
 	cli();
 	if (!usb_configuration) {
 		SREG = intr_state;
+		sei();
 		return -1;
 	}
 	UENUM = CDC_RX_ENDPOINT;

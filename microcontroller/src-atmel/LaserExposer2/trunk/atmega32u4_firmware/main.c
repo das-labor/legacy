@@ -82,7 +82,7 @@ start:
 	
 	while(!usb_serial_available())
 		asm volatile ("nop");
-		
+	
 	serial_handledata();
 		
 	LED_CALIBRATING_OFF
@@ -103,8 +103,6 @@ start:
 	//send current line
 	serial_sendcurrentline(exposer.plotstartpos);
 
-	//active laser
-	laser_control_setmode( LASER_MODE_RUNNING );
 	//plot
 	int16_t lineloops=0;
 	while(exposer.status && SUPPLY_SENSE_PIN){
@@ -122,6 +120,11 @@ start:
 		//get new usb data
 		while(!usb_configured())
 			asm volatile ("nop");
+		
+		while(!usb_serial_available())
+			asm volatile ("nop");
+		
+		serial_handledata();
 		
 		//update exposing time counter
 		lineloops = exposer.linesperrotaryenctick;

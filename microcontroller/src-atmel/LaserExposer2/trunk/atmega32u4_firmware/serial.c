@@ -1,13 +1,13 @@
 //serial.c
 #include "serial.h"
 #include "string.h"
+#include "buffer_handler.h"
 
-void serial_sendcurrentline(uint16_t line)
+void serial_sendStringandValue(PROGMEM char *pstrv, int16_t value)
 {
 	char buf[6];
-	send_Pstr(PSTR("cl=\n\r"));
-		
-	itoa(exposer.plotstartpos, &buf[0], 10);
+	send_Pstr(pstrv);
+	itoa(value, &buf[0], 10);
 	send_str(&buf);
 	send_Pstr(PSTR("\n\r"));
 }
@@ -47,20 +47,22 @@ void serial_sendhelpmsg()
 void serial_handledata()
 {
 	int16_t r;
-	char buf[10];
 	uint8_t stringsize;
-	while(usb_serial_available())
+	while(usb_serial_available() || datarecsize)
 	{
 		if(!datarecsize)
 		{
 			stringsize = serial_getString(&buf[0],sizeof(buf));
 			if(!strcmp (&buf,"s?"))		//status
 			{
-				serial_sendstatus();
+				uint8_t temp;
+				temp = laser_control_getmode();
+				temp = temp | (exposer.status<<3);
+				serial_sendStringandValue(PSTR("S=\n\r"),temp);
 			}
 			if(!strcmp (&buf,"cl?"))	//current line
 			{
-				serial_sendcurrentline();
+				serial_sendStringandValue(PSTR("cl="),exposer.currentline);
 			}
 			if(!strcmp (&buf,"rc?"))	//recv configuration
 			{
@@ -82,6 +84,10 @@ void serial_handledata()
 			{
 				serial_recvcompdata();
 			}
+			if(!strcmp (&buf,"ex!"))	//start exposing, host should wait for ex=0
+			{
+				serial_startexposing();
+			}
 		}
 		else
 		{
@@ -91,6 +97,12 @@ void serial_handledata()
 				serial_recvcompdata();
 		}
 	}
+}
+
+void serial_startexposing()
+{
+	
+	send_str(PSTR("OK\n\r"));
 }
 
 uint8_t datarecsize;
@@ -159,9 +171,7 @@ void serial_recvcompdata()
 		r = usb_serial_getchar();
 		while((datarecnt < datarecsize) && (r > 0))
 		{
-			if( ((uint8_t)r)&0x80)	//is MSB == 1
-				*p++ = 
-				
+		
 				
 				
 			datarecnt++;
