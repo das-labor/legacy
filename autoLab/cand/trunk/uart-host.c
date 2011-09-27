@@ -43,7 +43,8 @@ void uart_init(char *sport) {
 	 */
 	uart_fd = open(sport, O_RDWR | O_NOCTTY | O_NDELAY);
 	if (uart_fd == -1) {
-        	debug_perror("Error opening serial port %s", sport);
+        	debug_perror(0, "Error opening serial port %s", sport);
+		exit(EXIT_FAILURE);
 	}
 
 	// set some options on socket
@@ -81,6 +82,7 @@ void uart_init(char *sport) {
 	if (rc == -1) {
 		debug_perror(0, "Error setting serial options");
 		close(uart_fd);
+		exit(EXIT_FAILURE);
 	}
 }
 
