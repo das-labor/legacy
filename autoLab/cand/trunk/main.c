@@ -237,7 +237,7 @@ void process_uart_msg()
 	cann_conn_t *ac;
 	debug( 10, "Activity on uart_fd" );
 
-	rs232can_msg *msg = canu_get_nb();
+	rs232can_msg *msg = canu_get_nb();	//get message from uart
 	if (!msg) return;
 	
 	debug(3, "Processing message from uart..." );
@@ -254,7 +254,7 @@ void process_uart_msg()
 	ac = cann_conns_head;
 	while (ac) {
 //XXX		if ( cann_match_filter(ac, msg) )
-		cann_transmit(ac, msg);
+		cann_transmit(ac, msg);		//send to each client on the network
 		ac = ac->next;
 	}
 	canu_free(msg);
@@ -267,7 +267,7 @@ void process_client_msg( cann_conn_t *client )
 
 	debug( 10, "Activity on client %d", client->fd );
 
-	rs232can_msg *msg = cann_get_nb(client);
+	rs232can_msg *msg = cann_get_nb(client);	//get message from network
 	if(!msg) return;
 	
 	debug(3, "Processing message from network..." );
@@ -285,7 +285,7 @@ void process_client_msg( cann_conn_t *client )
 		case RS232CAN_PKT:
 		default:
 			// to UART
-			if (serial) canu_transmit(msg);
+			if (serial) canu_transmit(msg);		//send to client on the can
 
 			// foreach client
 			ac = cann_conns_head;
@@ -296,7 +296,7 @@ void process_client_msg( cann_conn_t *client )
 				ac = ac->next;
 			}
 	}
-//	cann_free(msg);
+	cann_free(msg);
 	debug(3, "...processing done.");
 }
 
@@ -387,9 +387,14 @@ int main(int argc, char *argv[])
 	(void) signal(SIGSEGV, signal_handler);
 
 	progname = argv[0];
-
-	while ((optc=getopt_long(argc, argv, optstring, longopts, (int *)0))
-		!= EOF) {
+	optc=getopt_long(argc, argv, optstring, longopts, (int *)0);
+	if(optc == EOF)
+	{
+		printf("ERROR: no arguments given, serial port not specified\n");
+		help();
+		exit(EXIT_SUCCESS);
+	}
+	while (optc != EOF) {
 		switch (optc) {
 			case 'v':
 				if (optarg)
@@ -422,15 +427,22 @@ int main(int argc, char *argv[])
 				help();
 				exit(EXIT_SUCCESS);
 		}
+		optc=getopt_long(argc, argv, optstring, longopts, (int *)0);
 	} // while
 	
+	if(!serial)
+	{
+		printf("ERROR: no serial port specified\n");
+		help();
+		exit(EXIT_SUCCESS);
+	}
+
 	debug_init(debugfile);
 	
 	// setup serial communication
-	if (serial) {
-		canu_init(serial);
-		debug(1, "Serial CAN communication established" );
-	}
+	canu_init(serial);
+	debug(1, "Serial CAN communication established" );
+	
 
 	// setup network socket
 	cann_listen(tcpport);
