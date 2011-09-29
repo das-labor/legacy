@@ -8,6 +8,18 @@
 #include "carriage_driver.h"
 #include "prism_control.h"
 #include "serial.h"
+#include <inttypes.h>
+#include <avr/eeprom.h>
+
+#ifndef	ATMEGAEEPROM_H
+#define ATMEGAEEPROM_H
+
+// EEMEM wird bei aktuellen Versionen der avr-lib in eeprom.h definiert
+// hier: definiere falls noch nicht bekannt ("alte" avr-libc)
+#ifndef EEMEM
+// alle Textstellen EEMEM im Quellcode durch __attribute__ ... ersetzen
+#define EEMEM  __attribute__ ((section (".eeprom")))
+#endif
 
 exposer_t exposer;
 
@@ -35,9 +47,23 @@ void main(){
 	{	
 	POWER_DOWN		//TODO: check if this is working
 	}
-	//sei();
-	LED_USBON_ON
 	
+	if(eeprom_read())
+	{
+		exposer.prism_freq = EEPROMconfig->prism_freq;
+		exposer.buffer_length = EEPROMconfig->buffer_length;
+		exposer.backspeed = EEPROMconfig->backspeed;
+		exposer.endline = EEPROMconfig->endline;
+		exposer.fastforwardspeed = EEPROMconfig->fastforwardspeed;
+		exposer.plotstartpos = EEPROMconfig->plotstartpos;
+		exposer.linesperrotaryenctick = EEPROMconfig->linespoerrotaryenctick;
+		exposer.plotforwardspeed = EEPROMconfig->plotforwardspeed;
+		exposer.status |=  EXPOSER_CONFIG;
+	}
+	laser_control_setbufsize(exposer.buffer_length);
+	
+	timer4_init();
+	LED_USBON_ON
 start:
 	LED_RUNNING_OFF
 	LED_READY_OFF
@@ -54,6 +80,9 @@ start:
 	
 	while(!EXPOSER_IS_ON)
 	{
+		//wait for data
+		if(usb_configured() && usb_serial_available())
+			serial_handledata();
 		POWER_DOWN		//go to sleep mode
 	}
 	
@@ -63,6 +92,9 @@ start:
 	
 	while(!EXPOSER_IS_RUNNING)
 	{
+		//wait for data
+		if(usb_configured() && usb_serial_available())
+			serial_handledata();
 		POWER_DOWN		//go to sleep mode
 	}
 	
@@ -71,23 +103,42 @@ start:
 	LED_CALIBRATING_ON
 	laser_control_setmode( LASER_MODE_INIT );
 	
+	if(EXPOSER_CONFIG_LOADED)
+	{
+		send_Pstr(PSTR("calibrating...\n\r"));
+		exposer.prism_freq = prism_calibrate(buffer_length, 2);
+		
+		EEPROMconfig->prism_freq =exposer.prism_freq;
+		EEPROMconfig->buffer_length =exposer.buffer_length;
+		EEPROMconfig->backspeed =exposer.backspeed;
+		EEPROMconfig->endline =exposer.endline;
+		EEPROMconfig->fastforwardspeed= exposer.fastforwardspeed;
+		EEPROMconfig->plotstartpos =exposer.plotstartpos;
+		EEPROMconfig->linespoerrotaryenctick =exposer.linesperrotaryenctick;
+		EEPROMconfig->plotforwardspeed = exposer.plotforwardspeed;
+
+		eeprom_write();
+	}
+	else
+	{
+		send_Pstr(PSTR("using given prism_freq\n\r"));
+	}
+	
+	prism_start();
+	_sleep_ms(3000);
 	//goto to idle mode
 	laser_control_setmode( LASER_MODE_IDLE );
+
+
 	
-	//move carriage to startline
 	
-	//wait for data
-	while(!usb_configured())
-		asm volatile ("nop");
-	
-	while(!usb_serial_available())
-		asm volatile ("nop");
 	
 	serial_handledata();
-		
+	
 	LED_CALIBRATING_OFF
 	LED_RUNNING_ON
 	
+	//move carriage to startline
 	//active carriage motor
 	bts7741g_forward(exposer.fastforwardspeed);
 	//wait i rotaryencoder ticks (drive to plot start position)
@@ -102,7 +153,9 @@ start:
 	
 	//send current line
 	serial_sendcurrentline(exposer.plotstartpos);
-
+	
+	prism_set_frequency(exposer.prism_freq);
+	
 	//plot
 	int16_t lineloops=0;
 	while(exposer.status && SUPPLY_SENSE_PIN){
@@ -117,14 +170,18 @@ start:
 				asm volatile("nop");
 		}
 		
-		//get new usb data
-		while(!usb_configured())
-			asm volatile ("nop");
-		
-		while(!usb_serial_available())
-			asm volatile ("nop");
-		
-		serial_handledata();
+		while(!EXPOSER_USB_READY)
+		{
+			//get new usb data
+			while(!usb_configured())
+				asm volatile ("nop");
+			
+			while(!usb_serial_available())
+				asm volatile ("nop");
+			
+			serial_handledata();
+		}
+		exposer.status &=~EXPOSER_USB_GO;
 		
 		//update exposing time counter
 		lineloops = exposer.linesperrotaryenctick;
@@ -171,7 +228,7 @@ start:
 	
 	//shut down laser, in any case
 	laser_control_setmode(LASER_MODE_OFF);
-	
+	prism_stop();
 	//move carriage to start, if possible
 	if(SUPPLY_SENSE_PIN)
 		carriage_tostart();
@@ -180,7 +237,7 @@ start:
 	if(exposer.status && !SUPPLY_SENSE_PIN)
 	{
 		//error handler
-		
+		send_Pstr(PSTR("ERR:PowerOff\n\r"));
 	}
 	
 	LED_RUNNING_OFF
@@ -244,4 +301,22 @@ void enable_noncritical_ints()
 	ENABLE_USB
 }
 
+uint8_t EEMEM eeprom_status = 1;
+
+//saves given struct to eeprom memory 
+void eeprom_write()
+{
+	eeprom_write_block(s,&EEPROMconfig,sizeof(EEPROMconfig));	//write s to eeprom_struct in eeprom
+	if(!(eeprom_read_byte(&eeprom_status) == 0xAA))
+		eeprom_write_byte(&eeprom_status, 0xAA);
+}
+
+//loads struct from eeprom memory to given pointer
+uint8_t eeprom_read()
+{
+	if(!(eeprom_read_byte(&eeprom_status) == 0xAA))
+		return 0;
+	eeprom_read_block(s,&EEPROMconfig,sizeof(EEPROMconfig));
+	return 1;
+}
 

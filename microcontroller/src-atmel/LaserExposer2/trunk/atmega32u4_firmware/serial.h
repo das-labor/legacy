@@ -26,3 +26,4 @@ void send_Pstr(const char *s);
 
 void send_str(const char *s);
 
+void serial_waituntilbuffercontains(uint8_t cnt);

@@ -85,12 +85,19 @@
 #define EXPOSER_OFF 0
 #define EXPOSER_RUNNING _BV(1)
 #define EXPOSER_ON _BV(2)
-#define EXPOSER_USB_GO _BV(4)
+#define EXPOSER_USB_GO _BV(3)
+#define EXPOSER_BUFF_HAS_CHANGED _BV(4)
+#define EXPOSER_CONFIG _BV(5) 
 
 #define EXPOSER_IS_ON (exposer.status & EXPOSER_ON)
 #define EXPOSER_IS_RUNNING (exposer.status & EXPOSER_RUNNING)
+#define EXPOSER_USB_READY (exposer.status & EXPOSER_USB_GO)
+#define EXPOSER_BUFF_CHANGED  (exposer.status & EXPOSER_BUFF_HAS_CHANGED)
+#define EXPOSER_CONFIG_LOADED (exposer.status &  EXPOSER_CONFIG)
 
 #define EXPOSER_BUFFER_SIZE 512
+#define BUFFERA_IN_USE 0
+#define BUFFERB_IN_USE 1
 
 typedef struct{
 	uint8_t buffer[EXPOSER_BUFFER_SIZE];
@@ -110,7 +117,25 @@ typedef struct{
 	uint16_t backspeed;
 	exposer_buffer_t bufferA;
 	exposer_buffer_t bufferB;
+	uint8_t bufferinuse;
+	uint16_t buffer_length;
+	uint16_t prism_freq;
 } exposer_t;
 
+typedef struct{
+	uint16_t endline;
+	uint16_t fastforwardspeed;
+	uint16_t plotstartpos;
+	uint8_t linesperrotaryenctick;
+	uint16_t plotforwardspeed;
+	uint16_t backspeed;
+	uint16_t buffer_length;
+	uint16_t prism_freq;
+} exposer_config_t;
+
+exposer_config_t EEMEM EEPROMconfig;
 
 extern exposer_t exposer;
+
+void eeprom_write();
+uint8_t eeprom_read();
