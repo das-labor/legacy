@@ -54,7 +54,7 @@ void init(void)
 
 	//turn on interrupts
 	sei();
-  wdt_enable(5); // 500ms
+	wdt_enable(5); // 500ms
 }
 	 
 int main(void)
@@ -68,8 +68,9 @@ int main(void)
 	{
 		can_handler();
 //			temp_sensor_read();
-    switch_handler();
-    wdt_reset();
+		switch_handler();
+		wdt_reset();
+		motion_tick();
 	}
 	return 1;
 };
