@@ -25,6 +25,10 @@
 
 #define PORT_BASTEL 0x01
 
+/* eeprom settings */
+#define EEP_MY_ADDR 0x00
+#define EEP_MOTION_TRESH 0x01
+
 
 #endif // ifndef CONFIG_H
 

@@ -3,6 +3,8 @@
 #include "io.h"
 #include <avr/interrupt.h>
 
+#include "motion.h"
+
 volatile uint8_t sreg;
 
 void change_shift_reg(uint8_t sreg);
@@ -10,8 +12,19 @@ void change_shift_reg(uint8_t sreg);
 uint8_t stat_licht = 0;
 
 volatile uint16_t tickscounter = 0;
-ISR(TIMER0_OVF_vect) {
-  tickscounter++;
+ISR(TIMER0_OVF_vect)
+{
+	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
+	tickscounter++;
+
+	if (tickscounter % 8192)
+		return;
+
+	/* approx. every 7 seconds... */
+	if (!motion_get())
+		return;
+	
+	can_transmit (&msg);
 }
 
 #define HOLD_THRESHOLD 18

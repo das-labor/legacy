@@ -10,6 +10,7 @@
 #include "io.h"
 
 #include "Bastelcmd.h"
+#include "config.h"
 
 
 uint8_t myaddr;
@@ -57,6 +58,10 @@ extern void can_handler()
 						PORTB |= _BV(PB0); //XXX
 						pwm_set(pwm_matrix[rx_msg->data[1]].port, rx_msg->data[2]);
 						break;
+
+					case C_SET_MOTION_T:
+						eeprom_write_byte ((uint8_t *) EEP_MOTION_TRESH, rx_msg->data[2]);
+						break;
 				}
 				//state_to_output();
 			}
@@ -77,6 +82,6 @@ void can_send(uint8_t port, uint8_t *p)
 
 void read_can_addr()
 {
-	myaddr = eeprom_read_byte(0x00);
+	myaddr = eeprom_read_byte(EEP_MY_ADDR);
 }
 
