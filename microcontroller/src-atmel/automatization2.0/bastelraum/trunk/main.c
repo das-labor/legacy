@@ -15,18 +15,17 @@
 #include "can/lap.h"
 #include "io.h"
 #include "i2c_funktionen.h"
-
+#include "motion.h"
 
 
 
 void init(void)
 {
+	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
 //	MCUCR |= _BV(SE); // Enable "sleep" mode (low power when idle)
 
-	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
-	
-	
+	motion_init();	
 //	DDRA &= ~(_BV(PA4)); // Eingänge Türkontakt
 
 
@@ -40,7 +39,7 @@ void init(void)
 */
 	DDRB |= _BV(PB0); // LED out
 	
-	TCCR0B = _BV(CS01) | _BV(CS00);
+	TCCR0B = _BV(CS01) | _BV(CS00); /* clk / 64 */
 	TIMSK0 = _BV(TOIE0);
 	
 	init_io();
