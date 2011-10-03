@@ -22,7 +22,7 @@
 #define ADC_OFFSET_CAL 1
 
 //powermeter samplebuffer size (allows up to POWERMETER_SAMPLEBUFF samples per period)
-#define POWERMETER_SAMPLEBUFF 256		//this will use POWERMETER_SAMPLEBUFF*18 bytes of RAM
+#define POWERMETER_SAMPLEBUFF 300		//this will use POWERMETER_SAMPLEBUFF*18 bytes of RAM
 
 #define NET_FREQ 50		//set freq of Powerline
 

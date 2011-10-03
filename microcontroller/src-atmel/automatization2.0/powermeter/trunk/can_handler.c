@@ -73,10 +73,18 @@ void can_createDATAPACKET()
 	uint8_t id=0;
 	
 	msg.addr_src = myaddr;
-	msg.dlc = 3;
-	msg.data[0] = 0;   //counter (0=start message)
-	msg.data[1] = id;  //TODO
-	msg.data[2] = 48;
+	msg.dlc = 4;
+	msg.data[0] = (uint8_t)((powermeter.samplesPerSecondDone>>8)&0xff);   //counter (0=start message)
+	//msg.data[1] = id;  //TODO
+	msg.data[1] = (uint8_t)(powermeter.samplesPerSecondDone&0xff);
+	//msg.data[2] = (uint8_t)((powermeter.adcsamples>>8)&0xff);
+	//msg.data[3] = (uint8_t)(powermeter.adcsamples&0xff);
+//	msg.data[4] = powermeter.ADCSamplesPerPeriod;
+	msg.data[2] = (uint8_t)((powermeter.timercc1clks>>8)&0xff);
+	msg.data[3] = (uint8_t)(powermeter.timercc1clks&0xff);
+	powermeter.timercc1clks=0;
+	powermeter.samplesPerSecondDone=0;
+	powermeter.adcsamples=0;
 
 #if laborhack
 	if(!laborcanbushack)
