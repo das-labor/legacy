@@ -52,16 +52,16 @@ void Eventsystem_init( void )
 {
 	/* Select multiplexer input. */
 	EVSYS_SetEventSource( 7, EVSYS_CHMUX_TCC1_OVF_gc );	//event Timer1CC1_OVF
-	EVSYS_SetEventSource( 2, EVSYS_CHMUX_OFF_gc);
- 	EVSYS_SetEventSource( 3, EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 2,  EVSYS_CHMUX_OFF_gc);
+ 	EVSYS_SetEventSource( 3,  EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 4, EVSYS_CHMUX_OFF_gc);
  	EVSYS_SetEventSource( 5, EVSYS_CHMUX_OFF_gc);
- 	//EVSYS_SetEventSource( 1, EVSYS_CHMUX_OFF_gc);
+ 	EVSYS_SetEventSource( 1,  EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 6, EVSYS_CHMUX_OFF_gc);
-        //EVSYS_SetEventSource( 0, EVSYS_CHMUX_OFF_gc);
+        EVSYS_SetEventSource( 0,  EVSYS_CHMUX_OFF_gc);
 //	not neccessary ???
-	EVSYS_SetEventSource( 0, EVSYS_CHMUX_ADCA_CH2_gc );	//event ADCA_CH2
-	EVSYS_SetEventSource( 1, EVSYS_CHMUX_ADCB_CH2_gc );	//event ADCB_CH2
+//	EVSYS_SetEventSource( 0, EVSYS_CHMUX_ADCA_CH2_gc );	//event ADCA_CH2
+//	EVSYS_SetEventSource( 1, EVSYS_CHMUX_ADCB_CH2_gc );	//event ADCB_CH2
 }
 
 void Interrupt_Init(void)
@@ -77,10 +77,10 @@ void Interrupt_Init(void)
 
 int main(void)
 {
-	
+
 	LED_initPORTC();  // LED Ports als Ausgang
 	LED_isrunning();	//set green LED
-	
+
 	sync_osc();
 	start_mcp_clock();
 	spi_init();
@@ -90,14 +90,14 @@ int main(void)
     	InitializeUSARTC1();	//init USARTC1 (for debuging)	19200 8N1
 	sendUSARTC1_putstr("DEBUG Interface\n\r");
 	#endif
-	
+
 	Eventsystem_init();
 	Interrupt_Init();
 
  	setERROR(0);
 	can_send_packet=0;
 	
-	powermeter_SetSampleratePerPeriod(32);
+	powermeter_SetSampleratePerPeriod(200);
 	powermeter_Start();
 
 #if DEBUGMODE

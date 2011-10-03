@@ -38,9 +38,12 @@ typedef struct
 
 typedef struct
 {
+	uint16_t adcsamples;			//adc samples, DEBUG
+	uint16_t samplesPerSecondDone;		//count how many samples per second were done
+	uint16_t timercc1clks;		//DEBUG
 	uint16_t ADCSamplesPerSecond;		//samples per second
 	uint16_t ADCSampleBufferSize;		//buffersize in Bytes
-	uint16_t ADCSamplesPerPeriod;		//samples per period
+	uint8_t ADCSamplesPerPeriod;		//samples per period
 	powermeter_adc_offset_t ADCoffset;	//ADC offset (+-2)
 	powermeter_channel_t powerdraw;
 	powermeter_channel_t powerdrawPerSecond;
@@ -98,6 +101,6 @@ void RTC_days_int(void);
 void RTC_year_int(void);
 
 
-void DMA0_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count );
+void DMA0_init(void * destAddr, uint8_t blockSize,uint8_t count );
 
-void DMA1_init(volatile void * destAddr, volatile uint8_t blockSize,volatile uint16_t count );
+void DMA1_init(void * destAddr, uint8_t blockSize,uint8_t count );
