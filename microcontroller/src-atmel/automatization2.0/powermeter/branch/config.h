@@ -15,6 +15,10 @@
 #define sendwithDELAY 0
 #define laborhack 0
 
+//ADCSamplesPerPeriod mode
+#define USE_STATIC_ADCSamplesPerPeriod 1
+#define ADCSAMPLESPERPERIOD 256
+
 //debugmode
 #define DEBUGMODE 0		//set to 1 for DEBUGMODE, otherwise 0
 
