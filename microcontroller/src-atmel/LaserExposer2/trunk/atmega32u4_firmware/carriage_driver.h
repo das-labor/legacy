@@ -1,3 +1,7 @@
+#ifndef carriage_driver_h__
+#define carriage_driver_h__
+#include "config.h"
+
 //carriage_driver.h
 //used hardware:
 //* Timer1 PWM (OC1A, OC1B)
@@ -23,15 +27,17 @@
 //IH2 <- OC1B
 
 
-void bts7741g_stop()
+void bts7741g_stop();
 
-void bts7741g_freerunning()
-
-//if !speed stop condition is called
-void bts7741g_forward(uint16_t speed)
+void bts7741g_freerunning();
 
 //if !speed stop condition is called
-void bts7741g_backwards(uint16_t speed)
+void bts7741g_forward(uint16_t speed);
+
+//if !speed stop condition is called
+void bts7741g_backwards(uint16_t speed);
 
 //Timer1
-void timer1_init()
+void timer1_init();
+
+#endif

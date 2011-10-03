@@ -317,14 +317,14 @@ static uint8_t cdc_line_rtsdtr=0;
 void usb_init(void)
 {
 	HW_CONFIG();
-        USB_FREEZE();				// enable USB
-        PLL_CONFIG();				// config PLL, 16 MHz xtal
-        while (!(PLLCSR & (1<<PLOCK))) ;	// wait for PLL lock
-        USB_CONFIG();				// start USB clock
-        UDCON = 0;				// enable attach resistor
+    USB_FREEZE();				// enable USB
+    PLL_CONFIG();				// config PLL, 16 MHz xtal
+    while (!(PLLCSR & (1<<PLOCK))) ;	// wait for PLL lock
+    USB_CONFIG();				// start USB clock
+    UDCON = 0;				// enable attach resistor
 	usb_configuration = 0;
 	cdc_line_rtsdtr = 0;
-        UDIEN = (1<<EORSTE)|(1<<SOFE);
+    UDIEN = (1<<EORSTE)|(1<<SOFE);
 	sei();
 }
 

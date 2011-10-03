@@ -1,14 +1,24 @@
 //serial.c
+#include <inttypes.h>
+#include <stdlib.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
+
+#include "config.h"
+
 #include "serial.h"
 #include "string.h"
 #include "buffer_handler.h"
+#include "laser_control.h"
+#include "usb_serial.h"
 
-void serial_sendStringandValue(PROGMEM char *pstrv, int16_t value)
+void serial_sendStringandValue(char PROGMEM *pstrv, int16_t value)
 {
 	char buf[6];
 	send_Pstr(pstrv);
 	itoa(value, &buf[0], 10);
-	send_str(&buf);
+	usb_serial_putchar(&buf[0]);
 	send_Pstr(PSTR("\n\r"));
 }
 
@@ -20,19 +30,19 @@ void serial_sendstatus()
 	temp = laser_control_getmode();
 	temp = temp | (exposer.status<<3);
 	itoa(temp, &buf[0], 10);
-	send_str(&buf);
+	usb_serial_putchar(&buf[0]);
 	send_Pstr(PSTR("\n\r"));
 }
 
 void serial_welcomemsg()
 {
-	send_str(PSTR("\r\nLaserPCBExposer\n\r"
+	send_Pstr(PSTR("\r\nLaserPCBExposer\n\r"
 		"v=0.1\n\r"));
 }
 
 void serial_sendhelpmsg()
 {
-	send_str(PSTR("\r\nLaserPCBExposer\n\r"
+	send_Pstr(PSTR("\r\nLaserPCBExposer\n\r"
 		"v=0.1\n\r"
 		"commands:\n\r"
 		"s?   - get status\n\r"
@@ -44,48 +54,59 @@ void serial_sendhelpmsg()
 		));
 	
 }
+
 void serial_handledata()
 {
-	int16_t r;
 	char buf[20];
 	while(usb_serial_available())
 	{
-		memset(&buf[0], 0,sizeof(buf));
+		memset(&buf[0], 0x00, sizeof(buf));
 		serial_getString(&buf[0],sizeof(buf));
-		if(!strcmp (&buf,"s?"))		//status
+		if(!strcmp (buf,"s?"))		//status
 		{
 			uint8_t temp;
 			temp = laser_control_getmode();
 			temp = temp | (exposer.status<<3);
 			serial_sendStringandValue(PSTR("S=\n\r"),temp);
 		}
-		if(!strcmp (&buf,"cl?"))	//current line
+		else if(!strcmp (buf,"cl?"))	//current line
 		{
 			serial_sendStringandValue(PSTR("cl="),exposer.currentline);
 		}
-		if(!strcmp (&buf,"rc?"))	//recv configuration
+		else if(!strcmp (buf,"rc?"))	//recv configuration
 		{
-			serial_recvconfiguration();
+			//serial_recvconfiguration();	//TODO !
 		}
-		if(!strcmp (&buf,"sc!"))	//set configuration
+		else if(!strcmp (buf,"sc!"))	//set configuration
 		{
 			serial_setconfiguration();
 		}
-		if(!strcmp (&buf,"h!"))	//help message
+		else if(!strcmp (buf,"h!"))	//help message
 		{
 			serial_sendhelpmsg();
 		}
-		if(!strcmp (&buf,"dr!"))	//recv raw data
+		else if(!strcmp (buf,"dr!"))	//recv raw data
 		{
 			serial_recvrawdata();
 		}
-		if(!strcmp (&buf,"dc!"))	//recv compressed data
+		else if(!strcmp (buf,"dc!"))	//recv compressed data
 		{
 			serial_recvcompdata();
 		}
-		if(!strcmp (&buf,"ex!"))	//start exposing, host should wait for ex=0
+		else if(!strcmp (buf,"ex!"))	//start exposing, host should wait for ex=0
 		{
 			serial_startexposing();
+		}
+		else
+		{
+			send_Pstr(PSTR("Unknown Command:"));
+			uint8_t i=0;
+			while (1) {
+				if (!buf[i]) break;
+				usb_serial_putchar(buf[i]);
+				i++;
+			}
+			send_Pstr(PSTR("\n\r"));
 		}
 	}
 }
@@ -104,31 +125,31 @@ void serial_setconfiguration()
 	datarecsize = (r<<8)+s;	//length of following data field, must exal buffer size set in config
 	if(sizeof(exposer_config_t) != datarecsize)
 	{
-		send_str(PSTR("ERR: buffersize missmatch!\n\r"));
+		send_Pstr(PSTR("ERR: buffersize missmatch!\n\r"));
 		return;
 	}
-	p=&newconfig;
+	p=(uint8_t *)&newconfig;
 	while(datarecnt < datarecsize)
 	{
 		do{
 			r = usb_serial_getchar();
 		}
-		while(r < 0)
+		while(r < 0);
 		*(p++) = (uint8_t)r;
 		datarecnt++;
 	}
 	if(!EXPOSER_IS_RUNNING)
 	{
-		exposer.prism_freq = newconfig->prism_freq;
-		exposer.buffer_length = newconfig->buffer_length;
-		exposer.backspeed = newconfig->backspeed;
-		exposer.endline = newconfig->endline;
-		exposer.fastforwardspeed = newconfig->fastforwardspeed;
-		exposer.plotstartpos = newconfig->plotstartpos;
-		exposer.linesperrotaryenctick = newconfig->linespoerrotaryenctick;
-		exposer.plotforwardspeed = newconfig->plotforwardspeed;
+		exposer.prism_freq = newconfig.prism_freq;
+		exposer.buffer_length = newconfig.buffer_length;
+		exposer.backspeed = newconfig.backspeed;
+		exposer.endline = newconfig.endline;
+		exposer.fastforwardspeed = newconfig.fastforwardspeed;
+		exposer.plotstartpos = newconfig.plotstartpos;
+		exposer.linesperrotaryenctick = newconfig.linesperrotaryenctick;
+		exposer.plotforwardspeed = newconfig.plotforwardspeed;
 		
-		if(!exposer.prism_freq || exposer.buffer_length != newconfig->buffer_length)
+		if(!exposer.prism_freq || exposer.buffer_length != newconfig.buffer_length)
 			exposer.status &=  ~EXPOSER_CONFIG;	//force recalibrate
 			
 		laser_control_setbufsize(exposer.buffer_length);
@@ -146,15 +167,15 @@ void serial_getconfiguration()
 	uint8_t *p;
 	exposer_config_t curconfig;
 	p=&curconfig;
-	curconfig->prism_freq =exposer.prism_freq;
-	curconfig->buffer_length =exposer.buffer_length;
-	curconfig->backspeed =exposer.backspeed;
-	curconfig->endline =exposer.endline;
-	curconfig->fastforwardspeed= exposer.fastforwardspeed;
-	curconfig->plotstartpos =exposer.plotstartpos;
-	curconfig->linespoerrotaryenctick =exposer.linesperrotaryenctick;
-	curconfig->plotforwardspeed = exposer.plotforwardspeed;
-	for(i=0;i < sizeof(exposer_config_t);i++)
+	curconfig.prism_freq =exposer.prism_freq;
+	curconfig.buffer_length =exposer.buffer_length;
+	curconfig.backspeed =exposer.backspeed;
+	curconfig.endline =exposer.endline;
+	curconfig.fastforwardspeed= exposer.fastforwardspeed;
+	curconfig.plotstartpos =exposer.plotstartpos;
+	curconfig.linesperrotaryenctick =exposer.linesperrotaryenctick;
+	curconfig.plotforwardspeed = exposer.plotforwardspeed;
+	for(uint8_t i=0;i < sizeof(exposer_config_t);i++)
 	{
 		usb_serial_putchar(*(p++));
 	}
@@ -183,7 +204,7 @@ void serial_startexposing()
 
 void serial_recvrawdata()
 {
-	int16_t r,s;
+	uint16_t r,s;
 	uint8_t *p;
 	uint16_t datarecsize;
 	uint16_t datarecnt=0;		//counts up to datarecsize
@@ -200,7 +221,7 @@ void serial_recvrawdata()
 	datarecsize = (r<<8)+s;	//length of following data field, must exal buffer size set in config
 	if(exposer.buffer_length != datarecsize)
 	{
-		send_str(PSTR("ERR: buffersize missmatch!\n\r"));
+		send_Pstr(PSTR("ERR: buffersize missmatch!\n\r"));
 		return;
 	}
 	while(datarecnt < datarecsize)
@@ -208,7 +229,7 @@ void serial_recvrawdata()
 		do{
 			r = usb_serial_getchar();
 		}
-		while(r < 0)
+		while(r < 0);
 		*(p++) = (uint8_t)r;
 		datarecnt++;
 	}
@@ -225,14 +246,14 @@ void serial_waituntilbuffercontains(uint8_t cnt)
 
 void serial_recvcompdata()
 {
-	int16_t r,s;
-	uint8_t *p;
+	uint16_t r,s;
+	exposer_buffer_t *p;
 	uint16_t datarecsize;
 	uint16_t datarecnt;		//counts up to datarecsize
 	if(exposer.bufferinuse)
-		p = &exposer.bufferA.buffer[0];	//point to buffer
+		p = &exposer.bufferA;	//point to buffer
 	else
-		p = &exposer.bufferB.buffer[0];
+		p = &exposer.bufferB;
 		
 	serial_waituntilbuffercontains(2);
 	
@@ -247,11 +268,11 @@ void serial_recvcompdata()
 		do{
 			r = usb_serial_getchar();
 		}
-		while(r < 0)
+		while(r < 0);
 		do{
 			s = usb_serial_getchar();
 		}
-		while(s < 0)
+		while(s < 0);
 		if(r & 0x80)
 			append_n_one_bits(p, ((r&0x7f)<<8)+s);
 		else
@@ -267,26 +288,36 @@ void serial_recvcompdata()
 
 uint8_t serial_getString(char *bufp, uint8_t bufsize)
 {
-	uint8_t cnt = 0;
-	r = usb_serial_getchar();
-	while(r == '\r' || r == '\n')
-		r = usb_serial_getchar();
-			
-	for(uint8_t i=0; i < bufsize;i++)
+	int16_t r;
+	do
 	{
-		if(r == -1)
-			break;
-			
-		if (r == '\r' || r == '\n')
-		{
-			return cnt;
+		r = usb_serial_getchar();
+	}while(r == 0x0A || r == 0x0D);	// \n or \r
+		
+	uint8_t i=0;
+	while(i < bufsize)
+	{		
+		do{
+			r = usb_serial_getchar();
 		}
-		//UCASE
+		while(r < 0);
+		
+		if (r == 0x0A || r == 0x0D)	// \n or \r
+		{
+			return i;
+		}
+		//LCASE
 		if (r > '@' && r < '[')
 			r+= ('a'-'A');
-		*bufp++ = r;
 		
-		r = usb_serial_getchar();
+		*bufp = (uint8_t)(r&0xff);
+		bufp++;
+		if (r == '?' || r == '!')	// \n or \r
+		{
+			return i;
+		}
+
+		i++;
 	}
 	return bufsize;
 }
@@ -301,12 +332,5 @@ void send_Pstr(const char *s)
 		c = pgm_read_byte(s++);
 		if (!c) break;
 		usb_serial_putchar(c);
-	}
-}
-
-void send_str(const char *s)
-{
-	while (*s) {
-		usb_serial_putchar(*s++);
 	}
 }

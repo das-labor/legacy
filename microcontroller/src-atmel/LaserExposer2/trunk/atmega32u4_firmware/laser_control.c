@@ -2,10 +2,14 @@
 //used hardware:
 //* Timer0
 //* Timer3
+#include <inttypes.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+#include "config.h"
+#include "laser_control.h"
 
 laser_driver_t laser_driver;
-
-#include "laser_control.h"
 
 // HSYNC
 ISR(INT2_vect)
@@ -63,7 +67,7 @@ ISR(TIMER0_COMPA_vect)
 void init_timer0()
 {
 	OCR0A = (laser_driver.buffer_length>>2);	//devide by 4, since Timer0 ist 4 times slower than SPI
-	TCCR0A=_BV(WGM1);	//no output change, simple CTC (OCRA clears TCNT)
+	TCCR0A=_BV(WGM01);	//no output change, simple CTC (OCRA clears TCNT)
 	TIMSK0=_BV(OCIE0A);	//enable OCR0A interrupt
 }
 
@@ -91,7 +95,7 @@ void laser_control_setmode(uint8_t mode)
 				laser_driver.idle = 1;
 				init_timer0();
 				ENABLE_INT2
-				laser_driver.mode == LASER_MODE_IDLE;
+				laser_driver.mode = LASER_MODE_IDLE;
 			}
 		break;
 		case LASER_MODE_RUNNING:
@@ -99,7 +103,7 @@ void laser_control_setmode(uint8_t mode)
 				laser_driver.idle = 0;
 				init_timer0();
 				ENABLE_INT2
-				laser_driver.mode == LASER_MODE_RUNNING;
+				laser_driver.mode = LASER_MODE_RUNNING;
 			}
 		break;
 	}
