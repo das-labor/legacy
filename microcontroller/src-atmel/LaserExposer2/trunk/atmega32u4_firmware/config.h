@@ -1,3 +1,19 @@
+#ifndef config_h__
+#define config_h__
+
+#include <inttypes.h>
+#include <avr/eeprom.h>
+
+#ifndef	ATMEGAEEPROM_H
+#define ATMEGAEEPROM_H
+
+// EEMEM wird bei aktuellen Versionen der avr-lib in eeprom.h definiert
+// hier: definiere falls noch nicht bekannt ("alte" avr-libc)
+#ifndef EEMEM
+// alle Textstellen EEMEM im Quellcode durch __attribute__ ... ersetzen
+#define EEMEM  __attribute__ ((section (".eeprom")))
+#endif
+#endif
 
 //Atmega port definitions
 
@@ -47,23 +63,23 @@
 #define HSYNC PD2
 
 #define ENABLE_INT3 EIMSK |=_BV(INT3);
-#define DISABLE_INT3 EIMSK &=~BV(INT3);
+#define DISABLE_INT3 EIMSK &=~_BV(INT3);
 #define CONFIGURE_INT3 EICRA|=_BV(ISC30);	//any edge
 
 #define ENABLE_INT2 EIMSK |=_BV(INT2);
-#define DISABLE_INT2 EIMSK &=~BV(INT2);
+#define DISABLE_INT2 EIMSK &=~_BV(INT2);
 #define CONFIGURE_INT2 EICRA|=_BV(ISC21);	//falling edge
  
 #define ENABLE_INT0 EIMSK |=_BV(INT0);
-#define DISABLE_INT0 EIMSK &=~BV(INT0);
+#define DISABLE_INT0 EIMSK &=~_BV(INT0);
 #define CONFIGURE_INT0 EICRA|=_BV(ISC01);	//falling edge
 
 #define ENABLE_INT1 EIMSK |=_BV(INT1);
-#define DISABLE_INT1 EIMSK &=~BV(INT1);
+#define DISABLE_INT1 EIMSK &=~_BV(INT1);
 #define CONFIGURE_INT1 EICRA|=_BV(ISC11);	//falling edge
  
 #define ENABLE_INT6 EIMSK |=_BV(INT6);
-#define DISABLE_INT6 EIMSK &=~BV(INT6);
+#define DISABLE_INT6 EIMSK &=~_BV(INT6);
 #define CONFIGURE_INT6 EICRB|=_BV(ISC61);		//falling edge
 
 
@@ -133,9 +149,11 @@ typedef struct{
 	uint16_t prism_freq;
 } exposer_config_t;
 
-exposer_config_t EEMEM EEPROMconfig;
+extern exposer_config_t EEMEM EEPROMconfig;
 
 extern exposer_t exposer;
 
 void eeprom_write();
 uint8_t eeprom_read();
+
+#endif

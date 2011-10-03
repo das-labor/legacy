@@ -1,3 +1,7 @@
+#ifndef laser_control_h__
+#define laser_control_h__
+#include "config.h"
+
 typedef struct{
 	uint8_t idle;
 	uint8_t mode;
@@ -23,6 +27,11 @@ void laser_control_setbufsize(uint16_t buf);
 #define LASER_MODE_IDLE 2
 #define LASER_MODE_RUNNING 4
 
+#define DDR_SPI DDRB
+#define PORT_SPI PORTB
+#define DD_MOSI PB2
+#define DD_SCK PB0
+
 #define START_TIMER0 TCCR0B=_BV(CS01)|_BV(CS00);	//clock select	1:64
 #define STOP_TIMER0 TCCR0B=0;
 #define LASER_ALWAYS_ON {PORTB|=_BV(PB2);}	//TODO: use SPI modes
@@ -33,5 +42,7 @@ void laser_control_setbufsize(uint16_t buf);
 #define ENABLE_SPI SPCR |= _BV(SPE);
 #define DISABLE_SPI  SPCR &= ~ _BV(SPE);
 
-#define INIT_SPI { SPCR |= _BV(MSTR)|_BV(SPR0); DDR_SPI = (1<<DD_MOSI)|(1<<DD_SCK);}	//SPI is master and users clk 1:16
+#define INIT_SPI { SPCR |= _BV(MSTR)|_BV(SPR0); DDR_SPI = _BV(DD_MOSI)|_BV(DD_SCK);}	//SPI is master and users clk 1:16
 #define FORCE_SPI_MOSI_LOW {SPCR &= ~ _BV(SPE); PORT_SPI &= ~_BV(DD_MOSI);}	//SPI off, Pin low
+
+#endif

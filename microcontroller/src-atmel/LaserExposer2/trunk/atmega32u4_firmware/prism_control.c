@@ -1,8 +1,14 @@
 //prism_control.c
 //used hardware
 //* Timer4
-#include "config.h"
+#include <inttypes.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdlib.h>
+#include <util/delay.h> 
 
+#include "config.h"
+#include "prism_control.h"
 
 //Timer4
 void timer4_init()
@@ -81,25 +87,25 @@ messure:
 		}
 		if(TCCR4B&0x07)	//messurement valid ?
 		{
-			uint32_t time;
+			uint32_t time_cnt;
 			//time between to syncs is now in TCNT3
 			//don't forget the prescaller
-			if(TCCR4B&0x07 == _BV(CS30))
+			if((TCCR4B&0x07) == _BV(CS30))
 			{
-				time=TCNT3;
+				time_cnt=TCNT3;
 			}
-			elseif(TCCR4B&0x07 == _BV(CS31))
+			else if((TCCR4B&0x07) == _BV(CS31))
 			{
-				time=TCNT3<<3;
+				time_cnt=TCNT3<<3;
 			}
-			elseif(TCCR4B&0x07 == _BV(CS32))
+			else if((TCCR4B&0x07) == _BV(CS32))
 			{
-				time=TCNT4<<8;
+				time_cnt=TCNT4<<8;
 			}
 			// time/16Mhz !== ((bufferlength + delay) * 8)/1Mbits
 			// time/16 !== ((bufferlength + delay)* 8)
 			//distance := abs(time/16 -  ((bufferlength + delay)* 8));
-			temp = abs(time/16 -  ((bufferlength + delay)* 8));
+			time_cnt = abs(time_cnt/16 -  ((bufferlength + delay)* 8));
 			if(temp <= distance)
 			{
 				distance = temp;
@@ -115,10 +121,7 @@ messure:
 	return freq;
 }
 
-#define START_TIMER3_1 TCCR3B = _BV(CS30);	//prescaler to 1:1
-#define START_TIMER3_8 TCCR3B = _BV(CS31);	//prescaler to 1:8
-#define START_TIMER3_256 TCCR3B = _BV(CS32);	//prescaler to 1:256
-#define STOP_TIMER3 TCCR3B = 0;
+
 void prism_start(void)
 {
 	TCCR4B=_BV(CS43)|_BV(CS42)|_BV(CS41);	//clk prescaller 1:8192
