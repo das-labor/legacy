@@ -83,10 +83,6 @@ int main(void)
 	spi_init();
 	can_init();
 	read_can_addr();
-	#if DEBUGMODE
-    	InitializeUSARTC1();	//init USARTC1 (for debuging)	19200 8N1
-	sendUSARTC1_putstr("DEBUG Interface\n\r");
-	#endif
 
 	Eventsystem_init();
 	Interrupt_Init();
@@ -97,9 +93,6 @@ int main(void)
 	powermeter_SetSampleratePerPeriod(ADCSAMPLESPERPERIOD);	//configure ADCSAMPLESPERPERIOD in config.h
 	powermeter_Start();
 
-#if DEBUGMODE
-		sendUSARTC1_putstr("entering main-loop\n\r");
-#endif
 	uint16_t x;
 	while (1) {
 		can_handler();
