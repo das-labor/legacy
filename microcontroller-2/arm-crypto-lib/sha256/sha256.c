@@ -68,6 +68,7 @@ void sha256_init(sha256_ctx_t *state){
 /**
  * rotate x right by n positions
  */
+static
 uint32_t rotr32( uint32_t x, uint8_t n){
 	return ((x>>n) | (x<<(32-n)));
 }
@@ -76,7 +77,7 @@ uint32_t rotr32( uint32_t x, uint8_t n){
 /*************************************************************************/
 
 // #define CHANGE_ENDIAN32(x) (((x)<<24) | ((x)>>24) | (((x)& 0x0000ff00)<<8) | (((x)& 0x00ff0000)>>8))
-
+static
 uint32_t change_endian32(uint32_t x){
 	return (((x)<<24) | ((x)>>24) | (((x)& 0x0000ff00)<<8) | (((x)& 0x00ff0000)>>8));
 }

@@ -29,7 +29,7 @@ typedef struct {
 } hfhmacgen_ctx_t;
 
 uint8_t hfal_hmac_init(const hfdesc_t* hash_descriptor, hfhmacgen_ctx_t* ctx, const void* key, uint16_t keylength_b);
-int hfal_hmac_ctxcopy(hfhmacgen_ctx_t* dest, hfhmacgen_ctx_t* src);
+uint8_t hfal_hmac_ctxcopy(hfhmacgen_ctx_t* dest, hfhmacgen_ctx_t* src);
 void hfal_hmac_nextBlock(hfhmacgen_ctx_t* ctx, const void* block);
 void hfal_hmac_lastBlock(hfhmacgen_ctx_t* ctx, const void* block, uint16_t length_b);
 void hfal_hmac_ctx2mac(void* dest, hfhmacgen_ctx_t* ctx);
