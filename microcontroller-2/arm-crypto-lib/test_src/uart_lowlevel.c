@@ -180,3 +180,11 @@ uint32_t uart_dataavail(uint8_t uartno){
 	/* wait while the FIFO is empty */
 	return(HW_REG(uart_base[uartno]+UARTFR_OFFSET)&_BV(UART_RXFE))?0:1;
 }
+
+void uart_flush(uint8_t uartno){
+	if(uartno>UART_MAX){
+		return;
+	}
+	while((HW_REG(uart_base[uartno]+UARTCTL_OFFSET)&_BV(UART_EOT)) == 0)
+		;
+}

@@ -62,6 +62,7 @@ void cli_hexdump(const void* data, uint32_t length);
 void cli_hexdump_rev(const void* data, uint32_t length);
 void cli_hexdump2(const void* data, uint32_t length);
 void cli_hexdump_block(const void* data, uint32_t length, uint8_t indent, uint8_t width);
+void cli_hexdump_byte(uint8_t byte);
 
 void echo_ctrl(char* s);
 int8_t cmd_interface(const cmdlist_entry_t* cmd_desc);

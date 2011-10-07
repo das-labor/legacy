@@ -73,6 +73,10 @@ uint32_t rotr32( uint32_t x, uint8_t n){
 	return ((x>>n) | (x<<(32-n)));
 }
 
+static
+uint32_t rotl32( uint32_t x, uint8_t n){
+	return ((x<<n) | (x>>(32-n)));
+}
 
 /*************************************************************************/
 
@@ -90,10 +94,10 @@ uint32_t change_endian32(uint32_t x){
 #define CH(x,y,z)  (((x)&(y)) ^ ((~(x))&(z)))
 #define MAJ(x,y,z) (((x)&(y)) ^ ((x)&(z)) ^ ((y)&(z)))
 
-#define SIGMA0(x) (rotr32((x),2) ^ rotr32((x),13) ^ rotr32((x),22))
-#define SIGMA1(x) (rotr32((x),6) ^ rotr32((x),11) ^ rotr32((x),25))
-#define SIGMA_a(x) (rotr32((x),7)  ^ rotr32((x),18) ^ ((x)>>3))
-#define SIGMA_b(x) (rotr32((x),17) ^ rotr32((x),19) ^ ((x)>>10))
+#define SIGMA0(x) (rotr32((x),2) ^ rotr32((x),13) ^ rotl32((x),10))
+#define SIGMA1(x) (rotr32((x),6) ^ rotr32((x),11) ^ rotl32((x),7))
+#define SIGMA_a(x) (rotr32((x),7)  ^ rotl32((x),14) ^ ((x)>>3))
+#define SIGMA_b(x) (rotl32((x),15) ^ rotl32((x),13) ^ ((x)>>10))
 
 const
 uint32_t k[]={
