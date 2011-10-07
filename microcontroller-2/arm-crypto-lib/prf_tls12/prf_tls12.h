@@ -43,6 +43,7 @@ uint8_t prf_tls12_init_w_label(prf_tls12_ctx_t* ctx, const hfdesc_t* hash,
 
 void prf_tls12_free(prf_tls12_ctx_t* ctx);
 uint8_t prf_tls12_next(void* dest, prf_tls12_ctx_t* ctx);
+uint8_t prf_tls12_fill(void* dest, uint16_t length_B, prf_tls12_ctx_t* ctx);
 
 
 #endif /* PRF_TLS12_H_ */
