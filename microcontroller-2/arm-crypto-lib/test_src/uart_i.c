@@ -272,6 +272,8 @@ void uart_flush(uint8_t uartno){
 	if(uartno>UART_MAX){
 		return;
 	}
+	while(circularbytebuffer_cnt(&(uart_tx_buffer[uartno])))
+		;
 	while((HW_REG(uart_base[uartno]+UARTCTL_OFFSET)&_BV(UART_EOT)) == 0)
 		;
 }

@@ -196,6 +196,9 @@ const cmdlist_entry_t cmdlist[]  = {
 int main(void) {
 	main_setup();
 
+	shavs_algolist=(hfdesc_t**)algolist;
+	shavs_algo=(hfdesc_t*)&sha512_desc;
+
 	for(;;){
 		welcome_msg(algo_name);
 		cmd_interface(cmdlist);
