@@ -96,7 +96,11 @@ char* ultoa(unsigned long a, char* buffer, uint8_t radix){
 		return buffer;
 	}
 	while(a){
+		/* toolchain bug??
 		result = div(a, radix);
+		*/
+		result.quot = a/radix;
+		result.rem = a%radix;
 		*ptr = result.rem;
 		if(result.rem<10){
 			*ptr += '0';

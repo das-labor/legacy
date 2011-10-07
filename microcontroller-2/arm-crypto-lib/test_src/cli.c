@@ -102,7 +102,8 @@ uint8_t cli_getsn(char* s, uint32_t n){
 	char c;
 	if(n==0)
 		return 2;
-	while((c=cli_getc_cecho())!='\0' && c!='\r' && n--){
+	while((c=cli_getc_cecho())!='\0' && c!='\r' && n){
+		--n;
 		*s++=c;
 	}
 	*s='\0';

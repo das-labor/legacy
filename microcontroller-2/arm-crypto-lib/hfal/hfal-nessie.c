@@ -34,7 +34,7 @@ void hfal_nessie(const hfdesc_t* hd){
 		return;
 	
 	nessie_hash_ctx.hashsize_b  = hd->hashsize_b;
-	nessie_hash_ctx.name = (char*)(hd->name); /* needs a nicer fix */
+	nessie_hash_ctx.name        = hd->name;
 	nessie_hash_ctx.blocksize_B = hd->blocksize_b/8;
 	nessie_hash_ctx.ctx_size_B  = hd->ctxsize_B;
 	nessie_hash_ctx.hash_init = (nessie_hash_init_fpt)(hd->init);
