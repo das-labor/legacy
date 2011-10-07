@@ -27,9 +27,6 @@
 #ifndef SHA256_H_
 #define SHA256_H_
 
-#define __LITTLE_ENDIAN__
-
-
 #include <stdint.h>
 
 /** \def SHA256_HASH_BITS
