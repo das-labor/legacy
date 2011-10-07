@@ -87,6 +87,7 @@ void test_prf(const hfdesc_t* hash){
 		cli_hexdump_block(buffer, ctx.blocklength_b/8, 4, 8);
 		i += ctx.blocklength_b/8;
 	}while(i<100);
+	prf_tls12_free(&ctx);
 }
 
 void test_sha256(void){
