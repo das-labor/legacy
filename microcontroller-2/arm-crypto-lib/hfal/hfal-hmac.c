@@ -69,16 +69,16 @@ uint8_t hfal_hmac_init(const hfdesc_t* hash_descriptor,
 	return 0;
 }
 
-int hfal_hmac_ctxcopy(hfhmacgen_ctx_t* dest, hfhmacgen_ctx_t* src){
+uint8_t hfal_hmac_ctxcopy(hfhmacgen_ctx_t* dest, hfhmacgen_ctx_t* src){
 	dest->desc = src->desc;
 	dest->ctx = malloc(dest->desc->ctxsize_B);
 	if(dest->ctx == NULL){
-		return -1;
+		return 1;
 	}
 	memcpy(dest->ctx, src->ctx, dest->desc->ctxsize_B);
 	dest->finctx = malloc(dest->desc->ctxsize_B);
 	if(dest->finctx == NULL){
-		return -1;
+		return 1;
 	}
 	memcpy(dest->finctx, src->finctx, dest->desc->ctxsize_B);
 	return 0;

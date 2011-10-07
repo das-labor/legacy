@@ -52,12 +52,12 @@ void sha1_init(sha1_ctx_t *state){
 
 /********************************************************************************************************/
 /* some helping functions */
-const
+static const
 uint32_t rotl32(uint32_t n, uint8_t bits){
 	return ((n<<bits) | (n>>(32-bits)));
 }
 
-const
+static const
 uint32_t change_endian32(uint32_t x){
 	return (((x)<<24) | ((x)>>24) | (((x)& 0x0000ff00)<<8) | (((x)& 0x00ff0000)>>8));
 }
