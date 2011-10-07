@@ -133,3 +133,21 @@ uint8_t prf_tls12_next(void* dest, prf_tls12_ctx_t* ctx){
 	return 0;
 }
 
+uint8_t prf_tls12_fill(void* dest, uint16_t length_B, prf_tls12_ctx_t* ctx){
+	uint16_t bs = ctx->blocklength_b/8;
+	while(length_B>=bs){
+		if(prf_tls12_next(dest, ctx)){
+			return 1;
+		}
+		length_B -= bs;
+		dest = (uint8_t*)dest + bs;
+	}
+	if(length_B){
+		uint8_t buffer[bs];
+		if(prf_tls12_next(buffer, ctx)){
+			return 2;
+		}
+		memcpy(dest, buffer, length_B);
+	}
+	return 0;
+}

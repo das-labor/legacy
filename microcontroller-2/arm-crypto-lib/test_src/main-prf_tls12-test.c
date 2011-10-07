@@ -76,17 +76,13 @@ const char test_label[] = "test label";
 
 void test_prf(const hfdesc_t* hash){
 	prf_tls12_ctx_t ctx;
+	uint8_t buffer[100];
 	prf_tls12_init_w_label(&ctx, hash, test_secret, 16*8, test_label, strlen(test_label), test_seed, 16*8);
-	uint8_t buffer[ctx.blocklength_b/8];
-	uint16_t i=0;
 	cli_putstr("\r\n== Testing PRF-TLSv1.2 with ");
 	cli_putstr(hash->name);
 	cli_putstr(" ==\r\n");
-	do{
-		prf_tls12_next(buffer, &ctx);
-		cli_hexdump_block(buffer, ctx.blocklength_b/8, 4, 8);
-		i += ctx.blocklength_b/8;
-	}while(i<100);
+	prf_tls12_fill(buffer, 100, &ctx);
+	cli_hexdump_block(buffer, 100, 4, 8);
 	prf_tls12_free(&ctx);
 }
 
