@@ -110,6 +110,7 @@ typedef struct {
 
 static shavs_ctx_t shavs_ctx;
 
+static
 uint8_t buffer_add(char c){
 	uint8_t v,t;
 	if(shavs_ctx.buffer_idx==shavs_ctx.buffersize_B){
@@ -368,11 +369,11 @@ void shavs_test2(void){ /* Monte Carlo tests for SHA-1 & SHA-2 */
 				return;
 			}
 		}
-		if((c=cli_getc_cecho())!='e' && c!='e'){
+		if((c=cli_getc_cecho())!='e' && c!='E'){
 				cli_putstr("\r\nERROR: wrong input (2)!\r\n");
 				return;
 		}
-		if((c=cli_getc_cecho())!='e' && c!='e'){
+		if((c=cli_getc_cecho())!='e' && c!='E'){
 				cli_putstr("\r\nERROR: wrong input (3)!\r\n");
 				return;
 		}
@@ -453,11 +454,11 @@ void shavs_test3(void){ /* Monte Carlo tests for SHA-3 */
 				return;
 			}
 		}
-		if((c=cli_getc_cecho())!='e' && c!='e'){
+		if((c=cli_getc_cecho())!='e' && c!='E'){
 				cli_putstr("\r\nERROR: wrong input (2)!\r\n");
 				return;
 		}
-		if((c=cli_getc_cecho())!='e' && c!='e'){
+		if((c=cli_getc_cecho())!='e' && c!='E'){
 				cli_putstr("\r\nERROR: wrong input (3)!\r\n");
 				return;
 		}
