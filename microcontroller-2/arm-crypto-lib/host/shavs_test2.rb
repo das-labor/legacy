@@ -24,7 +24,7 @@ require 'rubygems'
 require 'serialport'
 require 'getopt/std'
 
-$buffer_size = 0
+$buffer_size = 0 # set automatically in init_system
 $conffile_check = Hash.new
 $conffile_check.default = 0
 
@@ -137,19 +137,19 @@ end
 =end
 def send_md(md_string)
 #  puts 'DBG: send_md; md_string.length = '+md_string.length.to_s+'; buffer_size = '+$buffer_size.to_s
-  bs = $buffer_size*2
+  bs = $buffer_size
   $sp.print("Msg = ")
   for i in 0..((md_string.length-1)/bs)
 #    puts 'DBG bulk send'
-    if(md_string.length-i*bs<bs)
+    if(md_string.length-i*bs<=bs)
  #     puts "DBG: i="+i.to_s()
       $sp.print(md_string[(i*bs)..-1]) 
       return
     end
     $sp.print(md_string[(i*bs)..((i+1)*bs-1)])
-    begin
-      line=$sp.gets()
-    end while not /\./.match(line) 
+  #  begin
+  #    line=$sp.gets()
+  #  end while not /\./.match(line) 
   end
 end
 
@@ -186,14 +186,16 @@ def run_test(filename, skip=0)
 	$sp.print(lb.strip)
 	$sp.print("\r")
     begin
-	  lb=file.gets()
+	    lb=file.gets()
     end while not (file.eof or (m=/[\s]*Msg[\s]*=[\s]*([0-9a-fA-F]*)/.match(lb)))
     return if file.eof
     puts("DBG sending: "+lb) if $debug
 	send_md(m[1])
+    puts("DBG sending [done] getting...") if $debug
 	avr_md = get_md()
+    puts("DBG getting [done]") if $debug
     begin
-	  lb=file.gets()
+	    lb=file.gets()
     end while not /[\s]*MD[\s]*=.*/.match(lb)
 	a = (/[\s]*MD[\s]*=[\s]*([0-9a-fA-F]*).*/.match(lb))[1];
 	b = (/[\s]*MD[\s]*=[\s]*([0-9a-fA-F]*).*/.match(avr_md))[1];
@@ -221,6 +223,16 @@ end
 ################################################################################
 # MAIN                                                                         #
 ################################################################################
+#
+# Options:
+#  -s {algo_letter} run only specified algos
+#  -f <file>        also read config from <file>
+#  -i <n>           skip until test nr. <n>
+#  -j <n>           start with testfile <n>
+#  -h ???
+#  -d               enable debug mode
+#  -c ???
+#  -a ???
 
 opts = Getopt::Std.getopts("s:f:i:j:hdca")
 
@@ -299,7 +311,7 @@ algo_tasks.each do |algoa|
         puts("\n[errors: "+ nerrors.to_s() +"]")
         logfile.puts("[error] "+nerrors.to_s+" "+conf[algo]["file_#{i}"]+ " ("+Time.now.to_s()+")")
       end
-      i += 1
+      i = i+1
     end
     logfile.close()
   end
