@@ -4,7 +4,7 @@
 #include <avr/eeprom.h>
 
 #include "mcp2510regs.h"
-#include "can.h"
+#include "mcp2510.h"
 #include "spi.h"
 #include "../config.h"
 
@@ -18,7 +18,7 @@
 
 #ifdef XMEGA
 	#define SET_CS()   MCP_CS_PORT.OUTSET = _BV(MCP_CS_BIT)
-	#define CLEAR_CS() MCP_CS_PORT.OUTCLR = _BV(MCP_CS_BIT)	
+	#define CLEAR_CS() MCP_CS_PORT.OUTCLR = _BV(MCP_CS_BIT)
 #else
 	#define SET_CS()   MCP_CS_PORT |= _BV(MCP_CS_BIT)
 	#define CLEAR_CS() MCP_CS_PORT &= ~_BV(MCP_CS_BIT)
@@ -66,7 +66,7 @@ static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val)
 void message_load(can_message_x * msg)
 {
 	unsigned char x;
-	
+
 	CLEAR_CS();
 	spi_send(WRITE);
 	spi_send(TXB0SIDH);
@@ -82,7 +82,7 @@ void message_load(can_message_x * msg)
 	spi_send(msg->msg.addr_src);
 	spi_send(msg->msg.addr_dst);
 #endif
-	
+
 	spi_send(msg->msg.dlc);
 	for(x=0;x<msg->msg.dlc;x++){
 		spi_send(msg->msg.data[x]);
@@ -104,13 +104,13 @@ void message_fetch(can_message_x * msg)
 	CLEAR_CS();
 	spi_send(READ);
 	spi_send(RXB0SIDH);
-	
-#ifdef CAN_RAW	
+
+#ifdef CAN_RAW
 	tmp1 = spi_send(0);
 	tmp2 = spi_send(0);
 	tmp3 = spi_send(0);
-	
-	msg->msg.id = ((uint32_t)tmp1<<21) | ((uint32_t)((uint8_t)tmp2&0xE0)<<13) 
+
+	msg->msg.id = ((uint32_t)tmp1<<21) | ((uint32_t)((uint8_t)tmp2&0xE0)<<13)
 			| ((uint32_t)((uint8_t)tmp2&0x03)<<16) | ((uint16_t)tmp3<<8) | spi_send(0);
 #else
 	tmp1 = spi_send(0);
@@ -121,14 +121,14 @@ void message_fetch(can_message_x * msg)
 	msg->msg.addr_src = spi_send(0);
 	msg->msg.addr_dst = spi_send(0);
 #endif
-	
-	msg->msg.dlc = spi_send(0) & 0x0F;	
+
+	msg->msg.dlc = spi_send(0) & 0x0F;
 	for (x = 0; x < msg->msg.dlc; x++)
 	{
 		msg->msg.data[x] = spi_send(0);
 	}
 	SET_CS();
-	
+
 	mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
 }
 #ifdef CAN_INTERRUPT
@@ -141,7 +141,7 @@ static volatile unsigned char TX_INT;
 ISR (MCP_INT_VEC)
 {
 	unsigned char status = mcp_status();
-		
+
 	if (status & 0x01)
 	{	// Message in RX0
 		if (!(((can_message_x*)&RX_BUFFER[RX_HEAD])->flags & 0x01))
@@ -216,7 +216,7 @@ unsigned char mcp_read(unsigned char reg)
 /* Management */
 void can_setmode(can_mode_t mode)
 {
-	unsigned char val = mode << 5;  
+	unsigned char val = mode << 5;
 	val |= 0x04;  // CLKEN
 
 	mcp_write( CANCTRL, val );
@@ -248,15 +248,15 @@ void can_init()
 	//set Slave select DDR to output
 	MCP_CS_PORT.DIRSET = _BV(MCP_CS_BIT);
 	//set Slave select high
-	MCP_CS_PORT.OUTSET = _BV(MCP_CS_BIT);	
+	MCP_CS_PORT.OUTSET = _BV(MCP_CS_BIT);
 #else
 	//set Slave select DDR to output
 	DDR(MCP_CS_PORT) |= _BV(MCP_CS_BIT);
 	//set Slave select high
 	MCP_CS_PORT      |= _BV(MCP_CS_BIT);
 #endif
-	
-#ifdef CAN_INTERRUPT	
+
+#ifdef CAN_INTERRUPT
 	unsigned char x;
 	for (x = 0; x < CAN_RX_BUFFER_SIZE; x++)
 	{
@@ -266,22 +266,22 @@ void can_init()
 	{
 		TX_BUFFER[x].flags = 0;
 	}
-#endif	
+#endif
 
 #ifdef CAN_HANDLEERROR
 	can_error = 0;
-#endif	
-	
+#endif
+
 	mcp_reset();
-	
+
 	_delay_ms(1);
-	
+
 	mcp_write(BFPCTRL, 0x0C);//RXBF Pins to Output
-	
+
 	// 0x01 : 125kbit/8MHz
 	// 0x03 : 125kbit/16MHz
 	// 0x04 : 125kbit/20MHz
-	
+
 #if F_MCP == 16000000
 #define CNF1_T 0x03
 #elif F_MCP == 8000000
@@ -290,7 +290,7 @@ void can_init()
 #define CNF1_T 0x04
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz
-#endif 
+#endif
 	mcp_write( CNF1, 0x40 | CNF1_T );
 	mcp_write( CNF2, 0xf1 );
 	mcp_write( CNF3, 0x05 );
@@ -303,7 +303,7 @@ void can_init()
 	// configure IRQ
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
 	mcp_write(CANINTE, (1<<RX0IE) | (1<<TX0IE));
-	
+
 #if defined (ENABLE_CAN_INT)
 	ENABLE_CAN_INT();
 #elif defined (__AVR_ATmega8__)
@@ -392,7 +392,7 @@ void can_transmit(can_message* msg2)
 	}
 }
 
-#else  // NON INTERRUPT VERSION 
+#else  // NON INTERRUPT VERSION
 
 can_message_x RX_MESSAGE, TX_MESSAGE;
 
