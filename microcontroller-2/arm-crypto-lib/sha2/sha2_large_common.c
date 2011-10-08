@@ -1,4 +1,4 @@
-/* sha512.c */
+/* sha2_large_common.c */
 /*
     This file is part of the ARM-Crypto-Lib.
     Copyright (C) 2006-2011 Daniel Otte (daniel.otte@rub.de)
@@ -19,18 +19,11 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "sha512.h"
+#include "sha2_large_common.h"
 
-#include "cli.h"
-
-static const
-uint64_t sha512_init_values[8] = {
-0x6a09e667f3bcc908LL, 0xbb67ae8584caa73bLL, 0x3c6ef372fe94f82bLL, 0xa54ff53a5f1d36f1LL,
-0x510e527fade682d1LL, 0x9b05688c2b3e6c1fLL, 0x1f83d9abfb41bd6bLL, 0x5be0cd19137e2179LL
-};
 
 static const
-uint64_t sha512_const[80] = {
+uint64_t sha2_large_common_const[80] = {
 0x428a2f98d728ae22LL, 0x7137449123ef65cdLL, 0xb5c0fbcfec4d3b2fLL, 0xe9b5dba58189dbbcLL,
 0x3956c25bf348b538LL, 0x59f111f1b605d019LL, 0x923f82a4af194f9bLL, 0xab1c5ed5da6d8118LL,
 0xd807aa98a3030242LL, 0x12835b0145706fbeLL, 0x243185be4ee4b28cLL, 0x550c7dc3d5ffb4e2LL,
@@ -66,6 +59,8 @@ uint64_t change_endian64(uint64_t x){
 	return r;
 }
 
+
+
 static const
 uint64_t rotr64(uint64_t x, uint8_t n){
 	return (x>>n)|(x<<(64-n));
@@ -76,19 +71,6 @@ uint64_t rotl64(uint64_t x, uint8_t n){
 	return (x<<n)|(x>>(64-n));
 }
 
-void sha512_init(sha512_ctx_t* ctx){
-	ctx->length = 0;
-	memcpy(ctx->h, sha512_init_values, 8*8);
-}
-
-void sha512_ctx2hash(void* dest, const sha512_ctx_t* ctx){
-	uint8_t i=8;
-	do{
-		*((uint64_t*)dest) = change_endian64(ctx->h[8-i]);
-		dest = (uint8_t*)dest + 8;
-	}while(--i);
-}
-
 #define CH(x,y,z)  (((x)&(y))^((~(x))&(z)))
 #define MAJ(x,y,z) (((x)&(y))^((x)&(z))^((y)&(z)))
 #define SIGMA_0(x) (rotr64((x), 28) ^ rotl64((x), 30) ^ rotl64((x), 25))
@@ -96,11 +78,11 @@ void sha512_ctx2hash(void* dest, const sha512_ctx_t* ctx){
 #define SIGMA_a(x) (rotr64((x),  1) ^ rotr64((x),  8) ^ ((x)>>7))
 #define SIGMA_b(x) (rotr64((x), 19) ^ rotl64((x),  3) ^ ((x)>>6))
 
-void sha512_nextBlock(sha512_ctx_t* ctx, const void* block){
+void sha2_large_common_nextBlock(sha2_large_common_ctx_t* ctx, const void* block){
 	uint64_t w[16], wx;
 	uint64_t a[8];
 	uint64_t t1, t2;
-	const uint64_t *k=sha512_const;
+	const uint64_t *k=sha2_large_common_const;
 	uint8_t i;
 	i=16;
 	do{
@@ -129,9 +111,9 @@ void sha512_nextBlock(sha512_ctx_t* ctx, const void* block){
 	ctx->length += 1;
 }
 
-void sha512_lastBlock(sha512_ctx_t* ctx, const void* block, uint16_t length_b){
+void sha2_large_common_lastBlock(sha2_large_common_ctx_t* ctx, const void* block, uint16_t length_b){
 	while(length_b >= 1024){
-		sha512_nextBlock(ctx, block);
+		sha2_large_common_nextBlock(ctx, block);
 		block = (uint8_t*)block + 1024/8;
 		length_b -= 1024;
 	}
@@ -144,21 +126,10 @@ void sha512_lastBlock(sha512_ctx_t* ctx, const void* block, uint16_t length_b){
 	buffer[length_b/8] |= 0x80>>(length_b%8);
 	if(length_b>1024-128-1){
 		/* length goes into the next block */
-		sha512_nextBlock(ctx, buffer);
+		sha2_large_common_nextBlock(ctx, buffer);
 		memset(buffer, 0, 120);
 	}
 	memcpy(&(buffer[128-8]), &len, 8);
-	sha512_nextBlock(ctx, buffer);
+	sha2_large_common_nextBlock(ctx, buffer);
 }
 
-void sha512(void* dest, const void* msg, uint32_t length_b){
-	sha512_ctx_t ctx;
-	sha512_init(&ctx);
-	while(length_b >= 1024){
-		sha512_nextBlock(&ctx, msg);
-		msg = (uint8_t*)msg + 1024/8;
-		length_b -= 1024;
-	}
-	sha512_lastBlock(&ctx, msg, length_b);
-	sha512_ctx2hash(dest, &ctx);
-}

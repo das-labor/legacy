@@ -20,36 +20,15 @@
 #ifndef SHA512_H_
 #define SHA512_H_
 
-#define __LITTLE_ENDIAN__
-
-
 #include <stdint.h>
-
-/** \def SHA256_HASH_BITS
- * defines the size of a SHA-256 hash value in bits
- */
-
-/** \def SHA256_HASH_BYTES
- * defines the size of a SHA-256 hash value in bytes
- */
-
-/** \def SHA256_BLOCK_BITS
- * defines the size of a SHA-256 input block in bits
- */
-
-/** \def SHA256_BLOCK_BYTES
- * defines the size of a SHA-256 input block in bytes
- */
+#include "sha2_large_common.h"
 
 #define SHA512_HASH_BITS  512
 #define SHA512_HASH_BYTES (SHA512_HASH_BITS/8)
 #define SHA512_BLOCK_BITS 1024
 #define SHA5122_BLOCK_BYTES (SHA512_BLOCK_BITS/8)
 
-typedef struct {
-	uint64_t h[8];
-	uint32_t length;
-} sha512_ctx_t;
+typedef sha2_large_common_ctx_t sha512_ctx_t;
 
 
 void sha512_init(sha512_ctx_t *ctx);

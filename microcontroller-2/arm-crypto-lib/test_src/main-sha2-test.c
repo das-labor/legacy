@@ -31,13 +31,17 @@
 #include "hfal-performance.h"
 #include "hfal-test.h"
 
+
+#include "sha384.h"
+#include "hfal_sha384.h"
 #include "sha512.h"
 #include "hfal_sha512.h"
 
-const char* algo_name = "SHA-512";
+const char* algo_name = "SHA-2";
 
 const hfdesc_t* algolist[] = {
 	(hfdesc_t*)&sha512_desc,
+	(hfdesc_t*)&sha384_desc,
 	NULL
 };
 
@@ -45,11 +49,11 @@ const hfdesc_t* algolist[] = {
  *  additional validation-functions											 *
  *****************************************************************************/
 
-void testrun_nessie_sha512(void){
+void testrun_nessie_sha2(void){
 	hfal_nessie_multiple(algolist);
 }
 
-void testrun_performance_sha512(void){
+void testrun_performance_sha2(void){
 	hfal_performance_multiple(algolist);
 }
 
@@ -178,11 +182,11 @@ const char shavs_test3_str[]  = "shavs_test3";
 const char dump_str[]         = "dump";
 
 const cmdlist_entry_t cmdlist[]  = {
-	{ nessie_str,          NULL, testrun_nessie_sha512          },
+	{ nessie_str,          NULL, testrun_nessie_sha2          },
 	{ test_str,            NULL, simple_test                    },
 //	{ monte_str,           NULL, test_monte                     },
 //	{ monte2_str,          NULL, test_monte2                    },
-	{ performance_str,     NULL, testrun_performance_sha512     },
+	{ performance_str,     NULL, testrun_performance_sha2     },
 	{ echo_str,        (void*)1, (void_fpt)echo_ctrl            },
 	{ shavs_list_str,      NULL, shavs_listalgos                },
 	{ shavs_set_str,   (void*)1, (void_fpt)shavs_setalgo        },
