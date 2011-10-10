@@ -192,7 +192,7 @@ void can_init()
 	TCD0.CCC = 1;
 	TCD0.CNT = 0;
 	TCD0.CTRLA = 1; //clk/1
-		
+	
 	spi_init();
 
 	spi_assert_ss();
