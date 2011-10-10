@@ -3,14 +3,13 @@
 #include "../config.h"
 #include "spi.h"
 
-unsigned char spi_data(unsigned char c)
-{
+unsigned char spi_data(unsigned char c) {
 	SPID.DATA = c;
 	while (!((SPID.STATUS) & SPI_IF_bm));
 	return(SPID.DATA);
 }
 
-void spi_init(){
+void spi_init() {
 	//PORTB |= (1<<SPI_PIN_MISO); //MISO pullup for debugging
 		
 	//set output SPI pins to output
@@ -25,7 +24,6 @@ void spi_init(){
 	spi_release_ss();
 
 
-	SPID.CTRL = SPI_ENABLE_bm | SPI_MASTER_bm ;
-	
+	SPID.CTRL = SPI_ENABLE_bm | SPI_MASTER_bm;
 
 }

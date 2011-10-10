@@ -81,8 +81,6 @@ void sync_osc() {
 	/*Clock auf 32Mhz einstellen*/
 	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;
 
-	
-
 }
 
 uint8_t can_address EEMEM = 5;
@@ -95,12 +93,12 @@ int main(void) {
 	unsigned char x;
 	
 	sync_osc();
-	init_workaround();	
+	init_workaround();
 	
 	Station_id = eeprom_read_byte(0);
 	
 	can_init();
-		
+
 	Tx_msg.addr_src = Station_id;
 	Tx_msg.addr_dst = 0;
 	Tx_msg.port_src = PORT_MGT;
@@ -122,7 +120,7 @@ int main(void) {
 			mcp_write(BFPCTRL, toggle);
 			toggle ^= 0x10;
 		#elif defined(TOGGLE_PORT_LED)
-			PORT_LED.OUT ^= (1<<BIT_LED);
+			PORT_LED.OUTTGL = (1<<BIT_LED);
 		#endif
 		_delay_ms(100);
 		
@@ -186,6 +184,7 @@ int main(void) {
 	ClearFlashBuffer();
 	
 	while (1) {
+		PORT_LED.OUTTGL = _BV(BIT_LED);
 		while (!can_get_nb());
 		if (Rx_msg.port_dst != PORT_SDO_DATA) {
 			//boot_rww_enable ();
