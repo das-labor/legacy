@@ -6,7 +6,9 @@
 
 // SS Pin muss Ausgang sein wenn nicht als SC verwendet
 #define MCP_CS        PB4
+#define MCP_CS_BIT    4
 #define MCP_CMD_PORT  PORTB
+#define MCP_CS_PORT  PORTB
 
 #define SPI_REG_PIN_MCP_INT  PINB
 #define SPI_PIN_MCP_INT      PB2
