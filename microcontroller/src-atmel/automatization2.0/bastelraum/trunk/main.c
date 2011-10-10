@@ -17,8 +17,6 @@
 #include "i2c_funktionen.h"
 #include "motion.h"
 
-
-
 void init(void)
 {
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
@@ -59,9 +57,9 @@ void init(void)
 	 
 int main(void)
 {
-
 	//system initialization
 	init();
+	uint16_t cnt = 0;
 
 	//the main loop continuously handles can messages
 	while (1)
@@ -70,6 +68,9 @@ int main(void)
 //			temp_sensor_read();
 		switch_handler();
 		wdt_reset();
+		cnt++;
+		if (cnt < 0xffff)
+			continue;
 		motion_tick();
 	}
 	return 1;
