@@ -28,7 +28,7 @@
 #define SHA256_H_
 
 #include <stdint.h>
-
+#include "sha2_small_common.h"
 /** \def SHA256_HASH_BITS
  * defines the size of a SHA-256 hash value in bits
  */
@@ -55,18 +55,7 @@
  * 
  * A variable of this type may hold the state of a SHA-256 hashing process
  */
-typedef struct {
-	uint32_t h[8];
-	uint64_t length;
-} sha256_ctx_t;
-
-/** \typedef sha256_hash_t
- * \brief SHA-256 hash value type
- * 
- * A variable of this type may hold the hash value produced by the
- * sha256_ctx2hash(sha256_hash_t* dest, const sha256_ctx_t* state) function.
- */
-typedef uint8_t sha256_hash_t[SHA256_HASH_BYTES];
+typedef sha2_small_common_ctx_t sha256_ctx_t;
 
 /** \fn void sha256_init(sha256_ctx_t *state)
  * \brief initialize a SHA-256 context
@@ -103,7 +92,7 @@ void sha256_lastBlock(sha256_ctx_t* state, const void* block, uint16_t length_b)
  * \param dest pointer to the location where the hash value should be written
  * \param state pointer to the SHA-256 hash context
  */
-void sha256_ctx2hash(sha256_hash_t* dest, const sha256_ctx_t* state);
+void sha256_ctx2hash(void* dest, const sha256_ctx_t* state);
 
 /** \fn void sha256(sha256_hash_t* dest, const void* msg, uint32_t length_b)
  * \brief simple SHA-256 hashing function for direct hashing
@@ -114,6 +103,6 @@ void sha256_ctx2hash(sha256_hash_t* dest, const sha256_ctx_t* state);
  * \param msg pointer to the message thats going to be hashed
  * \param length_b length of the message in bits
  */
-void sha256(sha256_hash_t* dest, const void* msg, uint32_t length_b);
+void sha256(void* dest, const void* msg, uint32_t length_b);
 
 #endif /*SHA256_H_*/
