@@ -74,39 +74,47 @@ uint32_t k[]={
  * block must be, 512, Bit = 64, Byte, long !!!
  */
 void sha2_small_common_nextBlock (sha2_small_common_ctx_t *state, const void* block){
-	uint32_t w[64];	/* this is 256, byte, large, */
+	uint32_t w[16], wx;	/* this is 256, byte, large, */
 	uint8_t  i;
 	uint32_t a[8],t1,t2;
 
 	/* init w */
 #if defined LITTLE_ENDIAN
-		for (i=0; i<16; ++i){
-			w[i]= change_endian32(((uint32_t*)block)[i]);
-		}
+	for (i=0; i<16; ++i){
+		w[i]= change_endian32(((uint32_t*)block)[i]);
+	}
 #elif defined BIG_ENDIAN
 		memcpy((void*)w, block, 64);
 #endif
-		for (i=16; i<64; ++i){
-			w[i] = SIGMA_b(w[i-2]) + w[i-7] + SIGMA_a(w[i-15]) + w[i-16];
-		}
+/*
+	for (i=16; i<64; ++i){
+		w[i] = SIGMA_b(w[i-2]) + w[i-7] + SIGMA_a(w[i-15]) + w[i-16];
+	}
+*/
+/* init working variables */
+	memcpy((void*)a,(void*)(state->h), 8*4);
 
-	/* init working variables */
-		memcpy((void*)a,(void*)(state->h), 8*4);
-
-	/* do the, fun stuff, */
-		for (i=0; i<64; ++i){
-			t1 = a[7] + SIGMA1(a[4]) + CH(a[4],a[5],a[6]) + k[i] + w[i];
-			t2 = SIGMA0(a[0]) + MAJ(a[0],a[1],a[2]);
-			memmove(&(a[1]), &(a[0]), 7*4); 	/* a[7]=a[6]; a[6]=a[5]; a[5]=a[4]; a[4]=a[3]; a[3]=a[2]; a[2]=a[1]; a[1]=a[0]; */
-			a[4] += t1;
-			a[0] = t1 + t2;
+/* do the, fun stuff, */
+	for (i=0; i<64; ++i){
+		if(i<16){
+			wx = w[i];
+		}else{
+			wx = SIGMA_b(w[14]) + w[9] + SIGMA_a(w[1]) + w[0];
+			memmove(&(w[0]), &(w[1]), 15*4);
+			w[15] = wx;
 		}
+		t1 = a[7] + SIGMA1(a[4]) + CH(a[4],a[5],a[6]) + k[i] + wx;
+		t2 = SIGMA0(a[0]) + MAJ(a[0],a[1],a[2]);
+		memmove(&(a[1]), &(a[0]), 7*4); 	/* a[7]=a[6]; a[6]=a[5]; a[5]=a[4]; a[4]=a[3]; a[3]=a[2]; a[2]=a[1]; a[1]=a[0]; */
+		a[4] += t1;
+		a[0] = t1 + t2;
+	}
 
-	/* update, the, state, */
-		for (i=0; i<8; ++i){
-			state->h[i] += a[i];
-		}
-		state->length += 1;
+/* update, the, state, */
+	for (i=0; i<8; ++i){
+		state->h[i] += a[i];
+	}
+	state->length += 1;
 }
 
 
@@ -125,7 +133,7 @@ void sha2_small_common_lastBlock(sha2_small_common_ctx_t *state, const void* blo
 	/* set the final one bit */
 	lb[length_b/8] |= 0x80>>(length_b & 0x7);
 	/* pad with zeros */
-	if (length_b>512-64){ /* not enouth space for 64bit length value */
+	if (length_b>=512-64){ /* not enouth space for 64bit length value */
 		sha2_small_common_nextBlock(state, lb);
 		memset(lb, 0, 64);
 	}
