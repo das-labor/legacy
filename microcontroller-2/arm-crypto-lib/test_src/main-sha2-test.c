@@ -32,6 +32,10 @@
 #include "hfal-test.h"
 
 
+#include "sha224.h"
+#include "hfal_sha224.h"
+#include "sha256.h"
+#include "hfal_sha256.h"
 #include "sha384.h"
 #include "hfal_sha384.h"
 #include "sha512.h"
@@ -40,8 +44,10 @@
 const char* algo_name = "SHA-2";
 
 const hfdesc_t* algolist[] = {
-	(hfdesc_t*)&sha512_desc,
+	(hfdesc_t*)&sha224_desc,
+	(hfdesc_t*)&sha256_desc,
 	(hfdesc_t*)&sha384_desc,
+	(hfdesc_t*)&sha512_desc,
 	NULL
 };
 
@@ -201,7 +207,7 @@ int main(void) {
 	main_setup();
 
 	shavs_algolist=(hfdesc_t**)algolist;
-	shavs_algo=(hfdesc_t*)&sha512_desc;
+	shavs_algo=(hfdesc_t*)&sha256_desc;
 
 	for(;;){
 		welcome_msg(algo_name);
