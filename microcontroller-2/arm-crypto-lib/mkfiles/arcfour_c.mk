@@ -5,7 +5,7 @@ ALGO_NAME := ARCFOUR_C
 STREAM_CIPHERS += $(ALGO_NAME)
 
 $(ALGO_NAME)_DIR      := arcfour/
-$(ALGO_NAME)_INCDIR   := memxor/ scal/
+$(ALGO_NAME)_INCDIR   := memxor/ bcal/ scal/
 $(ALGO_NAME)_OBJ      := arcfour.o
 $(ALGO_NAME)_TESTBIN := main-arcfour-test.o scal_arcfour.o $(CLI_STD) $(SCAL_STD)
 $(ALGO_NAME)_NESSIE_TEST      := "nessie"

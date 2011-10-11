@@ -69,19 +69,19 @@ const hfdesc_t* algolist[] = {
 void testrun_nessie_groestl(void){
 	hfal_nessie_multiple(algolist);
 }
-void groestl224_test(void* msg, uint32_t length_b){
+void groestl224_test(const void* msg, uint32_t length_b){
 	hfal_test(&groestl224_desc, msg, length_b);
 }
 
-void groestl256_test(void* msg, uint32_t length_b){
+void groestl256_test(const void* msg, uint32_t length_b){
 	hfal_test(&groestl256_desc, msg, length_b);
 }
 
-void groestl384_test(void* msg, uint32_t length_b){
+void groestl384_test(const void* msg, uint32_t length_b){
 	hfal_test(&groestl384_desc, msg, length_b);
 }
 
-void groestl512_test(void* msg, uint32_t length_b){
+void groestl512_test(const void* msg, uint32_t length_b){
 	hfal_test(&groestl512_desc, msg, length_b);
 }
 
