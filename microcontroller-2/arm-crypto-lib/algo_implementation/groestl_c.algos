@@ -1,0 +1,4 @@
+Groestl-224: bin/groestl_c/groestl_small.o bin/groestl_c/memxor.o bin/groestl_c/aes_sbox.o bin/groestl_c/gf256mul.o
+Groestl-256: bin/groestl_c/groestl_small.o bin/groestl_c/memxor.o bin/groestl_c/aes_sbox.o bin/groestl_c/gf256mul.o
+Groestl-384: bin/groestl_c/groestl_large.o bin/groestl_c/memxor.o bin/groestl_c/aes_sbox.o bin/groestl_c/gf256mul.o
+Groestl-512: bin/groestl_c/groestl_large.o bin/groestl_c/memxor.o bin/groestl_c/aes_sbox.o bin/groestl_c/gf256mul.o

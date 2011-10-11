@@ -1,0 +1,4 @@
+Keccak-256: bin/keccak_c/keccak.o bin/keccak_c/memxor.o
+Keccak-384: bin/keccak_c/keccak.o bin/keccak_c/memxor.o
+Keccak-224: bin/keccak_c/keccak.o bin/keccak_c/memxor.o
+Keccak-512: bin/keccak_c/keccak.o bin/keccak_c/memxor.o

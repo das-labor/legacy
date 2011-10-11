@@ -1,0 +1,3325 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 18 36 577 806
+%%Title: Enscript Output
+%%Creator: GNU enscript 1.6.5
+%%CreationDate: Sat May 22 18:52:39 2010
+%%Orientation: Portrait
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 5
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 5
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6 5
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 559 def
+/d_page_h 770 def
+/d_header_x 0 def
+/d_header_y 755 def
+/d_header_w 559 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 559 def
+/d_footer_h 0 def
+/d_output_w 559 def
+/d_output_h 755 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 1 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        .syntax unified) s
+5 731 M
+(        .thumb) s
+5 720 M
+(        .file   "bmw_small-asm-cstub.c") s
+5 709 M
+(        .text) s
+5 698 M
+(        .align  2) s
+5 687 M
+(        .global s32_0) s
+5 676 M
+(        .thumb) s
+5 665 M
+(        .thumb_func) s
+5 654 M
+(        .type   s32_0, %function) s
+5 643 M
+(s32_0:) s
+5 632 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 621 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 610 M
+(        @ link register save eliminated.) s
+5 599 M
+(        mov     r3, r0) s
+5 588 M
+(        lsrs    r0, r0, #1) s
+5 577 M
+(        eor     r0, r0, r3, lsl #3) s
+5 566 M
+(        eor     r0, r0, r3, ror #28) s
+5 555 M
+(        eor     r0, r0, r3, ror #13) s
+5 544 M
+(        bx      lr) s
+5 533 M
+(        .size   s32_0, .-s32_0) s
+5 522 M
+(        .align  2) s
+5 511 M
+(        .global s32_1) s
+5 500 M
+(        .thumb) s
+5 489 M
+(        .thumb_func) s
+5 478 M
+(        .type   s32_1, %function) s
+5 467 M
+(s32_1:) s
+5 456 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 445 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 434 M
+(        @ link register save eliminated.) s
+5 423 M
+(        mov     r3, r0) s
+5 412 M
+(        lsrs    r0, r0, #1) s
+5 401 M
+(        eor     r0, r0, r3, lsl #2) s
+5 390 M
+(        eor     r0, r0, r3, ror #24) s
+5 379 M
+(        eor     r0, r0, r3, ror #9) s
+5 368 M
+(        bx      lr) s
+5 357 M
+(        .size   s32_1, .-s32_1) s
+5 346 M
+(        .align  2) s
+5 335 M
+(        .global s32_2) s
+5 324 M
+(        .thumb) s
+5 313 M
+(        .thumb_func) s
+5 302 M
+(        .type   s32_2, %function) s
+5 291 M
+(s32_2:) s
+5 280 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 269 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 258 M
+(        @ link register save eliminated.) s
+5 247 M
+(        mov     r3, r0) s
+5 236 M
+(        lsrs    r0, r0, #2) s
+5 225 M
+(        eor     r0, r0, r3, lsl #1) s
+5 214 M
+(        eor     r0, r0, r3, ror #20) s
+5 203 M
+(        eor     r0, r0, r3, ror #7) s
+5 192 M
+(        bx      lr) s
+5 181 M
+(        .size   s32_2, .-s32_2) s
+5 170 M
+(        .align  2) s
+5 159 M
+(        .global s32_3) s
+5 148 M
+(        .thumb) s
+5 137 M
+(        .thumb_func) s
+5 126 M
+(        .type   s32_3, %function) s
+5 115 M
+(s32_3:) s
+5 104 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 93 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 82 M
+(        @ link register save eliminated.) s
+5 71 M
+(        mov     r3, r0) s
+5 60 M
+(        lsrs    r0, r0, #2) s
+5 49 M
+(        eor     r0, r0, r3, lsl #2) s
+5 38 M
+(        eor     r0, r0, r3, ror #17) s
+5 27 M
+(        eor     r0, r0, r3, ror #3) s
+5 16 M
+(        bx      lr) s
+5 5 M
+(        .size   s32_3, .-s32_3) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 2 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        .align  2) s
+5 731 M
+(        .global s32_4) s
+5 720 M
+(        .thumb) s
+5 709 M
+(        .thumb_func) s
+5 698 M
+(        .type   s32_4, %function) s
+5 687 M
+(s32_4:) s
+5 676 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 665 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 654 M
+(        @ link register save eliminated.) s
+5 643 M
+(        eor     r0, r0, r0, lsr #1) s
+5 632 M
+(        bx      lr) s
+5 621 M
+(        .size   s32_4, .-s32_4) s
+5 610 M
+(        .align  2) s
+5 599 M
+(        .global s32_5) s
+5 588 M
+(        .thumb) s
+5 577 M
+(        .thumb_func) s
+5 566 M
+(        .type   s32_5, %function) s
+5 555 M
+(s32_5:) s
+5 544 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 533 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 522 M
+(        @ link register save eliminated.) s
+5 511 M
+(        eor     r0, r0, r0, lsr #2) s
+5 500 M
+(        bx      lr) s
+5 489 M
+(        .size   s32_5, .-s32_5) s
+5 478 M
+(        .align  2) s
+5 467 M
+(        .thumb) s
+5 456 M
+(        .thumb_func) s
+5 445 M
+(        .type   bmw_small_expand1, %function) s
+5 434 M
+(bmw_small_expand1:) s
+5 423 M
+(        @ args = 0, pretend = 0, frame = 32) s
+5 412 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 401 M
+(        @ link register save eliminated.) s
+5 390 M
+(        uxtb    r0, r0) s
+5 379 M
+(        and     ip, r0, #15) s
+5 368 M
+(        push    {r4, r5, r6, r7, r8, r9, sl, fp}) s
+5 357 M
+(        ldr     r4, [r2, ip, lsl #2]) s
+5 346 M
+(        mvn     sl, ip) s
+5 335 M
+(        add     sl, sl, #32) s
+5 324 M
+(        add     ip, ip, #1) s
+5 313 M
+(        lsr     sl, r4, sl) s
+5 302 M
+(        lsl     r4, r4, ip) s
+5 291 M
+(        add     fp, r0, #3) s
+5 280 M
+(        add     r7, r0, #10) s
+5 269 M
+(        and     r5, fp, #15) s
+5 258 M
+(        and     r8, r7, #15) s
+5 247 M
+(        ldr     r6, [r2, r5, lsl #2]) s
+5 236 M
+(        ldr     r9, [r2, r8, lsl #2]) s
+5 225 M
+(        ldr     r2, .L15) s
+5 214 M
+(        orr     sl, sl, r4) s
+5 203 M
+(        ldr     ip, [r2, r0, lsl #2]) s
+5 192 M
+(        mvn     r2, r5) s
+5 181 M
+(        add     sl, sl, ip) s
+5 170 M
+(        adds    r5, r5, #1) s
+5 159 M
+(        adds    r2, r2, #32) s
+5 148 M
+(        mvn     ip, r8) s
+5 137 M
+(        lsrs    r2, r6, r2) s
+5 126 M
+(        add     r8, r8, #1) s
+5 115 M
+(        lsls    r6, r6, r5) s
+5 104 M
+(        add     ip, ip, #32) s
+5 93 M
+(        lsr     ip, r9, ip) s
+5 82 M
+(        lsl     r9, r9, r8) s
+5 71 M
+(        sub     sp, sp, #32) s
+5 60 M
+(        orrs    r2, r2, r6) s
+5 49 M
+(        str     r7, [sp, #0]) s
+5 38 M
+(        adds    r7, r0, #7) s
+5 27 M
+(        orr     ip, ip, r9) s
+5 16 M
+(        add     sl, sl, r2) s
+5 5 M
+(        and     r2, r7, #15) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 3 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        rsb     sl, ip, sl) s
+5 731 M
+(        ldr     ip, [r3, r2, lsl #2]) s
+5 720 M
+(        adds    r2, r0, #2) s
+5 709 M
+(        ldr     r4, [r1, r2, lsl #2]) s
+5 698 M
+(        adds    r3, r0, #1) s
+5 687 M
+(        adds    r2, r0, #5) s
+5 676 M
+(        ldr     r9, [r1, r2, lsl #2]) s
+5 665 M
+(        eor     sl, sl, ip) s
+5 654 M
+(        add     r2, r0, #9) s
+5 643 M
+(        ldr     ip, [r1, r3, lsl #2]) s
+5 632 M
+(        adds    r3, r0, #4) s
+5 621 M
+(        ldr     r8, [r1, r3, lsl #2]) s
+5 610 M
+(        ldr     r2, [r1, r2, lsl #2]) s
+5 599 M
+(        adds    r3, r0, #6) s
+5 588 M
+(        ldr     r6, [r1, fp, lsl #2]) s
+5 577 M
+(        ldr     fp, [r1, r3, lsl #2]) s
+5 566 M
+(        add     r3, r0, #8) s
+5 555 M
+(        ldr     r3, [r1, r3, lsl #2]) s
+5 544 M
+(        str     r2, [sp, #8]) s
+5 533 M
+(        ldr     r2, [sp, #0]) s
+5 522 M
+(        str     r3, [sp, #4]) s
+5 511 M
+(        ldr     r2, [r1, r2, lsl #2]) s
+5 500 M
+(        add     r3, r0, #11) s
+5 489 M
+(        ldr     r3, [r1, r3, lsl #2]) s
+5 478 M
+(        str     r2, [sp, #12]) s
+5 467 M
+(        add     r2, r0, #12) s
+5 456 M
+(        ldr     r2, [r1, r2, lsl #2]) s
+5 445 M
+(        str     r3, [sp, #16]) s
+5 434 M
+(        add     r3, r0, #13) s
+5 423 M
+(        ldr     r3, [r1, r3, lsl #2]) s
+5 412 M
+(        ldr     r5, [r1, r0, lsl #2]) s
+5 401 M
+(        str     r2, [sp, #20]) s
+5 390 M
+(        add     r2, r0, #14) s
+5 379 M
+(        adds    r0, r0, #15) s
+5 368 M
+(        ldr     r7, [r1, r7, lsl #2]) s
+5 357 M
+(        ldr     r2, [r1, r2, lsl #2]) s
+5 346 M
+(        str     r3, [sp, #24]) s
+5 335 M
+(        ldr     r1, [r1, r0, lsl #2]) s
+5 324 M
+(        lsrs    r3, r4, #2) s
+5 313 M
+(        lsr     r0, ip, #2) s
+5 302 M
+(        eor     r0, r0, ip, lsl #1) s
+5 291 M
+(        eor     r3, r3, r4, lsl #2) s
+5 280 M
+(        eor     r0, r0, ip, ror #20) s
+5 269 M
+(        eor     r3, r3, r4, ror #17) s
+5 258 M
+(        str     r2, [sp, #28]) s
+5 247 M
+(        eor     r3, r3, r4, ror #3) s
+5 236 M
+(        lsrs    r2, r5, #1) s
+5 225 M
+(        eor     r0, r0, ip, ror #7) s
+5 214 M
+(        adds    r0, r0, r3) s
+5 203 M
+(        eor     r2, r2, r5, lsl #2) s
+5 192 M
+(        lsrs    r3, r6, #1) s
+5 181 M
+(        eor     r2, r2, r5, ror #24) s
+5 170 M
+(        eor     r3, r3, r6, lsl #3) s
+5 159 M
+(        eor     r2, r2, r5, ror #9) s
+5 148 M
+(        eor     r3, r3, r6, ror #28) s
+5 137 M
+(        adds    r0, r0, r2) s
+5 126 M
+(        eor     r3, r3, r6, ror #13) s
+5 115 M
+(        lsr     r2, r8, #1) s
+5 104 M
+(        adds    r0, r0, r3) s
+5 93 M
+(        eor     r2, r2, r8, lsl #2) s
+5 82 M
+(        lsr     r3, r9, #2) s
+5 71 M
+(        eor     r2, r2, r8, ror #24) s
+5 60 M
+(        eor     r3, r3, r9, lsl #1) s
+5 49 M
+(        eor     r2, r2, r8, ror #9) s
+5 38 M
+(        eor     r3, r3, r9, ror #20) s
+5 27 M
+(        adds    r0, r0, r2) s
+5 16 M
+(        eor     r3, r3, r9, ror #7) s
+5 5 M
+(        lsr     r2, fp, #2) s
+_R
+S
+%%Page: (4) 4
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 4 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (4) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        adds    r0, r0, r3) s
+5 731 M
+(        eor     r2, r2, fp, lsl #2) s
+5 720 M
+(        lsrs    r3, r7, #1) s
+5 709 M
+(        eor     r2, r2, fp, ror #17) s
+5 698 M
+(        eor     r3, r3, r7, lsl #3) s
+5 687 M
+(        eor     r2, r2, fp, ror #3) s
+5 676 M
+(        eor     r3, r3, r7, ror #28) s
+5 665 M
+(        adds    r0, r0, r2) s
+5 654 M
+(        eor     r3, r3, r7, ror #13) s
+5 643 M
+(        adds    r0, r0, r3) s
+5 632 M
+(        ldr     r3, [sp, #4]) s
+5 621 M
+(        ldr     r7, [sp, #8]) s
+5 610 M
+(        lsrs    r2, r3, #1) s
+5 599 M
+(        eor     r2, r2, r3, lsl #2) s
+5 588 M
+(        eor     r2, r2, r3, ror #24) s
+5 577 M
+(        eor     r2, r2, r3, ror #9) s
+5 566 M
+(        lsrs    r3, r7, #2) s
+5 555 M
+(        eor     r3, r3, r7, lsl #1) s
+5 544 M
+(        eor     r3, r3, r7, ror #20) s
+5 533 M
+(        adds    r0, r0, r2) s
+5 522 M
+(        eor     r3, r3, r7, ror #7) s
+5 511 M
+(        adds    r0, r0, r3) s
+5 500 M
+(        ldr     r3, [sp, #12]) s
+5 489 M
+(        ldr     r7, [sp, #16]) s
+5 478 M
+(        lsrs    r2, r3, #2) s
+5 467 M
+(        eor     r2, r2, r3, lsl #2) s
+5 456 M
+(        eor     r2, r2, r3, ror #17) s
+5 445 M
+(        eor     r2, r2, r3, ror #3) s
+5 434 M
+(        lsrs    r3, r7, #1) s
+5 423 M
+(        eor     r3, r3, r7, lsl #3) s
+5 412 M
+(        eor     r3, r3, r7, ror #28) s
+5 401 M
+(        adds    r0, r0, r2) s
+5 390 M
+(        eor     r3, r3, r7, ror #13) s
+5 379 M
+(        adds    r0, r0, r3) s
+5 368 M
+(        ldr     r3, [sp, #20]) s
+5 357 M
+(        ldr     r7, [sp, #24]) s
+5 346 M
+(        lsrs    r2, r3, #1) s
+5 335 M
+(        eor     r2, r2, r3, lsl #2) s
+5 324 M
+(        eor     r2, r2, r3, ror #24) s
+5 313 M
+(        eor     r2, r2, r3, ror #9) s
+5 302 M
+(        adds    r0, r0, r2) s
+5 291 M
+(        lsrs    r3, r7, #2) s
+5 280 M
+(        eor     r3, r3, r7, lsl #1) s
+5 269 M
+(        eor     r3, r3, r7, ror #20) s
+5 258 M
+(        eor     r3, r3, r7, ror #7) s
+5 247 M
+(        adds    r0, r0, r3) s
+5 236 M
+(        ldr     r3, [sp, #28]) s
+5 225 M
+(        lsrs    r2, r3, #2) s
+5 214 M
+(        eor     r2, r2, r3, lsl #2) s
+5 203 M
+(        eor     r2, r2, r3, ror #17) s
+5 192 M
+(        eor     r2, r2, r3, ror #3) s
+5 181 M
+(        lsrs    r3, r1, #1) s
+5 170 M
+(        eor     r3, r3, r1, lsl #3) s
+5 159 M
+(        eor     r3, r3, r1, ror #28) s
+5 148 M
+(        adds    r0, r0, r2) s
+5 137 M
+(        eor     r3, r3, r1, ror #13) s
+5 126 M
+(        adds    r0, r0, r3) s
+5 115 M
+(        add     r0, r0, sl) s
+5 104 M
+(        add     sp, sp, #32) s
+5 93 M
+(        pop     {r4, r5, r6, r7, r8, r9, sl, fp}) s
+5 82 M
+(        bx      lr) s
+5 71 M
+(.L16:) s
+5 60 M
+(        .align  2) s
+5 49 M
+(.L15:) s
+5 38 M
+(        .word   k_lut) s
+5 27 M
+(        .size   bmw_small_expand1, .-bmw_small_expand1) s
+5 16 M
+(        .align  2) s
+5 5 M
+(        .thumb) s
+_R
+S
+%%Page: (5) 5
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 5 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (5) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        .thumb_func) s
+5 731 M
+(        .type   bmw_small_f0, %function) s
+5 720 M
+(bmw_small_f0:) s
+5 709 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 698 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 687 M
+(        @ link register save eliminated.) s
+5 676 M
+(        push    {r4, r5}) s
+5 665 M
+(        mov     r5, r0) s
+5 654 M
+(        mov     r4, r1) s
+5 643 M
+(        mov     r0, r2) s
+5 632 M
+(        movs    r1, #0) s
+5 621 M
+(.L18:) s
+5 610 M
+(        ldr     r3, [r4, r1]) s
+5 599 M
+(        ldr     r2, [r0, r1]) s
+5 588 M
+(        eors    r3, r3, r2) s
+5 577 M
+(        str     r3, [r4, r1]) s
+5 566 M
+(        adds    r1, r1, #4) s
+5 555 M
+(        cmp     r1, #64) s
+5 544 M
+(        bne     .L18) s
+5 533 M
+(        ldr     r2, [r4, #20]) s
+5 522 M
+(        ldr     r3, [r4, #40]) s
+5 511 M
+(        ldr     r1, [r4, #52]) s
+5 500 M
+(        adds    r3, r3, r2) s
+5 489 M
+(        ldr     r2, [r4, #56]) s
+5 478 M
+(        adds    r3, r3, r1) s
+5 467 M
+(        ldr     r1, [r4, #28]) s
+5 456 M
+(        adds    r3, r3, r2) s
+5 445 M
+(        subs    r3, r3, r1) s
+5 434 M
+(        str     r3, [r5, #0]) s
+5 423 M
+(        ldr     r3, [r4, #24]) s
+5 412 M
+(        ldr     r2, [r4, #44]) s
+5 401 M
+(        ldr     r1, [r4, #56]) s
+5 390 M
+(        adds    r2, r2, r3) s
+5 379 M
+(        ldr     r3, [r4, #60]) s
+5 368 M
+(        adds    r2, r2, r1) s
+5 357 M
+(        ldr     r1, [r4, #32]) s
+5 346 M
+(        subs    r2, r2, r3) s
+5 335 M
+(        subs    r2, r2, r1) s
+5 324 M
+(        str     r2, [r5, #4]) s
+5 313 M
+(        ldr     r2, [r4, #36]) s
+5 302 M
+(        ldr     r3, [r4, #28]) s
+5 291 M
+(        ldr     r1, [r4, #0]) s
+5 280 M
+(        adds    r3, r3, r2) s
+5 269 M
+(        ldr     r2, [r4, #60]) s
+5 258 M
+(        adds    r3, r3, r1) s
+5 247 M
+(        ldr     r1, [r4, #48]) s
+5 236 M
+(        adds    r3, r3, r2) s
+5 225 M
+(        subs    r3, r3, r1) s
+5 214 M
+(        str     r3, [r5, #8]) s
+5 203 M
+(        ldr     r3, [r4, #52]) s
+5 192 M
+(        ldr     r2, [r4, #32]) s
+5 181 M
+(        ldr     r1, [r4, #0]) s
+5 170 M
+(        adds    r2, r2, r3) s
+5 159 M
+(        ldr     r3, [r4, #4]) s
+5 148 M
+(        adds    r2, r2, r1) s
+5 137 M
+(        ldr     r1, [r4, #40]) s
+5 126 M
+(        subs    r2, r2, r3) s
+5 115 M
+(        subs    r2, r2, r1) s
+5 104 M
+(        str     r2, [r5, #12]) s
+5 93 M
+(        ldr     r2, [r4, #4]) s
+5 82 M
+(        ldr     r3, [r4, #8]) s
+5 71 M
+(        ldr     r1, [r4, #36]) s
+5 60 M
+(        adds    r3, r3, r2) s
+5 49 M
+(        ldr     r2, [r4, #56]) s
+5 38 M
+(        adds    r3, r3, r1) s
+5 27 M
+(        ldr     r1, [r4, #44]) s
+5 16 M
+(        subs    r3, r3, r2) s
+5 5 M
+(        subs    r3, r3, r1) s
+_R
+S
+%%Page: (6) 6
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 6 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (6) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        str     r3, [r5, #16]) s
+5 731 M
+(        ldr     r3, [r4, #12]) s
+5 720 M
+(        ldr     r2, [r4, #40]) s
+5 709 M
+(        ldr     r1, [r4, #60]) s
+5 698 M
+(        adds    r2, r2, r3) s
+5 687 M
+(        ldr     r3, [r4, #8]) s
+5 676 M
+(        adds    r2, r2, r1) s
+5 665 M
+(        ldr     r1, [r4, #48]) s
+5 654 M
+(        subs    r2, r2, r3) s
+5 643 M
+(        subs    r2, r2, r1) s
+5 632 M
+(        str     r2, [r5, #20]) s
+5 621 M
+(        ldr     r2, [r4, #0]) s
+5 610 M
+(        ldr     r3, [r4, #16]) s
+5 599 M
+(        ldr     r1, [r4, #44]) s
+5 588 M
+(        subs    r3, r3, r2) s
+5 577 M
+(        ldr     r2, [r4, #52]) s
+5 566 M
+(        subs    r3, r3, r1) s
+5 555 M
+(        ldr     r1, [r4, #12]) s
+5 544 M
+(        adds    r3, r3, r2) s
+5 533 M
+(        subs    r3, r3, r1) s
+5 522 M
+(        str     r3, [r5, #24]) s
+5 511 M
+(        ldr     r3, [r4, #16]) s
+5 500 M
+(        ldr     r2, [r4, #4]) s
+5 489 M
+(        ldr     r1, [r4, #20]) s
+5 478 M
+(        subs    r2, r2, r3) s
+5 467 M
+(        ldr     r3, [r4, #48]) s
+5 456 M
+(        subs    r2, r2, r1) s
+5 445 M
+(        ldr     r1, [r4, #56]) s
+5 434 M
+(        subs    r2, r2, r3) s
+5 423 M
+(        subs    r2, r2, r1) s
+5 412 M
+(        str     r2, [r5, #28]) s
+5 401 M
+(        ldr     r2, [r4, #20]) s
+5 390 M
+(        ldr     r3, [r4, #8]) s
+5 379 M
+(        ldr     r1, [r4, #60]) s
+5 368 M
+(        subs    r3, r3, r2) s
+5 357 M
+(        ldr     r2, [r4, #52]) s
+5 346 M
+(        subs    r3, r3, r1) s
+5 335 M
+(        ldr     r1, [r4, #24]) s
+5 324 M
+(        adds    r3, r3, r2) s
+5 313 M
+(        subs    r3, r3, r1) s
+5 302 M
+(        str     r3, [r5, #32]) s
+5 291 M
+(        ldr     r3, [r4, #56]) s
+5 280 M
+(        ldr     r2, [r4, #24]) s
+5 269 M
+(        ldr     r1, [r4, #0]) s
+5 258 M
+(        adds    r2, r2, r3) s
+5 247 M
+(        ldr     r3, [r4, #12]) s
+5 236 M
+(        adds    r2, r2, r1) s
+5 225 M
+(        ldr     r1, [r4, #28]) s
+5 214 M
+(        subs    r2, r2, r3) s
+5 203 M
+(        subs    r2, r2, r1) s
+5 192 M
+(        str     r2, [r5, #36]) s
+5 181 M
+(        ldr     r2, [r4, #4]) s
+5 170 M
+(        ldr     r3, [r4, #32]) s
+5 159 M
+(        ldr     r1, [r4, #28]) s
+5 148 M
+(        subs    r3, r3, r2) s
+5 137 M
+(        ldr     r2, [r4, #60]) s
+5 126 M
+(        subs    r3, r3, r1) s
+5 115 M
+(        ldr     r1, [r4, #16]) s
+5 104 M
+(        adds    r3, r3, r2) s
+5 93 M
+(        subs    r3, r3, r1) s
+5 82 M
+(        str     r3, [r5, #40]) s
+5 71 M
+(        ldr     r3, [r4, #0]) s
+5 60 M
+(        ldr     r2, [r4, #32]) s
+5 49 M
+(        ldr     r1, [r4, #20]) s
+5 38 M
+(        subs    r2, r2, r3) s
+5 27 M
+(        ldr     r3, [r4, #36]) s
+5 16 M
+(        subs    r2, r2, r1) s
+5 5 M
+(        ldr     r1, [r4, #8]) s
+_R
+S
+%%Page: (7) 7
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 7 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (7) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        adds    r2, r2, r3) s
+5 731 M
+(        subs    r2, r2, r1) s
+5 720 M
+(        str     r2, [r5, #44]) s
+5 709 M
+(        ldr     r2, [r4, #4]) s
+5 698 M
+(        ldr     r3, [r4, #12]) s
+5 687 M
+(        ldr     r1, [r4, #40]) s
+5 676 M
+(        adds    r3, r3, r2) s
+5 665 M
+(        ldr     r2, [r4, #36]) s
+5 654 M
+(        adds    r3, r3, r1) s
+5 643 M
+(        ldr     r1, [r4, #24]) s
+5 632 M
+(        subs    r3, r3, r2) s
+5 621 M
+(        subs    r3, r3, r1) s
+5 610 M
+(        str     r3, [r5, #48]) s
+5 599 M
+(        ldr     r3, [r4, #8]) s
+5 588 M
+(        ldr     r2, [r4, #16]) s
+5 577 M
+(        ldr     r1, [r4, #28]) s
+5 566 M
+(        adds    r2, r2, r3) s
+5 555 M
+(        ldr     r3, [r4, #40]) s
+5 544 M
+(        adds    r2, r2, r1) s
+5 533 M
+(        ldr     r1, [r4, #44]) s
+5 522 M
+(        adds    r2, r2, r3) s
+5 511 M
+(        adds    r2, r2, r1) s
+5 500 M
+(        str     r2, [r5, #52]) s
+5 489 M
+(        ldr     r2, [r4, #12]) s
+5 478 M
+(        ldr     r3, [r4, #32]) s
+5 467 M
+(        ldr     r1, [r4, #48]) s
+5 456 M
+(        adds    r3, r3, r2) s
+5 445 M
+(        ldr     r2, [r4, #44]) s
+5 434 M
+(        subs    r3, r3, r1) s
+5 423 M
+(        ldr     r1, [r4, #20]) s
+5 412 M
+(        subs    r3, r3, r2) s
+5 401 M
+(        subs    r3, r3, r1) s
+5 390 M
+(        str     r3, [r5, #56]) s
+5 379 M
+(        ldr     r2, [r4, #36]) s
+5 368 M
+(        ldr     r3, [r4, #24]) s
+5 357 M
+(        ldr     r1, [r4, #52]) s
+5 346 M
+(        rsb     r2, r2, #0) s
+5 335 M
+(        subs    r2, r2, r3) s
+5 324 M
+(        adds    r2, r2, r1) s
+5 313 M
+(        ldr     r3, [r4, #48]) s
+5 302 M
+(        ldr     r1, [r4, #16]) s
+5 291 M
+(        subs    r3, r3, r1) s
+5 280 M
+(        ldr     r1, [r5, #0]) s
+5 269 M
+(        adds    r2, r2, r3) s
+5 258 M
+(        lsrs    r3, r1, #1) s
+5 247 M
+(        eor     r3, r3, r1, lsl #3) s
+5 236 M
+(        str     r2, [r5, #60]) s
+5 225 M
+(        eor     r3, r3, r1, ror #28) s
+5 214 M
+(        ldr     r2, [r5, #4]) s
+5 203 M
+(        eor     r3, r3, r1, ror #13) s
+5 192 M
+(        str     r3, [r5, #0]) s
+5 181 M
+(        lsrs    r3, r2, #1) s
+5 170 M
+(        eor     r3, r3, r2, lsl #2) s
+5 159 M
+(        eor     r3, r3, r2, ror #24) s
+5 148 M
+(        eor     r3, r3, r2, ror #9) s
+5 137 M
+(        ldr     r2, [r5, #8]) s
+5 126 M
+(        str     r3, [r5, #4]) s
+5 115 M
+(        lsrs    r3, r2, #2) s
+5 104 M
+(        eor     r3, r3, r2, lsl #1) s
+5 93 M
+(        eor     r3, r3, r2, ror #20) s
+5 82 M
+(        eor     r3, r3, r2, ror #7) s
+5 71 M
+(        ldr     r2, [r5, #12]) s
+5 60 M
+(        str     r3, [r5, #8]) s
+5 49 M
+(        lsrs    r3, r2, #2) s
+5 38 M
+(        eor     r3, r3, r2, lsl #2) s
+5 27 M
+(        eor     r3, r3, r2, ror #17) s
+5 16 M
+(        eor     r3, r3, r2, ror #3) s
+5 5 M
+(        ldr     r2, [r5, #16]) s
+_R
+S
+%%Page: (8) 8
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 8 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (8) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        str     r3, [r5, #12]) s
+5 731 M
+(        eor     r2, r2, r2, lsr #1) s
+5 720 M
+(        str     r2, [r5, #16]) s
+5 709 M
+(        ldr     r1, [r5, #20]) s
+5 698 M
+(        ldr     r2, [r5, #24]) s
+5 687 M
+(        lsrs    r3, r1, #1) s
+5 676 M
+(        eor     r3, r3, r1, lsl #3) s
+5 665 M
+(        eor     r3, r3, r1, ror #28) s
+5 654 M
+(        eor     r3, r3, r1, ror #13) s
+5 643 M
+(        str     r3, [r5, #20]) s
+5 632 M
+(        lsrs    r3, r2, #1) s
+5 621 M
+(        eor     r3, r3, r2, lsl #2) s
+5 610 M
+(        eor     r3, r3, r2, ror #24) s
+5 599 M
+(        eor     r3, r3, r2, ror #9) s
+5 588 M
+(        ldr     r2, [r5, #28]) s
+5 577 M
+(        str     r3, [r5, #24]) s
+5 566 M
+(        lsrs    r3, r2, #2) s
+5 555 M
+(        eor     r3, r3, r2, lsl #1) s
+5 544 M
+(        eor     r3, r3, r2, ror #20) s
+5 533 M
+(        eor     r3, r3, r2, ror #7) s
+5 522 M
+(        ldr     r2, [r5, #32]) s
+5 511 M
+(        str     r3, [r5, #28]) s
+5 500 M
+(        lsrs    r3, r2, #2) s
+5 489 M
+(        eor     r3, r3, r2, lsl #2) s
+5 478 M
+(        ldr     r1, [r5, #40]) s
+5 467 M
+(        eor     r3, r3, r2, ror #17) s
+5 456 M
+(        eor     r3, r3, r2, ror #3) s
+5 445 M
+(        ldr     r2, [r5, #36]) s
+5 434 M
+(        str     r3, [r5, #32]) s
+5 423 M
+(        lsrs    r3, r1, #1) s
+5 412 M
+(        eor     r2, r2, r2, lsr #1) s
+5 401 M
+(        eor     r3, r3, r1, lsl #3) s
+5 390 M
+(        eor     r3, r3, r1, ror #28) s
+5 379 M
+(        str     r2, [r5, #36]) s
+5 368 M
+(        ldr     r2, [r5, #44]) s
+5 357 M
+(        eor     r3, r3, r1, ror #13) s
+5 346 M
+(        str     r3, [r5, #40]) s
+5 335 M
+(        lsrs    r3, r2, #1) s
+5 324 M
+(        eor     r3, r3, r2, lsl #2) s
+5 313 M
+(        eor     r3, r3, r2, ror #24) s
+5 302 M
+(        eor     r3, r3, r2, ror #9) s
+5 291 M
+(        ldr     r2, [r5, #48]) s
+5 280 M
+(        str     r3, [r5, #44]) s
+5 269 M
+(        lsrs    r3, r2, #2) s
+5 258 M
+(        eor     r3, r3, r2, lsl #1) s
+5 247 M
+(        eor     r3, r3, r2, ror #20) s
+5 236 M
+(        eor     r3, r3, r2, ror #7) s
+5 225 M
+(        ldr     r2, [r5, #52]) s
+5 214 M
+(        str     r3, [r5, #48]) s
+5 203 M
+(        lsrs    r3, r2, #2) s
+5 192 M
+(        eor     r3, r3, r2, lsl #2) s
+5 181 M
+(        ldr     r1, [r5, #60]) s
+5 170 M
+(        eor     r3, r3, r2, ror #17) s
+5 159 M
+(        eor     r3, r3, r2, ror #3) s
+5 148 M
+(        str     r3, [r5, #52]) s
+5 137 M
+(        lsrs    r3, r1, #1) s
+5 126 M
+(        ldr     r2, [r5, #56]) s
+5 115 M
+(        eor     r3, r3, r1, lsl #3) s
+5 104 M
+(        eor     r3, r3, r1, ror #28) s
+5 93 M
+(        eor     r3, r3, r1, ror #13) s
+5 82 M
+(        eor     r2, r2, r2, lsr #1) s
+5 71 M
+(        str     r2, [r5, #56]) s
+5 60 M
+(        str     r3, [r5, #60]) s
+5 49 M
+(        movs    r1, #0) s
+5 38 M
+(.L19:) s
+5 27 M
+(        ldr     r3, [r4, r1]) s
+5 16 M
+(        ldr     r2, [r0, r1]) s
+5 5 M
+(        eors    r3, r3, r2) s
+_R
+S
+%%Page: (9) 9
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 9 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (9) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        str     r3, [r4, r1]) s
+5 731 M
+(        adds    r1, r1, #4) s
+5 720 M
+(        cmp     r1, #64) s
+5 709 M
+(        bne     .L19) s
+5 698 M
+(        mov     ip, #0) s
+5 687 M
+(        movs    r0, #1) s
+5 676 M
+(.L20:) s
+5 665 M
+(        and     r3, r0, #15) s
+5 654 M
+(        ldr     r2, [r5, ip]) s
+5 643 M
+(        ldr     r1, [r4, r3, lsl #2]) s
+5 632 M
+(        adds    r0, r0, #1) s
+5 621 M
+(        adds    r2, r2, r1) s
+5 610 M
+(        str     r2, [r5, ip]) s
+5 599 M
+(        add     ip, ip, #4) s
+5 588 M
+(        cmp     ip, #64) s
+5 577 M
+(        bne     .L20) s
+5 566 M
+(        pop     {r4, r5}) s
+5 555 M
+(        bx      lr) s
+5 544 M
+(        .size   bmw_small_f0, .-bmw_small_f0) s
+5 533 M
+(        .align  2) s
+5 522 M
+(        .thumb) s
+5 511 M
+(        .thumb_func) s
+5 500 M
+(        .type   bmw_small_f1, %function) s
+5 489 M
+(bmw_small_f1:) s
+5 478 M
+(        @ args = 0, pretend = 0, frame = 4) s
+5 467 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 456 M
+(        push    {r4, r5, r6, r7, r8, r9, sl, fp, lr}) s
+5 445 M
+(        sub     sp, sp, #4) s
+5 434 M
+(        mov     r4, r0) s
+5 423 M
+(        mov     fp, r1) s
+5 412 M
+(        str     r2, [sp, #0]) s
+5 401 M
+(        mov     r1, r4) s
+5 390 M
+(        mov     r2, fp) s
+5 379 M
+(        ldr     r3, [sp, #0]) s
+5 368 M
+(        movs    r0, #0) s
+5 357 M
+(        bl      bmw_small_expand1) s
+5 346 M
+(        mov     r1, r4) s
+5 335 M
+(        str     r0, [r4, #64]) s
+5 324 M
+(        mov     r2, fp) s
+5 313 M
+(        movs    r0, #1) s
+5 302 M
+(        ldr     r3, [sp, #0]) s
+5 291 M
+(        bl      bmw_small_expand1) s
+5 280 M
+(        ldr     r9, .L30) s
+5 269 M
+(        str     r0, [r4, #68]) s
+5 258 M
+(        mov     lr, r4) s
+5 247 M
+(        movs    r6, #0) s
+5 236 M
+(        mov     sl, #2) s
+5 225 M
+(        mov     r8, #5) s
+5 214 M
+(        movs    r7, #12) s
+5 203 M
+(.L27:) s
+5 192 M
+(        and     r3, sl, #15) s
+5 181 M
+(        ldr     r2, [fp, r3, lsl #2]) s
+5 170 M
+(        mvn     r0, r3) s
+5 159 M
+(        and     r1, r8, #15) s
+5 148 M
+(        adds    r3, r3, #1) s
+5 137 M
+(        adds    r0, r0, #32) s
+5 126 M
+(        ldr     ip, [fp, r1, lsl #2]) s
+5 115 M
+(        lsrs    r0, r2, r0) s
+5 104 M
+(        lsls    r2, r2, r3) s
+5 93 M
+(        mvn     r3, r1) s
+5 82 M
+(        adds    r3, r3, #32) s
+5 71 M
+(        adds    r1, r1, #1) s
+5 60 M
+(        lsr     r3, ip, r3) s
+5 49 M
+(        lsl     ip, ip, r1) s
+5 38 M
+(        and     r4, r7, #15) s
+5 27 M
+(        orrs    r0, r0, r2) s
+5 16 M
+(        orr     r3, r3, ip) s
+5 5 M
+(        ldr     r5, [fp, r4, lsl #2]) s
+_R
+S
+%%Page: (10) 10
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 10 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (10) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        adds    r0, r0, r3) s
+5 731 M
+(        mvn     r3, r4) s
+5 720 M
+(        adds    r3, r3, #32) s
+5 709 M
+(        adds    r4, r4, #1) s
+5 698 M
+(        lsrs    r3, r5, r3) s
+5 687 M
+(        lsls    r5, r5, r4) s
+5 676 M
+(        ldr     r2, [r9, #8]) s
+5 665 M
+(        ldr     r1, [sp, #0]) s
+5 654 M
+(        adds    r0, r0, r2) s
+5 643 M
+(        add     r2, r6, #9) s
+5 632 M
+(        orrs    r3, r3, r5) s
+5 621 M
+(        and     r2, r2, #15) s
+5 610 M
+(        subs    r0, r0, r3) s
+5 599 M
+(        ldr     r3, [r1, r2, lsl #2]) s
+5 588 M
+(        ldr     r2, [lr, #8]) s
+5 577 M
+(        eors    r0, r0, r3) s
+5 566 M
+(        ldr     r3, [lr, #16]) s
+5 555 M
+(        ldr     r1, [lr, #24]) s
+5 544 M
+(        adds    r3, r3, r2) s
+5 533 M
+(        ldr     r2, [lr, #32]) s
+5 522 M
+(        adds    r3, r3, r1) s
+5 511 M
+(        ldr     r1, [lr, #40]) s
+5 500 M
+(        adds    r3, r3, r2) s
+5 489 M
+(        ldr     r2, [lr, #48]) s
+5 478 M
+(        adds    r3, r3, r1) s
+5 467 M
+(        ldr     r1, [lr, #56]) s
+5 456 M
+(        adds    r3, r3, r2) s
+5 445 M
+(        ldr     r2, [lr, #12]) s
+5 434 M
+(        adds    r3, r3, r1) s
+5 423 M
+(        ldr     r1, [lr, #20]) s
+5 412 M
+(        add     r3, r3, r2, ror #29) s
+5 401 M
+(        ldr     r2, [lr, #28]) s
+5 390 M
+(        add     r3, r3, r1, ror #25) s
+5 379 M
+(        ldr     r1, [lr, #36]) s
+5 368 M
+(        add     r3, r3, r2, ror #19) s
+5 357 M
+(        ldr     r2, [lr, #44]) s
+5 346 M
+(        add     r3, r3, r1, ror #16) s
+5 335 M
+(        ldr     r1, [lr, #52]) s
+5 324 M
+(        ldr     ip, [lr, #64]) s
+5 313 M
+(        add     r3, r3, r2, ror #13) s
+5 302 M
+(        ldr     r2, [lr, #60]) s
+5 291 M
+(        ldr     r4, [lr, #68]) s
+5 280 M
+(        add     r3, r3, r1, ror #9) s
+5 269 M
+(        add     r3, r3, r2, ror #5) s
+5 258 M
+(        eor     ip, ip, ip, lsr #1) s
+5 247 M
+(        add     r3, r3, ip) s
+5 236 M
+(        eor     r4, r4, r4, lsr #2) s
+5 225 M
+(        adds    r3, r3, r4) s
+5 214 M
+(        adds    r6, r6, #1) s
+5 203 M
+(        adds    r3, r3, r0) s
+5 192 M
+(        adds    r7, r7, #1) s
+5 181 M
+(        cmp     r6, #14) s
+5 170 M
+(        str     r3, [lr, #72]) s
+5 159 M
+(        add     sl, sl, #1) s
+5 148 M
+(        add     r8, r8, #1) s
+5 137 M
+(        add     r9, r9, #4) s
+5 126 M
+(        add     lr, lr, #4) s
+5 115 M
+(        bne     .L27) s
+5 104 M
+(        add     sp, sp, #4) s
+5 93 M
+(        pop     {r4, r5, r6, r7, r8, r9, sl, fp, pc}) s
+5 82 M
+(.L31:) s
+5 71 M
+(        .align  2) s
+5 60 M
+(.L30:) s
+5 49 M
+(        .word   k_lut) s
+5 38 M
+(        .size   bmw_small_f1, .-bmw_small_f1) s
+5 27 M
+(        .align  2) s
+5 16 M
+(        .global bmw224_init) s
+5 5 M
+(        .thumb) s
+_R
+S
+%%Page: (11) 11
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 11 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (11) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        .thumb_func) s
+5 731 M
+(        .type   bmw224_init, %function) s
+5 720 M
+(bmw224_init:) s
+5 709 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 698 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 687 M
+(        @ link register save eliminated.) s
+5 676 M
+(        ldr     r3, .L36) s
+5 665 M
+(        mov     r2, r0) s
+5 654 M
+(        str     r3, [r0, #0]) s
+5 643 M
+(        add     r1, r0, #60) s
+5 632 M
+(.L33:) s
+5 621 M
+(        ldr     r3, [r2, #0]) s
+5 610 M
+(        add     r3, r3, #67372036) s
+5 599 M
+(        str     r3, [r2, #4]!) s
+5 588 M
+(        cmp     r2, r1) s
+5 577 M
+(        bne     .L33) s
+5 566 M
+(        movs    r3, #0) s
+5 555 M
+(        str     r3, [r0, #64]) s
+5 544 M
+(        bx      lr) s
+5 533 M
+(.L37:) s
+5 522 M
+(        .align  2) s
+5 511 M
+(.L36:) s
+5 500 M
+(        .word   66051) s
+5 489 M
+(        .size   bmw224_init, .-bmw224_init) s
+5 478 M
+(        .align  2) s
+5 467 M
+(        .global bmw256_init) s
+5 456 M
+(        .thumb) s
+5 445 M
+(        .thumb_func) s
+5 434 M
+(        .type   bmw256_init, %function) s
+5 423 M
+(bmw256_init:) s
+5 412 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 401 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 390 M
+(        @ link register save eliminated.) s
+5 379 M
+(        ldr     r3, .L42) s
+5 368 M
+(        mov     r2, r0) s
+5 357 M
+(        str     r3, [r0, #0]) s
+5 346 M
+(        add     r1, r0, #60) s
+5 335 M
+(.L39:) s
+5 324 M
+(        ldr     r3, [r2, #0]) s
+5 313 M
+(        add     r3, r3, #67372036) s
+5 302 M
+(        str     r3, [r2, #4]!) s
+5 291 M
+(        cmp     r2, r1) s
+5 280 M
+(        bne     .L39) s
+5 269 M
+(        movs    r3, #0) s
+5 258 M
+(        str     r3, [r0, #64]) s
+5 247 M
+(        bx      lr) s
+5 236 M
+(.L43:) s
+5 225 M
+(        .align  2) s
+5 214 M
+(.L42:) s
+5 203 M
+(        .word   1078018627) s
+5 192 M
+(        .size   bmw256_init, .-bmw256_init) s
+5 181 M
+(        .align  2) s
+5 170 M
+(        .global bmw256_ctx2hash) s
+5 159 M
+(        .thumb) s
+5 148 M
+(        .thumb_func) s
+5 137 M
+(        .type   bmw256_ctx2hash, %function) s
+5 126 M
+(bmw256_ctx2hash:) s
+5 115 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 104 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 93 M
+(        push    {lr}) s
+5 82 M
+(        adds    r1, r1, #32) s
+5 71 M
+(        movs    r2, #32) s
+5 60 M
+(        bl      memcpy) s
+5 49 M
+(        pop     {pc}) s
+5 38 M
+(        .size   bmw256_ctx2hash, .-bmw256_ctx2hash) s
+5 27 M
+(        .align  2) s
+5 16 M
+(        .global bmw224_ctx2hash) s
+5 5 M
+(        .thumb) s
+_R
+S
+%%Page: (12) 12
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 12 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (12) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        .thumb_func) s
+5 731 M
+(        .type   bmw224_ctx2hash, %function) s
+5 720 M
+(bmw224_ctx2hash:) s
+5 709 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 698 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 687 M
+(        push    {lr}) s
+5 676 M
+(        adds    r1, r1, #36) s
+5 665 M
+(        movs    r2, #28) s
+5 654 M
+(        bl      memcpy) s
+5 643 M
+(        pop     {pc}) s
+5 632 M
+(        .size   bmw224_ctx2hash, .-bmw224_ctx2hash) s
+5 621 M
+(        .align  2) s
+5 610 M
+(        .thumb) s
+5 599 M
+(        .thumb_func) s
+5 588 M
+(        .type   bmw_small_f2, %function) s
+5 577 M
+(bmw_small_f2:) s
+5 566 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 555 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 544 M
+(        push    {r4, r5, r6, r7, r8, lr}) s
+5 533 M
+(        mov     r8, #0) s
+5 522 M
+(        mov     r5, r0) s
+5 511 M
+(        mov     r6, r1) s
+5 500 M
+(        mov     r0, r8) s
+5 489 M
+(        mov     r1, r2) s
+5 478 M
+(.L49:) s
+5 467 M
+(        add     r3, r6, r0) s
+5 456 M
+(        ldr     r2, [r3, #64]) s
+5 445 M
+(        adds    r0, r0, #4) s
+5 434 M
+(        cmp     r0, #32) s
+5 423 M
+(        eor     r8, r8, r2) s
+5 412 M
+(        bne     .L49) s
+5 401 M
+(        mov     r7, r8) s
+5 390 M
+(        subs    r0, r0, #32) s
+5 379 M
+(.L50:) s
+5 368 M
+(        add     r3, r6, r0) s
+5 357 M
+(        ldr     r2, [r3, #96]) s
+5 346 M
+(        adds    r0, r0, #4) s
+5 335 M
+(        eors    r7, r7, r2) s
+5 324 M
+(        cmp     r0, #32) s
+5 313 M
+(        bne     .L50) s
+5 302 M
+(        movs    r2, #64) s
+5 291 M
+(        mov     r0, r5) s
+5 280 M
+(        bl      memcpy) s
+5 269 M
+(        ldr     r2, [r6, #64]) s
+5 258 M
+(        ldr     r3, [r5, #0]) s
+5 247 M
+(        movs    r0, #0) s
+5 236 M
+(        eor     r3, r3, r2, lsr #5) s
+5 225 M
+(        eor     r3, r3, r7, lsl #5) s
+5 214 M
+(        str     r3, [r5, #0]) s
+5 203 M
+(        ldr     r2, [r6, #68]) s
+5 192 M
+(        ldr     r3, [r5, #4]) s
+5 181 M
+(        eor     r3, r3, r2, lsl #8) s
+5 170 M
+(        eor     r3, r3, r7, lsr #7) s
+5 159 M
+(        str     r3, [r5, #4]) s
+5 148 M
+(        ldr     r2, [r6, #72]) s
+5 137 M
+(        ldr     r3, [r5, #8]) s
+5 126 M
+(        eor     r3, r3, r2, lsl #5) s
+5 115 M
+(        eor     r3, r3, r7, lsr #5) s
+5 104 M
+(        str     r3, [r5, #8]) s
+5 93 M
+(        ldr     r2, [r6, #76]) s
+5 82 M
+(        ldr     r3, [r5, #12]) s
+5 71 M
+(        eor     r3, r3, r2, lsl #5) s
+5 60 M
+(        eor     r3, r3, r7, lsr #1) s
+5 49 M
+(        str     r3, [r5, #12]) s
+5 38 M
+(        ldr     r2, [r6, #80]) s
+5 27 M
+(        ldr     r3, [r5, #16]) s
+5 16 M
+(        eors    r2, r2, r3) s
+5 5 M
+(        eor     r2, r2, r7, lsr #3) s
+_R
+S
+%%Page: (13) 13
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 13 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (13) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        str     r2, [r5, #16]) s
+5 731 M
+(        ldr     r1, [r6, #84]) s
+5 720 M
+(        ldr     r3, [r5, #20]) s
+5 709 M
+(        eor     r3, r3, r1, lsr #6) s
+5 698 M
+(        eor     r3, r3, r7, lsl #6) s
+5 687 M
+(        str     r3, [r5, #20]) s
+5 676 M
+(        ldr     r2, [r6, #88]) s
+5 665 M
+(        ldr     r3, [r5, #24]) s
+5 654 M
+(        eor     r3, r3, r2, lsl #6) s
+5 643 M
+(        eor     r3, r3, r7, lsr #4) s
+5 632 M
+(        str     r3, [r5, #24]) s
+5 621 M
+(        ldr     r2, [r6, #92]) s
+5 610 M
+(        ldr     r3, [r5, #28]) s
+5 599 M
+(        eor     r3, r3, r2, lsl #2) s
+5 588 M
+(        eor     r3, r3, r7, lsr #11) s
+5 577 M
+(        str     r3, [r5, #28]) s
+5 566 M
+(.L51:) s
+5 555 M
+(        add     r1, r6, r0) s
+5 544 M
+(        ldr     r2, [r6, r0]) s
+5 533 M
+(        ldr     r3, [r1, #96]) s
+5 522 M
+(        eors    r2, r2, r3) s
+5 511 M
+(        ldr     r3, [r5, r0]) s
+5 500 M
+(        eor     r2, r2, r8) s
+5 489 M
+(        adds    r3, r3, r2) s
+5 478 M
+(        str     r3, [r5, r0]) s
+5 467 M
+(        adds    r0, r0, #4) s
+5 456 M
+(        cmp     r0, #32) s
+5 445 M
+(        bne     .L51) s
+5 434 M
+(        mov     lr, r5) s
+5 423 M
+(        mov     r4, r6) s
+5 412 M
+(        mov     ip, #4) s
+5 401 M
+(.L52:) s
+5 390 M
+(        ldr     r3, [lr, #32]) s
+5 379 M
+(        ldr     r0, [r4, #96]) s
+5 368 M
+(        and     r2, ip, #7) s
+5 357 M
+(        eors    r0, r0, r3) s
+5 346 M
+(        eors    r0, r0, r7) s
+5 335 M
+(        str     r0, [lr, #32]) s
+5 324 M
+(        ldr     r1, [r5, r2, lsl #2]) s
+5 313 M
+(        rsb     r3, ip, #27) s
+5 302 M
+(        add     r2, ip, #5) s
+5 291 M
+(        lsrs    r3, r1, r3) s
+5 280 M
+(        lsls    r1, r1, r2) s
+5 269 M
+(        add     ip, ip, #1) s
+5 258 M
+(        orrs    r3, r3, r1) s
+5 247 M
+(        adds    r3, r3, r0) s
+5 236 M
+(        adds    r4, r4, #4) s
+5 225 M
+(        cmp     ip, #12) s
+5 214 M
+(        str     r3, [lr, #32]) s
+5 203 M
+(        add     lr, lr, #4) s
+5 192 M
+(        bne     .L52) s
+5 181 M
+(        movs    r2, #28) s
+5 170 M
+(        add     r0, r6, #36) s
+5 159 M
+(        add     r1, r6, #64) s
+5 148 M
+(        bl      memxor) s
+5 137 M
+(        ldr     r3, [r6, #32]) s
+5 126 M
+(        ldr     r2, [r6, #92]) s
+5 115 M
+(        eors    r2, r2, r3) s
+5 104 M
+(        str     r2, [r6, #32]) s
+5 93 M
+(        ldr     r3, [r5, #32]) s
+5 82 M
+(        eor     r2, r2, r8, lsl #8) s
+5 71 M
+(        adds    r3, r3, r2) s
+5 60 M
+(        str     r3, [r5, #32]) s
+5 49 M
+(        ldr     r2, [r6, #36]) s
+5 38 M
+(        ldr     r3, [r5, #36]) s
+5 27 M
+(        eor     r2, r2, r8, lsr #6) s
+5 16 M
+(        adds    r3, r3, r2) s
+5 5 M
+(        str     r3, [r5, #36]) s
+_R
+S
+%%Page: (14) 14
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 14 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (14) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        ldr     r2, [r6, #40]) s
+5 731 M
+(        ldr     r3, [r5, #40]) s
+5 720 M
+(        eor     r2, r2, r8, lsl #6) s
+5 709 M
+(        adds    r3, r3, r2) s
+5 698 M
+(        str     r3, [r5, #40]) s
+5 687 M
+(        ldr     r2, [r6, #44]) s
+5 676 M
+(        ldr     r3, [r5, #44]) s
+5 665 M
+(        eor     r2, r2, r8, lsl #4) s
+5 654 M
+(        adds    r3, r3, r2) s
+5 643 M
+(        str     r3, [r5, #44]) s
+5 632 M
+(        ldr     r2, [r6, #48]) s
+5 621 M
+(        ldr     r3, [r5, #48]) s
+5 610 M
+(        eor     r2, r2, r8, lsr #3) s
+5 599 M
+(        adds    r3, r3, r2) s
+5 588 M
+(        str     r3, [r5, #48]) s
+5 577 M
+(        ldr     r2, [r6, #52]) s
+5 566 M
+(        ldr     r3, [r5, #52]) s
+5 555 M
+(        eor     r2, r2, r8, lsr #4) s
+5 544 M
+(        adds    r3, r3, r2) s
+5 533 M
+(        str     r3, [r5, #52]) s
+5 522 M
+(        ldr     r2, [r6, #56]) s
+5 511 M
+(        ldr     r3, [r5, #56]) s
+5 500 M
+(        eor     r2, r2, r8, lsr #7) s
+5 489 M
+(        adds    r3, r3, r2) s
+5 478 M
+(        str     r3, [r5, #56]) s
+5 467 M
+(        ldr     r2, [r6, #60]) s
+5 456 M
+(        ldr     r3, [r5, #60]) s
+5 445 M
+(        eor     r2, r2, r8, lsr #2) s
+5 434 M
+(        adds    r3, r3, r2) s
+5 423 M
+(        str     r3, [r5, #60]) s
+5 412 M
+(        pop     {r4, r5, r6, r7, r8, pc}) s
+5 401 M
+(        .size   bmw_small_f2, .-bmw_small_f2) s
+5 390 M
+(        .align  2) s
+5 379 M
+(        .global bmw_small_nextBlock) s
+5 368 M
+(        .thumb) s
+5 357 M
+(        .thumb_func) s
+5 346 M
+(        .type   bmw_small_nextBlock, %function) s
+5 335 M
+(bmw_small_nextBlock:) s
+5 324 M
+(        @ args = 0, pretend = 0, frame = 128) s
+5 313 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 302 M
+(        push    {r4, r5, r6, lr}) s
+5 291 M
+(        mov     r5, r0) s
+5 280 M
+(        sub     sp, sp, #128) s
+5 269 M
+(        mov     r6, r1) s
+5 258 M
+(        mov     r0, sp) s
+5 247 M
+(        mov     r1, r5) s
+5 236 M
+(        mov     r2, r6) s
+5 225 M
+(        bl      bmw_small_f0) s
+5 214 M
+(        mov     r0, sp) s
+5 203 M
+(        mov     r1, r6) s
+5 192 M
+(        mov     r2, r5) s
+5 181 M
+(        bl      bmw_small_f1) s
+5 170 M
+(        mov     r0, r5) s
+5 159 M
+(        mov     r1, sp) s
+5 148 M
+(        mov     r2, r6) s
+5 137 M
+(        bl      bmw_small_f2) s
+5 126 M
+(        ldr     r3, [r5, #64]) s
+5 115 M
+(        mov     r4, sp) s
+5 104 M
+(        adds    r3, r3, #1) s
+5 93 M
+(        str     r3, [r5, #64]) s
+5 82 M
+(        add     sp, sp, #128) s
+5 71 M
+(        pop     {r4, r5, r6, pc}) s
+5 60 M
+(        .size   bmw_small_nextBlock, .-bmw_small_nextBlock) s
+5 49 M
+(        .align  2) s
+5 38 M
+(        .global bmw256_nextBlock) s
+5 27 M
+(        .thumb) s
+5 16 M
+(        .thumb_func) s
+5 5 M
+(        .type   bmw256_nextBlock, %function) s
+_R
+S
+%%Page: (15) 15
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 15 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (15) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(bmw256_nextBlock:) s
+5 731 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 720 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 709 M
+(        push    {lr}) s
+5 698 M
+(        bl      bmw_small_nextBlock) s
+5 687 M
+(        pop     {pc}) s
+5 676 M
+(        .size   bmw256_nextBlock, .-bmw256_nextBlock) s
+5 665 M
+(        .align  2) s
+5 654 M
+(        .global bmw224_nextBlock) s
+5 643 M
+(        .thumb) s
+5 632 M
+(        .thumb_func) s
+5 621 M
+(        .type   bmw224_nextBlock, %function) s
+5 610 M
+(bmw224_nextBlock:) s
+5 599 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 588 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 577 M
+(        push    {lr}) s
+5 566 M
+(        bl      bmw_small_nextBlock) s
+5 555 M
+(        pop     {pc}) s
+5 544 M
+(        .size   bmw224_nextBlock, .-bmw224_nextBlock) s
+5 533 M
+(        .align  2) s
+5 522 M
+(        .global bmw_small_lastBlock) s
+5 511 M
+(        .thumb) s
+5 500 M
+(        .thumb_func) s
+5 489 M
+(        .type   bmw_small_lastBlock, %function) s
+5 478 M
+(bmw_small_lastBlock:) s
+5 467 M
+(        @ args = 0, pretend = 0, frame = 192) s
+5 456 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 445 M
+(        push    {r4, r5, r6, r7, r8, sl, lr}) s
+5 434 M
+(        movw    r3, #511) s
+5 423 M
+(        uxth    r8, r2) s
+5 412 M
+(        cmp     r8, r3) s
+5 401 M
+(        sub     sp, sp, #192) s
+5 390 M
+(        mov     r6, r0) s
+5 379 M
+(        mov     sl, r1) s
+5 368 M
+(        bls     .L65) s
+5 357 M
+(        mov     r5, r1) s
+5 346 M
+(        mov     r4, r8) s
+5 335 M
+(        mov     r7, r3) s
+5 324 M
+(.L66:) s
+5 313 M
+(        mov     r1, r5) s
+5 302 M
+(        mov     r0, r6) s
+5 291 M
+(        bl      bmw_small_nextBlock) s
+5 280 M
+(        sub     r3, r4, #512) s
+5 269 M
+(        uxth    r4, r3) s
+5 258 M
+(        adds    r5, r5, #64) s
+5 247 M
+(        cmp     r4, r7) s
+5 236 M
+(        bhi     .L66) s
+5 225 M
+(        sub     r2, r8, #512) s
+5 214 M
+(        uxth    r2, r2) s
+5 203 M
+(        lsrs    r3, r2, #9) s
+5 192 M
+(        adds    r3, r3, #1) s
+5 181 M
+(        lsls    r3, r3, #6) s
+5 170 M
+(        lsl     r8, r2, #23) s
+5 159 M
+(        add     sl, sl, r3) s
+5 148 M
+(        lsr     r8, r8, #23) s
+5 137 M
+(.L65:) s
+5 126 M
+(        add     r5, sp, #128) s
+5 115 M
+(        movs    r1, #0) s
+5 104 M
+(        movs    r2, #64) s
+5 93 M
+(        mov     r0, r5) s
+5 82 M
+(        bl      memset) s
+5 71 M
+(        add     r2, r8, #7) s
+5 60 M
+(        asrs    r2, r2, #3) s
+5 49 M
+(        mov     r1, sl) s
+5 38 M
+(        mov     r0, r5) s
+5 27 M
+(        bl      memcpy) s
+5 16 M
+(        add     r3, sp, #192) s
+5 5 M
+(        add     ip, r3, r8, lsr #3) s
+_R
+S
+%%Page: (16) 16
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 16 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (16) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        and     r1, r8, #7) s
+5 731 M
+(        movs    r3, #128) s
+5 720 M
+(        asrs    r3, r3, r1) s
+5 709 M
+(        ldrb    r2, [ip, #-64]  @ zero_extendqisi2) s
+5 698 M
+(        orrs    r3, r3, r2) s
+5 687 M
+(        strb    r3, [ip, #-64]) s
+5 676 M
+(        cmp     r8, #448) s
+5 665 M
+(        it      lt) s
+5 654 M
+(        ldrlt   r1, [r6, #64]) s
+5 643 M
+(        bge     .L74) s
+5 632 M
+(.L67:) s
+5 621 M
+(        mov     r2, #512) s
+5 610 M
+(        mov     r3, r8) s
+5 599 M
+(        mov     r4, #0) s
+5 588 M
+(        umlal   r3, r4, r2, r1) s
+5 577 M
+(        mov     r0, r6) s
+5 566 M
+(        str     r3, [r5, #56]) s
+5 555 M
+(        str     r4, [r5, #60]) s
+5 544 M
+(        mov     r1, r5) s
+5 533 M
+(        bl      bmw_small_nextBlock) s
+5 522 M
+(        movs    r2, #64) s
+5 511 M
+(        mov     r0, r5) s
+5 500 M
+(        movs    r1, #170) s
+5 489 M
+(        bl      memset) s
+5 478 M
+(        movs    r2, #0) s
+5 467 M
+(        movs    r3, #160) s
+5 456 M
+(.L68:) s
+5 445 M
+(        strb    r3, [r5, r2]) s
+5 434 M
+(        adds    r2, r2, #4) s
+5 423 M
+(        adds    r3, r3, #1) s
+5 412 M
+(        cmp     r2, #64) s
+5 401 M
+(        uxtb    r3, r3) s
+5 390 M
+(        bne     .L68) s
+5 379 M
+(        mov     r1, r5) s
+5 368 M
+(        mov     r0, sp) s
+5 357 M
+(        mov     r2, r6) s
+5 346 M
+(        bl      bmw_small_f0) s
+5 335 M
+(        mov     r2, r5) s
+5 324 M
+(        mov     r0, sp) s
+5 313 M
+(        mov     r1, r6) s
+5 302 M
+(        bl      bmw_small_f1) s
+5 291 M
+(        mov     r4, r6) s
+5 280 M
+(        mov     r0, r5) s
+5 269 M
+(        mov     r1, sp) s
+5 258 M
+(        mov     r2, r6) s
+5 247 M
+(        bl      bmw_small_f2) s
+5 236 M
+(        ldmia   r5!, {r0, r1, r2, r3}) s
+5 225 M
+(        stmia   r4!, {r0, r1, r2, r3}) s
+5 214 M
+(        mov     ip, r5) s
+5 203 M
+(        ldmia   ip!, {r0, r1, r2, r3}) s
+5 192 M
+(        stmia   r4!, {r0, r1, r2, r3}) s
+5 181 M
+(        ldmia   ip!, {r0, r1, r2, r3}) s
+5 170 M
+(        stmia   r4!, {r0, r1, r2, r3}) s
+5 159 M
+(        ldmia   ip, {r0, r1, r2, r3}) s
+5 148 M
+(        stmia   r4, {r0, r1, r2, r3}) s
+5 137 M
+(        add     sp, sp, #192) s
+5 126 M
+(        pop     {r4, r5, r6, r7, r8, sl, pc}) s
+5 115 M
+(.L74:) s
+5 104 M
+(        mov     r1, r5) s
+5 93 M
+(        mov     r0, r6) s
+5 82 M
+(        bl      bmw_small_nextBlock) s
+5 71 M
+(        ldr     r1, [r6, #64]) s
+5 60 M
+(        movs    r3, #0) s
+5 49 M
+(        subs    r1, r1, #1) s
+5 38 M
+(        str     r3, [sp, #128]) s
+5 27 M
+(        str     r3, [sp, #132]) s
+5 16 M
+(        str     r3, [sp, #136]) s
+5 5 M
+(        str     r3, [sp, #140]) s
+_R
+S
+%%Page: (17) 17
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 17 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (17) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        str     r3, [sp, #144]) s
+5 731 M
+(        str     r3, [sp, #148]) s
+5 720 M
+(        str     r3, [sp, #152]) s
+5 709 M
+(        str     r3, [sp, #156]) s
+5 698 M
+(        str     r3, [sp, #160]) s
+5 687 M
+(        str     r3, [sp, #164]) s
+5 676 M
+(        str     r3, [sp, #168]) s
+5 665 M
+(        str     r3, [sp, #172]) s
+5 654 M
+(        str     r3, [sp, #176]) s
+5 643 M
+(        str     r3, [sp, #180]) s
+5 632 M
+(        str     r1, [r6, #64]) s
+5 621 M
+(        b       .L67) s
+5 610 M
+(        .size   bmw_small_lastBlock, .-bmw_small_lastBlock) s
+5 599 M
+(        .align  2) s
+5 588 M
+(        .global bmw256) s
+5 577 M
+(        .thumb) s
+5 566 M
+(        .thumb_func) s
+5 555 M
+(        .type   bmw256, %function) s
+5 544 M
+(bmw256:) s
+5 533 M
+(        @ args = 0, pretend = 0, frame = 68) s
+5 522 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 511 M
+(        push    {r4, r5, r6, r7, r8, r9, sl, lr}) s
+5 500 M
+(        ldr     r3, .L82) s
+5 489 M
+(        sub     sp, sp, #68) s
+5 478 M
+(        add     r6, sp, #68) s
+5 467 M
+(        mov     sl, r1) s
+5 456 M
+(        mov     r7, r2) s
+5 445 M
+(        mov     r9, r0) s
+5 434 M
+(        str     r3, [r6, #-68]!) s
+5 423 M
+(        mov     r2, sp) s
+5 412 M
+(        add     r1, sp, #60) s
+5 401 M
+(.L76:) s
+5 390 M
+(        ldr     r3, [r2, #0]) s
+5 379 M
+(        add     r3, r3, #67372036) s
+5 368 M
+(        str     r3, [r2, #4]!) s
+5 357 M
+(        cmp     r2, r1) s
+5 346 M
+(        bne     .L76) s
+5 335 M
+(        movs    r3, #0) s
+5 324 M
+(        str     r3, [sp, #64]) s
+5 313 M
+(        movw    r3, #511) s
+5 302 M
+(        cmp     r7, r3) s
+5 291 M
+(        bls     .L77) s
+5 280 M
+(        mov     r5, sl) s
+5 269 M
+(        mov     r4, r7) s
+5 258 M
+(        mov     r8, r3) s
+5 247 M
+(.L78:) s
+5 236 M
+(        mov     r1, r5) s
+5 225 M
+(        mov     r0, sp) s
+5 214 M
+(        sub     r4, r4, #512) s
+5 203 M
+(        bl      bmw_small_nextBlock) s
+5 192 M
+(        adds    r5, r5, #64) s
+5 181 M
+(        cmp     r4, r8) s
+5 170 M
+(        bhi     .L78) s
+5 159 M
+(        sub     r2, r7, #512) s
+5 148 M
+(        lsrs    r3, r2, #9) s
+5 137 M
+(        adds    r3, r3, #1) s
+5 126 M
+(        lsls    r3, r3, #6) s
+5 115 M
+(        lsls    r7, r2, #23) s
+5 104 M
+(        add     sl, sl, r3) s
+5 93 M
+(        lsrs    r7, r7, #23) s
+5 82 M
+(.L77:) s
+5 71 M
+(        uxth    r2, r7) s
+5 60 M
+(        mov     r0, sp) s
+5 49 M
+(        mov     r1, sl) s
+5 38 M
+(        bl      bmw_small_lastBlock) s
+5 27 M
+(        mov     r0, r9) s
+5 16 M
+(        add     r1, sp, #32) s
+5 5 M
+(        movs    r2, #32) s
+_R
+S
+%%Page: (18) 18
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 18 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (18) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        bl      memcpy) s
+5 731 M
+(        add     sp, sp, #68) s
+5 720 M
+(        pop     {r4, r5, r6, r7, r8, r9, sl, pc}) s
+5 709 M
+(.L83:) s
+5 698 M
+(        .align  2) s
+5 687 M
+(.L82:) s
+5 676 M
+(        .word   1078018627) s
+5 665 M
+(        .size   bmw256, .-bmw256) s
+5 654 M
+(        .align  2) s
+5 643 M
+(        .global bmw224) s
+5 632 M
+(        .thumb) s
+5 621 M
+(        .thumb_func) s
+5 610 M
+(        .type   bmw224, %function) s
+5 599 M
+(bmw224:) s
+5 588 M
+(        @ args = 0, pretend = 0, frame = 68) s
+5 577 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 566 M
+(        push    {r4, r5, r6, r7, r8, r9, sl, lr}) s
+5 555 M
+(        ldr     r3, .L91) s
+5 544 M
+(        sub     sp, sp, #68) s
+5 533 M
+(        add     r6, sp, #68) s
+5 522 M
+(        mov     sl, r1) s
+5 511 M
+(        mov     r7, r2) s
+5 500 M
+(        mov     r9, r0) s
+5 489 M
+(        str     r3, [r6, #-68]!) s
+5 478 M
+(        mov     r2, sp) s
+5 467 M
+(        add     r1, sp, #60) s
+5 456 M
+(.L85:) s
+5 445 M
+(        ldr     r3, [r2, #0]) s
+5 434 M
+(        add     r3, r3, #67372036) s
+5 423 M
+(        str     r3, [r2, #4]!) s
+5 412 M
+(        cmp     r2, r1) s
+5 401 M
+(        bne     .L85) s
+5 390 M
+(        movs    r3, #0) s
+5 379 M
+(        str     r3, [sp, #64]) s
+5 368 M
+(        movw    r3, #511) s
+5 357 M
+(        cmp     r7, r3) s
+5 346 M
+(        bls     .L86) s
+5 335 M
+(        mov     r5, sl) s
+5 324 M
+(        mov     r4, r7) s
+5 313 M
+(        mov     r8, r3) s
+5 302 M
+(.L87:) s
+5 291 M
+(        mov     r1, r5) s
+5 280 M
+(        mov     r0, sp) s
+5 269 M
+(        sub     r4, r4, #512) s
+5 258 M
+(        bl      bmw_small_nextBlock) s
+5 247 M
+(        adds    r5, r5, #64) s
+5 236 M
+(        cmp     r4, r8) s
+5 225 M
+(        bhi     .L87) s
+5 214 M
+(        sub     r2, r7, #512) s
+5 203 M
+(        lsrs    r3, r2, #9) s
+5 192 M
+(        adds    r3, r3, #1) s
+5 181 M
+(        lsls    r3, r3, #6) s
+5 170 M
+(        lsls    r7, r2, #23) s
+5 159 M
+(        add     sl, sl, r3) s
+5 148 M
+(        lsrs    r7, r7, #23) s
+5 137 M
+(.L86:) s
+5 126 M
+(        uxth    r2, r7) s
+5 115 M
+(        mov     r0, sp) s
+5 104 M
+(        mov     r1, sl) s
+5 93 M
+(        bl      bmw_small_lastBlock) s
+5 82 M
+(        mov     r0, r9) s
+5 71 M
+(        add     r1, sp, #36) s
+5 60 M
+(        movs    r2, #28) s
+5 49 M
+(        bl      memcpy) s
+5 38 M
+(        add     sp, sp, #68) s
+5 27 M
+(        pop     {r4, r5, r6, r7, r8, r9, sl, pc}) s
+5 16 M
+(.L92:) s
+5 5 M
+(        .align  2) s
+_R
+S
+%%Page: (19) 19
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 19 def
+/fname (bmw_small-asm-cstub.s) def
+/fdir (.) def
+/ftail (bmw_small-asm-cstub.s) def
+% User defined strings:
+/fmodstr (Sat May 22 18:52:18 2010) def
+/pagenumstr (19) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(.L91:) s
+5 731 M
+(        .word   66051) s
+5 720 M
+(        .size   bmw224, .-bmw224) s
+5 709 M
+(        .align  2) s
+5 698 M
+(        .global bmw256_lastBlock) s
+5 687 M
+(        .thumb) s
+5 676 M
+(        .thumb_func) s
+5 665 M
+(        .type   bmw256_lastBlock, %function) s
+5 654 M
+(bmw256_lastBlock:) s
+5 643 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 632 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 621 M
+(        push    {lr}) s
+5 610 M
+(        uxth    r2, r2) s
+5 599 M
+(        bl      bmw_small_lastBlock) s
+5 588 M
+(        pop     {pc}) s
+5 577 M
+(        .size   bmw256_lastBlock, .-bmw256_lastBlock) s
+5 566 M
+(        .align  2) s
+5 555 M
+(        .global bmw224_lastBlock) s
+5 544 M
+(        .thumb) s
+5 533 M
+(        .thumb_func) s
+5 522 M
+(        .type   bmw224_lastBlock, %function) s
+5 511 M
+(bmw224_lastBlock:) s
+5 500 M
+(        @ args = 0, pretend = 0, frame = 0) s
+5 489 M
+(        @ frame_needed = 0, uses_anonymous_args = 0) s
+5 478 M
+(        push    {lr}) s
+5 467 M
+(        uxth    r2, r2) s
+5 456 M
+(        bl      bmw_small_lastBlock) s
+5 445 M
+(        pop     {pc}) s
+5 434 M
+(        .size   bmw224_lastBlock, .-bmw224_lastBlock) s
+5 423 M
+(        .section        .rodata) s
+5 412 M
+(        .align  2) s
+5 401 M
+(        .type   k_lut, %object) s
+5 390 M
+(        .size   k_lut, 64) s
+5 379 M
+(k_lut:) s
+5 368 M
+(        .word   1431655760) s
+5 357 M
+(        .word   1521134245) s
+5 346 M
+(        .word   1610612730) s
+5 335 M
+(        .word   1700091215) s
+5 324 M
+(        .word   1789569700) s
+5 313 M
+(        .word   1879048185) s
+5 302 M
+(        .word   1968526670) s
+5 291 M
+(        .word   2058005155) s
+5 280 M
+(        .word   2147483640) s
+5 269 M
+(        .word   -2058005171) s
+5 258 M
+(        .word   -1968526686) s
+5 247 M
+(        .word   -1879048201) s
+5 236 M
+(        .word   -1789569716) s
+5 225 M
+(        .word   -1700091231) s
+5 214 M
+(        .word   -1610612746) s
+5 203 M
+(        .word   -1521134261) s
+5 192 M
+(        .ident  "GCC: \(GNU\) 4.3.2") s
+_R
+S
+%%Trailer
+%%Pages: 19
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF

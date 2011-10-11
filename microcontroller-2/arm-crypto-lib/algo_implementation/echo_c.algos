@@ -1,0 +1,4 @@
+ECHO-224: bin/echo_c/echo.o bin/echo_c/memxor.o bin/echo_c/aes_enc_round-asm.o bin/echo_c/aes_sbox-asm.o bin/echo_c/gf256mul.o
+ECHO-256: bin/echo_c/echo.o bin/echo_c/memxor.o bin/echo_c/aes_enc_round-asm.o bin/echo_c/aes_sbox-asm.o bin/echo_c/gf256mul.o
+ECHO-384: bin/echo_c/echo.o bin/echo_c/memxor.o bin/echo_c/aes_enc_round-asm.o bin/echo_c/aes_sbox-asm.o bin/echo_c/gf256mul.o
+ECHO-512: bin/echo_c/echo.o bin/echo_c/memxor.o bin/echo_c/aes_enc_round-asm.o bin/echo_c/aes_sbox-asm.o bin/echo_c/gf256mul.o

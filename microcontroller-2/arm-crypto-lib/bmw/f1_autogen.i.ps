@@ -1,0 +1,1180 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 18 36 577 806
+%%Title: Enscript Output
+%%Creator: GNU enscript 1.6.5
+%%CreationDate: Fri Oct 15 11:48:47 2010
+%%Orientation: Portrait
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 5
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 5
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6 5
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 559 def
+/d_page_h 770 def
+/d_header_x 0 def
+/d_header_y 755 def
+/d_header_w 559 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 559 def
+/d_footer_h 0 def
+/d_output_w 559 def
+/d_output_h 755 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 1 def
+/fname (f1_autogen.i) def
+/fdir (.) def
+/ftail (f1_autogen.i) def
+% User defined strings:
+/fmodstr (Wed Oct 06 22:27:32 2010) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+30 742 M (1:) s
+/Courier-Oblique 10 10 SUF
+48 742 M
+(/* BEGIN of automatic generated code */) s
+/F-gs-font 10 10 SF
+30 731 M (2:) s
+30 720 M (3:) s
+/Courier-Bold 10 10 SUF
+48 720 M
+(static) s
+/F-gs-font 10 10 SF
+84 720 M
+( inline) s
+30 709 M (4:) s
+/Courier-Bold 10 10 SUF
+48 709 M
+(void) s
+/F-gs-font 10 10 SF
+72 709 M
+( ) s
+/Courier-Bold 10 10 SUF
+78 709 M
+(bmw_small_f1) s
+/F-gs-font 10 10 SF
+150 709 M
+(\(uint32_t* q, ) s
+/Courier-Bold 10 10 SUF
+234 709 M
+(const) s
+/F-gs-font 10 10 SF
+264 709 M
+( ) s
+/Courier-Bold 10 10 SUF
+270 709 M
+(void) s
+/F-gs-font 10 10 SF
+294 709 M
+(* m, ) s
+/Courier-Bold 10 10 SUF
+324 709 M
+(const) s
+/F-gs-font 10 10 SF
+354 709 M
+( ) s
+/Courier-Bold 10 10 SUF
+360 709 M
+(void) s
+/F-gs-font 10 10 SF
+384 709 M
+(* h\){ ) s
+30 698 M (5:) s
+48 698 M
+(  uint32_t even, odd;) s
+30 687 M (6:) s
+/Courier-Oblique 10 10 SUF
+48 687 M
+(/* expand_1\( 0\) */) s
+/F-gs-font 10 10 SF
+30 676 M (7:) s
+48 676 M
+(        q[16] = ) s
+30 665 M (8:) s
+48 665 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[ 0], 1\) ) s
+30 654 M (9:) s
+48 654 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[ 3], 4\) ) s
+24 643 M (10:) s
+48 643 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[10], 11\) ) s
+24 632 M (11:) s
+48 632 M
+(                  + 0x55555550UL ) s
+24 621 M (12:) s
+48 621 M
+(                 \)^ \(\(uint32_t*\)h\)[ 7] ) s
+24 610 M (13:) s
+48 610 M
+(                \)) s
+24 599 M (14:) s
+48 599 M
+(                + S32_1\(q[ 0]\) + S32_2\(q[ 1]\) + S32_3\(q[ 2]\) + S32_0\(q[ 3]\)) s
+24 588 M (15:) s
+48 588 M
+(                + S32_1\(q[ 4]\) + S32_2\(q[ 5]\) + S32_3\(q[ 6]\) + S32_0\(q[ 7]\)) s
+24 577 M (16:) s
+48 577 M
+(                + S32_1\(q[ 8]\) + S32_2\(q[ 9]\) + S32_3\(q[10]\) + S32_0\(q[11]\)) s
+24 566 M (17:) s
+48 566 M
+(                + S32_1\(q[12]\) + S32_2\(q[13]\) + S32_3\(q[14]\) + S32_0\(q[15]\);) s
+24 555 M (18:) s
+/Courier-Oblique 10 10 SUF
+48 555 M
+(/* expand_1\( 1\) */) s
+/F-gs-font 10 10 SF
+24 544 M (19:) s
+48 544 M
+(        q[17] = ) s
+24 533 M (20:) s
+48 533 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[ 1], 2\) ) s
+24 522 M (21:) s
+48 522 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[ 4], 5\) ) s
+24 511 M (22:) s
+48 511 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[11], 12\) ) s
+24 500 M (23:) s
+48 500 M
+(                  + 0x5aaaaaa5UL ) s
+24 489 M (24:) s
+48 489 M
+(                 \)^ \(\(uint32_t*\)h\)[ 8] ) s
+24 478 M (25:) s
+48 478 M
+(                \)) s
+24 467 M (26:) s
+48 467 M
+(                + S32_1\(q[ 1]\) + S32_2\(q[ 2]\) + S32_3\(q[ 3]\) + S32_0\(q[ 4]\)) s
+24 456 M (27:) s
+48 456 M
+(                + S32_1\(q[ 5]\) + S32_2\(q[ 6]\) + S32_3\(q[ 7]\) + S32_0\(q[ 8]\)) s
+24 445 M (28:) s
+48 445 M
+(                + S32_1\(q[ 9]\) + S32_2\(q[10]\) + S32_3\(q[11]\) + S32_0\(q[12]\)) s
+24 434 M (29:) s
+48 434 M
+(                + S32_1\(q[13]\) + S32_2\(q[14]\) + S32_3\(q[15]\) + S32_0\(q[16]\);) s
+24 423 M (30:) s
+/Courier-Oblique 10 10 SUF
+48 423 M
+(/* expand_2\( 2\) */) s
+/F-gs-font 10 10 SF
+24 412 M (31:) s
+48 412 M
+(        q[18] = ) s
+24 401 M (32:) s
+48 401 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[ 2], 3\) ) s
+24 390 M (33:) s
+48 390 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[ 5], 6\) ) s
+24 379 M (34:) s
+48 379 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[12], 13\) ) s
+24 368 M (35:) s
+48 368 M
+(                  + 0x5ffffffaUL ) s
+24 357 M (36:) s
+48 357 M
+(                 \)^ \(\(uint32_t*\)h\)[ 9] ) s
+24 346 M (37:) s
+48 346 M
+(                \)) s
+24 335 M (38:) s
+48 335 M
+(                 + \( even =  q[ 2] + q[ 4] + q[ 6]) s
+24 324 M (39:) s
+48 324 M
+(                           + q[ 8] + q[10] + q[12] + q[14] \)) s
+24 313 M (40:) s
+48 313 M
+(                 + R32_1\(q[ 3]\) + R32_2\(q[ 5]\) + R32_3\(q[ 7]\)) s
+24 302 M (41:) s
+48 302 M
+(                 + R32_4\(q[ 9]\) + R32_5\(q[11]\) + R32_6\(q[13]\)) s
+24 291 M (42:) s
+48 291 M
+(                 + R32_7\(q[15]\) + S32_4\(q[16]\) + S32_5\(q[17]\);) s
+24 280 M (43:) s
+/Courier-Oblique 10 10 SUF
+48 280 M
+(/* expand_2\( 3\) */) s
+/F-gs-font 10 10 SF
+24 269 M (44:) s
+48 269 M
+(        q[19] = ) s
+24 258 M (45:) s
+48 258 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[ 3], 4\) ) s
+24 247 M (46:) s
+48 247 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[ 6], 7\) ) s
+24 236 M (47:) s
+48 236 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[13], 14\) ) s
+24 225 M (48:) s
+48 225 M
+(                  + 0x6555554fUL ) s
+24 214 M (49:) s
+48 214 M
+(                 \)^ \(\(uint32_t*\)h\)[10] ) s
+24 203 M (50:) s
+48 203 M
+(                \)) s
+24 192 M (51:) s
+48 192 M
+(                 + \( odd  =  q[ 3] + q[ 5] + q[ 7]) s
+24 181 M (52:) s
+48 181 M
+(                           + q[ 9] + q[11] + q[13] + q[15] \)) s
+24 170 M (53:) s
+48 170 M
+(                 + R32_1\(q[ 4]\) + R32_2\(q[ 6]\) + R32_3\(q[ 8]\)) s
+24 159 M (54:) s
+48 159 M
+(                 + R32_4\(q[10]\) + R32_5\(q[12]\) + R32_6\(q[14]\)) s
+24 148 M (55:) s
+48 148 M
+(                 + R32_7\(q[16]\) + S32_4\(q[17]\) + S32_5\(q[18]\);) s
+24 137 M (56:) s
+/Courier-Oblique 10 10 SUF
+48 137 M
+(/* expand_2\( 4\) */) s
+/F-gs-font 10 10 SF
+24 126 M (57:) s
+48 126 M
+(        q[20] = ) s
+24 115 M (58:) s
+48 115 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[ 4], 5\) ) s
+24 104 M (59:) s
+48 104 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[ 7], 8\) ) s
+24 93 M (60:) s
+48 93 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[14], 15\) ) s
+24 82 M (61:) s
+48 82 M
+(                  + 0x6aaaaaa4UL ) s
+24 71 M (62:) s
+48 71 M
+(                 \)^ \(\(uint32_t*\)h\)[11] ) s
+24 60 M (63:) s
+48 60 M
+(                \)) s
+24 49 M (64:) s
+48 49 M
+(                 + \( even  +=  q[16] - q[ 2] \)) s
+24 38 M (65:) s
+48 38 M
+(                 + R32_1\(q[ 5]\) + R32_2\(q[ 7]\) + R32_3\(q[ 9]\)) s
+24 27 M (66:) s
+48 27 M
+(                 + R32_4\(q[11]\) + R32_5\(q[13]\) + R32_6\(q[15]\)) s
+24 16 M (67:) s
+48 16 M
+(                 + R32_7\(q[17]\) + S32_4\(q[18]\) + S32_5\(q[19]\);) s
+24 5 M (68:) s
+/Courier-Oblique 10 10 SUF
+48 5 M
+(/* expand_2\( 5\) */) s
+/F-gs-font 10 10 SF
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 2 def
+/fname (f1_autogen.i) def
+/fdir (.) def
+/ftail (f1_autogen.i) def
+% User defined strings:
+/fmodstr (Wed Oct 06 22:27:32 2010) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+24 742 M (69:) s
+48 742 M
+(        q[21] = ) s
+24 731 M (70:) s
+48 731 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[ 5], 6\) ) s
+24 720 M (71:) s
+48 720 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[ 8], 9\) ) s
+24 709 M (72:) s
+48 709 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[15], 16\) ) s
+24 698 M (73:) s
+48 698 M
+(                  + 0x6ffffff9UL ) s
+24 687 M (74:) s
+48 687 M
+(                 \)^ \(\(uint32_t*\)h\)[12] ) s
+24 676 M (75:) s
+48 676 M
+(                \)) s
+24 665 M (76:) s
+48 665 M
+(                 + \( odd   +=  q[17] - q[ 3] \)) s
+24 654 M (77:) s
+48 654 M
+(                 + R32_1\(q[ 6]\) + R32_2\(q[ 8]\) + R32_3\(q[10]\)) s
+24 643 M (78:) s
+48 643 M
+(                 + R32_4\(q[12]\) + R32_5\(q[14]\) + R32_6\(q[16]\)) s
+24 632 M (79:) s
+48 632 M
+(                 + R32_7\(q[18]\) + S32_4\(q[19]\) + S32_5\(q[20]\);) s
+24 621 M (80:) s
+/Courier-Oblique 10 10 SUF
+48 621 M
+(/* expand_2\( 6\) */) s
+/F-gs-font 10 10 SF
+24 610 M (81:) s
+48 610 M
+(        q[22] = ) s
+24 599 M (82:) s
+48 599 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[ 6], 7\) ) s
+24 588 M (83:) s
+48 588 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[ 9], 10\) ) s
+24 577 M (84:) s
+48 577 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[ 0], 1\) ) s
+24 566 M (85:) s
+48 566 M
+(                  + 0x7555554eUL ) s
+24 555 M (86:) s
+48 555 M
+(                 \)^ \(\(uint32_t*\)h\)[13] ) s
+24 544 M (87:) s
+48 544 M
+(                \)) s
+24 533 M (88:) s
+48 533 M
+(                 + \( even  +=  q[18] - q[ 4] \)) s
+24 522 M (89:) s
+48 522 M
+(                 + R32_1\(q[ 7]\) + R32_2\(q[ 9]\) + R32_3\(q[11]\)) s
+24 511 M (90:) s
+48 511 M
+(                 + R32_4\(q[13]\) + R32_5\(q[15]\) + R32_6\(q[17]\)) s
+24 500 M (91:) s
+48 500 M
+(                 + R32_7\(q[19]\) + S32_4\(q[20]\) + S32_5\(q[21]\);) s
+24 489 M (92:) s
+/Courier-Oblique 10 10 SUF
+48 489 M
+(/* expand_2\( 7\) */) s
+/F-gs-font 10 10 SF
+24 478 M (93:) s
+48 478 M
+(        q[23] = ) s
+24 467 M (94:) s
+48 467 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[ 7], 8\) ) s
+24 456 M (95:) s
+48 456 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[10], 11\) ) s
+24 445 M (96:) s
+48 445 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[ 1], 2\) ) s
+24 434 M (97:) s
+48 434 M
+(                  + 0x7aaaaaa3UL ) s
+24 423 M (98:) s
+48 423 M
+(                 \)^ \(\(uint32_t*\)h\)[14] ) s
+24 412 M (99:) s
+48 412 M
+(                \)) s
+18 401 M (100:) s
+48 401 M
+(                 + \( odd   +=  q[19] - q[ 5] \)) s
+18 390 M (101:) s
+48 390 M
+(                 + R32_1\(q[ 8]\) + R32_2\(q[10]\) + R32_3\(q[12]\)) s
+18 379 M (102:) s
+48 379 M
+(                 + R32_4\(q[14]\) + R32_5\(q[16]\) + R32_6\(q[18]\)) s
+18 368 M (103:) s
+48 368 M
+(                 + R32_7\(q[20]\) + S32_4\(q[21]\) + S32_5\(q[22]\);) s
+18 357 M (104:) s
+/Courier-Oblique 10 10 SUF
+48 357 M
+(/* expand_2\( 8\) */) s
+/F-gs-font 10 10 SF
+18 346 M (105:) s
+48 346 M
+(        q[24] = ) s
+18 335 M (106:) s
+48 335 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[ 8], 9\) ) s
+18 324 M (107:) s
+48 324 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[11], 12\) ) s
+18 313 M (108:) s
+48 313 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[ 2], 3\) ) s
+18 302 M (109:) s
+48 302 M
+(                  + 0x7ffffff8UL ) s
+18 291 M (110:) s
+48 291 M
+(                 \)^ \(\(uint32_t*\)h\)[15] ) s
+18 280 M (111:) s
+48 280 M
+(                \)) s
+18 269 M (112:) s
+48 269 M
+(                 + \( even  +=  q[20] - q[ 6] \)) s
+18 258 M (113:) s
+48 258 M
+(                 + R32_1\(q[ 9]\) + R32_2\(q[11]\) + R32_3\(q[13]\)) s
+18 247 M (114:) s
+48 247 M
+(                 + R32_4\(q[15]\) + R32_5\(q[17]\) + R32_6\(q[19]\)) s
+18 236 M (115:) s
+48 236 M
+(                 + R32_7\(q[21]\) + S32_4\(q[22]\) + S32_5\(q[23]\);) s
+18 225 M (116:) s
+/Courier-Oblique 10 10 SUF
+48 225 M
+(/* expand_2\( 9\) */) s
+/F-gs-font 10 10 SF
+18 214 M (117:) s
+48 214 M
+(        q[25] = ) s
+18 203 M (118:) s
+48 203 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[ 9], 10\) ) s
+18 192 M (119:) s
+48 192 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[12], 13\) ) s
+18 181 M (120:) s
+48 181 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[ 3], 4\) ) s
+18 170 M (121:) s
+48 170 M
+(                  + 0x8555554dUL ) s
+18 159 M (122:) s
+48 159 M
+(                 \)^ \(\(uint32_t*\)h\)[ 0] ) s
+18 148 M (123:) s
+48 148 M
+(                \)) s
+18 137 M (124:) s
+48 137 M
+(                 + \( odd   +=  q[21] - q[ 7] \)) s
+18 126 M (125:) s
+48 126 M
+(                 + R32_1\(q[10]\) + R32_2\(q[12]\) + R32_3\(q[14]\)) s
+18 115 M (126:) s
+48 115 M
+(                 + R32_4\(q[16]\) + R32_5\(q[18]\) + R32_6\(q[20]\)) s
+18 104 M (127:) s
+48 104 M
+(                 + R32_7\(q[22]\) + S32_4\(q[23]\) + S32_5\(q[24]\);) s
+18 93 M (128:) s
+/Courier-Oblique 10 10 SUF
+48 93 M
+(/* expand_2\(10\) */) s
+/F-gs-font 10 10 SF
+18 82 M (129:) s
+48 82 M
+(        q[26] = ) s
+18 71 M (130:) s
+48 71 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[10], 11\) ) s
+18 60 M (131:) s
+48 60 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[13], 14\) ) s
+18 49 M (132:) s
+48 49 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[ 4], 5\) ) s
+18 38 M (133:) s
+48 38 M
+(                  + 0x8aaaaaa2UL ) s
+18 27 M (134:) s
+48 27 M
+(                 \)^ \(\(uint32_t*\)h\)[ 1] ) s
+18 16 M (135:) s
+48 16 M
+(                \)) s
+18 5 M (136:) s
+48 5 M
+(                 + \( even  +=  q[22] - q[ 8] \)) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+18 36 translate
+/pagenum 3 def
+/fname (f1_autogen.i) def
+/fdir (.) def
+/ftail (f1_autogen.i) def
+% User defined strings:
+/fmodstr (Wed Oct 06 22:27:32 2010) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 742 M (137:) s
+48 742 M
+(                 + R32_1\(q[11]\) + R32_2\(q[13]\) + R32_3\(q[15]\)) s
+18 731 M (138:) s
+48 731 M
+(                 + R32_4\(q[17]\) + R32_5\(q[19]\) + R32_6\(q[21]\)) s
+18 720 M (139:) s
+48 720 M
+(                 + R32_7\(q[23]\) + S32_4\(q[24]\) + S32_5\(q[25]\);) s
+18 709 M (140:) s
+/Courier-Oblique 10 10 SUF
+48 709 M
+(/* expand_2\(11\) */) s
+/F-gs-font 10 10 SF
+18 698 M (141:) s
+48 698 M
+(        q[27] = ) s
+18 687 M (142:) s
+48 687 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[11], 12\) ) s
+18 676 M (143:) s
+48 676 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[14], 15\) ) s
+18 665 M (144:) s
+48 665 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[ 5], 6\) ) s
+18 654 M (145:) s
+48 654 M
+(                  + 0x8ffffff7UL ) s
+18 643 M (146:) s
+48 643 M
+(                 \)^ \(\(uint32_t*\)h\)[ 2] ) s
+18 632 M (147:) s
+48 632 M
+(                \)) s
+18 621 M (148:) s
+48 621 M
+(                 + \( odd   +=  q[23] - q[ 9] \)) s
+18 610 M (149:) s
+48 610 M
+(                 + R32_1\(q[12]\) + R32_2\(q[14]\) + R32_3\(q[16]\)) s
+18 599 M (150:) s
+48 599 M
+(                 + R32_4\(q[18]\) + R32_5\(q[20]\) + R32_6\(q[22]\)) s
+18 588 M (151:) s
+48 588 M
+(                 + R32_7\(q[24]\) + S32_4\(q[25]\) + S32_5\(q[26]\);) s
+18 577 M (152:) s
+/Courier-Oblique 10 10 SUF
+48 577 M
+(/* expand_2\(12\) */) s
+/F-gs-font 10 10 SF
+18 566 M (153:) s
+48 566 M
+(        q[28] = ) s
+18 555 M (154:) s
+48 555 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[12], 13\) ) s
+18 544 M (155:) s
+48 544 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[15], 16\) ) s
+18 533 M (156:) s
+48 533 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[ 6], 7\) ) s
+18 522 M (157:) s
+48 522 M
+(                  + 0x9555554cUL ) s
+18 511 M (158:) s
+48 511 M
+(                 \)^ \(\(uint32_t*\)h\)[ 3] ) s
+18 500 M (159:) s
+48 500 M
+(                \)) s
+18 489 M (160:) s
+48 489 M
+(                 + \( even  +=  q[24] - q[10] \)) s
+18 478 M (161:) s
+48 478 M
+(                 + R32_1\(q[13]\) + R32_2\(q[15]\) + R32_3\(q[17]\)) s
+18 467 M (162:) s
+48 467 M
+(                 + R32_4\(q[19]\) + R32_5\(q[21]\) + R32_6\(q[23]\)) s
+18 456 M (163:) s
+48 456 M
+(                 + R32_7\(q[25]\) + S32_4\(q[26]\) + S32_5\(q[27]\);) s
+18 445 M (164:) s
+/Courier-Oblique 10 10 SUF
+48 445 M
+(/* expand_2\(13\) */) s
+/F-gs-font 10 10 SF
+18 434 M (165:) s
+48 434 M
+(        q[29] = ) s
+18 423 M (166:) s
+48 423 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[13], 14\) ) s
+18 412 M (167:) s
+48 412 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[ 0], 1\) ) s
+18 401 M (168:) s
+48 401 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[ 7], 8\) ) s
+18 390 M (169:) s
+48 390 M
+(                  + 0x9aaaaaa1UL ) s
+18 379 M (170:) s
+48 379 M
+(                 \)^ \(\(uint32_t*\)h\)[ 4] ) s
+18 368 M (171:) s
+48 368 M
+(                \)) s
+18 357 M (172:) s
+48 357 M
+(                 + \( odd   +=  q[25] - q[11] \)) s
+18 346 M (173:) s
+48 346 M
+(                 + R32_1\(q[14]\) + R32_2\(q[16]\) + R32_3\(q[18]\)) s
+18 335 M (174:) s
+48 335 M
+(                 + R32_4\(q[20]\) + R32_5\(q[22]\) + R32_6\(q[24]\)) s
+18 324 M (175:) s
+48 324 M
+(                 + R32_7\(q[26]\) + S32_4\(q[27]\) + S32_5\(q[28]\);) s
+18 313 M (176:) s
+/Courier-Oblique 10 10 SUF
+48 313 M
+(/* expand_2\(14\) */) s
+/F-gs-font 10 10 SF
+18 302 M (177:) s
+48 302 M
+(        q[30] = ) s
+18 291 M (178:) s
+48 291 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[14], 15\) ) s
+18 280 M (179:) s
+48 280 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[ 1], 2\) ) s
+18 269 M (180:) s
+48 269 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[ 8], 9\) ) s
+18 258 M (181:) s
+48 258 M
+(                  + 0x9ffffff6UL ) s
+18 247 M (182:) s
+48 247 M
+(                 \)^ \(\(uint32_t*\)h\)[ 5] ) s
+18 236 M (183:) s
+48 236 M
+(                \)) s
+18 225 M (184:) s
+48 225 M
+(                 + \( even  +=  q[26] - q[12] \)) s
+18 214 M (185:) s
+48 214 M
+(                 + R32_1\(q[15]\) + R32_2\(q[17]\) + R32_3\(q[19]\)) s
+18 203 M (186:) s
+48 203 M
+(                 + R32_4\(q[21]\) + R32_5\(q[23]\) + R32_6\(q[25]\)) s
+18 192 M (187:) s
+48 192 M
+(                 + R32_7\(q[27]\) + S32_4\(q[28]\) + S32_5\(q[29]\);) s
+18 181 M (188:) s
+/Courier-Oblique 10 10 SUF
+48 181 M
+(/* expand_2\(15\) */) s
+/F-gs-font 10 10 SF
+18 170 M (189:) s
+48 170 M
+(        q[31] = ) s
+18 159 M (190:) s
+48 159 M
+(                \(\(  ROTL32\(\(\(uint32_t*\)m\)[15], 16\) ) s
+18 148 M (191:) s
+48 148 M
+(                  + ROTL32\(\(\(uint32_t*\)m\)[ 2], 3\) ) s
+18 137 M (192:) s
+48 137 M
+(                  - ROTL32\(\(\(uint32_t*\)m\)[ 9], 10\) ) s
+18 126 M (193:) s
+48 126 M
+(                  + 0xa555554bUL ) s
+18 115 M (194:) s
+48 115 M
+(                 \)^ \(\(uint32_t*\)h\)[ 6] ) s
+18 104 M (195:) s
+48 104 M
+(                \)) s
+18 93 M (196:) s
+48 93 M
+(                 + \( odd   +=  q[27] - q[13] \)) s
+18 82 M (197:) s
+48 82 M
+(                 + R32_1\(q[16]\) + R32_2\(q[18]\) + R32_3\(q[20]\)) s
+18 71 M (198:) s
+48 71 M
+(                 + R32_4\(q[22]\) + R32_5\(q[24]\) + R32_6\(q[26]\)) s
+18 60 M (199:) s
+48 60 M
+(                 + R32_7\(q[28]\) + S32_4\(q[29]\) + S32_5\(q[30]\);) s
+18 49 M (200:) s
+48 49 M
+(}) s
+18 38 M (201:) s
+18 27 M (202:) s
+/Courier-Oblique 10 10 SUF
+48 27 M
+(/* END of automatic generated code */) s
+/F-gs-font 10 10 SF
+18 16 M (203:) s
+_R
+S
+%%Trailer
+%%Pages: 3
+%%DocumentNeededResources: font Courier-Oblique Courier-Bold Courier 
+%%EOF

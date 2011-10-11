@@ -1,0 +1,1147 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 18 36 577 806
+%%Title: Enscript Output
+%%Creator: GNU enscript 1.6.5
+%%CreationDate: Fri Nov  5 13:27:03 2010
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 5
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 5
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6 5
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 559 def
+/d_page_h 770 def
+/d_header_x 0 def
+/d_header_y 755 def
+/d_header_w 559 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 559 def
+/d_footer_h 0 def
+/d_output_w 559 def
+/d_output_h 755 def
+/cols 1 def
+%%EndSetup
+%%Page: (1-2) 1
+%%BeginPageSetup
+_S
+90 rotate
+36 -18 translate
+%Page: (1) 1
+%BeginPageSetup
+_S
+% N-up sub-page 1/2
+0 -559 translate
+0.679785 dup scale
+/pagenum 1 def
+/fname (bmw_small_speed.c) def
+/fdir (.) def
+/ftail (bmw_small_speed.c) def
+% User defined strings:
+/fmodstr (Fri Nov 05 11:49:05 2010) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(/* bmw_small.c */) s
+5 731 M
+(/*) s
+5 720 M
+(    This file is part of the ARM-Crypto-Lib.) s
+5 709 M
+(    Copyright \(C\) 2006-2010  Daniel Otte \(daniel.otte@rub.de\)) s
+5 687 M
+(    This program is free software: you can redistribute it and/or modify) s
+5 676 M
+(    it under the terms of the GNU General Public License as published by) s
+5 665 M
+(    the Free Software Foundation, either version 3 of the License, or) s
+5 654 M
+(    \(at your option\) any later version.) s
+5 632 M
+(    This program is distributed in the hope that it will be useful,) s
+5 621 M
+(    but WITHOUT ANY WARRANTY; without even the implied warranty of) s
+5 610 M
+(    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the) s
+5 599 M
+(    GNU General Public License for more details.) s
+5 577 M
+(    You should have received a copy of the GNU General Public License) s
+5 566 M
+(    along with this program.  If not, see <http://www.gnu.org/licenses/>.) s
+5 555 M
+(*/) s
+5 544 M
+(/*) s
+5 533 M
+( * \\file    bmw_small.c) s
+5 522 M
+( * \\author  Daniel Otte) s
+5 511 M
+( * \\email   daniel.otte@rub.de) s
+5 500 M
+( * \\date    2009-04-27) s
+5 489 M
+( * \\license GPLv3 or later) s
+5 478 M
+( *) s
+5 467 M
+( */) s
+5 445 M
+(#include <stdint.h>) s
+5 434 M
+(#include <string.h>) s
+5 423 M
+(#include "bmw_small.h") s
+5 401 M
+(#define SHL32\(a,n\) \(\(a\)<<\(n\)\)) s
+5 390 M
+(#define SHR32\(a,n\) \(\(a\)>>\(n\)\)) s
+5 379 M
+(#define ROTL32\(a,n\) \(\(\(a\)<<\(n\)\)|\(\(a\)>>\(32-\(n\)\)\)\)) s
+5 368 M
+(#define ROTR32\(a,n\) \(\(\(a\)>>\(n\)\)|\(\(a\)<<\(32-\(n\)\)\)\)) s
+5 335 M
+(#define DEBUG 0) s
+5 302 M
+(#if DEBUG) s
+5 291 M
+( #include "cli.h") s
+5 269 M
+( void ctx_dump\(const bmw_small_ctx_t* ctx\){) s
+5 258 M
+(        uint8_t i;) s
+5 247 M
+(        cli_putstr\("\\r\\n==== ctx dump ===="\);) s
+5 236 M
+(        for\(i=0; i<16;++i\){) s
+5 225 M
+(                cli_putstr\("\\r\\n h["\);) s
+5 214 M
+(                cli_hexdump\(&i, 1\);) s
+5 203 M
+(                cli_putstr\("] = "\);) s
+5 192 M
+(                cli_hexdump_rev\(&\(ctx->h[i]\), 4\);) s
+5 181 M
+(        }) s
+5 170 M
+(        cli_putstr\("\\r\\n counter = "\);) s
+5 159 M
+(        cli_hexdump\(&\(ctx->counter\), 4\);) s
+5 148 M
+( }) s
+5 126 M
+( void dump_x\(const uint32_t* q, uint8_t elements, char x\){) s
+5 115 M
+(        uint8_t i;) s
+5 104 M
+(        cli_putstr\("\\r\\n==== "\);) s
+5 93 M
+(        cli_putc\(x\);) s
+5 82 M
+(        cli_putstr\(" dump ===="\);) s
+5 71 M
+(        for\(i=0; i<elements;++i\){) s
+5 60 M
+(                cli_putstr\("\\r\\n "\);) s
+5 49 M
+(                cli_putc\(x\);) s
+5 38 M
+(                cli_putstr\("["\);) s
+5 27 M
+(                cli_hexdump\(&i, 1\);) s
+5 16 M
+(                cli_putstr\("] = "\);) s
+5 5 M
+(                cli_hexdump_rev\(&\(q[i]\), 4\);) s
+_R
+%Page: (2) 2
+%BeginPageSetup
+_S
+% N-up sub-page 2/2
+390 -559 translate
+0.679785 dup scale
+/pagenum 2 def
+/fname (bmw_small_speed.c) def
+/fdir (.) def
+/ftail (bmw_small_speed.c) def
+% User defined strings:
+/fmodstr (Fri Nov 05 11:49:05 2010) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        }) s
+5 731 M
+( }) s
+5 720 M
+(#else) s
+5 709 M
+( #define ctx_dump\(x\)) s
+5 698 M
+( #define dump_x\(a,b,c\)) s
+5 687 M
+(#endif) s
+5 665 M
+(#define S32_0\(x\) \( \(SHR32\(\(x\),   1\)\) ^ \\) s
+5 654 M
+(                       \(SHL32\(\(x\),   3\)\) ^ \\) s
+5 643 M
+(                       \(ROTL32\(\(x\),  4\)\) ^ \\) s
+5 632 M
+(                       \(ROTR32\(\(x\), 13\)\) \)) s
+5 610 M
+(#define S32_1\(x\) \( \(SHR32\(\(x\),   1\)\) ^ \\) s
+5 599 M
+(                       \(SHL32\(\(x\),   2\)\) ^ \\) s
+5 588 M
+(                       \(ROTL32\(\(x\),  8\)\) ^ \\) s
+5 577 M
+(                       \(ROTR32\(\(x\),  9\)\) \)) s
+5 555 M
+(#define S32_2\(x\) \( \(SHR32\(\(x\),   2\)\) ^ \\) s
+5 544 M
+(                       \(SHL32\(\(x\),   1\)\) ^ \\) s
+5 533 M
+(                       \(ROTL32\(\(x\), 12\)\) ^ \\) s
+5 522 M
+(                       \(ROTR32\(\(x\),  7\)\) \)) s
+5 500 M
+(#define S32_3\(x\) \( \(SHR32\(\(x\),   2\)\) ^ \\) s
+5 489 M
+(                       \(SHL32\(\(x\),   2\)\) ^ \\) s
+5 478 M
+(                       \(ROTL32\(\(x\), 15\)\) ^ \\) s
+5 467 M
+(                       \(ROTR32\(\(x\),  3\)\) \)) s
+5 445 M
+(#define S32_4\(x\) \( \(SHR32\(\(x\),   1\)\) ^ \(x\)\)) s
+5 423 M
+(#define S32_5\(x\) \( \(SHR32\(\(x\),   2\)\) ^ \(x\)\)) s
+5 401 M
+(#define R32_1\(x\)   \(ROTL32\(\(x\),  3\)\)) s
+5 390 M
+(#define R32_2\(x\)   \(ROTL32\(\(x\),  7\)\)) s
+5 379 M
+(#define R32_3\(x\)   \(ROTL32\(\(x\), 13\)\)) s
+5 368 M
+(#define R32_4\(x\)   \(ROTL32\(\(x\), 16\)\)) s
+5 357 M
+(#define R32_5\(x\)   \(ROTR32\(\(x\), 13\)\)) s
+5 346 M
+(#define R32_6\(x\)   \(ROTR32\(\(x\),  9\)\)) s
+5 335 M
+(#define R32_7\(x\)   \(ROTR32\(\(x\),  5\)\)) s
+5 302 M
+(#include "f1_autogen.i") s
+5 280 M
+(static inline) s
+5 269 M
+(void bmw_small_f0\(uint32_t* q, uint32_t* h, const uint32_t* m\){) s
+5 258 M
+(        uint32_t t[16];) s
+5 247 M
+(        uint32_t tr0, tr1, tr2, tmp;) s
+5 236 M
+(        t[ 0] = h[ 0] ^ m[ 0];) s
+5 225 M
+(        t[ 1] = h[ 1] ^ m[ 1];) s
+5 214 M
+(        t[ 2] = h[ 2] ^ m[ 2];) s
+5 203 M
+(        t[ 3] = h[ 3] ^ m[ 3];) s
+5 192 M
+(        t[ 4] = h[ 4] ^ m[ 4];) s
+5 181 M
+(        t[ 6] = h[ 6] ^ m[ 6];) s
+5 170 M
+(        t[ 8] = h[ 8] ^ m[ 8];) s
+5 159 M
+(        t[ 9] = h[ 9] ^ m[ 9];) s
+5 148 M
+(        t[11] = h[11] ^ m[11];) s
+5 137 M
+(        t[12] = h[12] ^ m[12];) s
+5 126 M
+(        t[15] = h[15] ^ m[15];) s
+5 115 M
+(        t[ 5] = h[ 5] ^ m[ 5];) s
+5 104 M
+(        t[10] = h[10] ^ m[10];) s
+5 93 M
+(        t[13] = h[13] ^ m[13];) s
+5 82 M
+(        t[ 7] = h[ 7] ^ m[ 7];) s
+5 71 M
+(        t[14] = h[14] ^ m[14];) s
+5 49 M
+(        dump_x\(t, 16, 'T'\);) s
+5 38 M
+(        /*) s
+5 27 M
+(        q[ 0] = \(t[ 5] - t[ 7] + t[10] + t[13] + t[14]\);) s
+5 16 M
+(        q[ 3] = \(t[ 0] - t[ 1] + t[ 8] - t[10] + t[13]\);) s
+5 5 M
+(        q[ 6] = \(t[ 4] - t[ 0] - t[ 3] - t[11] + t[13]\);) s
+_R
+_R
+S
+%%Page: (3-4) 2
+%%BeginPageSetup
+_S
+90 rotate
+36 -18 translate
+%Page: (3) 3
+%BeginPageSetup
+_S
+% N-up sub-page 1/2
+0 -559 translate
+0.679785 dup scale
+/pagenum 3 def
+/fname (bmw_small_speed.c) def
+/fdir (.) def
+/ftail (bmw_small_speed.c) def
+% User defined strings:
+/fmodstr (Fri Nov 05 11:49:05 2010) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        q[ 9] = \(t[ 0] - t[ 3] + t[ 6] - t[ 7] + t[14]\);) s
+5 731 M
+(        q[12] = \(t[ 1] + t[ 3] - t[ 6] - t[ 9] + t[10]\);) s
+5 720 M
+(        q[15] = \(t[12] - t[ 4] - t[ 6] - t[ 9] + t[13]\);) s
+5 709 M
+(        q[ 2] = \(t[ 0] + t[ 7] + t[ 9] - t[12] + t[15]\);) s
+5 698 M
+(        q[ 5] = \(t[ 3] - t[ 2] + t[10] - t[12] + t[15]\);) s
+5 687 M
+(        q[ 8] = \(t[ 2] - t[ 5] - t[ 6] + t[13] - t[15]\);) s
+5 676 M
+(        q[11] = \(t[ 8] - t[ 0] - t[ 2] - t[ 5] + t[ 9]\);) s
+5 665 M
+(        q[14] = \(t[ 3] - t[ 5] + t[ 8] - t[11] - t[12]\);) s
+5 654 M
+(        q[ 1] = \(t[ 6] - t[ 8] + t[11] + t[14] - t[15]\);) s
+5 643 M
+(        q[ 4] = \(t[ 1] + t[ 2] + t[ 9] - t[11] - t[14]\);) s
+5 632 M
+(        q[ 7] = \(t[ 1] - t[ 4] - t[ 5] - t[12] - t[14]\);) s
+5 621 M
+(        q[10] = \(t[ 8] - t[ 1] - t[ 4] - t[ 7] + t[15]\);) s
+5 610 M
+(        q[13] = \(t[ 2] + t[ 4] + t[ 7] + t[10] + t[11]\);) s
+5 599 M
+(        */) s
+5 588 M
+(        tmp = +t[ 5] +t[10] +t[13] +\(tr1=-t[ 7]+t[14]\) ;) s
+5 577 M
+(        q[ 0] = S32_0\(tmp\) + h[ 1];) s
+5 566 M
+(        tmp = +t[ 8] +t[13] +t[ 0] -\(tr2=+t[ 1]+t[10]\) ;) s
+5 555 M
+(        q[ 3] = S32_3\(tmp\) + h[ 4];) s
+5 544 M
+(        tmp = -t[11] +t[13] -t[ 0] -t[ 3] +t[ 4] ;) s
+5 533 M
+(        q[ 6] = S32_1\(tmp\) + h[ 7];) s
+5 522 M
+(        tmp = +t[ 0] +\(tr0=-t[ 3]+t[ 6]\) +\(tr1\) ;) s
+5 511 M
+(        q[ 9] = S32_4\(tmp\) + h[10];) s
+5 500 M
+(        tmp = -t[ 9] -\(tr0\) +\(tr2\) ;) s
+5 489 M
+(        q[12] = S32_2\(tmp\) + h[13];) s
+5 478 M
+(        tmp = -t[ 4] +\(tr0=-t[ 9]+t[12]\) +\(tr1=-t[ 6]+t[13]\) ;) s
+5 467 M
+(        q[15] = S32_0\(tmp\) + h[ 0];) s
+5 456 M
+(        tmp = +t[ 7] +t[15] +t[ 0] -\(tr0\) ;) s
+5 445 M
+(        q[ 2] = S32_2\(tmp\) + h[ 3];) s
+5 434 M
+(        tmp = +t[10] +\(tr0=-t[ 2]+t[15]\) +\(tr2=+t[ 3]-t[12]\) ;) s
+5 423 M
+(        q[ 5] = S32_0\(tmp\) + h[ 6];) s
+5 412 M
+(        tmp = -t[ 5] -\(tr0\) +\(tr1\) ;) s
+5 401 M
+(        q[ 8] = S32_3\(tmp\) + h[ 9];) s
+5 390 M
+(        tmp = -t[ 0] -t[ 2] +t[ 9] +\(tr0=-t[ 5]+t[ 8]\) ;) s
+5 379 M
+(        q[11] = S32_1\(tmp\) + h[12];) s
+5 368 M
+(        tmp = -t[11] +\(tr0\) +\(tr2\) ;) s
+5 357 M
+(        q[14] = S32_4\(tmp\) + h[15];) s
+5 346 M
+(        tmp = +t[ 6] +\(tr0=+t[11]+t[14]\) +\(tr1=-t[ 8]-t[15]\) ;) s
+5 335 M
+(        q[ 1] = S32_1\(tmp\) + h[ 2];) s
+5 324 M
+(        tmp = +t[ 9] +t[ 1] +t[ 2] -\(tr0\) ;) s
+5 313 M
+(        q[ 4] = S32_4\(tmp\) + h[ 5];) s
+5 302 M
+(        tmp = -t[12] -t[14] +t[ 1] -t[ 4] -t[ 5] ;) s
+5 291 M
+(        q[ 7] = S32_2\(tmp\) + h[ 8];) s
+5 280 M
+(        tmp = -t[ 1] +\(tr0=-t[ 4]-t[ 7]\) -\(tr1\) ;) s
+5 269 M
+(        q[10] = S32_0\(tmp\) + h[11];) s
+5 258 M
+(        tmp = +t[ 2] +t[10] +t[11] -\(tr0\) ;) s
+5 247 M
+(        q[13] = S32_3\(tmp\) + h[14];) s
+5 225 M
+(        dump_x\(q, 16, 'W'\);) s
+5 214 M
+(}) s
+5 192 M
+(static inline) s
+5 181 M
+(void bmw_small_f2\(uint32_t* h, uint32_t* q, const uint32_t* m\){) s
+5 170 M
+(        uint32_t xl, xh;) s
+5 159 M
+(        xl =      q[16] ^ q[17] ^ q[18] ^ q[19] ^ q[20] ^ q[21] ^ q[22] ^ q[23];) s
+5 148 M
+(        xh = xl ^ q[24] ^ q[25] ^ q[26] ^ q[27] ^ q[28] ^ q[29] ^ q[30] ^ q[31];) s
+5 137 M
+(#if DEBUG) s
+5 126 M
+(        cli_putstr\("\\r\\n XL = "\);) s
+5 115 M
+(        cli_hexdump_rev\(&xl, 4\);) s
+5 104 M
+(        cli_putstr\("\\r\\n XH = "\);) s
+5 93 M
+(        cli_hexdump_rev\(&xh, 4\);) s
+5 82 M
+(#endif) s
+5 60 M
+(        h[0] = \(SHL32\(xh, 5\) ^ SHR32\(q[16], 5\) ^ m[ 0]\) + \(xl ^ q[24] ^ q[ 0]\);) s
+5 49 M
+(        h[1] = \(SHR32\(xh, 7\) ^ SHL32\(q[17], 8\) ^ m[ 1]\) + \(xl ^ q[25] ^ q[ 1]\);) s
+5 38 M
+(        h[2] = \(SHR32\(xh, 5\) ^ SHL32\(q[18], 5\) ^ m[ 2]\) + \(xl ^ q[26] ^ q[ 2]\);) s
+5 27 M
+(        h[3] = \(SHR32\(xh, 1\) ^ SHL32\(q[19], 5\) ^ m[ 3]\) + \(xl ^ q[27] ^ q[ 3]\);) s
+5 16 M
+(        h[4] = \(SHR32\(xh, 3\) ^ q[20]           ^ m[ 4]\) + \(xl ^ q[28] ^ q[ 4]\);) s
+5 5 M
+(        h[5] = \(SHL32\(xh, 6\) ^ SHR32\(q[21], 6\) ^ m[ 5]\) + \(xl ^ q[29] ^ q[ 5]\);) s
+_R
+%Page: (4) 4
+%BeginPageSetup
+_S
+% N-up sub-page 2/2
+390 -559 translate
+0.679785 dup scale
+/pagenum 4 def
+/fname (bmw_small_speed.c) def
+/fdir (.) def
+/ftail (bmw_small_speed.c) def
+% User defined strings:
+/fmodstr (Fri Nov 05 11:49:05 2010) def
+/pagenumstr (4) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 742 M
+(        h[6] = \(SHR32\(xh, 4\) ^ SHL32\(q[22], 6\) ^ m[ 6]\) + \(xl ^ q[30] ^ q[ 6]\);) s
+5 731 M
+(        h[7] = \(SHR32\(xh,11\) ^ SHL32\(q[23], 2\) ^ m[ 7]\) + \(xl ^ q[31] ^ q[ 7]\);) s
+5 709 M
+(        h[ 8] = ROTL32\(h[4],  9\) + \(xh ^ q[24] ^ m[ 8]\) + \(SHL32\(xl, 8\) ^ q[23] ^ q[ 8]\);) s
+5 698 M
+(        h[ 9] = ROTL32\(h[5], 10\) + \(xh ^ q[25] ^ m[ 9]\) + \(SHR32\(xl, 6\) ^ q[16] ^ q[ 9]\);) s
+5 687 M
+(        h[10] = ROTL32\(h[6], 11\) + \(xh ^ q[26] ^ m[10]\) + \(SHL32\(xl, 6\) ^ q[17] ^ q[10]\);) s
+5 676 M
+(        h[11] = ROTL32\(h[7], 12\) + \(xh ^ q[27] ^ m[11]\) + \(SHL32\(xl, 4\) ^ q[18] ^ q[11]\);) s
+5 665 M
+(        h[12] = ROTL32\(h[0], 13\) + \(xh ^ q[28] ^ m[12]\) + \(SHR32\(xl, 3\) ^ q[19] ^ q[12]\);) s
+5 654 M
+(        h[13] = ROTL32\(h[1], 14\) + \(xh ^ q[29] ^ m[13]\) + \(SHR32\(xl, 4\) ^ q[20] ^ q[13]\);) s
+5 643 M
+(        h[14] = ROTL32\(h[2], 15\) + \(xh ^ q[30] ^ m[14]\) + \(SHR32\(xl, 7\) ^ q[21] ^ q[14]\);) s
+5 632 M
+(        h[15] = ROTL32\(h[3], 16\) + \(xh ^ q[31] ^ m[15]\) + \(SHR32\(xl, 2\) ^ q[22] ^ q[15]\);) s
+5 621 M
+(}) s
+5 599 M
+(void bmw_small_nextBlock\(bmw_small_ctx_t* ctx, const void* block\){) s
+5 588 M
+(        uint32_t q[32];) s
+5 577 M
+(        dump_x\(block, 16, 'M'\);) s
+5 566 M
+(        bmw_small_f0\(q, ctx->h, block\);) s
+5 555 M
+(        dump_x\(q, 16, 'Q'\);) s
+5 544 M
+(        bmw_small_f1\(q, block, ctx->h\);) s
+5 533 M
+(        dump_x\(q+16, 16, 'Q'\);) s
+5 522 M
+(        bmw_small_f2\(ctx->h, q, block\);) s
+5 511 M
+(        ctx->counter += 1;) s
+5 500 M
+(        ctx_dump\(ctx\);) s
+5 489 M
+(}) s
+5 467 M
+(void bmw_small_lastBlock\(bmw_small_ctx_t* ctx, const void* block, uint16_t length_b\){) s
+5 456 M
+(        uint8_t buffer[64];) s
+5 445 M
+(        while\(length_b >= BMW_SMALL_BLOCKSIZE\){) s
+5 434 M
+(                bmw_small_nextBlock\(ctx, block\);) s
+5 423 M
+(                length_b -= BMW_SMALL_BLOCKSIZE;) s
+5 412 M
+(                block = \(uint8_t*\)block + BMW_SMALL_BLOCKSIZE_B;) s
+5 401 M
+(        }) s
+5 390 M
+(        memset\(buffer, 0, 64\);) s
+5 379 M
+(        memcpy\(buffer, block, \(length_b+7\)/8\);) s
+5 368 M
+(        buffer[length_b>>3] |= 0x80 >> \(length_b&0x07\);) s
+5 357 M
+(        if\(length_b+1>64*8-64\){) s
+5 346 M
+(                bmw_small_nextBlock\(ctx, buffer\);) s
+5 335 M
+(                memset\(buffer, 0, 64-8\);) s
+5 324 M
+(                ctx->counter -= 1;) s
+5 313 M
+(        }) s
+5 302 M
+(        *\(\(uint64_t*\)&\(buffer[64-8]\)\) = \(uint64_t\)\(ctx->counter*512LL\)+\(uint64_t\)length_b;) s
+5 291 M
+(        bmw_small_nextBlock\(ctx, buffer\);) s
+5 280 M
+(        uint8_t i;) s
+5 269 M
+(        uint32_t q[32];) s
+5 258 M
+(        memset\(buffer, 0xaa, 64\);) s
+5 247 M
+(        for\(i=0; i<16;++i\){) s
+5 236 M
+(                buffer[i*4] = i+0xa0;) s
+5 225 M
+(        }) s
+5 214 M
+(//      dump_x\(buffer, 16, 'A'\);) s
+5 203 M
+(        dump_x\(ctx->h, 16, 'M'\);) s
+5 192 M
+(        bmw_small_f0\(q, \(uint32_t*\)buffer, ctx->h\);) s
+5 181 M
+(        dump_x\(buffer, 16, 'a'\);) s
+5 170 M
+(        dump_x\(q, 16, 'Q'\);) s
+5 159 M
+(        bmw_small_f1\(q, ctx->h, \(uint32_t*\)buffer\);) s
+5 148 M
+(        dump_x\(q, 32, 'Q'\);) s
+5 137 M
+(        bmw_small_f2\(\(uint32_t*\)buffer, q, ctx->h\);) s
+5 126 M
+(        memcpy\(ctx->h, buffer, 64\);) s
+5 115 M
+(}) s
+5 93 M
+(void bmw224_init\(bmw224_ctx_t* ctx\){) s
+5 82 M
+(        uint8_t i;) s
+5 71 M
+(        ctx->h[0] = 0x00010203;) s
+5 60 M
+(        for\(i=1; i<16; ++i\){) s
+5 49 M
+(                ctx->h[i] = ctx->h[i-1]+ 0x04040404;) s
+5 38 M
+(        }) s
+5 27 M
+(        ctx->counter=0;) s
+5 16 M
+(        ctx_dump\(ctx\);) s
+5 5 M
+(}) s
+_R
+_R
+S
+%%Page: (5-6) 3
+%%BeginPageSetup
+_S
+90 rotate
+36 -18 translate
+%Page: (5) 5
+%BeginPageSetup
+_S
+% N-up sub-page 1/2
+0 -559 translate
+0.679785 dup scale
+/pagenum 5 def
+/fname (bmw_small_speed.c) def
+/fdir (.) def
+/ftail (bmw_small_speed.c) def
+% User defined strings:
+/fmodstr (Fri Nov 05 11:49:05 2010) def
+/pagenumstr (5) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 731 M
+(void bmw256_init\(bmw256_ctx_t* ctx\){) s
+5 720 M
+(        uint8_t i;) s
+5 709 M
+(        ctx->h[0] = 0x40414243;) s
+5 698 M
+(        for\(i=1; i<16; ++i\){) s
+5 687 M
+(                ctx->h[i] = ctx->h[i-1]+ 0x04040404;) s
+5 676 M
+(        }) s
+5 665 M
+(        ctx->counter=0;) s
+5 654 M
+(        ctx_dump\(ctx\);) s
+5 643 M
+(}) s
+5 621 M
+(void bmw224_nextBlock\(bmw224_ctx_t* ctx, const void* block\){) s
+5 610 M
+(        bmw_small_nextBlock\(ctx, block\);) s
+5 599 M
+(}) s
+5 577 M
+(void bmw256_nextBlock\(bmw256_ctx_t* ctx, const void* block\){) s
+5 566 M
+(        bmw_small_nextBlock\(ctx, block\);) s
+5 555 M
+(}) s
+5 533 M
+(void bmw224_lastBlock\(bmw224_ctx_t* ctx, const void* block, uint16_t length_b\){) s
+5 522 M
+(        bmw_small_lastBlock\(ctx, block, length_b\);) s
+5 511 M
+(}) s
+5 489 M
+(void bmw256_lastBlock\(bmw256_ctx_t* ctx, const void* block, uint16_t length_b\){) s
+5 478 M
+(        bmw_small_lastBlock\(ctx, block, length_b\);) s
+5 467 M
+(}) s
+5 445 M
+(void bmw224_ctx2hash\(void* dest, const bmw224_ctx_t* ctx\){) s
+5 434 M
+(        memcpy\(dest, &\(ctx->h[9]\), 224/8\);) s
+5 423 M
+(}) s
+5 401 M
+(void bmw256_ctx2hash\(void* dest, const bmw256_ctx_t* ctx\){) s
+5 390 M
+(        memcpy\(dest, &\(ctx->h[8]\), 256/8\);) s
+5 379 M
+(}) s
+5 357 M
+(void bmw224\(void* dest, const void* msg, uint32_t length_b\){) s
+5 346 M
+(        bmw_small_ctx_t ctx;) s
+5 335 M
+(        bmw224_init\(&ctx\);) s
+5 324 M
+(        while\(length_b>=BMW_SMALL_BLOCKSIZE\){) s
+5 313 M
+(                bmw_small_nextBlock\(&ctx, msg\);) s
+5 302 M
+(                length_b -= BMW_SMALL_BLOCKSIZE;) s
+5 291 M
+(                msg = \(uint8_t*\)msg + BMW_SMALL_BLOCKSIZE_B;) s
+5 280 M
+(        }) s
+5 269 M
+(        bmw_small_lastBlock\(&ctx, msg, length_b\);) s
+5 258 M
+(        bmw224_ctx2hash\(dest, &ctx\);) s
+5 247 M
+(}) s
+5 225 M
+(void bmw256\(void* dest, const void* msg, uint32_t length_b\){) s
+5 214 M
+(        bmw_small_ctx_t ctx;) s
+5 203 M
+(        bmw256_init\(&ctx\);) s
+5 192 M
+(        while\(length_b>=BMW_SMALL_BLOCKSIZE\){) s
+5 181 M
+(                bmw_small_nextBlock\(&ctx, msg\);) s
+5 170 M
+(                length_b -= BMW_SMALL_BLOCKSIZE;) s
+5 159 M
+(                msg = \(uint8_t*\)msg + BMW_SMALL_BLOCKSIZE_B;) s
+5 148 M
+(        }) s
+5 137 M
+(        bmw_small_lastBlock\(&ctx, msg, length_b\);) s
+5 126 M
+(        bmw256_ctx2hash\(dest, &ctx\);) s
+5 115 M
+(}) s
+_R
+_R
+S
+%%Trailer
+%%Pages: 5
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF

@@ -1,0 +1,4 @@
+BlueMidnightWish-224: bin/bmw_c/bmw_small.o bin/bmw_c/memxor.o
+BlueMidnightWish-256: bin/bmw_c/bmw_small.o bin/bmw_c/memxor.o
+BlueMidnightWish-512: bin/bmw_c/bmw_large.o bin/bmw_c/memxor.o
+BlueMidnightWish-384: bin/bmw_c/bmw_large.o bin/bmw_c/memxor.o
