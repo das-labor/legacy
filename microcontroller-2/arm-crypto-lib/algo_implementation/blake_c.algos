@@ -1,0 +1,4 @@
+Blake-48: bin/blake_c/blake_small.o bin/blake_c/blake_common.o bin/blake_c/memxor.o
+Blake-28: bin/blake_c/blake_small.o bin/blake_c/blake_common.o bin/blake_c/memxor.o
+Blake-64: bin/blake_c/blake_large.o bin/blake_c/blake_common.o bin/blake_c/memxor.o
+Blake-32: bin/blake_c/blake_large.o bin/blake_c/blake_common.o bin/blake_c/memxor.o

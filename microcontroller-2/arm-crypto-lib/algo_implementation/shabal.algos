@@ -1,0 +1,5 @@
+Shabal-192: bin/shabal/shabal-asm.o bin/shabal/shabal192-asm.o
+Shabal-224: bin/shabal/shabal-asm.o bin/shabal/shabal224-asm.o
+Shabal-256: bin/shabal/shabal-asm.o bin/shabal/shabal256-asm.o
+Shabal-384: bin/shabal/shabal-asm.o bin/shabal/shabal384-asm.o
+Shabal-512: bin/shabal/shabal-asm.o bin/shabal/shabal512-asm.o

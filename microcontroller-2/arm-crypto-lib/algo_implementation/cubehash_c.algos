@@ -1,0 +1,4 @@
+CubeHash-224: bin/cubehash_c/cubehash.o bin/cubehash_c/memxor.o
+CubeHash-256: bin/cubehash_c/cubehash.o bin/cubehash_c/memxor.o
+CubeHash-384: bin/cubehash_c/cubehash.o bin/cubehash_c/memxor.o
+CubeHash-512: bin/cubehash_c/cubehash.o bin/cubehash_c/memxor.o

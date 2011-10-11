@@ -1,0 +1,21 @@
+Skein-256-128:   bin/skein_c/threefish256_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi256.o  bin/skein_c/memxor.o bin/skein_c/skein256.o 
+Skein-256-160:   bin/skein_c/threefish256_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi256.o  bin/skein_c/memxor.o bin/skein_c/skein256.o 
+Skein-256-256:   bin/skein_c/threefish256_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi256.o  bin/skein_c/memxor.o bin/skein_c/skein256.o 
+Skein-256-224:   bin/skein_c/threefish256_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi256.o  bin/skein_c/memxor.o bin/skein_c/skein256.o 
+Skein-256-384:   bin/skein_c/threefish256_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi256.o  bin/skein_c/memxor.o bin/skein_c/skein256.o 
+Skein-256-512:   bin/skein_c/threefish256_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi256.o  bin/skein_c/memxor.o bin/skein_c/skein256.o 
+Skein-512-128:   bin/skein_c/threefish512_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi512.o  bin/skein_c/memxor.o bin/skein_c/skein512.o 
+Skein-512-160:   bin/skein_c/threefish512_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi512.o  bin/skein_c/memxor.o bin/skein_c/skein512.o 
+Skein-512-224:   bin/skein_c/threefish512_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi512.o  bin/skein_c/memxor.o bin/skein_c/skein512.o 
+Skein-512-256:   bin/skein_c/threefish512_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi512.o  bin/skein_c/memxor.o bin/skein_c/skein512.o 
+Skein-512-384:   bin/skein_c/threefish512_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi512.o  bin/skein_c/memxor.o bin/skein_c/skein512.o 
+Skein-512-512:   bin/skein_c/threefish512_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi512.o  bin/skein_c/memxor.o bin/skein_c/skein512.o 
+Skein-512-1024:  bin/skein_c/threefish512_enc.o  bin/skein_c/threefish_mix_c.o bin/skein_c/ubi512.o  bin/skein_c/memxor.o bin/skein_c/skein512.o 
+Skein-1024-128:  bin/skein_c/threefish1024_enc.o bin/skein_c/threefish_mix_c.o bin/skein_c/ubi1024.o bin/skein_c/memxor.o bin/skein_c/skein1024.o
+Skein-1024-160:  bin/skein_c/threefish1024_enc.o bin/skein_c/threefish_mix_c.o bin/skein_c/ubi1024.o bin/skein_c/memxor.o bin/skein_c/skein1024.o
+Skein-1024-224:  bin/skein_c/threefish1024_enc.o bin/skein_c/threefish_mix_c.o bin/skein_c/ubi1024.o bin/skein_c/memxor.o bin/skein_c/skein1024.o
+Skein-1024-256:  bin/skein_c/threefish1024_enc.o bin/skein_c/threefish_mix_c.o bin/skein_c/ubi1024.o bin/skein_c/memxor.o bin/skein_c/skein1024.o
+Skein-1024-384:  bin/skein_c/threefish1024_enc.o bin/skein_c/threefish_mix_c.o bin/skein_c/ubi1024.o bin/skein_c/memxor.o bin/skein_c/skein1024.o
+Skein-1024-512:  bin/skein_c/threefish1024_enc.o bin/skein_c/threefish_mix_c.o bin/skein_c/ubi1024.o bin/skein_c/memxor.o bin/skein_c/skein1024.o
+Skein-1024-1024: bin/skein_c/threefish1024_enc.o bin/skein_c/threefish_mix_c.o bin/skein_c/ubi1024.o bin/skein_c/memxor.o bin/skein_c/skein1024.o
+                                                                                                                                                                                                                                                

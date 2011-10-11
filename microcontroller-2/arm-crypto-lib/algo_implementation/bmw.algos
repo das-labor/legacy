@@ -1,0 +1,4 @@
+BlueMidnightWish-224: bin/bmw/bmw_small-asm.o
+BlueMidnightWish-256: bin/bmw/bmw_small-asm.o
+BlueMidnightWish-384: bin/bmw/bmw_large.o
+BlueMidnightWish-512: bin/bmw/bmw_large.o
