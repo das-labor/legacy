@@ -51,9 +51,9 @@ uint32_t change_endian32(uint32_t x){
 #define CH(x,y,z)  (((x)&(y)) ^ ((~(x))&(z)))
 #define MAJ(x,y,z) (((x)&(y)) ^ ((x)&(z)) ^ ((y)&(z)))
 
-#define SIGMA0(x) (rotr32((x),2) ^ rotr32((x),13) ^ rotl32((x),10))
-#define SIGMA1(x) (rotr32((x),6) ^ rotr32((x),11) ^ rotl32((x),7))
-#define SIGMA_a(x) (rotr32((x),7)  ^ rotl32((x),14) ^ ((x)>>3))
+#define SIGMA_0(x) (rotr32((x), 2) ^ rotr32((x),13) ^ rotl32((x),10))
+#define SIGMA_1(x) (rotr32((x), 6) ^ rotr32((x),11) ^ rotl32((x),7))
+#define SIGMA_a(x) (rotr32((x), 7) ^ rotl32((x),14) ^ ((x)>>3))
 #define SIGMA_b(x) (rotl32((x),15) ^ rotl32((x),13) ^ ((x)>>10))
 
 const
@@ -103,8 +103,8 @@ void sha2_small_common_nextBlock (sha2_small_common_ctx_t *state, const void* bl
 			memmove(&(w[0]), &(w[1]), 15*4);
 			w[15] = wx;
 		}
-		t1 = a[7] + SIGMA1(a[4]) + CH(a[4],a[5],a[6]) + k[i] + wx;
-		t2 = SIGMA0(a[0]) + MAJ(a[0],a[1],a[2]);
+		t1 = a[7] + SIGMA_1(a[4]) + CH(a[4],a[5],a[6]) + k[i] + wx;
+		t2 = SIGMA_0(a[0]) + MAJ(a[0],a[1],a[2]);
 		memmove(&(a[1]), &(a[0]), 7*4); 	/* a[7]=a[6]; a[6]=a[5]; a[5]=a[4]; a[4]=a[3]; a[3]=a[2]; a[2]=a[1]; a[1]=a[0]; */
 		a[4] += t1;
 		a[0] = t1 + t2;
