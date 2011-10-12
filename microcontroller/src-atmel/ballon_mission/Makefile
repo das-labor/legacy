@@ -1,10 +1,10 @@
 PRG            = image
-OBJ            = main.o at45db.o spi.o uart/uart.o
+OBJ            = main.o at45db.o spi.o uart/uart.o adc.o logger.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
 DEFS           = -DF_CPU=16000000
-LIBS           =
+LIBS           = 
 
 # You should not have to change anything below here.
 

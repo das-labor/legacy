@@ -62,6 +62,26 @@ void df_memory_page_programm(uint8_t * buffer, uint16_t page){
 }
 
 
+void df_erase(){
+	/*
+	
+	uint16_t i;
+	
+	uint8_t buf[256];
+	for(i=0;i<256;i++){
+		buf[i] = 0xff;
+	}
+	
+	for(i=0;i<2048;i++){
+		buzz(1000);
+		_delay_ms(100);
+		buzz(0);
+		df_memory_page_programm(buf, i);
+	}
+	*/
+}
+
+
 void df_init(void){
    cli();
 
