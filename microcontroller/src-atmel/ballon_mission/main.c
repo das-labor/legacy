@@ -4,6 +4,8 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 
+#include "logger.h"
+
 #include "uart/uart.h"
 
 #include "ioport.h"
@@ -12,6 +14,34 @@
 
 #define BUZZER_PORT D
 #define BUZZER_BIT  4
+
+#define PYRO_FIRE_PORT D
+#define PYRO_FIRE_BIT  5
+
+#define PYRO_TEST_PORT D
+#define PYRO_TEST_BIT  6
+
+#define CAM_BUTTON_PORT C
+#define CAM_BUTTON_BIT  1
+
+#define CAM_POWER_PORT C
+#define CAM_POWER_BIT  0
+
+//2 Stunden 10 min Pyro
+#define PYRO_TIME  7800
+//#define PYRO_TIME  30
+
+//20 minuten pro video
+#define CAM_TIME   1200
+
+//3 Stunden bis der piezo trötet
+#define PIEZO_TIME 10800
+
+
+#define RXD_PIN_PORT D
+#define RXD_PIN_BIT  0
+
+
 
 void init_timer1(){
 	//TCCR1A = (1<<COM1B1) | (1<<WGM11) | (1<<WGM10);
@@ -26,7 +56,7 @@ void buzz(int freq){
 		TCCR1A = (1<<COM1B1) | (1<<WGM11) | (1<<WGM10);
 		uint16_t w = 2000000ul / freq;
 		OCR1A = w;
-		OCR1B = w/8;
+		OCR1B = w/4;
 	}else{
 		TCCR1A =               (1<<WGM11) | (1<<WGM10);
 	}
@@ -54,35 +84,173 @@ ISR(TIMER2_COMP_vect){
 }
 
 
-uint32_t current_seconds;
-uint32_t last_seconds;
+uint16_t current_second;
+uint16_t last_second;
+uint8_t preflight = 1;
 
 void update_seconds(){
-	last_seconds = current_seconds;
-	cli();
-	current_seconds = timer_seconds;
-	sei();
 }
 
 //return true if a time has passed since last main loop
-uint8_t time_passed(uint32_t val){
-	if((current_seconds >= val) && (last_seconds < val)){
+uint8_t time_passed(uint16_t val){
+	if((current_second >= val) && (last_second < val)){
 		return 1;
 	}else{
 		return 0;
 	}
 }
 
+uint16_t pyro_time = PYRO_TIME;
 
 void statemachine(){
-	if(time_passed(5)){
-		buzz(1500);
+	if(preflight){
+		static uint8_t check_pyro;
+		static uint8_t check_jumper;
+		logger_show();
+		if(time_passed(1)){
+			buzz(0);
+			if(INPUT(RXD_PIN)){
+				goto uart_mode;
+			}
+		}
+		if(time_passed(2)){
+			buzz(1000);
+		}
+		if(time_passed(3)){
+			buzz(0);
+		}
+		if(time_passed(4)){
+			buzz(1000);
+		}
+		if(time_passed(5)){
+			buzz(0);
+			check_pyro = 1;
+		}
+		
+		if(time_passed(10)){
+			buzz(1000);
+			_delay_ms(100);
+			buzz(0);
+			df_erase();
+			buzz(1000);
+			_delay_ms(100);
+			buzz(0);
+
+			check_jumper = 1;
+			
+		}
+		
+		if(check_pyro){
+			if(!INPUT(PYRO_TEST)){
+				buzz(2000);
+			}else{
+				buzz(0);
+			}
+		}
+		
+		if(check_jumper && INPUT(RXD_PIN)){
+			preflight = 0;
+			current_second = 0;
+			last_second = 0;
+			cli();
+			time_ms = 0;
+			timer_seconds = 0;
+			sei();
+		}
+	}else{
+		static uint8_t piezo_quaek;
+		static uint8_t piezo_timer = 4;
+		logger_tick();
+		if(time_passed(1)){
+			buzz(1500);
+		}
+		if(time_passed(6)){
+			buzz(0);
+		}
+		
+		if(time_passed(pyro_time-3)){//cut down
+			buzz(1000);
+		}
+		
+		if(time_passed(pyro_time)){//cut down
+			OUTPUT_ON(PYRO_FIRE);
+			buzz(0);
+		}
+		if(time_passed(pyro_time + 1)){//cut down
+			OUTPUT_OFF(PYRO_FIRE);
+		}
+		if(time_passed(pyro_time + 20)){//cut down
+			OUTPUT_ON(PYRO_FIRE);
+		}
+		if(time_passed(pyro_time + 21)){//cut down
+			OUTPUT_OFF(PYRO_FIRE);
+		}
+		
+		if(time_passed(PIEZO_TIME)){
+			piezo_quaek = 1;
+		}
+		
+		if(piezo_quaek){
+			piezo_timer --;
+			if(piezo_timer == 3)
+				buzz(1000);
+			if(piezo_timer == 2)
+				buzz(0);
+			if(piezo_timer == 1)
+				buzz(1500);
+			if(piezo_timer == 0){
+				buzz(0);
+				piezo_timer = 30;
+			}
+		}
+		
+		static uint8_t allready_undervoltage;
+		if(undervoltage){
+			if(!allready_undervoltage){
+				pyro_time = current_second + 4;
+			}
+			allready_undervoltage = 1;
+		}
 	}
-	if(time_passed(6)){
-		buzz(0);
+	
+	return;
+	
+	uart_mode:
+	dump_log();
+	while(1){
+		if(uart_getc() == 'd'){
+				
+		}
 	}
 }
 
+void cam_timer(){
+	static uint16_t cam_time;
+	static uint8_t shutoff;
+	
+	OUTPUT_OFF(CAM_BUTTON);
+	if(cam_time == 20){
+		if(shutoff){
+			OUTPUT_OFF(CAM_POWER);
+		}else{
+			OUTPUT_ON(CAM_BUTTON);
+		}
+	}
+	
+	if(cam_time == CAM_TIME + 20){
+		OUTPUT_ON(CAM_BUTTON);
+		cam_time = 9;
+	}
+	
+	cam_time++;
+	
+	if(undervoltage){
+		if(!shutoff){
+			shutoff = 1;
+			cam_time = CAM_TIME; //20 more seconds
+		}
+	}
+}
 
 int my_putc(char c, FILE * fp){
 	uart_putc(c);
@@ -96,34 +264,36 @@ int main(){
 	init_timer1();
 	init_timer2();
 
+	logger_init();
+
+	SET_DDR(PYRO_FIRE);
+	SET_DDR(CAM_BUTTON);
+	SET_DDR(CAM_POWER);
+	OUTPUT_ON(CAM_POWER);
+
+
 	uart_init();
 	fdevopen (my_putc, 0);
 	
 	sei();
 	
-	printf("Hello World\r\n");
-	
 	df_init();
 	
-	//while(1){
-		uint8_t x =	df_memory_status_read();
-		printf("%X\r\n", x);
-	//}
-
 	printf("init done\r\n");
 	
-	uint8_t buf[256];
-	uint16_t i;
-	for(i=0;i<4;i++){
-		df_memory_page_read(buf, i);
-		uart_hexdump(buf, 256);
-	}
-	
-	df_memory_page_programm(test_buf, 0);
+	buzz(1000);
 	
 	
+		
 	while(1){
-		update_seconds();
-		statemachine();	
+		last_second = current_second;
+		cli();
+		current_second = timer_seconds;
+		sei();
+		if(current_second != last_second){
+			statemachine();
+			cam_timer();
+		}
+			
 	}
 }
