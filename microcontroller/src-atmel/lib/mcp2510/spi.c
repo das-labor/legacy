@@ -1,7 +1,7 @@
 #include <avr/io.h>
 
 #include "spi.h"
-#include "../config.h"
+#include "config.h"
 
 #if defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega8__) | defined(__AVR_ATmega88__)
 	#define AVR_SS_BIT PB2
@@ -30,10 +30,10 @@ void spi_init()
 #ifdef XMEGA
 	/* configure MOSI, SCK, lines as outputs */
 	AVR_SPI_PORT.OUTSET = _BV(AVR_MOSI_BIT) | _BV(AVR_SCK_BIT) | _BV(AVR_SS_BIT); // mosi, sck, avr-ss to output
-	
+
 	XMEGA_SPI.CTRL = SPI_ENABLE_bm | SPI_MASTER_bm ;
 
-#else	
+#else
 	/* configure MOSI, SCK, lines as outputs */
 	DDRB |= _BV(AVR_MOSI_BIT) | _BV(AVR_SCK_BIT) | _BV(AVR_SS_BIT); // mosi, sck, avr-ss to output
 
