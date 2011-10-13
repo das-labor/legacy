@@ -3,10 +3,10 @@
 #include <util/delay.h>
 #include <avr/eeprom.h>
 
-#include "mcp2510regs.h"
+#include "mcp251s_register.h"
 #include "mcp2510.h"
 #include "spi.h"
-#include "../config.h"
+#include "config.h"
 
 
 //for backwards compatibility. Please use MCP_CS_PORT from now on!

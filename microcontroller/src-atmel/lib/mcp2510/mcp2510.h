@@ -15,10 +15,7 @@
  */
 
 #include <stdint.h>
-#include "../config.h"
-
-typedef unsigned char can_addr;
-typedef unsigned char can_port;
+#include "config.h"
 
 typedef struct
 {
