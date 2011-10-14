@@ -298,7 +298,7 @@
 /*
  * MCP2515 Additions
  */
-#ifdef MCP2515
+#ifndef MCP2510
 
 
 /*
@@ -321,6 +321,6 @@
 #define READ_RX_BUFFER 0x90
 #define LOAD_TX_BUFFER 0x40
 
-#endif //MCP2515
+#endif //MCP2510
 
 #endif //_MCP251X_REGISTER_H
