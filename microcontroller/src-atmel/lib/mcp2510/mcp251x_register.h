@@ -120,7 +120,7 @@
 
 //receive buffer n data field byte 0
 #define RXB0D0 0x66
-#define RXB0D0 0x76
+#define RXB1D0 0x76
 
 //acceptance filter n standard identifier high + low
 #define RXF0SIDH 0x00

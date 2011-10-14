@@ -3,7 +3,7 @@
 #include <util/delay.h>
 #include <avr/eeprom.h>
 
-#include "mcp251s_register.h"
+#include "mcp251x_register.h"
 #include "mcp2510.h"
 #include "spi.h"
 #include "config.h"
