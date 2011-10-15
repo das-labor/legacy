@@ -18,7 +18,6 @@ comment "Animations"
 	dep_bool_menu "Bitmap Scroller" ANIMATION_BMSCROLLER y $RANDOM_SUPPORT
 		dep_bool "LABOR Logo"       ANIMATION_LABORLOGO $ANIMATION_BMSCROLLER
 		dep_bool "Amphibian"        ANIMATION_AMPHIBIAN $ANIMATION_BMSCROLLER
-		dep_bool "27c3 Logo"        ANIMATION_LOGO_27C3 $ANIMATION_BMSCROLLER
 		dep_bool "Out of Spec Logo" ANIMATION_LOGO_OOS  $ANIMATION_BMSCROLLER
 	endmenu
 
