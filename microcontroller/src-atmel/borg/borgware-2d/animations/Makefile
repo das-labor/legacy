@@ -49,10 +49,6 @@ ifeq ($(ANIMATION_AMPHIBIAN),y)
   SRC += amphibian.c
 endif
 
-ifeq ($(ANIMATION_LOGO_27C3),y)
-  SRC += 27c3.c
-endif
-
 ifeq ($(ANIMATION_LOGO_OOS),y)
   SRC += outofspec.c
 endif

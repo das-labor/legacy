@@ -14,7 +14,6 @@
 #include "animations/ltn_ant.h"
 #include "animations/amphibian.h"
 #include "animations/laborlogo.h"
-#include "animations/27c3.h"
 #include "animations/outofspec.h"
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
@@ -173,26 +172,20 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_LOGO_27C3
-		case 17:
-			logo_27c3();
-			break;
-#endif
-
 #ifdef ANIMATION_LOGO_OOS
-		case 18:
+		case 17:
 			logo_OutOfSpec();
 			break;
 #endif
 
 #ifdef ANIMATION_PLASMA
-		case 19:
+		case 18:
 			plasma();
 			break;
 #endif
 
 #ifdef ANIMATION_PSYCHEDELIC
-		case 20:
+		case 19:
 			psychedelic();
 			break;
 #endif
