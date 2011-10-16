@@ -234,6 +234,7 @@ void customscripts(rs232can_msg *msg)
 
 void process_cmd_pkt(rs232can_msg *msg)
 {
+	cann_conn_t *ac;
 	customscripts(msg);
 
 	// foreach client
@@ -247,7 +248,7 @@ void process_cmd_pkt(rs232can_msg *msg)
 
 void process_uart_msg()
 {
-	cann_conn_t *ac;
+	
 	debug( 10, "Activity on uart_fd" );
 
 	rs232can_msg *msg = canu_get_nb();	//get message from uart
