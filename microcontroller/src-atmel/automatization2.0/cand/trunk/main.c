@@ -267,7 +267,7 @@ void process_uart_msg()
 			debug(0, "GATEWAY PONG");
 			break;
 		default:
-			debug(0, "Whats going on? Received other than PKT type on Uart");			
+			debug(0, "Whats going on? Received unknown type 0x%02x on Uart", msg->cmd);
 			break;
 	}
 	
