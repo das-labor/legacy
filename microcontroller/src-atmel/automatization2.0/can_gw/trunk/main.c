@@ -1,6 +1,8 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
+#include <util/crc16.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -27,24 +29,30 @@ typedef struct {
 /*****************************************************************************
  * CAN to UART
  */
-void write_buffer_to_uart(char* buf, uint8_t len)
+uint16_t write_buffer_to_uart_and_crc(char* buf, uint8_t len)
 {
 	uint8_t i;
+	uint16_t crc = 0;
 
 	for (i=0; i<len; i++) {
+		crc = _crc16_update(crc, *buf);
 		uart_putc( *buf++);
 	}
+	
+	return crc;
 }
-
+    
 void write_can_message_to_uart(can_message * cmsg){
 	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
+	uint16_t crc; 
 
 	uart_putc(RS232CAN_PKT);  //command
 	uart_putc(len);           //length
 	
-	write_buffer_to_uart((char*)cmsg, len); //data
+	crc = write_buffer_to_uart_and_crc((char*)cmsg, len); //data
 
-	uart_putc(0x23);		// XXX CRC
+	uart_putc(crc >> 8);
+	uart_putc(crc & 0xFF);
 }
 /*****************************************************************************/
 
@@ -78,11 +86,16 @@ rs232can_msg * canu_get_nb(){
 			}
 			break;
 		case STATE_LEN:
-			canu_rcvstate     = STATE_PAYLOAD;
 			canu_rcvlen       = (unsigned char)c;
-			canu_rcvpkt.len   = c;
+			if(canu_rcvlen > RS232CAN_MAXLENGTH)
+			{
+				canu_rcvstate = STATE_START;
+				break;
+			}
+			canu_rcvstate     = STATE_PAYLOAD;
+			canu_rcvpkt.len   = (unsigned char)c;
 			uartpkt_data      = &canu_rcvpkt.data[0];
-			break;
+			break;s
 		case STATE_PAYLOAD:
 			if(canu_rcvlen--){
 				*(uartpkt_data++) = c;
@@ -175,6 +188,7 @@ int main(){
 	uart_init();
 	spi_init();
 	can_init();
+	wdt_enable(WDTO_250MS);
 
 	sei();
 
@@ -188,7 +202,8 @@ int main(){
 	while(1) {
 		rs232can_msg  *rmsg;
 		can_message *cmsg;
-
+		
+		wdt_reset();
 
 		rmsg = canu_get_nb();
 		if (rmsg){
@@ -208,7 +223,6 @@ int main(){
 			leds_old = leds;
 			led_set(leds);
 		}
-		
 	}
 
 	return 0;
