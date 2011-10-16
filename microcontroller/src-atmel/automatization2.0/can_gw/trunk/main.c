@@ -140,8 +140,11 @@ void process_cantun_msg(rs232can_msg *msg) {
 			break;
 		case RS232CAN_PING_GATEWAY:
 			uart_putc(RS232CAN_PING_GATEWAY);  // reply
+			uart_putc(0);
+			break;
 		default:
 			uart_putc(RS232CAN_ERROR);  //send error
+			uart_putc(0);
 			break;
 	}
 }
@@ -189,6 +192,13 @@ void adc_init() {
 	ADCSRA |= (1<<ADEN) | (1<<ADSC) | (1<<ADIF);
 }
 
+// syncronize line
+void canu_reset()
+{  
+	unsigned char i;
+	for(i=RS232CAN_MAXLENGTH+3; i>0; i--)
+		uart_putc( (char)0x00 );
+}
 
 uint16_t leds, leds_old;
 
@@ -204,7 +214,9 @@ int main() {
 
 	sei();
 
+	canu_reset();
 	uart_putc(RS232CAN_NOTIFY_RESET);  //notify host that we resetted
+	uart_putc(0);
 
 	can_setmode(normal);
 	can_setled(0, 1);
