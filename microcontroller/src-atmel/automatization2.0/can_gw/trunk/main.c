@@ -29,20 +29,19 @@ typedef struct {
 /*****************************************************************************
  * CAN to UART
  */
-uint16_t write_buffer_to_uart_and_crc(char* buf, uint8_t len)
-{
+uint16_t write_buffer_to_uart_and_crc(char* buf, uint8_t len) {
 	uint8_t i;
 	uint16_t crc = 0;
 
-	for (i=0; i<len; i++) {
+	for (i = 0; i < len; i++) {
 		crc = _crc16_update(crc, *buf);
 		uart_putc( *buf++);
 	}
 	
 	return crc;
 }
-    
-void write_can_message_to_uart(can_message * cmsg){
+
+void write_can_message_to_uart(can_message * cmsg) {
 	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
 	uint16_t crc; 
 
@@ -70,7 +69,7 @@ canu_rcvstate_t	canu_rcvstate = STATE_START;
 unsigned char 	canu_rcvlen   = 0;
 
 
-rs232can_msg * canu_get_nb(){
+rs232can_msg * canu_get_nb() {
 	static char *uartpkt_data;
 	char c;
 	
@@ -97,12 +96,12 @@ rs232can_msg * canu_get_nb(){
 			uartpkt_data      = &canu_rcvpkt.data[0];
 			break;
 		case STATE_PAYLOAD:
-			if(canu_rcvlen--){
+			if (canu_rcvlen--) {
 				*(uartpkt_data++) = c;
 			} else {
 				canu_rcvstate = STATE_START;
 				//check CRC
-				if(c == 0x23){ // XXX CRC
+				if (c == 0x23) { // XXX CRC
 					return &canu_rcvpkt;
 				}
 			}
@@ -116,11 +115,10 @@ rs232can_msg * canu_get_nb(){
 /*****************************************************************************/
 
 
-void process_cantun_msg(rs232can_msg *msg)
-{
+void process_cantun_msg(rs232can_msg *msg) {
 	can_message *cmsg;
 
-	switch(msg->cmd) {
+	switch (msg->cmd) {
 		case RS232CAN_SETFILTER:
 			break;
 		case RS232CAN_SETMODE:
@@ -146,31 +144,31 @@ void process_cantun_msg(rs232can_msg *msg)
 #define DDR_BUSPOWER DDRD
 #define BIT_BUSPOWER PD4
 
-void buspower_on(){
+void buspower_on() {
 	DDR_BUSPOWER |= (1<<BIT_BUSPOWER);
 	PORT_BUSPOWER |= (1<<BIT_BUSPOWER);
 }
 
-void led_init(){
+void led_init() {
 	DDR_LEDS |= (1<<PIN_LEDD)|(1<<PIN_LEDCL)|(1<<PIN_LEDCK);
 	PORT_LEDS |= (1<<PIN_LEDCL);
 }
 
-void led_set(unsigned int stat){
+void led_set(unsigned int stat) {
 	unsigned char x;
-	for(x=0;x<16;x++){
-		if(stat & 0x01){
+	for (x = 0; x < 16; x++) {
+		if (stat & 0x01) {
 			PORT_LEDS |= (1<<PIN_LEDD);
-		}else{
+		} else {
 			PORT_LEDS &= ~(1<<PIN_LEDD);
 		}
-		stat>>=1;
+		stat >>= 1;
 		PORT_LEDS |= (1<<PIN_LEDCK);
 		PORT_LEDS &= ~(1<<PIN_LEDCK);
 	}
 }
 
-void adc_init(){
+void adc_init() {
 	DDRC = 0xCF;
 	ADMUX = 0;
 	ADCSRA = 0x07; //slowest adc clock
@@ -180,7 +178,7 @@ void adc_init(){
 
 uint16_t leds, leds_old;
 
-int main(){
+int main() {
 	led_init();
 
 	buspower_on();
@@ -193,33 +191,33 @@ int main(){
 	sei();
 
 	can_setmode(normal);
-	can_setled(0,1);
+	can_setled(0, 1);
 
 
 	uint8_t r_count = 1, t_count = 1;
 	
 
-	while(1) {
+	while (1) {
 		rs232can_msg  *rmsg;
 		can_message *cmsg;
 		
 		wdt_reset();
 
 		rmsg = canu_get_nb();
-		if (rmsg){
+		if (rmsg) {
 			r_count ++;
 			process_cantun_msg(rmsg);
 		}
 		
 		cmsg = can_get_nb();
-		if (cmsg){
+		if (cmsg) {
 			t_count ++;
 			write_can_message_to_uart(cmsg);
 			can_free(cmsg);
 		}
 		
 		leds = (r_count << 8) | t_count;
-		if(leds != leds_old){
+		if (leds != leds_old) {
 			leds_old = leds;
 			led_set(leds);
 		}
