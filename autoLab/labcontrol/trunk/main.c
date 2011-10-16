@@ -25,6 +25,7 @@
 #include "cmds-cantemp.h"
 #include "cmds-powercommander.h"
 #include "cmds-bastel.h"
+#include "cmds-powermeter.h"
 // Atmel ; LAP includes
 // #include "config.h"
 
@@ -61,6 +62,7 @@ cmd_t cmds[] = {
   { &cmd_powercommander, "powercommander", "powercommander", "powercommander class object function value ... wiki->Powercommander" },
   { &cmd_cantemp, "cantemp", "cantemp", "Temperatur fuer Sensor" },
   { &cmd_bastel, "bastelcmd", "bastelcmd", "bastelcontrol class object function value ... wiki->Bastelraum" },
+  { &cmd_canpowermeter, "powermeter", "powermeter", "Energieverbrauch des Labors" },
   { NULL, NULL, NULL, NULL }
 };
 
