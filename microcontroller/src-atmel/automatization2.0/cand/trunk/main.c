@@ -232,6 +232,19 @@ void customscripts(rs232can_msg *msg)
 
 }
 
+void process_cmd_pkt(rs232can_msg *msg)
+{
+	customscripts(msg);
+
+	// foreach client
+	ac = cann_conns_head;
+	while (ac) {
+//XXX		if ( cann_match_filter(ac, msg) )
+		cann_transmit(ac, msg);		//send to each client on the network
+		ac = ac->next;
+	}
+}
+
 void process_uart_msg()
 {
 	cann_conn_t *ac;
@@ -242,21 +255,22 @@ void process_uart_msg()
 	
 	debug(3, "Processing message from uart..." );
 	
-	if (msg->cmd != RS232CAN_PKT) {
-		debug(0, "Whats going on? Received other than PKT type on Uart");
-		canu_free(msg);
-		return;
+	switch(msg->cmd)
+	{
+		case RS232CAN_PKT:
+			process_cmd_pkt(msg);
+			break;
+		case RS232CAN_NOTIFY_RESET:
+			debug(0, "GATEWAY RESET");
+			break;
+		case RS232CAN_PING_GATEWAY:
+			debug(0, "GATEWAY PONG");
+			break;
+		default:
+			debug(0, "Whats going on? Received other than PKT type on Uart");			
+			break;
 	}
-
-	customscripts(msg);
-
-	// foreach client
-	ac = cann_conns_head;
-	while (ac) {
-//XXX		if ( cann_match_filter(ac, msg) )
-		cann_transmit(ac, msg);		//send to each client on the network
-		ac = ac->next;
-	}
+	
 	canu_free(msg);
 	debug(3, "...processing done.");
 }
