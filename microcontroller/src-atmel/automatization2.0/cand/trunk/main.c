@@ -261,6 +261,9 @@ void process_uart_msg()
 		case RS232CAN_PKT:
 			process_cmd_pkt(msg);
 			break;
+		case RS232CAN_ERROR:
+			debug(0, "GATEWAY ERROR");
+			break;
 		case RS232CAN_NOTIFY_RESET:
 			debug(0, "GATEWAY RESET");
 			break;
