@@ -13,8 +13,15 @@
 #include "uart/uart.h"
 
 
-typedef enum { RS232CAN_RESET=0x00,
-		RS232CAN_SETFILTER=0x10, RS232CAN_PKT=0x11, RS232CAN_SETMODE=0x12, RS232CAN_ERROR=0x13
+typedef enum
+{
+	RS232CAN_RESET=0x00,
+	RS232CAN_SETFILTER=0x10,
+	RS232CAN_PKT=0x11,
+	RS232CAN_SETMODE=0x12,
+	RS232CAN_ERROR=0x13,
+	RS232CAN_NOTIFY_RESET=0x14,
+	RS232CAN_PING_GATEWAY=0x15
 } rs232can_cmd;
 
 #define RS232CAN_MAXLENGTH 20
@@ -129,6 +136,13 @@ void process_cantun_msg(rs232can_msg *msg) {
 			memcpy(cmsg, msg->data, sizeof(can_message)); //copy can message
 			can_transmit(cmsg);                           //transmit it
 			break;
+		case RS232CAN_NOTIFY_RESET:
+			break;
+		case RS232CAN_PING_GATEWAY:
+			uart_putc(RS232CAN_PING_GATEWAY);  // reply
+		default:
+			uart_putc(RS232CAN_ERROR);  //send error
+			break;
 	}
 }
 
@@ -189,6 +203,8 @@ int main() {
 	wdt_enable(WDTO_250MS);
 
 	sei();
+
+	uart_putc(RS232CAN_NOTIFY_RESET);  //notify host that we resetted
 
 	can_setmode(normal);
 	can_setled(0, 1);
