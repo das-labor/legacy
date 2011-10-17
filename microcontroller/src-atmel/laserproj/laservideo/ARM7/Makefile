@@ -63,7 +63,7 @@ SRC = $(TARGET).c
 
 # List C source files here which must be compiled in ARM-Mode.
 # use file-extension c for "c-only"-files
-SRCARM = uartISR.c uart.c sysTime.c armVIC.c timer.c videoengine.c iccom.c menu.c printf_P.c
+SRCARM = uartISR.c uart.c sysTime.c armVIC.c timer.c videoengine.c iccom.c menu.c printf_P.c fastfunc.c
 
 # List C++ source files here.
 # use file-extension cpp for C++-files
@@ -129,7 +129,7 @@ ADEFS =  -D$(RUN_MODE)
 #    -adhlns...: create assembler listing
 #
 # Flags for C and C++ (arm-elf-gcc/arm-elf-g++)
-CFLAGS = -g$(DEBUG)
+CFLAGS = -g$(DEBUG) -mlong-calls
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -Wall -Wcast-align -Wcast-qual -Wimplicit 
@@ -139,7 +139,7 @@ CFLAGS += -Wa,-adhlns=$(subst $(suffix $<),.lst,$<)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
 # flags only for C
-CONLYFLAGS  = -Wstrict-prototypes -Wmissing-declarations
+CONLYFLAGS  = -Wstrict-prototypes -Wmissing-declarations 
 CONLYFLAGS += -Wmissing-prototypes -Wnested-externs 
 CONLYFLAGS += $(CSTANDARD)
 

@@ -17,7 +17,7 @@
 
 volatile unsigned long timeval;
 extern volatile Videoengine_t ve;
-
+extern volatile uint8_t mode;
 /* Timer0 Compare-Match Interrupt Handler (ISR) */
 
 //on cap0 interrupt
@@ -28,9 +28,9 @@ extern volatile Videoengine_t ve;
 /* Setup Timer0 Compare-Match Interrupt         */
 /* no prescaler timer runs at cclk = FOSC*PLL_M */
 void init_timer0 (void) {
-	PINSEL0 |=(1 << 9);	//set Pin0.4 as T0CR1 input
-	PINSEL0 &=~(1<<8);
-    T0CCR = TCCR_CR1_R|TCCR_CR1_I; // Capture Control Register, CAP0.1 Falling Edge+ Int
+	PINSEL0 |=(1<<5);	//set Pin0.2 as T0CR0 input
+	PINSEL0 &=~(1<<4);
+    T0CCR = TCCR_CR0_R|TCCR_CR0_I; // Capture Control Register, CAP0.1 Falling Edge+ Int
 	T0MCR = 0;	//clear match interrupt
 	T0MR0 = 0x000fffff;	//this will never happen
 	T0IR=0xff; //clear all interrupts
@@ -46,10 +46,10 @@ void init_timer0 (void) {
 /* Setup Timer1 Compare-Match Interrupt         */
 /* no prescaler timer runs at cclk = FOSC*PLL_M */
 void init_timer1 (void) {
-	PINSEL0 |=(1 << 21);	//set Pin0.10 as T1CR0 input
-	PINSEL0 &=~(1<<20);
+	PINSEL0 |=(1<<23);	//set Pin0.11 as T1CR1 input
+	PINSEL0 &=~(1<<22);
 	
-    T1CCR = TCCR_CR0_R|TCCR_CR0_I; // Capture Control Register, CAP1.0 Falling Edge+ Int
+    T1CCR = TCCR_CR1_R|TCCR_CR1_I; // Capture Control Register, CAP1.0 Falling Edge+ Int
 	T1MCR =  0;	//clear match interrupt
 	T1PR=0; //prescaler = 0
 	T1MR0 = 0x000fffff;	//this will never happen
@@ -99,10 +99,10 @@ void init_RTC (void){
 FASTRUN void  __attribute__ ((interrupt("IRQ"))) tmr0_interrupt(void)
 {
 	
-	if(T0IR&TIR_CR1I){ //Timer0 Capture0 Interrupt	
+	if(T0IR&TIR_CR0I){ //Timer0 Capture0 Interrupt	
 		ve.h_line_cnt++;
-		ve.h_line_time +=T0CR1; //add to counter
-		T0TC-=T0CR1; //reset the counter
+		ve.h_line_time +=T0CR0; //add to counter
+		T0TC-=T0CR0; //reset the counter
 
 		//if((ve.h_sync_wait > 0) && (T3TCR & TCR_ENABLE)){	//only activate Timer2 if Timer3 is running
 		if(T3TCR & TCR_ENABLE){	
@@ -110,7 +110,7 @@ FASTRUN void  __attribute__ ((interrupt("IRQ"))) tmr0_interrupt(void)
 			T0MCR |= TMCR_MR0_I;	//Timer0 set Interrupt on MR0
 		}
 		
-		T0IR|=TIR_CR1I;		//reset Interrupt
+		T0IR|=TIR_CR0I;		//reset Interrupt
 	}
 	if((T0IR&TIR_MR0I) || (ve.h_sync_wait == 0)){ //Timer0 Match0 Interrupt or not h_sync_wait			
 		T2TC=0;		//reset timer2 counter
@@ -128,17 +128,17 @@ FASTRUN void  __attribute__ ((interrupt("IRQ"))) tmr0_interrupt(void)
 void __attribute__ ((interrupt("IRQ"))) tmr1_interrupt(void)
 {
 
-	if(T1IR&TIR_CR0I){ //Timer1 Capture0 Interrupt			
+	if(T1IR&TIR_CR1I){ //Timer1 Capture1 Interrupt			
 
 		ve.frame_cnt++;		//increment frame counter
-		ve.frame_time+=T1CR0; //increment frame time counter
-		T1TC-=T1CR0; //reset the counter
+		ve.frame_time+=T1CR1; //increment frame time counter
+		T1TC-=T1CR1; //reset the counter
 		
 		T1MR0 = ve.v_sync_wait; //wait until enabling Timer3 (v_pixel_clk)
 		T1MCR |= TMCR_MR0_I;	//Timer1 set Interrupt on MR0
 		
 		//T3TCR=TCR_RESET;	//stop Timer3 (should be off anyway) TODO:??
-		T1IR|=TIR_CR0I;	//reset Timer1 interrupt Capture0
+		T1IR|=TIR_CR1I;	//reset Timer1 interrupt Capture0
 	}
 	if(T1IR&TIR_MR0I){ //Timer1 Match0 Interrupt or ve.v_sync_wait == 0
 		T3TC=0;  //reset timer3 counter 
@@ -184,6 +184,11 @@ void __attribute__ ((interrupt("IRQ"))) rtc_interrupt(void)
 
 	
 	FIO0PINL ^= LEDMASK; 	// LED blink
+
+	//DEBUG
+	mode++;
+	if(mode > 3)
+	mode =1;
 	
 	ILR|=1;	//reset interrupt 
 	VICVectAddr=0; //prepare VIC for next Interrupt
