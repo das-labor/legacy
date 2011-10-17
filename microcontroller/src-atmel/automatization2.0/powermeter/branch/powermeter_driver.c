@@ -26,14 +26,26 @@
 #include "can_handler.h"
 #include "config.h"
 
+
+
 powermeter_t powermeter;
+
+#define DMARESET 1		//muss 1 sein, 0 == bööööse
+#define USEDMAMEMSET 0
+#define USEDMAMEMCPY 0
 
 //this is called every time a DMA transfers completes
 ISR(DMA_CH0_vect)
 {
+
+	#if DMARESET
+		DMA_ResetChannel(&DMA.CH0);
+	 	DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
+	#else
+		DMA_DisableChannel(&DMA.CH0);
+	#endif
+
 #if DMARESET
-	DMA_ResetChannel(&DMA.CH0);
-	DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
 	//set new page
 	if(powermeter.samplebuffer_page){
 		DMA0_init(&powermeter.samplebuffer[0].u[0],sizeof(uint16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
@@ -41,7 +53,6 @@ ISR(DMA_CH0_vect)
 		DMA0_init(&powermeter.samplebuffer[1].u[0],sizeof(uint16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
 	}
 #else
-	DMA_DisableChannel(&DMA.CH0);
 	if(powermeter.samplebuffer_page){
 		DMA.CH0.DESTADDR0 = ((uint16_t)&powermeter.samplebuffer[0].u[0]) & 0xFF;
 		DMA.CH0.DESTADDR1 = (((uint16_t)&powermeter.samplebuffer[0].u[0])>>8) & 0xFF;
@@ -56,16 +67,20 @@ ISR(DMA_CH0_vect)
 
 	DMA.CH0.CTRLA |= DMA_CH_ENABLE_bm;
 #endif
-
 	powermeter.startCalculations++;		//increment, start calculating if  == 2
 }
 
 //this is called every time a DMA transfers completes
 ISR(DMA_CH1_vect)
 {
+	#if DMARESET
+		DMA_ResetChannel(&DMA.CH1);
+		DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
+	#else
+		DMA_DisableChannel(&DMA.CH1);
+	#endif
+
 #if DMARESET
-	DMA_ResetChannel(&DMA.CH1);
-	DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
 	//set new page
 	if(powermeter.samplebuffer_page){
 		DMA1_init((void*)&powermeter.samplebuffer[0].i1[0],sizeof(uint16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
@@ -73,7 +88,6 @@ ISR(DMA_CH1_vect)
 		DMA1_init((void*)&powermeter.samplebuffer[1].i1[0],sizeof(uint16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
 	}
 #else
-	DMA_DisableChannel(&DMA.CH1);
 	if(powermeter.samplebuffer_page){
 		DMA.CH1.DESTADDR0 = ((uint16_t)&powermeter.samplebuffer[0].i1[0]) & 0xFF;
 		DMA.CH1.DESTADDR1 = (((uint16_t)&powermeter.samplebuffer[0].i1[0])>>8) & 0xFF;
@@ -97,10 +111,10 @@ int powermeter_SetSampleratePerPeriod(uint16_t samples)
 		return -1;
 	if(!samples)
 		return -1;
-		//configure Timer1 to generate 50//60 * samples events 
-		powermeter.ADCSamplesPerPeriod = samples;
-		powermeter.ADCSamplesPerSecond = samples * NET_FREQ;
-		powermeter.ADCSampleBufferSize = samples * 3;
+	//configure Timer1 to generate 50//60 * samples events 
+	powermeter.ADCSamplesPerPeriod = samples;
+	powermeter.ADCSamplesPerSecond = samples * NET_FREQ;
+	powermeter.ADCSampleBufferSize = samples * 3;
 	return 0;
 }
 
@@ -110,11 +124,9 @@ int powermeter_Start()
 	powermeter_clearpowerdrawPerSecond();
 
 	if(powermeter.ADCSampleBufferSize > (POWERMETER_SAMPLEBUFF * 3))
-	return -1;
-
+		return -1;
 	if(!powermeter.ADCSampleBufferSize)
-	return -1;
-
+		return -1;
 
 	powermeter.samplebuffer_page = 0;
 	powermeter.startCalculations = 0;
@@ -137,12 +149,10 @@ int powermeter_Start()
 	DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
 	DMA1_init(&powermeter.samplebuffer[powermeter.samplebuffer_page].i1[0],sizeof(int16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
 
+
 	RTC_Init();	//enable 1sec interrupt
-
 	LED_issampling();	//set blue LED
-
 	TC1_init(powermeter.ADCSamplesPerSecond);		//set timer1 to trigger ADCSamplesPerSecond times per second
-
 	return 0;
 }
 
@@ -159,7 +169,7 @@ void powermeter_Stop()
 	LED_isrunning();		//set green LED
 	powermeter.isrunning = 0;
 }
-
+#define DEBUGMODE_CAN 0
 void powermeter_docalculations()
 {
 	//check if calculations has to be done
@@ -167,22 +177,17 @@ void powermeter_docalculations()
 	{
 		LED__cyan();	//set LED color cyan
 		powermeter.samplesPerSecondDone++;
-
 		int32_t u;
 		int32_t i;
-		
 		register int16_t * up;		//points to start of array containing the sampled voltages: u1, u2, u3, u1, u2, u3, ....
 		register int16_t * ip;		//points to start of array containing the sampled currents: i1, i2, i3, i1, i2 ,i3, ....
 		up = &powermeter.samplebuffer[powermeter.samplebuffer_page].u[0];
 		ip = &powermeter.samplebuffer[powermeter.samplebuffer_page].i1[0];
-
 		for(uint16_t x = 0;x < powermeter.ADCSamplesPerPeriod;x++)
 		{
 			//load u & i
 			u = (int32_t)(*up)-powermeter.ADCoffset.offsetA;
 			i = (int32_t)(*ip)-powermeter.ADCoffset.offsetB;
-
-
 			up++;//increment pointer
 			ip++;//increment pointer
 
@@ -210,33 +215,31 @@ void powermeter_docalculations()
 			powermeter.powerdraw.c3.Ueff += u * u;
 			powermeter.powerdraw.c3.Ieff += i * i;
 			powermeter.powerdraw.c3.P += -u * i;
-
 		}
-#if !DEBUGMODE
 
 #if USE_STATIC_ADCSamplesPerPeriod
 #if ADCSAMPLESPERPERIOD == 256
-	 	//calculate S
-        powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff>>8) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >>8));
-        powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff>>8) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >>8));
-        powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff>>8) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >>8));
+	 	//calculate Ueff
+                powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>8));
+                powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>8));
+                powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>8));
+                //calculate Ieff
+                powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>8);
+                powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>8);
+                powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>8);
+		//calculate S
+		powermeter.powerdrawPerSecond.c1.S += (((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff ))>>8);
+		powermeter.powerdrawPerSecond.c2.S += (((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff ))>>8);
+		powermeter.powerdrawPerSecond.c3.S += (((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff ))>>8);
 		//calculate P
 		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>8);
 		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>8);
 		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >>8);
-		//calculate Ueff
-		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>8));
-		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>8));
-		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>8));
-		//calculate Ieff
-		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>8);
-		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>8);
-		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>8);
 #elif ADCSAMPLESPERPERIOD == 128
-		//calculate S
-        powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff>>7) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >>7));
-        powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff>>7) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >>7));
-        powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff>>7) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >>7));
+		 //calculate S
+                powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff>>7) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >>7));
+                powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff>>7) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >>7));
+                powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff>>7) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >>7));
 		//calculate P
 		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>7);
 		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>7);
@@ -252,9 +255,9 @@ void powermeter_docalculations()
 
 #elif ADCSAMPLESPERPERIOD == 64
 		//calculate S
-        powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff>>6) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >>6));
-        powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff>>6) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >>6));
-        powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff>>6) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >>6));
+		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )>>6);
+		powermeter.powerdrawPerSecond.c2.S += (sqrt(powermeter.powerdraw.c2.Ueff * powermeter.powerdraw.c2.Ieff )>>6);
+		powermeter.powerdrawPerSecond.c3.S += (sqrt(powermeter.powerdraw.c3.Ueff * powermeter.powerdraw.c3.Ieff )>>6);
 		//calculate P
 		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>6);
 		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>6);
@@ -270,28 +273,27 @@ void powermeter_docalculations()
 
 #elif ADCSAMPLESPERPERIOD == 32
 		//calculate S
-        powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff>>5) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >>5));
-        powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff>>5) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >>5));
-        powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff>>5) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >>5));
+		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )>>5);
+		powermeter.powerdrawPerSecond.c2.S += (sqrt(powermeter.powerdraw.c2.Ueff * powermeter.powerdraw.c2.Ieff )>>5);
+		powermeter.powerdrawPerSecond.c3.S += (sqrt(powermeter.powerdraw.c3.Ueff * powermeter.powerdraw.c3.Ieff )>>5);
 		//calculate P
 		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>5);
 		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>5);
 		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >>5);
 		//calculate Ueff
 		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>5));
-		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>5);
+		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>5));
 		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>5));
 		//calculate Ieff
 		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>5);
 		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>5);
 		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>5);
 
-
 #elif ADCSAMPLESPERPERIOD == 16
 		//calculate S
-        powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff>>4) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >>4));
-        powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff>>4) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >>4));
-        powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff>>4) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >>4));
+		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )>>4);
+		powermeter.powerdrawPerSecond.c2.S += (sqrt(powermeter.powerdraw.c2.Ueff * powermeter.powerdraw.c2.Ieff )>>4);
+		powermeter.powerdrawPerSecond.c3.S += (sqrt(powermeter.powerdraw.c3.Ueff * powermeter.powerdraw.c3.Ieff )>>4);
 		//calculate P
 		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>4);
 		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>4);
@@ -305,10 +307,10 @@ void powermeter_docalculations()
 		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>4);
 		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>4);
 #elif ADCSAMPLESPERPERIOD == 8
-		//calculate S
-        powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff>>3) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >>3));
-        powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff>>3) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >>3));
-        powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff>>3) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >>3));
+//calculate S
+		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )>>3);
+		powermeter.powerdrawPerSecond.c2.S += (sqrt(powermeter.powerdraw.c2.Ueff * powermeter.powerdraw.c2.Ieff )>>3);
+		powermeter.powerdrawPerSecond.c3.S += (sqrt(powermeter.powerdraw.c3.Ueff * powermeter.powerdraw.c3.Ieff )>>3);
 		//calculate P
 		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>3);
 		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>3);
@@ -345,7 +347,6 @@ void powermeter_docalculations()
 		//clear powermeter.powerdraw
 		powermeter_clearpowerdraw();
 
-#endif
 
 	//flip page
 	if(powermeter.samplebuffer_page)
@@ -466,9 +467,7 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 
 	if(eventsPerSecond > 0xF42400)		//greater than 16000000Hz ?
 		return;
-
 	TC1_Reset(&TCC1);
-
 	TC1_SetOverflowIntLevel(&TCC1,TC_OVFINTLVL_MED_gc);
 	uint16_t TC1_TOP;
 	if((F_CPU/(1*eventsPerSecond))<0xFFFF){
@@ -485,7 +484,6 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		TC1_TOP = ((F_CPU / 2) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
 		TC_SetPeriod( &TCC1,TC1_TOP);
-
 		/* Start Timer/Counter. */
 		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV2_gc );
 		return;
@@ -495,7 +493,6 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		TC1_TOP = ((F_CPU / 4) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
 		TC_SetPeriod( &TCC1,TC1_TOP);
-
 		/* Start Timer/Counter. */
 		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV4_gc );
 		return;
@@ -505,7 +502,6 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		TC1_TOP = ((F_CPU / 8) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
 		TC_SetPeriod( &TCC1,TC1_TOP);
-
 		/* Start Timer/Counter. */
 		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV8_gc );
 		return;
@@ -514,7 +510,6 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		TC1_TOP = ((F_CPU / 64) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
 		TC_SetPeriod( &TCC1,TC1_TOP);
-
 		/* Start Timer/Counter. */
 		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV64_gc );
 		return;
@@ -523,7 +518,6 @@ void TC1_init(volatile uint32_t eventsPerSecond){
 		TC1_TOP = ((F_CPU / 256) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
 		TC_SetPeriod( &TCC1,TC1_TOP);
-
 		/* Start Timer/Counter. */
 		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV256_gc );
 		return;
@@ -538,7 +532,7 @@ void RTC_Init(void)
 {
 	/* Security Signature to modify clock */
 	//CCP = CCP_IOREG_gc;
-	
+
 	/* Turn on internal 32kHz. */
 	//OSC.CTRL |= OSC_RC32KEN_bm;
 
@@ -577,31 +571,7 @@ typedef struct
 static time_t time;
 ISR(RTC_OVF_vect)
 {
-#if 0
-	time.second++;
-	if(time.second == 60){
-		time.second=0;
-		time.minute++;
-		if(time.minute == 60){
-			time.minute=0;
-			time.hour++;
-			if(time.hour == 24){
-				time.hour=0;
-				time.day++;
-				if(time.day == 365){
-					time.day=0;
-					time.year++;
-					RTC_year_int();	
-				}
-				RTC_days_int();	
-			}
-			RTC_hours_int();	
-		}
-		RTC_minutes_int();	
-	}
-#endif
 	RTC_seconds_int();
-	
 }
 
 uint8_t RTC_getSeconds(void)
@@ -714,8 +684,6 @@ void DMA_memset(void * ptr, uint8_t val, uint16_t size)
                     	0,							//repeat count times
                     	false );						//repeat
 
-	//DMA_SetTriggerSource(&DMA.CH0, DMA_CH_TRIGSRC_ADCA_CH4_gc);	//Trigger on ADCA_CH0 - 3
-	//DMA_EnableSingleShot(&DMA.CH0);
 	DMA_EnableChannel(&DMA.CH2);
 	DMA_StartTransfer(&DMA.CH2);
 }
@@ -736,8 +704,6 @@ void DMA_memcpy(void * ptr_dest, void * ptr_src, uint16_t size)
                     	0,							//repeat count times
                     	false );						//repeat
 
-	//DMA_SetTriggerSource(&DMA.CH0, DMA_CH_TRIGSRC_ADCA_CH4_gc);	//Trigger on ADCA_CH0 - 3
-	//DMA_EnableSingleShot(&DMA.CH0);
 	DMA_EnableChannel(&DMA.CH3);
 	DMA_StartTransfer(&DMA.CH3);
 }
@@ -861,14 +827,6 @@ void ADC_init(){
 
 }
 
-
-#if 0
-ISR(ADCA_CH2_vect)
-{
-	powermeter.adcsamples++;
-//	DMA_StartTransfer(&DMA.CH0);
-}
-#endif
 
 ISR(TCC1_OVF_vect)
 {
