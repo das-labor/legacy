@@ -19,11 +19,6 @@
 #define USE_STATIC_ADCSamplesPerPeriod 1
 #define ADCSAMPLESPERPERIOD 128
 
-//DMA stuff
-#define DMARESET 1		//must be 1
-#define USEDMAMEMSET 1
-#define USEDMAMEMCPY 0	//must be 0
-
 //debugmode
 #define DEBUGMODE 0		//set to 1 for DEBUGMODE, otherwise 0
 
