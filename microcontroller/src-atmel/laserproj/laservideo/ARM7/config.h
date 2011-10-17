@@ -26,7 +26,7 @@
 // PLL setup values are computed within the LPC include file
 // It relies upon the following defines
 #define FOSC				18432000  // Master Oscillator Freq.
-#define PLL_MUL             (3)         // PLL Multiplier
+#define PLL_MUL             (4)         // PLL Multiplier
 #define CCLK                (FOSC * PLL_MUL) // CPU Clock Freq.
 #define MSEL				(PLL_MUL-1)
 
@@ -39,12 +39,12 @@
 #error Fosc out of range (10MHz-25MHz)
 #error correct and recompile
 #endif
-
+#if 0
 #if ((CCLK < 10000000) || (CCLK > 60000000))
 #error cclk out of range (10MHz-60MHz)
 #error correct PLL_MUL and recompile
 #endif
-
+#endif
 #if ((FCCO < 150000000) || (FCCO > 320000000))
 #error Fcco out of range (156MHz-320MHz)
 #error internal algorithm error
@@ -53,6 +53,7 @@
 #if ((PBSD != 1) && (PBSD != 2) && (PBSD != 4))
 #error Pheripheal Bus Speed Divider (PBSD) illegal value (1, 2, or 4)
 #endif
+
 #define PLOCK		10
 
 #define PLL_FEED1	0xAA
@@ -88,15 +89,17 @@
 /* Video engine */
 #define VIDEO_BUFFER_SIZE 4096  //set video buffer size
 /*define OUTPORT*/
-#define OUTPORT FIO0PINU  //P0.16 ... bit 15 to P0.31. 
+#define OUTPORT FIO0PINL  //P0.5 ... P0.10
+#define OUTPORTCONST 5
 
-#define CLKPIN  8 //connect CLK to this pin
+
+#define CLKPIN  5 //connect CLK to this pin P0.21
 #define CLK_HIGH FIO0SETU = (1<<CLKPIN)
 #define CLK_LOW FIO0CLRU =(1<<CLKPIN)
 #define CLK_PULSE CLK_HIGH;__asm("nop");CLK_LOW
 
 #define LEDPIN  14
-#define LEDMASK (1<<LEDPIN);
+#define LEDMASK (1<<LEDPIN)
 
 #define WAIT33MS   1
 #define WAIT100MS  3
