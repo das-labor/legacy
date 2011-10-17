@@ -1,1 +1,0 @@
-void xoni_study1(void);
