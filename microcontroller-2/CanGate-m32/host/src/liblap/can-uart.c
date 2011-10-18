@@ -5,8 +5,6 @@
 
 #include "liblap.h"
 #include "can-uart.h"
-// #include "can-encap.h"
-
 #include "uart-host.h"
 
 /*****************************************************************************
