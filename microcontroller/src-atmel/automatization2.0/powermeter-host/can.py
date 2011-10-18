@@ -1,39 +1,62 @@
+"""
+  Provide a simmple interface to connect to a cand (or compatible) CAN gateway
+
+  Example:
+  
+    c = CANSocket(host, port)  # open connection to cand
+    pkt = c.get_pkt()          # return raw CAN packet
+    lpkt = LAPPacket(pkt)      # parse to LAPPacket
+    print lpkt
+"""
 
 import socket
 
+#=============================================================================
+# Utility functions
+
 def hexdump(data):
+    """ Return the content of the given (byte-) array as a nice hex-string """
     ret = ""
     for c in data:
         ret += "%02x " % c
     return ret
 
-class CANPacket:
-    def __init__(self, pkt=None):
-        pass
-            
- 
+#=============================================================================
+# Packet types / parsers
+
 class LAPPacket:
+    """ A single LAP Packet """
     def __init__(self, pkt=None):
-        if pkt is None:
-            self.sa = 0
-            self.sp = 0
-            self.da = 0
-            self.dp = 0
-            self.data = bytearray("")
-            self.dlc = len(self.data)
-        else:
-            self.da = pkt[0]
-            self.sa = pkt[1]
-            self.dp = ((pkt[2] & 0x60) >> 1) + (pkt[2] & 0x0f)
-            self.sp = ((pkt[3] & 0x1f) << 1) + ((pkt[2] & 0x80) >> 7)
-            self.data = pkt[5:]
-            self.dlc = len(self.data)
+        self.sa = 0
+        self.sp = 0
+        self.da = 0
+        self.dp = 0
+        self.data = bytearray("")
+        self.dlc = len(self.data)
+
+        if pkt is not None:
+            self.from_array(pkt)
+
+    def from_array(self, arr):
+        """ Parse packet from RAW (byte-)array """
+        self.da = arr[0]
+        self.sa = arr[1]
+        self.dp = ((arr[2] & 0x60) >> 1) + (arr[2] & 0x0f)
+        self.sp = ((arr[3] & 0x1f) << 1) + ((arr[2] & 0x80) >> 7)
+        self.data = arr[5:]
+        self.dlc = len(self.data)
+
+    def to_array(self):
+        return None
 
     def __str__(self):
         return "%02x:%02x -> %02x:%02x: %s" % (self.sa, self.sp, self.da, self.dp, hexdump(self.data))
 
+#=============================================================================
+# Connection to a CAN gateway (cand)
 
 class CANSocket:
+    """ Connection to a cand """
     def __init__(self, host="10.0.1.2", port=2342):
         BUFFER_SIZE = 1024
 
@@ -77,3 +100,4 @@ class CANSocket:
         while pkt is None:
             pkt = self.get_pkt_nb()
         return pkt
+
