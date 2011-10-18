@@ -15,6 +15,10 @@
 #include "error_handler.h"
 #include "rtc_driver.h"
 
+
+#define wdt_reset() __asm__ __volatile__ ("wdr")
+
+
 void sync_osc() {
 	
 	/*32 MHz Oszillator starten */
@@ -89,9 +93,22 @@ int main(void)
 
  	setERROR(0);
 	can_send_packet=0;
+
+	//init watchdog
+	{
+		uint8_t tmp = _BV(3)|_BV(2)|_BV(1)|_BV(0);	//set 64ms watchdog timeout, enable watchdog, CEN
+		/*I/O Protection*/
+		CCP = CCP_IOREG_gc;
+		WDT.CTRL = tmp;
+			while(WDT.STATUS & WDT_SYNCBUSY_bm)	//wait until synced
+				__asm("nop");
+	}
+
 	
 	powermeter_SetSampleratePerPeriod(ADCSAMPLESPERPERIOD);	//configure ADCSAMPLESPERPERIOD in config.h
 	powermeter_Start();
+
+	
 
 	uint16_t x;
 	while (1) {
@@ -103,7 +120,7 @@ int main(void)
                         can_send_packet=0;
 		}
 #endif
-		
+		wdt_reset();
 		if((RTC.CNT & 0x00ff) >= x)
 			x=RTC.CNT;
 		else
