@@ -70,6 +70,13 @@ class CANSocket:
         self.sock.close()
 
     def get_pkt_nb(self):
+        """ Receive a CAN packet; non-blocking.
+
+            The received packet is returned as a bytearray.
+
+            If there is no complete CAN packet to return, this function
+            returns Null.
+        """
         s = self.sock
         buf = self.buf
         
@@ -96,6 +103,10 @@ class CANSocket:
         return pkt
     
     def get_pkt(self):
+        """ Receive a CAN packet; non-blocking.
+
+            The received packet is returned as a bytearray.
+        """
         pkt = self.get_pkt_nb()
         while pkt is None:
             pkt = self.get_pkt_nb()

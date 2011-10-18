@@ -7,6 +7,15 @@ import subprocess
 from string import Template
 
 RRD_CMD = "rrdtool update powermeter.rrd N:$U1:$U2:$U3:$I1:$I2:$I3:$S1:$S2:$S3:$P1:$P2:$P3"
+CONSOLE_OUT = """
+
+            L1           L2           L3          SUM
+---+------------+------------+------------+------------
+ U | %(U1)10.2f | %(U2)10.2f | %(U3)10.2f | %(U)10.2f
+ I | %(I1)10.2f | %(I2)10.2f | %(I3)10.2f | %(I)10.2f
+ S | %(S1)10.2f | %(S2)10.2f | %(S3)10.2f | %(U)10.2f
+ E | %(E1)10d | %(E2)10d | %(E3)10d |
+"""
 
 val_map = {
     0x01: "P1", 0x02: "P2", 0x03: "P3",
@@ -72,8 +81,12 @@ if __name__ == "__main__":
 
         # All values received?
         if sorted(values.keys()) == sorted(val_map.values()):
-            print "-------------------------"
-            print values
+            values['U'] = (values['U1'] + values['U2'] + values['U3']) / 3
+            values['I'] = values['I1'] + values['I2'] + values['I3'] 
+            values['S'] = values['S1'] + values['S2'] + values['S3'] 
+            values['P'] = values['P1'] + values['P2'] + values['P3'] 
+            print CONSOLE_OUT % values
+
             update_rrd(values)
             values = {}
 
