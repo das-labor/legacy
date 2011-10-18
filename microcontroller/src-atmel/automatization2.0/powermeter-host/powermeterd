@@ -1,0 +1,80 @@
+#!/usr/bin/env python
+
+from can import LAPPacket, CANSocket, hexdump
+
+import socket
+import subprocess
+from string import Template
+
+RRD_CMD = "rrdtool update powermeter.rrd N:$U1:$U2:$U3:$I1:$I2:$I3:$S1:$S2:$S3:$P1:$P2:$P3"
+
+val_map = {
+    0x01: "P1", 0x02: "P2", 0x03: "P3",
+    0x04: "S1", 0x05: "S2", 0x06: "S3",
+    0x07: "U1", 0x08: "U2", 0x09: "U3",
+    0x0a: "I1", 0x0b: "I2", 0x0c: "I3",
+    0x0d: "E1", 0x0e: "E2", 0x0f: "E3",
+}
+
+val_fac = {
+    'U': (1.65*215)/2048,
+    'I': 1000./(33*2048),
+    'P': (1.65*215*1000)/(33*2048*2048),
+    'S': (1.65*215*1000)/(33*2048*2048),
+    'E': 1
+}
+
+
+def parse_pm_pkt(pkt):
+    """ Return (name, val) if the pkt contains parsable values.
+
+        If pkt contains unknwon value-type, return (None, None).
+    """
+    data = pkt.data
+    vt = data[0]
+
+    if vt not in val_map:
+        return None, None
+
+    name = val_map[vt]
+    fac = val_fac[name[0]]
+
+    val = data[1] + (data[2] << 8) + (data[3] << 16) + (data[4] << 24)
+    val = val * fac
+    
+    return name, val
+
+def update_rrd(vals):
+    cmd_tmpl  = Template(RRD_CMD)
+    cmd = cmd_tmpl.substitute(vals)
+    output = subprocess.check_output(cmd.split())
+    print output
+
+if __name__ == "__main__":
+    c = CANSocket()
+
+    # We start with an empty set
+    values = {}
+
+    while True:
+        pkt = LAPPacket(c.get_pkt())
+
+        # Is it the powermeter talking?
+        if pkt.sa != 5 or pkt.sp != 6:
+            continue
+
+        name, val = parse_pm_pkt(pkt)
+    
+        if name is None:   # unknown value 
+            continue
+        
+        values[name] = val
+
+        # All values received?
+        if sorted(values.keys()) == sorted(val_map.values()):
+            print "-------------------------"
+            print values
+            update_rrd(values)
+            values = {}
+
+    c.close()

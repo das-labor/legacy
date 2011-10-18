@@ -1,0 +1,71 @@
+#!/bin/sh
+
+rrdtool graph graphs/I-hour.png                     \
+    -a PNG --title="Current"                 \
+    -s -1h                                   \
+    'DEF:I1=powermeter.rrd:I1:AVERAGE'       \
+    'DEF:I1_=powermeter.rrd:I1:MAX'          \
+    'DEF:I2=powermeter.rrd:I2:AVERAGE'       \
+    'DEF:I2_=powermeter.rrd:I2:MAX'          \
+    'DEF:I3=powermeter.rrd:I3:AVERAGE'       \
+    'DEF:I3_=powermeter.rrd:I3:MAX'          \
+    'AREA:I1_#94541F40:'                     \
+    'AREA:I2_#948E1F40::STACK'               \
+    'AREA:I3_#1F945440::STACK'               \
+    'LINE1:I1#94541FC0:I1'                   \
+    'LINE1:I2#948E1FC0:I2:STACK'             \
+    'LINE1:I3#1F9454C0:I3:STACK'           
+
+
+rrdtool graph graphs/I-hours.png                     \
+    -a PNG --title="Current"                 \
+    -s -6h                                   \
+    'DEF:I1=powermeter.rrd:I1:AVERAGE'       \
+    'DEF:I1_=powermeter.rrd:I1:MAX'          \
+    'DEF:I2=powermeter.rrd:I2:AVERAGE'       \
+    'DEF:I2_=powermeter.rrd:I2:MAX'          \
+    'DEF:I3=powermeter.rrd:I3:AVERAGE'       \
+    'DEF:I3_=powermeter.rrd:I3:MAX'          \
+    'AREA:I1_#94541F40:'                     \
+    'AREA:I2_#948E1F40::STACK'               \
+    'AREA:I3_#1F945440::STACK'               \
+    'LINE1:I1#94541FC0:I1'                   \
+    'LINE1:I2#948E1FC0:I2:STACK'             \
+    'LINE1:I3#1F9454C0:I3:STACK'           
+
+
+rrdtool graph graphs/P-hour.png                     \
+    -a PNG --title="Power"                   \
+    -s -1h                                   \
+    'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
+    'DEF:P1_=powermeter.rrd:P1:MAX'          \
+    'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
+    'DEF:P2_=powermeter.rrd:P2:MAX'          \
+    'DEF:P3=powermeter.rrd:P3:AVERAGE'       \
+    'DEF:P3_=powermeter.rrd:P3:MAX'          \
+    'AREA:P1_#94541F40:'                     \
+    'AREA:P2_#948E1F40::STACK'               \
+    'AREA:P3_#1F945440::STACK'               \
+    'LINE1:P1#94541FC0:P1'                   \
+    'LINE1:P2#948E1FC0:P2:STACK'             \
+    'LINE1:P3#1F9454C0:P3:STACK'           
+
+rrdtool graph graphs/P-hours.png                     \
+    -a PNG --title="Power"                 \
+    -s -6h                                   \
+    'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
+    'DEF:P1_=powermeter.rrd:P1:MAX'          \
+    'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
+    'DEF:P2_=powermeter.rrd:P2:MAX'          \
+    'DEF:P3=powermeter.rrd:P3:AVERAGE'       \
+    'DEF:P3_=powermeter.rrd:P3:MAX'          \
+    'AREA:P1_#94541F40:'                     \
+    'AREA:P2_#948E1F40::STACK'               \
+    'AREA:P3_#1F945440::STACK'               \
+    'LINE1:P1#94541FC0:P1'                   \
+    'LINE1:P2#948E1FC0:P2:STACK'             \
+    'LINE1:P3#1F9454C0:P3:STACK'           
+
+
+
+
