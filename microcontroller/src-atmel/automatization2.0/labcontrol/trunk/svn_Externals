@@ -1,4 +1,4 @@
 lib https://www.das-labor.org/storage/LaborLib/lib
 lib-host https://www.das-labor.org/storage/LaborLib/lib-host
-cand -r 4845 https://www.das-labor.org/svn/microcontroller/src-atmel/automatization2.0/cand/tags/cand-1.0
+cand https://www.das-labor.org/svn/microcontroller/src-atmel/automatization2.0/cand/tags/cand-1.0
 cansole -r 3123 https://www.das-labor.org/svn/microcontroller/src-host/src/cansole
