@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd /home/joerg/src/automatization2.0/
+
 rrdtool graph graphs/I-hour.png                     \
     -a PNG --title="Current"                 \
     -s -1h                                   \
