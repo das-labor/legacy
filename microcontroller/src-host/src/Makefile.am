@@ -1,2 +1,2 @@
 
-SUBDIRS = cand lapcontrol liblap
+SUBDIRS = cand-ucspi_tcp liblap
