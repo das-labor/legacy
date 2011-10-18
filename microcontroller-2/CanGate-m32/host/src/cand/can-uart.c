@@ -5,13 +5,7 @@
 
 #include "can.h"
 #include "can-uart.h"
-// #include "can-encap.h"
-
-#ifdef UART_HOST
 #include "uart-host.h"
-#else
-#include "uart.h"
-#endif
 
 /*****************************************************************************
  * Connection management

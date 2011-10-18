@@ -10,7 +10,6 @@
  * HOST ONLY
  */
 #include "can.h"
-// #include "can-encap.h"
 
 // for select
 #include <sys/types.h>
