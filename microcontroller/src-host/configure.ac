@@ -4,7 +4,7 @@
 AC_PREREQ(2.59)
 AC_INIT(lap-host, 0.0.1)
 AM_INIT_AUTOMAKE
-AC_CONFIG_SRCDIR(src/cand/main.c)
+AC_CONFIG_SRCDIR(src/cand-ucspi_tcp/main.c)
 AM_CONFIG_HEADER(config.h)
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -32,8 +32,7 @@ AC_CONFIG_FILES([
 Makefile
 playground/Makefile
 src/Makefile
-src/cand/Makefile
-src/lapcontrol/Makefile
+src/cand-ucspi_tcp/Makefile
 src/liblap/Makefile
 ])
 
