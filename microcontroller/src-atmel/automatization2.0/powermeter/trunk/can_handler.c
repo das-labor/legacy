@@ -83,7 +83,6 @@ void can_createDATAPACKET()
 	msg.data[2] = (uint8_t)((powermeter.timercc1clks>>8)&0xff);
 	msg.data[3] = (uint8_t)(powermeter.timercc1clks&0xff);
 	powermeter.timercc1clks=0;
-	powermeter.samplesPerSecondDone=0;
 	powermeter.adcsamples=0;
 
 #if laborhack
