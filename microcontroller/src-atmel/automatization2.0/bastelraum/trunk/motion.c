@@ -28,12 +28,12 @@ uint8_t motion_get ()
 
 void motion_tick ()
 {
-	static can_message msg = {0, 0, 0x13, 0x37, 1, {0x9F}};
+	//static can_message msg = {0, 0, 0x13, 0x37, 1, {0x9F}};
 
 	if (!motion_get())
 		return;
 	
-	can_transmit (&msg);
+	//can_transmit (&msg);
 }
 
 ISR (ADC_vect)
