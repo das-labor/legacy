@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Project SYSTEM "Project-5.1.dtd">
+<!-- eric5 project file for project candpy -->
+<!-- Saved: 2011-10-19, 16:59:05 -->
+<!-- Copyright (C) 2011 Alexander Kasper, asklepios@das-labor.org -->
+<Project version="5.1">
+  <Language></Language>
+  <Hash>c87a72f1a4c7ff4e480506db617b8e49195b7fd7</Hash>
+  <ProgLanguage mixed="0">Python2</ProgLanguage>
+  <ProjectType>Console</ProjectType>
+  <Description></Description>
+  <Version>0.1</Version>
+  <Author>Alexander Kasper</Author>
+  <Email>asklepios@das-labor.org</Email>
+  <Sources>
+    <Source>__init__.py</Source>
+  </Sources>
+  <Forms/>
+  <Translations/>
+  <Resources/>
+  <Interfaces/>
+  <Others/>
+  <Vcs>
+    <VcsType>Subversion</VcsType>
+    <VcsOptions>
+      <dict>
+        <key>
+          <string>add</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>checkout</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>commit</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>diff</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>export</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>global</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>history</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>log</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>remove</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>status</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>tag</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+        <key>
+          <string>update</string>
+        </key>
+        <value>
+          <list>
+            <string></string>
+          </list>
+        </value>
+      </dict>
+    </VcsOptions>
+    <VcsOtherData>
+      <dict>
+        <key>
+          <string>standardLayout</string>
+        </key>
+        <value>
+          <bool>False</bool>
+        </value>
+      </dict>
+    </VcsOtherData>
+  </Vcs>
+  <FiletypeAssociations>
+    <FiletypeAssociation pattern="*.pyw2" type="SOURCES"/>
+    <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>
+    <FiletypeAssociation pattern="*.py2" type="SOURCES"/>
+    <FiletypeAssociation pattern="*.ptl" type="SOURCES"/>
+    <FiletypeAssociation pattern="*.py" type="SOURCES"/>
+  </FiletypeAssociations>
+</Project>
