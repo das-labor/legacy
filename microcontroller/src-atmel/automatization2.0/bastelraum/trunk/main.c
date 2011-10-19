@@ -1,6 +1,5 @@
 /* -*- Mode: C; tab-width: 2 -*- */
 
-
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
