@@ -375,21 +375,24 @@ void powermeter_copypowerdraw()
 //#if USEDMAMEMCPY
 //	DMA_memcpy(&powermeter.powerdrawLastSecond,&powermeter.powerdrawPerSecond,sizeof(powermeter_channel_t));
 //#else
-	  powermeter.powerdrawLastSecond.c1.S = powermeter.powerdrawPerSecond.c1.S/powermeter.samplesPerSecondDone;
-          powermeter.powerdrawLastSecond.c2.S = powermeter.powerdrawPerSecond.c2.S/powermeter.samplesPerSecondDone;
-          powermeter.powerdrawLastSecond.c3.S = powermeter.powerdrawPerSecond.c3.S/powermeter.samplesPerSecondDone;
+	if(powermeter.samplesPerSecondDone)
+	{
+		  powermeter.powerdrawLastSecond.c1.S = powermeter.powerdrawPerSecond.c1.S/powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c2.S = powermeter.powerdrawPerSecond.c2.S/powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c3.S = powermeter.powerdrawPerSecond.c3.S/powermeter.samplesPerSecondDone;
 
-          powermeter.powerdrawLastSecond.c1.P = powermeter.powerdrawPerSecond.c1.P/powermeter.samplesPerSecondDone;
-          powermeter.powerdrawLastSecond.c2.P = powermeter.powerdrawPerSecond.c2.P/powermeter.samplesPerSecondDone;
-          powermeter.powerdrawLastSecond.c3.P = powermeter.powerdrawPerSecond.c3.P/powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c1.P = powermeter.powerdrawPerSecond.c1.P/powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c2.P = powermeter.powerdrawPerSecond.c2.P/powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c3.P = powermeter.powerdrawPerSecond.c3.P/powermeter.samplesPerSecondDone;
 
-          powermeter.powerdrawLastSecond.c1.Ueff = powermeter.powerdrawPerSecond.c1.Ueff /powermeter.samplesPerSecondDone;
-          powermeter.powerdrawLastSecond.c2.Ueff = powermeter.powerdrawPerSecond.c2.Ueff /powermeter.samplesPerSecondDone;
-          powermeter.powerdrawLastSecond.c3.Ueff = powermeter.powerdrawPerSecond.c3.Ueff /powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c1.Ueff = powermeter.powerdrawPerSecond.c1.Ueff /powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c2.Ueff = powermeter.powerdrawPerSecond.c2.Ueff /powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c3.Ueff = powermeter.powerdrawPerSecond.c3.Ueff /powermeter.samplesPerSecondDone;
 
-          powermeter.powerdrawLastSecond.c1.Ieff = powermeter.powerdrawPerSecond.c1.Ieff /powermeter.samplesPerSecondDone;
-          powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff /powermeter.samplesPerSecondDone;
-          powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff /powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c1.Ieff = powermeter.powerdrawPerSecond.c1.Ieff /powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff /powermeter.samplesPerSecondDone;
+		  powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff /powermeter.samplesPerSecondDone;
+	}
 //#endif
 }
 
