@@ -39,7 +39,7 @@ typedef struct
 typedef struct
 {
 	uint16_t adcsamples;			//adc samples, DEBUG
-	uint16_t samplesPerSecondDone;		//count how many samples per second were done
+	volatile uint16_t samplesPerSecondDone;		//count how many samples per second were done
 	uint16_t timercc1clks;		//DEBUG
 	uint16_t ADCSamplesPerSecond;		//samples per second
 	uint16_t ADCSampleBufferSize;		//buffersize in Bytes
