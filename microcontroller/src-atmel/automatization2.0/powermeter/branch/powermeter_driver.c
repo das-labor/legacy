@@ -216,6 +216,9 @@ void powermeter_docalculations()
 			powermeter.powerdraw.c3.P += -u * i;
 		}
 		
+		DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_OFF_gc,DMA_CH_ERRINTLVL_OFF_gc);
+		DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_OFF_gc,DMA_CH_ERRINTLVL_OFF_gc);
+
 		//flip page
 		if(powermeter.samplebuffer_page)
 			powermeter.samplebuffer_page=0;
@@ -225,6 +228,9 @@ void powermeter_docalculations()
 		if(powermeter.startCalculations > 2)
 			setERROR(ERROR_SR_TOHIGH);
 		powermeter.startCalculations = 0;
+
+		DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);
+		DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);
 
 		//disable RTC Interrupt, it modifies powermeter.powerdrawPerSecond
 		RTC_SetIntLevels( RTC_OVFINTLVL_OFF_gc, RTC_COMPINTLVL_OFF_gc );
@@ -415,6 +421,7 @@ void powermeter_clearpowerdrawPerSecond()
 	powermeter.powerdrawPerSecond.c2.Ieff = 0;
 	powermeter.powerdrawPerSecond.c3.Ieff = 0;
 #endif
+	powermeter.samplesPerSecondDone=0;
 }
 
 void powermeter_clearpowerdraw()
@@ -463,7 +470,6 @@ void powermeter_clearpowerdrawLastSecond()
 	powermeter.powerdrawLastSecond.c2.Ieff = 0;
 	powermeter.powerdrawLastSecond.c3.Ieff = 0;
 #endif
-	powermeter.samplesPerSecondDone=0;
 }
 
 void TC1_init(volatile uint32_t eventsPerSecond)

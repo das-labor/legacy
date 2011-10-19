@@ -102,6 +102,11 @@ int main(void)
 	while (1) {
 		can_handler();
 		powermeter_docalculations();
+		if(can_send_packet)
+		{
+			can_createDATAPACKET();
+			can_send_packet = 0;
+		}
 		WDT_Reset();
 		if ((RTC.CNT & 0x00ff) >= x)
 			x=RTC.CNT;
