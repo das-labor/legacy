@@ -216,7 +216,7 @@ void powermeter_docalculations()
 			powermeter.powerdraw.c3.Ieff += i * i;
 			powermeter.powerdraw.c3.P += -u * i;
 		}
-		powermeter.samplesPerSecondDone++;
+		
 		//flip page
 		if(powermeter.samplebuffer_page)
 			powermeter.samplebuffer_page=0;
@@ -357,6 +357,7 @@ void powermeter_docalculations()
 		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff / powermeter.ADCSamplesPerPeriod);
 		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff / powermeter.ADCSamplesPerPeriod);
 #endif
+		powermeter.samplesPerSecondDone++;
 		//enable RTC Interrupt
 		RTC_SetIntLevels( RTC_OVFINTLVL_LO_gc, RTC_COMPINTLVL_OFF_gc );
 		//clear powermeter.powerdraw
