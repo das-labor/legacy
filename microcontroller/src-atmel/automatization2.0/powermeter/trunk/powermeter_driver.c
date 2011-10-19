@@ -217,10 +217,9 @@ void powermeter_Stop()
 void powermeter_docalculations()
 {
 	//check if calculations has to be done
-	if(powermeter.startCalculations == 2)
+	if(powermeter.startCalculations > 1)
 	{
 		LED__cyan();	//set LED color cyan
-		powermeter.samplesPerSecondDone++;
 #if DEBUGMODE
 		sendUSARTC1_putstr("startCalculations\n\r");
 		char buf[9];
@@ -365,7 +364,22 @@ void powermeter_docalculations()
 			powermeter.powerdraw.c3.P += u * i;
 #endif
 		}
+		//done with calculations, free the page as soon as possible
+		//flip page
+		if(powermeter.samplebuffer_page)
+			powermeter.samplebuffer_page=0;
+		else
+			powermeter.samplebuffer_page=1;
+
+		if(powermeter.startCalculations > 2)
+			setERROR(ERROR_SR_TOHIGH);
+	
+		powermeter.startCalculations = 0;
+
 #if !DEBUGMODE
+
+		//disable RTC Interrupt, it modifies powermeter.powerdrawPerSecond
+		RTC_SetIntLevels( RTC_OVFINTLVL_OFF_gc, RTC_COMPINTLVL_OFF_gc );
 
 		//calculate S
 		powermeter.powerdrawPerSecond.c1.S += sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )/ powermeter.ADCSamplesPerPeriod;
@@ -384,51 +398,43 @@ void powermeter_docalculations()
 		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff / powermeter.ADCSamplesPerPeriod);
 		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff / powermeter.ADCSamplesPerPeriod);
 
+		powermeter.samplesPerSecondDone++;
+
+		//enable RTC Interrupt
+		RTC_SetIntLevels( RTC_OVFINTLVL_LO_gc, RTC_COMPINTLVL_OFF_gc );
+		
 		//clear powermeter.powerdraw
 		powermeter_clearpowerdraw();
 
 #endif
 
-	//flip page
-	if(powermeter.samplebuffer_page)
-		powermeter.samplebuffer_page=0;
-	else
-		powermeter.samplebuffer_page=1;
-
-	if(powermeter.startCalculations > 2)
-		setERROR(ERROR_SR_TOHIGH);
-
 #if DEBUGMODE
 		sendUSARTC1_putstr("endCalculations\n\r");
 #endif
 	LED_on();	//return to normal LED color
-	powermeter.startCalculations = 0;
+
 	}
 
-	if(powermeter.startCalculations > 2)
-	{
-		setERROR(ERROR_SR_TOHIGH);
-		powermeter.startCalculations = 0;
-	}
+	
 }
 
 void powermeter_copypowerdraw()
 {
-	  powermeter.powerdrawLastSecond.c1.S = powermeter.powerdrawPerSecond.c1.S;
-          powermeter.powerdrawLastSecond.c2.S = powermeter.powerdrawPerSecond.c2.S;
-          powermeter.powerdrawLastSecond.c3.S = powermeter.powerdrawPerSecond.c3.S;
+	  powermeter.powerdrawLastSecond.c1.S = powermeter.powerdrawPerSecond.c1.S/powermeter.samplesPerSecondDone;
+          powermeter.powerdrawLastSecond.c2.S = powermeter.powerdrawPerSecond.c2.S/powermeter.samplesPerSecondDone;
+          powermeter.powerdrawLastSecond.c3.S = powermeter.powerdrawPerSecond.c3.S/powermeter.samplesPerSecondDone;
 
-          powermeter.powerdrawLastSecond.c1.P = powermeter.powerdrawPerSecond.c1.P;
-          powermeter.powerdrawLastSecond.c2.P = powermeter.powerdrawPerSecond.c2.P;
-          powermeter.powerdrawLastSecond.c3.P = powermeter.powerdrawPerSecond.c3.P;
+          powermeter.powerdrawLastSecond.c1.P = powermeter.powerdrawPerSecond.c1.P/powermeter.samplesPerSecondDone;
+          powermeter.powerdrawLastSecond.c2.P = powermeter.powerdrawPerSecond.c2.P/powermeter.samplesPerSecondDone;
+          powermeter.powerdrawLastSecond.c3.P = powermeter.powerdrawPerSecond.c3.P/powermeter.samplesPerSecondDone;
 
-          powermeter.powerdrawLastSecond.c1.Ueff = powermeter.powerdrawPerSecond.c1.Ueff /50;
-          powermeter.powerdrawLastSecond.c2.Ueff = powermeter.powerdrawPerSecond.c2.Ueff /50;
-          powermeter.powerdrawLastSecond.c3.Ueff = powermeter.powerdrawPerSecond.c3.Ueff /50;
+          powermeter.powerdrawLastSecond.c1.Ueff = powermeter.powerdrawPerSecond.c1.Ueff /powermeter.samplesPerSecondDone;
+          powermeter.powerdrawLastSecond.c2.Ueff = powermeter.powerdrawPerSecond.c2.Ueff /powermeter.samplesPerSecondDone;
+          powermeter.powerdrawLastSecond.c3.Ueff = powermeter.powerdrawPerSecond.c3.Ueff /powermeter.samplesPerSecondDone;
 
-          powermeter.powerdrawLastSecond.c1.Ieff = powermeter.powerdrawPerSecond.c1.Ieff /50;
-          powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff /50;
-          powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff /50;
+          powermeter.powerdrawLastSecond.c1.Ieff = powermeter.powerdrawPerSecond.c1.Ieff /powermeter.samplesPerSecondDone;
+          powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff /powermeter.samplesPerSecondDone;
+          powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff /powermeter.samplesPerSecondDone;
 
 }
 
@@ -450,6 +456,8 @@ void powermeter_clearpowerdrawPerSecond()
 	powermeter.powerdrawPerSecond.c1.Ieff = 0;
 	powermeter.powerdrawPerSecond.c2.Ieff = 0;
 	powermeter.powerdrawPerSecond.c3.Ieff = 0;
+
+	powermeter.samplesPerSecondDone = 0;
 }
 
 void powermeter_clearpowerdraw()
