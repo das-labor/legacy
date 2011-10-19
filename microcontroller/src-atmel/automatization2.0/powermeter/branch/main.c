@@ -14,13 +14,10 @@
 #include "event_system_driver.h"
 #include "error_handler.h"
 #include "rtc_driver.h"
+#include "wdt_driver.h"
 
-
-#define wdt_reset() __asm__ __volatile__ ("wdr")
-
-
-void sync_osc() {
-	
+void sync_osc()
+{
 	/*32 MHz Oszillator starten */
 	OSC.CTRL |= OSC_RC32MEN_bm;
 	
@@ -37,7 +34,8 @@ void sync_osc() {
 	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;
 }
 
-void start_mcp_clock(){
+void start_mcp_clock()
+{
 	//init the timmer for mcp2515 clock
 	PORTD.DIRSET = (1<<2);
 	TCD0.CTRLB = TC0_CCCEN_bm | 3; //single slope pwm, OC0C as output
@@ -52,15 +50,15 @@ void start_mcp_clock(){
 	
 }
 
-void Eventsystem_init( void )
+void Eventsystem_init(void)
 {
 	/* Select multiplexer input. */
-        EVSYS_SetEventSource( 0,  EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 0,  EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 1,  EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 2,  EVSYS_CHMUX_OFF_gc);
- 	EVSYS_SetEventSource( 3,  EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 3,  EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 4, EVSYS_CHMUX_OFF_gc);
- 	EVSYS_SetEventSource( 5, EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 5, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 6, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 7, EVSYS_CHMUX_TCC1_OVF_gc );	//event Timer1CC1_OVF
 }
@@ -78,7 +76,6 @@ void Interrupt_Init(void)
 
 int main(void)
 {
-
 	LED_initPORTC();  // LED Ports als Ausgang
 	LED_isrunning();	//set green LED
 
@@ -91,54 +88,25 @@ int main(void)
 	Eventsystem_init();
 	Interrupt_Init();
 
- 	setERROR(0);
+	setERROR(0);
 	can_send_packet=0;
 
 	//init watchdog
-	{
-		uint8_t tmp = _BV(3)|_BV(2)|_BV(1)|_BV(0);	//set 64ms watchdog timeout, enable watchdog, CEN
-		/*I/O Protection*/
-		CCP = CCP_IOREG_gc;
-		WDT.CTRL = tmp;
-			while(WDT.STATUS & WDT_SYNCBUSY_bm)	//wait until synced
-				__asm("nop");
-	}
+	WDT_EnableAndSetTimeout(WDT_PER_64CLK_gc);
 
 	
 	powermeter_SetSampleratePerPeriod(ADCSAMPLESPERPERIOD);	//configure ADCSAMPLESPERPERIOD in config.h
 	powermeter_Start();
 
-	
-
 	uint16_t x;
 	while (1) {
 		can_handler();
 		powermeter_docalculations();
-#if !laborhack
-		 if(can_send_packet){
-                        can_createDATAPACKET();
-                        can_send_packet=0;
-		}
-#endif
-		wdt_reset();
-		if((RTC.CNT & 0x00ff) >= x)
+		WDT_Reset();
+		if ((RTC.CNT & 0x00ff) >= x)
 			x=RTC.CNT;
 		else
 		{		//this is executed 4 times per second
-#if laborhack
-			if(can_send_packet)
-			x=0;
-	
-			if(can_send_packet == 2){
-                        	can_createDATAPACKET();
-                        	can_send_packet=0;
-                	}
-			 
-			if(can_send_packet == 1){
-                        can_createDATAPACKET();
-                        can_send_packet=2;
-                }
-#endif
 			ERROR_blink();
 		}
 	}
