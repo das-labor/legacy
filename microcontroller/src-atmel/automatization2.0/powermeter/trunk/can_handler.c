@@ -115,7 +115,7 @@ void can_createDATAPACKET()
 	//assuming that _ALL_ values are 4 byte
 	for(i = 0; i < (sizeof(value_pointer) / sizeof(void*)); i++)
 	{
-		can_sendValuePacket(&msg, id++, value_pointer[i], 4);
+		can_send_value_packet(&msg, id++, value_pointer[i], 4);
 		#if sendwithDELAY
 			_delay_ms(2);
 		#endif
