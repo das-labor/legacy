@@ -353,6 +353,10 @@ void powermeter_docalculations()
 		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P / powermeter.ADCSamplesPerPeriod);
 		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P / powermeter.ADCSamplesPerPeriod);
 		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P / powermeter.ADCSamplesPerPeriod);
+		//calculate E
+		powermeter.powerdrawPerSecond.c1.E += powermeter.powerdraw.c1.E;
+		powermeter.powerdrawPerSecond.c2.E += powermeter.powerdraw.c2.E;
+		powermeter.powerdrawPerSecond.c3.E += powermeter.powerdraw.c3.E;
 		//calculate Ueff
 		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff / powermeter.ADCSamplesPerPeriod));
 		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff / powermeter.ADCSamplesPerPeriod));
@@ -412,6 +416,10 @@ void powermeter_clearpowerdrawPerSecond()
 	powermeter.powerdrawPerSecond.c1.P = 0;
 	powermeter.powerdrawPerSecond.c2.P = 0;
 	powermeter.powerdrawPerSecond.c3.P = 0;
+    // DO NOT reset E!
+	//powermeter.powerdrawPerSecond.c1.E = 0;
+	//powermeter.powerdrawPerSecond.c2.E = 0;
+	//powermeter.powerdrawPerSecond.c3.E = 0;
 	//calculate Ueff
 	powermeter.powerdrawPerSecond.c1.Ueff = 0;
 	powermeter.powerdrawPerSecond.c2.Ueff = 0;
@@ -437,6 +445,10 @@ void powermeter_clearpowerdraw()
 	powermeter.powerdraw.c1.P = 0;
 	powermeter.powerdraw.c2.P = 0;
 	powermeter.powerdraw.c3.P = 0;
+	//clear E
+	powermeter.powerdraw.c1.E = 0;
+	powermeter.powerdraw.c2.E = 0;
+	powermeter.powerdraw.c3.E = 0;
 	//calculate Ueff
 	powermeter.powerdraw.c1.Ueff = 0;
 	powermeter.powerdraw.c2.Ueff = 0;
