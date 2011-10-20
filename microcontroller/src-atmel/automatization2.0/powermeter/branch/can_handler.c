@@ -85,6 +85,9 @@ void can_createDATAPACKET()
 		(void *)&powermeter.powerdrawLastSecond.c1.Ieff,
 		(void *)&powermeter.powerdrawLastSecond.c2.Ieff,
 		(void *)&powermeter.powerdrawLastSecond.c3.Ieff,
+		(void *)&powermeter.powerdrawLastSecond.c1.E,
+		(void *)&powermeter.powerdrawLastSecond.c2.E,
+		(void *)&powermeter.powerdrawLastSecond.c3.E,
 	};
 	
 	static can_message msg = {0, 0, PORT_POWERMETER, PORT_POWERMETER, 4, {}};

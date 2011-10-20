@@ -9,10 +9,11 @@
 
 typedef struct
 {
-	int32_t Ueff;	
-	int32_t Ieff;
-	int32_t P;
-	int32_t S;
+	int32_t  Ueff;	
+	int32_t  Ieff;
+	int32_t  P;
+	int32_t  S;
+    uint32_t E;
 } powermeter_data_t;
 
 typedef struct
