@@ -9,6 +9,7 @@
 #include "can_handler.h"
 #include "config.h"
 
+#define PORT_POWERMETER 0x06
 uint8_t myaddr;
 
 
@@ -68,7 +69,6 @@ void can_send_value_packet(can_message *template_msg, uint8_t id, void* value, s
 }
 
 //TODO port, id
-#define PORT_POWERMETER 0x06
 void can_createDATAPACKET()
 {
 	static void* value_pointer[] =
@@ -115,10 +115,10 @@ void can_createDATAPACKET()
 	//assuming that _ALL_ values are 4 byte
 	for(i = 0; i < (sizeof(value_pointer) / sizeof(void*)); i++)
 	{
-		can_send_value_packet(&msg, id++, value_pointer[i], 4);
 		#if sendwithDELAY
 			_delay_ms(2);
 		#endif
+		can_send_value_packet(&msg, id++, value_pointer[i], 4);
 	}
 	
 	//powermeter_clearpowerdrawPerSecond();
