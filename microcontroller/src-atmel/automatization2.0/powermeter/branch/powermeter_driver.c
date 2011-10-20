@@ -312,6 +312,14 @@ void powermeter_copypowerdraw()
 		powermeter.powerdrawLastSecond.c1.Ieff = powermeter.powerdrawPerSecond.c1.Ieff /powermeter.samplesPerSecondDone;
 		powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff /powermeter.samplesPerSecondDone;
 		powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff /powermeter.samplesPerSecondDone;
+
+		powermeter.powerdrawLastSecond.c1.Ieff = powermeter.powerdrawPerSecond.c1.Ieff /powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff /powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff /powermeter.samplesPerSecondDone;
+
+		powermeter.powerdrawLastSecond.c1.E += powermeter.powerdrawPerSecond.c1.P;
+		powermeter.powerdrawLastSecond.c2.E += powermeter.powerdrawPerSecond.c2.P;
+		powermeter.powerdrawLastSecond.c3.E += powermeter.powerdrawPerSecond.c3.P;
 	}
 //#endif
 }
@@ -330,9 +338,9 @@ void powermeter_clearpowerdrawPerSecond()
 	powermeter.powerdrawPerSecond.c2.P = 0;
 	powermeter.powerdrawPerSecond.c3.P = 0;
     // DO NOT reset E!
-	//powermeter.powerdrawPerSecond.c1.E = 0;
-	//powermeter.powerdrawPerSecond.c2.E = 0;
-	//powermeter.powerdrawPerSecond.c3.E = 0;
+	powermeter.powerdrawPerSecond.c1.E = 0;
+	powermeter.powerdrawPerSecond.c2.E = 0;
+	powermeter.powerdrawPerSecond.c3.E = 0;
 	//calculate Ueff
 	powermeter.powerdrawPerSecond.c1.Ueff = 0;
 	powermeter.powerdrawPerSecond.c2.Ueff = 0;
