@@ -63,7 +63,7 @@ void can_send_value_packet(can_message *template_msg, uint8_t id, void* value, s
 	txmsg = can_buffer_get();
 	memcpy(txmsg, template_msg, sizeof(can_message) - 8); //header
 	txmsg->data[0] = id;
-	memcpy(txmsg->data+1, value, length<7?length:7));
+	memcpy(txmsg->data+1, value, length<7?length:7);
 	can_transmit(txmsg);
 }
 
