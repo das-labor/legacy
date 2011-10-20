@@ -350,26 +350,7 @@ void powermeter_clearpowerdraw()
 #if USEDMAMEMSET
 	DMA_memset(&powermeter.powerdraw, 0x00, sizeof(powermeter_channel_t));
 #else
-	//clear S
-	powermeter.powerdraw.c1.S = 0;
-	powermeter.powerdraw.c2.S = 0;
-	powermeter.powerdraw.c3.S = 0;
-	//clear P
-	powermeter.powerdraw.c1.P = 0;
-	powermeter.powerdraw.c2.P = 0;
-	powermeter.powerdraw.c3.P = 0;
-	//clear E
-	powermeter.powerdraw.c1.E = 0;
-	powermeter.powerdraw.c2.E = 0;
-	powermeter.powerdraw.c3.E = 0;
-	//calculate Ueff
-	powermeter.powerdraw.c1.Ueff = 0;
-	powermeter.powerdraw.c2.Ueff = 0;
-	powermeter.powerdraw.c3.Ueff = 0;
-	//calculate Ieff
-	powermeter.powerdraw.c1.Ieff = 0;
-	powermeter.powerdraw.c2.Ieff = 0;
-	powermeter.powerdraw.c3.Ieff = 0;
+	memset(&powermeter.powerdraw, 0x00, sizeof(powermeter_channel_t));
 #endif
 }
 
@@ -378,22 +359,7 @@ void powermeter_clearpowerdrawLastSecond()
 #if USEDMAMEMSET
 	DMA_memset(&powermeter.powerdrawLastSecond, 0x00, sizeof(powermeter_channel_t));
 #else
-	//clear S
-	powermeter.powerdrawLastSecond.c1.S = 0;
-	powermeter.powerdrawLastSecond.c2.S = 0;
-	powermeter.powerdrawLastSecond.c3.S = 0;
-	//clear P
-	powermeter.powerdrawLastSecond.c1.P = 0;
-	powermeter.powerdrawLastSecond.c2.P = 0;
-	powermeter.powerdrawLastSecond.c3.P = 0;
-	//calculate Ueff
-	powermeter.powerdrawLastSecond.c1.Ueff = 0;
-	powermeter.powerdrawLastSecond.c2.Ueff = 0;
-	powermeter.powerdrawLastSecond.c3.Ueff = 0;
-	//calculate Ieff
-	powermeter.powerdrawLastSecond.c1.Ieff = 0;
-	powermeter.powerdrawLastSecond.c2.Ieff = 0;
-	powermeter.powerdrawLastSecond.c3.Ieff = 0;
+	memset(&powermeter.powerdrawLastSecond, 0x00, sizeof(powermeter_channel_t));
 #endif
 }
 
