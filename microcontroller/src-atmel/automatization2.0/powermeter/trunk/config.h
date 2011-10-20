@@ -8,8 +8,9 @@
 // can.[ch] defines
 #define CAN_INTERRUPT
 
-#define CAN_TX_BUFFER_SIZE 128
-#define CAN_RX_BUFFER_SIZE 32
+//this is not the size in bytes, but in amount of packet buffers
+#define CAN_TX_BUFFER_SIZE 16
+#define CAN_RX_BUFFER_SIZE 16
 
 //CAN hacks
 #define sendwithDELAY 0
