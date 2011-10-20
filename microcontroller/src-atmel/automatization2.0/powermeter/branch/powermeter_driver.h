@@ -64,13 +64,8 @@ void powermeter_Stop(void);
 
 void powermeter_docalculations();
 
-void powermeter_clearpowerdraw();
+void powermeter_clearchannel(powermeter_channel_t* channel);
 
-void powermeter_clearpowerdrawPerSecond();
-
-void powermeter_copypowerdraw();
-
-void powermeter_clearpowerdrawLastSecond();
 #if 0
 void memsetv(void *p,uint8_t value, uint16_t size);
 #endif
