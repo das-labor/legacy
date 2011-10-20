@@ -477,7 +477,7 @@ volatile uint8_t can_send_packet;
 void RTC_seconds_int(void)
 {
 	powermeter_copypowerdraw();	//TODO: move to main()
-	powermeter_clearchannel(powermeter.powerdrawPerSecond);
+	powermeter_clearchannel(&powermeter.powerdrawPerSecond);
 	powermeter.samplesPerSecondDone = 0;
 	can_send_packet = 1;
 }
