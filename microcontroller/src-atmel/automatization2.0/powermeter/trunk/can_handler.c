@@ -63,14 +63,39 @@ void read_can_addr()
 	myaddr = eeprom_read_byte(0x00);
 }
 
+void can_sendValuePacket(can_message *template_msg, uint8_t id, void* value, size_t length)
+{
+	can_message * txmsg;
+	txmsg = can_buffer_get();
+	memcpy(txmsg, template_msg, sizeof(can_message) - 8); //header
+	txmsg->data[0] = id;
+	memcpy(txmsg->data+1, value, max(length, 7));
+	can_transmit(txmsg);
+}
+
 //TODO port, id
 #define PORT_POWERMETER 0x06
 void can_createDATAPACKET()
 {
+	static void* value_pointer[] =
+	{
+		(void *)&powermeter.powerdrawLastSecond.c1.P,
+		(void *)&powermeter.powerdrawLastSecond.c2.P,
+		(void *)&powermeter.powerdrawLastSecond.c3.P,
+		(void *)&powermeter.powerdrawLastSecond.c1.S,
+		(void *)&powermeter.powerdrawLastSecond.c2.S,
+		(void *)&powermeter.powerdrawLastSecond.c3.S,
+		(void *)&powermeter.powerdrawLastSecond.c1.Ueff,
+		(void *)&powermeter.powerdrawLastSecond.c2.Ueff,
+		(void *)&powermeter.powerdrawLastSecond.c3.Ueff,
+		(void *)&powermeter.powerdrawLastSecond.c1.Ieff,
+		(void *)&powermeter.powerdrawLastSecond.c2.Ieff,
+		(void *)&powermeter.powerdrawLastSecond.c3.Ieff,
+	}
+	
 	static can_message msg = {0, 0, PORT_POWERMETER, PORT_POWERMETER, 4, {}};
 	can_message * txmsg;
-	
-	uint8_t id=0;
+	uint8_t id = 0, i;
 	
 	msg.addr_src = myaddr;
 	msg.dlc = 4;
@@ -79,139 +104,28 @@ void can_createDATAPACKET()
 	msg.data[1] = (uint8_t)(powermeter.samplesPerSecondDone&0xff);
 	//msg.data[2] = (uint8_t)((powermeter.adcsamples>>8)&0xff);
 	//msg.data[3] = (uint8_t)(powermeter.adcsamples&0xff);
-//	msg.data[4] = powermeter.ADCSamplesPerPeriod;
+	//msg.data[4] = powermeter.ADCSamplesPerPeriod;
 	msg.data[2] = (uint8_t)((powermeter.timercc1clks>>8)&0xff);
 	msg.data[3] = (uint8_t)(powermeter.timercc1clks&0xff);
 	powermeter.timercc1clks=0;
 	powermeter.adcsamples=0;
-
-#if laborhack
-	if(!laborcanbushack)
-	{
-	laborcanbushack =1;
-#endif			
+	
 	txmsg = can_buffer_get();
 	memcpy(txmsg, &msg, sizeof(can_message));
 	can_transmit(txmsg);
 	
+	id++;
 	msg.dlc = 5;
 	
-	//transmit C1.P
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 1;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c1.P, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-	_delay_ms(2);
-#endif
-	//transmit C2.P
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 2;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c2.P, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-	//transmit C3.P
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 3;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c3.P, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-	//transmit C1.S
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 4;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c1.S, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-	//transmit C2.S
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 5;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c2.S, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-	//transmit C3.S
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 6;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c3.S, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-	//transmit C1.Ueff
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 7;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c1.Ueff, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-	//transmit C2.Ueff
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 8;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c2.Ueff, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-#if laborhack
-	}else{
-	laborcanbushack=0;
-	msg.dlc = 5;
-#endif
-	//transmit C3.Ueff
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 0x09;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c3.Ueff, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-	//transmit C1.Ieff
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 0x0a;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c1.Ieff, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-	//transmit C2.Ieff
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 0x0b;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c2.Ieff, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-	//transmit C3.Ieff
-	txmsg = can_buffer_get();
-	memcpy(txmsg, &msg, sizeof(can_message) );//header
-	*txmsg->data = 0x0c;
-	memcpy(txmsg->data+1, (void *)&powermeter.powerdrawLastSecond.c3.Ieff, 4);
-	can_transmit(txmsg);
-#if sendwithDELAY
-        _delay_ms(2);
-#endif
-#if laborhack
+	//send all data value ram locations,
+	//assuming that _ALL_ values are 4 byte
+	for(i = 0; i < (sizeof(value_pointer) / sizeof(void*)); i++)
+	{
+		can_sendValuePacket(&msg, id++, value_pointer[i], 4);
+		#if sendwithDELAY
+			_delay_ms(2);
+		#endif
 	}
-#endif
-	//powermeter_clearpowerdrawPerSecond();
 	
+	//powermeter_clearpowerdrawPerSecond();
 }
