@@ -119,8 +119,9 @@ int powermeter_SetSampleratePerPeriod(uint16_t samples)
 
 int powermeter_Start()
 {
-	powermeter_clearpowerdraw();
-	powermeter_clearpowerdrawPerSecond();
+	powermeter_clearchannel(&powermeter.powerdraw);
+	powermeter_clearchannel(&powermeter.powerdrawPerSecond);
+	powermeter.samplesPerSecondDone = 0;
 
 	if(powermeter.ADCSampleBufferSize > (POWERMETER_SAMPLEBUFF * 3))
 		return -1;
@@ -280,13 +281,15 @@ void powermeter_docalculations()
 		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff / powermeter.ADCSamplesPerPeriod);
 #endif
 		powermeter.samplesPerSecondDone++;
+		
 		//enable RTC Interrupt
 		RTC_SetIntLevels( RTC_OVFINTLVL_LO_gc, RTC_COMPINTLVL_OFF_gc );
+		
 		//clear powermeter.powerdraw
+		powermeter_clearchannel(&powermeter.powerdraw);
 
-		powermeter_clearpowerdraw();
-
-		LED_on();	//return to normal LED color
+		//return to normal LED color
+		LED_on();
 	}
 }
 
@@ -324,50 +327,12 @@ void powermeter_copypowerdraw()
 //#endif
 }
 
-void powermeter_clearpowerdrawPerSecond()
+void powermeter_clearchannel(powermeter_channel_t* channel)
 {
 #if USEDMAMEMSET
-	DMA_memset(&powermeter.powerdrawPerSecond, 0x00, sizeof(powermeter_channel_t));	
+	DMA_memset(channel, 0x00, sizeof(powermeter_channel_t));
 #else
-	//clear S
-	powermeter.powerdrawPerSecond.c1.S = 0;
-	powermeter.powerdrawPerSecond.c2.S = 0;
-	powermeter.powerdrawPerSecond.c3.S = 0;
-	//clear P
-	powermeter.powerdrawPerSecond.c1.P = 0;
-	powermeter.powerdrawPerSecond.c2.P = 0;
-	powermeter.powerdrawPerSecond.c3.P = 0;
-    // DO NOT reset E!
-	powermeter.powerdrawPerSecond.c1.E = 0;
-	powermeter.powerdrawPerSecond.c2.E = 0;
-	powermeter.powerdrawPerSecond.c3.E = 0;
-	//calculate Ueff
-	powermeter.powerdrawPerSecond.c1.Ueff = 0;
-	powermeter.powerdrawPerSecond.c2.Ueff = 0;
-	powermeter.powerdrawPerSecond.c3.Ueff = 0;
-	//calculate Ieff
-	powermeter.powerdrawPerSecond.c1.Ieff = 0;
-	powermeter.powerdrawPerSecond.c2.Ieff = 0;
-	powermeter.powerdrawPerSecond.c3.Ieff = 0;
-#endif
-	powermeter.samplesPerSecondDone=0;
-}
-
-void powermeter_clearpowerdraw()
-{
-#if USEDMAMEMSET
-	DMA_memset(&powermeter.powerdraw, 0x00, sizeof(powermeter_channel_t));
-#else
-	memset(&powermeter.powerdraw, 0x00, sizeof(powermeter_channel_t));
-#endif
-}
-
-void powermeter_clearpowerdrawLastSecond()
-{
-#if USEDMAMEMSET
-	DMA_memset(&powermeter.powerdrawLastSecond, 0x00, sizeof(powermeter_channel_t));
-#else
-	memset(&powermeter.powerdrawLastSecond, 0x00, sizeof(powermeter_channel_t));
+	memset(channel, 0x00, sizeof(powermeter_channel_t));
 #endif
 }
 
@@ -512,9 +477,9 @@ volatile uint8_t can_send_packet;
 void RTC_seconds_int(void)
 {
 	powermeter_copypowerdraw();	//TODO: move to main()
-	powermeter_clearpowerdrawPerSecond();
-	//can transmit
-	can_send_packet=1;
+	powermeter_clearchannel(powermeter.powerdrawPerSecond);
+	powermeter.samplesPerSecondDone = 0;
+	can_send_packet = 1;
 }
 
 void RTC_minutes_int(void)
