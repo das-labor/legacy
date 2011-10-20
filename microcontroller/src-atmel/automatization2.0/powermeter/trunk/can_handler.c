@@ -1,4 +1,3 @@
-
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
@@ -7,16 +6,11 @@
 #include "can/lap.h"
 #include "string.h"
 #include "powermeter_driver.h"
-
 #include "can_handler.h"
 #include "config.h"
 
 uint8_t myaddr;
 
-
-#if laborhack
-uint8_t laborcanbushack;
-#endif
 
 void can_handler()
 {
@@ -63,7 +57,7 @@ void read_can_addr()
 	myaddr = eeprom_read_byte(0x00);
 }
 
-void can_sendValuePacket(can_message *template_msg, uint8_t id, void* value, size_t length)
+void can_send_value_packet(can_message *template_msg, uint8_t id, void* value, size_t length)
 {
 	can_message * txmsg;
 	txmsg = can_buffer_get();
@@ -91,7 +85,7 @@ void can_createDATAPACKET()
 		(void *)&powermeter.powerdrawLastSecond.c1.Ieff,
 		(void *)&powermeter.powerdrawLastSecond.c2.Ieff,
 		(void *)&powermeter.powerdrawLastSecond.c3.Ieff,
-	}
+	};
 	
 	static can_message msg = {0, 0, PORT_POWERMETER, PORT_POWERMETER, 4, {}};
 	can_message * txmsg;
