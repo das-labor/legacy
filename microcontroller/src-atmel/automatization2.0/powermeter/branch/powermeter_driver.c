@@ -254,10 +254,6 @@ void powermeter_docalculations()
 		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>ADCSAMPLESSHIFT);
 		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>ADCSAMPLESSHIFT);
 		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>ADCSAMPLESSHIFT);
-		//calculate E
-		powermeter.powerdrawPerSecond.c1.E += (powermeter.powerdraw.c1.P >>ADCSAMPLESSHIFT);
-		powermeter.powerdrawPerSecond.c2.E += (powermeter.powerdraw.c1.P >>ADCSAMPLESSHIFT);
-		powermeter.powerdrawPerSecond.c3.E += (powermeter.powerdraw.c1.P >>ADCSAMPLESSHIFT);
 #else
 		//calculate S
 		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )/ powermeter.ADCSamplesPerPeriod);
@@ -267,10 +263,6 @@ void powermeter_docalculations()
 		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P / powermeter.ADCSamplesPerPeriod);
 		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P / powermeter.ADCSamplesPerPeriod);
 		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P / powermeter.ADCSamplesPerPeriod);
-		//calculate E
-		powermeter.powerdrawPerSecond.c1.E += powermeter.powerdraw.c1.E;
-		powermeter.powerdrawPerSecond.c2.E += powermeter.powerdraw.c2.E;
-		powermeter.powerdrawPerSecond.c3.E += powermeter.powerdraw.c3.E;
 		//calculate Ueff
 		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff / powermeter.ADCSamplesPerPeriod));
 		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff / powermeter.ADCSamplesPerPeriod));
