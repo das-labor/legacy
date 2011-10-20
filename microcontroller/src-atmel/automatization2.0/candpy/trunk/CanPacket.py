@@ -66,18 +66,26 @@ class CanPacket(object):
     
     def __from_array(self, rawpkt):
         """ Parse packet from RAW (byte-)array """
-        print hexdump(rawpkt)
+        broken=True
         arr=bytearray(rawpkt)
-        i=0
-        for x in arr[:4]:
-            i = (i+x)<<8
+        if not broken:
+            print hexdump(rawpkt)
+            i=0
+            for x in arr[:4]:
+                i = (i+x)<<8
         
-        self.setDestAddr(i & 0xff)
-        self.setSrcAddr((i>>8) & 0xff)
-        self.setSrcPort((i>>23) & 0x3f)
-        self.setDestPort(((i>>17) & 0x30) | ((i>>16) & 0x0f))
-        ### arr[4] is discarded b/c it's dlc for data - we don't need that 
-        self.setData(arr[5:])
+            self.setDestAddr(i & 0xff)
+            self.setSrcAddr((i>>8) & 0xff)
+            self.setSrcPort((i>>23) & 0x3f)
+            self.setDestPort(((i>>17) & 0x30) | ((i>>16) & 0x0f))
+            ### arr[4] is discarded b/c it's dlc for data - we don't need that 
+            self.setData(arr[5:])
+        else:
+            self.setDestAddr(arr[0])
+            self.setSrcAddr(arr[1])
+            self.setDestPort(((arr[2] & 0x60) >> 1) + (arr[2] & 0x0f))
+            self.setSrcPort(((arr[3] & 0x1f) << 1) + ((arr[2] & 0x80) >> 7))
+            self.setData(arr[5:])
     
     def genRawPKT(self):
         """
