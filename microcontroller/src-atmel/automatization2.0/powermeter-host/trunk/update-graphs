@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd /home/joerg/src/automatization2.0/
+cd /home/joerg/src/automatization2.0/powermeter-host/
 
 rrdtool graph graphs/I-hour.png                     \
     -a PNG --title="Current"                 \
