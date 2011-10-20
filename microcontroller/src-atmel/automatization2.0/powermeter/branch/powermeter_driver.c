@@ -236,114 +236,27 @@ void powermeter_docalculations()
 		RTC_SetIntLevels( RTC_OVFINTLVL_OFF_gc, RTC_COMPINTLVL_OFF_gc );
 
 #if USE_STATIC_ADCSamplesPerPeriod
-#if ADCSAMPLESPERPERIOD == 256
-		//calculate Ueff
-		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>8));
-		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>8));
-		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>8));
-		//calculate Ieff
-		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>8);
-		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>8);
-		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>8);
+        // ADCSAMPLESSHIFT is defined in config.h
 		//calculate S
-		powermeter.powerdrawPerSecond.c1.S += (((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff ))>>8);
-		powermeter.powerdrawPerSecond.c2.S += (((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff ))>>8);
-		powermeter.powerdrawPerSecond.c3.S += (((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff ))>>8);
+		powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff>>ADCSAMPLESSHIFT) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >>ADCSAMPLESSHIFT));
+		powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff>>ADCSAMPLESSHIFT) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >>ADCSAMPLESSHIFT));
+		powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff>>ADCSAMPLESSHIFT) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >>ADCSAMPLESSHIFT));
 		//calculate P
-		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>8);
-		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>8);
-		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >>8);
-#elif ADCSAMPLESPERPERIOD == 128
-		//calculate S
-		powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff>>7) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >>7));
-		powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff>>7) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >>7));
-		powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff>>7) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >>7));
-		//calculate P
-		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>7);
-		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>7);
-		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >>7);
+		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >>ADCSAMPLESSHIFT);
 		//calculate Ueff
-		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>7));
-		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>7));
-		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>7));
+		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>ADCSAMPLESSHIFT));
+		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>ADCSAMPLESSHIFT));
+		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>ADCSAMPLESSHIFT));
 		//calculate Ieff
-		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>7);
-		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>7);
-		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>7);
-
-#elif ADCSAMPLESPERPERIOD == 64
-		//calculate S
-		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )>>6);
-		powermeter.powerdrawPerSecond.c2.S += (sqrt(powermeter.powerdraw.c2.Ueff * powermeter.powerdraw.c2.Ieff )>>6);
-		powermeter.powerdrawPerSecond.c3.S += (sqrt(powermeter.powerdraw.c3.Ueff * powermeter.powerdraw.c3.Ieff )>>6);
-		//calculate P
-		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>6);
-		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>6);
-		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >>6);
-		//calculate Ueff
-		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>6));
-		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>6));
-		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>6));
-		//calculate Ieff
-		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>6);
-		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>6);
-		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>6);
-
-#elif ADCSAMPLESPERPERIOD == 32
-		//calculate S
-		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )>>5);
-		powermeter.powerdrawPerSecond.c2.S += (sqrt(powermeter.powerdraw.c2.Ueff * powermeter.powerdraw.c2.Ieff )>>5);
-		powermeter.powerdrawPerSecond.c3.S += (sqrt(powermeter.powerdraw.c3.Ueff * powermeter.powerdraw.c3.Ieff )>>5);
-		//calculate P
-		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>5);
-		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>5);
-		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >>5);
-		//calculate Ueff
-		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>5));
-		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>5));
-		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>5));
-		//calculate Ieff
-		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>5);
-		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>5);
-		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>5);
-
-#elif ADCSAMPLESPERPERIOD == 16
-		//calculate S
-		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )>>4);
-		powermeter.powerdrawPerSecond.c2.S += (sqrt(powermeter.powerdraw.c2.Ueff * powermeter.powerdraw.c2.Ieff )>>4);
-		powermeter.powerdrawPerSecond.c3.S += (sqrt(powermeter.powerdraw.c3.Ueff * powermeter.powerdraw.c3.Ieff )>>4);
-		//calculate P
-		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>4);
-		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>4);
-		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >>4);
-		//calculate Ueff
-		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>4));
-		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>4));
-		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>4));
-		//calculate Ieff
-		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>4);
-		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>4);
-		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>4);
-#elif ADCSAMPLESPERPERIOD == 8
-//calculate S
-		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )>>3);
-		powermeter.powerdrawPerSecond.c2.S += (sqrt(powermeter.powerdraw.c2.Ueff * powermeter.powerdraw.c2.Ieff )>>3);
-		powermeter.powerdrawPerSecond.c3.S += (sqrt(powermeter.powerdraw.c3.Ueff * powermeter.powerdraw.c3.Ieff )>>3);
-		//calculate P
-		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>3);
-		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>3);
-		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >>3);
-		//calculate Ueff
-		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>3));
-		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>3));
-		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>3));
-		//calculate Ieff
-		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>3);
-		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>3);
-		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>3);
-#else
-#	error "unknown value of ADCSAMPLESPERPERIOD"
-#endif
+		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>ADCSAMPLESSHIFT);
+		//calculate E
+		powermeter.powerdrawPerSecond.c1.E += (powermeter.powerdraw.c1.P >>ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c2.E += (powermeter.powerdraw.c1.P >>ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c3.E += (powermeter.powerdraw.c1.P >>ADCSAMPLESSHIFT);
 #else
 		//calculate S
 		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )/ powermeter.ADCSamplesPerPeriod);

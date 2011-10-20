@@ -18,6 +18,7 @@
 //ADCSamplesPerPeriod mode
 #define USE_STATIC_ADCSamplesPerPeriod 1
 #define ADCSAMPLESPERPERIOD 128
+#define ADCSAMPLESSHIFT 7
 
 //debugmode
 #define DEBUGMODE 0		//set to 1 for DEBUGMODE, otherwise 0
