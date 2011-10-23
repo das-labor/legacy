@@ -454,8 +454,6 @@ int main(int argc, char *argv[])
 		optc=getopt_long(argc, argv, optstring, longopts, (int *)0);
 	} // while
 
-	debug(0, "Starting Cand");
-
 	if(!serial)
 	{
 		printf("ERROR: no serial port specified\n");
@@ -464,6 +462,7 @@ int main(int argc, char *argv[])
 	}
 
 	debug_init(debugfile);
+	debug(0, "Starting Cand");
 
 	// setup serial communication
 	canu_init(serial);
