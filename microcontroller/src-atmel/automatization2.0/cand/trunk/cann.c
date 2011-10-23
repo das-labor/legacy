@@ -318,7 +318,7 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 		// check msg length
 		if (val > sizeof(client->msg.data)) {
 			debug( 2, "Protocol error on fd %d: message too big (size=%d)",
-					client->fd, client->val );
+					client->fd, val );
 			client->error = 1;
 			return NULL;
 		}
