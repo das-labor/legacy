@@ -39,6 +39,8 @@ class LAPPacket:
 
     def from_array(self, arr):
         """ Parse packet from RAW (byte-)array """
+        if len(arr) < 4:
+            return 
         self.da = arr[0]
         self.sa = arr[1]
         self.dp = ((arr[2] & 0x60) >> 1) + (arr[2] & 0x0f)
@@ -62,6 +64,7 @@ class CANSocket:
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
+        s.setblocking(0)
 
         self.sock = s
         self.buf = bytearray("")
@@ -81,7 +84,10 @@ class CANSocket:
         buf = self.buf
         
         # Receive something
-        buf += bytearray(s.recv(20))
+        try:
+            buf += bytearray(s.recv(20))
+        except:
+            pass
         
         # Is there something at all?
         if len(buf) == 0:

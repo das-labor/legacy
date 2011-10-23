@@ -6,7 +6,7 @@ import socket
 import subprocess
 from string import Template
 
-RRD_CMD = "rrdtool update powermeter.rrd N:$U1:$U2:$U3:$I1:$I2:$I3:$S1:$S2:$S3:$P1:$P2:$P3"
+RRD_CMD = "rrdtool update powermeter.rrd N:$U1:$U2:$U3:$I1:$I2:$I3:$S1:$S2:$S3:$P1:$P2:$P3:$E1:$E2:$E3"
 CONSOLE_OUT = """
 
             L1           L2           L3          SUM
@@ -15,6 +15,7 @@ CONSOLE_OUT = """
  I | %(I1)10.2f | %(I2)10.2f | %(I3)10.2f | %(I)10.2f
  S | %(S1)10.2f | %(S2)10.2f | %(S3)10.2f | %(S)10.2f
  P | %(P1)10.2f | %(P2)10.2f | %(P3)10.2f | %(P)10.2f
+ E | %(E1)10d | %(E2)10d | %(E3)10d |
 """
 
 # E | %(E1)10d | %(E2)10d | %(E3)10d |
@@ -23,7 +24,7 @@ val_map = {
     0x04: "S1", 0x05: "S2", 0x06: "S3",
     0x07: "U1", 0x08: "U2", 0x09: "U3",
     0x0a: "I1", 0x0b: "I2", 0x0c: "I3",
-#    0x0d: "E1", 0x0e: "E2", 0x0f: "E3",
+    0x0d: "E1", 0x0e: "E2", 0x0f: "E3",
 }
 
 val_fac = {
@@ -31,9 +32,16 @@ val_fac = {
     'I': 1000./(33*2048),
     'P': (1.65*215*1000)/(33*2048*2048),
     'S': (1.65*215*1000)/(33*2048*2048),
-#    'E': 1
+#    'E': 7.5e-5,
+    'E': (1.65*215*1000)/(33*2048*2048),
 }
 
+
+def all_unknowm_values():
+    values = {}
+    for k in val_map.values():
+        values[k] = "UNK"
+    return values
 
 def parse_pm_pkt(pkt):
     """ Return (name, val) if the pkt contains parsable values.
@@ -41,6 +49,10 @@ def parse_pm_pkt(pkt):
         If pkt contains unknwon value-type, return (None, None).
     """
     data = pkt.data
+
+    if len(data) != 5:
+        return None, None
+
     vt = data[0]
 
     if vt not in val_map:
@@ -64,7 +76,7 @@ if __name__ == "__main__":
     c = CANSocket()
 
     # We start with an empty set
-    values = {}
+    values = all_unknowm_values()
 
     while True:
         pkt = LAPPacket(c.get_pkt())
@@ -72,8 +84,6 @@ if __name__ == "__main__":
         # Is it the powermeter talking?
         if pkt.sa != 5 or pkt.sp != 6:
             continue
-
-        #print pkt
 
         name, val = parse_pm_pkt(pkt)
     
@@ -83,14 +93,20 @@ if __name__ == "__main__":
         values[name] = val
 
         # All values received?
-        if sorted(values.keys()) == sorted(val_map.values()):
-            values['U'] = (values['U1'] + values['U2'] + values['U3']) / 3
-            values['I'] = values['I1'] + values['I2'] + values['I3'] 
-            values['S'] = values['S1'] + values['S2'] + values['S3'] 
-            values['P'] = values['P1'] + values['P2'] + values['P3'] 
-            print CONSOLE_OUT % values
+        if name == "E3":
+            try:
+                values['U'] = (values['U1'] + values['U2'] + values['U3']) / 3
+                values['I'] = values['I1'] + values['I2'] + values['I3'] 
+                values['S'] = values['S1'] + values['S2'] + values['S3'] 
+                values['P'] = values['P1'] + values['P2'] + values['P3'] 
+                values['E1'] = int(values['E1'])
+                values['E2'] = int(values['E2'])
+                values['E3'] = int(values['E3'])
+                print CONSOLE_OUT % values
+                update_rrd(values)
+            except:
+                pass
 
-            update_rrd(values)
-            values = {}
+            values = all_unknowm_values()
 
     c.close()
