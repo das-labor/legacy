@@ -252,7 +252,16 @@ void process_uart_msg()
 	debug( 10, "Activity on uart_fd" );
 
 	rs232can_msg *msg = canu_get_nb();	//get message from uart
-	if (!msg) return;
+
+	if (!msg)
+		return;
+	else if(canu_failcnt > CANU_FAILTHRESH)
+	{
+		debug(0, "UART failure threshold exceeded (%u), resyncing gateway.", canu_failcnt);
+		canu_reset();
+		canu_transmit_cmd(RS232CAN_RESYNC);
+		canu_failcnt = 0;
+	}
 
 	debug(3, "Processing message from uart..." );
 
@@ -262,16 +271,16 @@ void process_uart_msg()
 			process_cmd_pkt(msg);
 			break;
 		case RS232CAN_ERROR:
-			debug(0, "GATEWAY ERROR");
+			debug(0, "GATEWAY: error");
 			break;
 		case RS232CAN_NOTIFY_RESET:
-			debug(0, "GATEWAY RESET");
+			debug(0, "GATEWAY: reset");
 			break;
 		case RS232CAN_PING_GATEWAY:
-			debug(0, "GATEWAY PONG");
+			debug(0, "GATEWAY: pong");
 			break;
 		case RS232CAN_RESYNC:
-			debug(0, "GATEWAY RESYNC REQUEST");
+			debug(0, "GATEWAY: resync request");
 			canu_reset();
 			break;
 		default:
