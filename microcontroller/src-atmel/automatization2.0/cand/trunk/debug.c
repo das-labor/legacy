@@ -54,6 +54,7 @@ void debug( int level, char *format, ... )
 	va_start(ap, format);
 	vfprintf(debugFP, format, ap);
 	fprintf(debugFP, "\n");
+	fflush(debugFP);
 	va_end(ap);
 }
 
@@ -75,7 +76,8 @@ void debug_perror( int level, char *format, ... )
 
 	va_start(ap, format);
 	vfprintf(debugFP, format, ap);
-	fprintf(debugFP, " (%s)\n", strerror(errno) );
+	fprintf(debugFP, " (%s)\n", strerror(errno));
+	fflush(debugFP);
 	va_end(ap);
 }
 
@@ -91,9 +93,9 @@ void debug_assert( int test, char *format, ... )
 	va_start(ap, format);
 	fprintf(debugFP, "ERROR: ");
 	vfprintf(debugFP, format, ap);
-	fprintf(debugFP, " (%s)\n", strerror(errno) );
+	fprintf(debugFP, " (%s)\n", strerror(errno));
 	va_end(ap);
-
+	fflush(debugFP);
 	exit(1);
 }
 
@@ -106,9 +108,9 @@ void debug_assert2(char *format, ... )
 	va_start(ap, format);
 	fprintf(debugFP, "ERROR: ");
 	vfprintf(debugFP, format, ap);
-	fprintf(debugFP, " (%s)\n", strerror(errno) );
+	fprintf(debugFP, " (%s)\n", strerror(errno));
 	va_end(ap);
-
+	fflush(debugFP);
 	exit(1);
 }
 
