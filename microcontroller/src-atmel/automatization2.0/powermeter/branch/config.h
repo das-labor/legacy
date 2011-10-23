@@ -27,7 +27,8 @@
 #define ADC_OFFSET_CAL 1
 
 //powermeter samplebuffer size (allows up to POWERMETER_SAMPLEBUFF samples per period)
-#define POWERMETER_SAMPLEBUFF 300		//this will use POWERMETER_SAMPLEBUFF*36 bytes of RAM
+//this value must be smaller than 256 ! since DMA controller only supports 255 transfers at once
+#define POWERMETER_SAMPLEBUFF 255		//this will use POWERMETER_SAMPLEBUFF*36 bytes of RAM
 
 #define NET_FREQ 50		//set freq of Powerline
 

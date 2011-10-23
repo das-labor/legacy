@@ -110,6 +110,7 @@ int powermeter_SetSampleratePerPeriod(uint16_t samples)
 		return -1;
 	if(!samples)
 		return -1;
+
 	//configure Timer1 to generate 50//60 * samples events 
 	powermeter.ADCSamplesPerPeriod = samples;
 	powermeter.ADCSamplesPerSecond = samples * NET_FREQ;
@@ -177,13 +178,13 @@ void powermeter_docalculations()
 	{
 		LED__cyan();	//set LED color cyan
 
-		int32_t u;
-		int32_t i;
+		register int32_t u;
+		register int32_t i;
 		register int16_t * up;		//points to start of array containing the sampled voltages: u1, u2, u3, u1, u2, u3, ....
 		register int16_t * ip;		//points to start of array containing the sampled currents: i1, i2, i3, i1, i2 ,i3, ....
 		up = &powermeter.samplebuffer[powermeter.samplebuffer_page].u[0];
 		ip = &powermeter.samplebuffer[powermeter.samplebuffer_page].i1[0];
-		for(uint16_t x = 0;x < powermeter.ADCSamplesPerPeriod;x++)
+		for(uint8_t x = 0;x < powermeter.ADCSamplesPerPeriod;x++)
 		{
 			//load u & i
 			u = (int32_t)(*up)-powermeter.ADCoffset.offsetA;
