@@ -87,9 +87,9 @@ void can_transmit_raw_gateway_message(rs232can_msg *rmsg)
 	}
 
 	if (conn)
-		cann_transmit(conn, &rmsg);
+		cann_transmit(conn, rmsg);
 	else
-		canu_transmit(&rmsg);
+		canu_transmit(rmsg);
 }
 
 //transmit a can message
