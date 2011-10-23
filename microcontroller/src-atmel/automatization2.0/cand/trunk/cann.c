@@ -317,14 +317,11 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 
 		// check msg length
 		if (val > sizeof(client->msg.data)) {
-			debug( 2, "Protocol error on fd %d (size=%d)",
-					client->fd, client->missing_bytes );
+			debug( 2, "Protocol error on fd %d: message too big (size=%d)",
+					client->fd, client->val );
 			client->error = 1;
 			return NULL;
 		}
-
-		if (val == 0)
-			return NULL;
 
 		debug(10, "Next packet on %d: length=%d", client->fd, val);
 		client->msg.len        = val;
@@ -343,17 +340,19 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 		client->state = CANN_PAYLOAD;
 	}
 
-	// read data
-	ret = read(client->fd, client->rcv_ptr, client->missing_bytes);
+	if (client->missing_bytes > 0) {
+		// read data
+		ret = read(client->fd, client->rcv_ptr, client->missing_bytes);
 
-	if (ret == 0) goto eof;
-	if (ret < 0) goto error;
+		if (ret == 0) goto eof;
+		if (ret < 0) goto error;
 
-	client->missing_bytes -= ret;
-	client->rcv_ptr       += ret;
+		client->missing_bytes -= ret;
+		client->rcv_ptr       += ret;
 
-	debug(10, "fd %d: recived %d bytes, %d missing",
-			client->fd, ret, client->missing_bytes);
+		debug(10, "fd %d: recived %d bytes, %d missing",
+				client->fd, ret, client->missing_bytes);
+	}
 
 	// message complete?
 	if (client->missing_bytes == 0) {
