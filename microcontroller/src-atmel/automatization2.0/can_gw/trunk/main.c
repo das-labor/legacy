@@ -21,7 +21,7 @@ typedef enum
 	RS232CAN_SETMODE=0x12,
 	RS232CAN_ERROR=0x13,
 	RS232CAN_NOTIFY_RESET=0x14,
-	RS232CAN_PING_GATEWAY=0x15
+	RS232CAN_PING_GATEWAY=0x15,
 } rs232can_cmd;
 
 #define RS232CAN_MAXLENGTH 20
@@ -36,9 +36,8 @@ typedef struct {
 /*****************************************************************************
  * CAN to UART
  */
-uint16_t write_buffer_to_uart_and_crc(char* buf, uint8_t len) {
+uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char* buf, uint8_t len) {
 	uint8_t i;
-	uint16_t crc = 0;
 
 	for (i = 0; i < len; i++) {
 		crc = _crc16_update(crc, *buf);
@@ -50,18 +49,38 @@ uint16_t write_buffer_to_uart_and_crc(char* buf, uint8_t len) {
 
 void write_can_message_to_uart(can_message * cmsg) {
 	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
-	uint16_t crc; 
-
+	uint16_t crc = 0; 
+	
+	crc = _crc16_update(crc, RS232CAN_PKT);
+	crc = _crc16_update(crc, len);
+	
 	uart_putc(RS232CAN_PKT);  //command
 	uart_putc(len);           //length
-	
-	crc = write_buffer_to_uart_and_crc((char*)cmsg, len); //data
 
-	uart_putc(crc >> 8);
+	crc = write_buffer_to_uart_and_crc(crc, (char*)cmsg, len); //data
+
+	uart_putc(crc >> 8);	  //crc16
 	uart_putc(crc & 0xFF);
 }
 /*****************************************************************************/
 
+
+/*****************************************************************************
+ * CMD to UART
+ */
+void write_cmd_to_uart(uint8_t cmd)
+{
+	uint16_t crc = 0;
+	
+	crc = _crc16_update(crc, cmd);
+	crc = _crc16_update(crc, 0);
+	
+	uart_putc(cmd); 		//command
+	uart_putc(0);			//length
+	uart_putc(crc >> 8);	//crc16
+	uart_putc(crc & 0xFF);
+}
+/*****************************************************************************/
 
 
 /*****************************************************************************
@@ -69,50 +88,64 @@ void write_can_message_to_uart(can_message * cmsg) {
  * Returns Message or 0 if there is no complete message.
  */ 
 
-typedef enum {STATE_START, STATE_LEN, STATE_PAYLOAD} canu_rcvstate_t;
+typedef enum {STATE_START, STATE_LEN, STATE_PAYLOAD, STATE_CRC} canu_rcvstate_t;
 
 rs232can_msg	canu_rcvpkt;
 canu_rcvstate_t	canu_rcvstate = STATE_START;
 unsigned char 	canu_rcvlen   = 0;
 
 
-rs232can_msg * canu_get_nb() {
+rs232can_msg * canu_get_nb()
+{
 	static char *uartpkt_data;
-	char c;
+	static uint16_t crc;
+	uint16_t crc_in;
+	unsigned char c;
 	
-	while (uart_getc_nb(&c)) {
+	while (uart_getc_nb(&c))
+	{
 		#ifdef DEBUG
 		printf("canu_get_nb received: %02x\n", c);
 		#endif
-		switch (canu_rcvstate) {
-		case STATE_START:
-			if (c) {
-				canu_rcvstate = STATE_LEN;
-				canu_rcvpkt.cmd = c;
-			}
-			break;
-		case STATE_LEN:
-			canu_rcvlen       = (unsigned char)c;
-			if(canu_rcvlen > RS232CAN_MAXLENGTH)
-			{
-				canu_rcvstate = STATE_START;
-				break;
-			}
-			canu_rcvstate     = STATE_PAYLOAD;
-			canu_rcvpkt.len   = (unsigned char)c;
-			uartpkt_data      = &canu_rcvpkt.data[0];
-			break;
-		case STATE_PAYLOAD:
-			if (canu_rcvlen--) {
-				*(uartpkt_data++) = c;
-			} else {
-				canu_rcvstate = STATE_START;
-				//check CRC
-				if (c == 0x23) { // XXX CRC
-					return &canu_rcvpkt;
+		switch (canu_rcvstate)
+		{
+			case STATE_START:
+				if (c)
+				{
+					canu_rcvstate = STATE_LEN;
+					canu_rcvpkt.cmd = c;
+					crc = _crc16_update(crc, c);
 				}
-			}
-			break;
+				break;
+			case STATE_LEN:
+				canu_rcvlen       = c;
+				if(canu_rcvlen > RS232CAN_MAXLENGTH)
+				{
+					canu_rcvstate = STATE_START;
+					break;
+				}
+				canu_rcvstate     = STATE_PAYLOAD;
+				canu_rcvpkt.len   = c;
+				uartpkt_data      = &canu_rcvpkt.data[0];
+				crc = _crc16_update(crc, c);
+				break;
+			case STATE_PAYLOAD:
+				if(canu_rcvlen--)
+				{
+					*(uartpkt_data++) = c;
+					crc = _crc16_update(crc, c);
+				}
+				else
+				{
+					canu_rcvstate = STATE_CRC;
+					crc_in = c;
+				}
+				break;
+			case STATE_CRC:
+				canu_rcvstate = STATE_START;
+				if(crc == ((crc_in << 8) | c))
+					return &canu_rcvpkt;
+				break;
 		}
 	}
 
@@ -139,12 +172,10 @@ void process_cantun_msg(rs232can_msg *msg) {
 		case RS232CAN_NOTIFY_RESET:
 			break;
 		case RS232CAN_PING_GATEWAY:
-			uart_putc(RS232CAN_PING_GATEWAY);  // reply
-			uart_putc(0);
+			write_cmd_to_uart(RS232CAN_PING_GATEWAY);  // reply
 			break;
 		default:
-			uart_putc(RS232CAN_ERROR);  //send error
-			uart_putc(0);
+			write_cmd_to_uart(RS232CAN_ERROR);  //send error
 			break;
 	}
 }
@@ -196,7 +227,7 @@ void adc_init() {
 void canu_reset()
 {  
 	unsigned char i;
-	for(i=RS232CAN_MAXLENGTH+3; i>0; i--)
+	for(i=sizeof(rs232can_msg)+2; i>0; i--)
 		uart_putc( (char)0x00 );
 }
 
@@ -214,9 +245,11 @@ int main() {
 
 	sei();
 
+	//sync line
 	canu_reset();
-	uart_putc(RS232CAN_NOTIFY_RESET);  //notify host that we resetted
-	uart_putc(0);
+	
+	//notify host that we had a reset
+	write_cmd_to_uart(RS232CAN_NOTIFY_RESET);
 
 	can_setmode(normal);
 	can_setled(0, 1);
