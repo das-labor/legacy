@@ -26,6 +26,7 @@
 #include "cmds-powercommander.h"
 #include "cmds-bastel.h"
 #include "cmds-powermeter.h"
+#include "cmds-gateway.h"
 // Atmel ; LAP includes
 // #include "config.h"
 
@@ -63,6 +64,7 @@ cmd_t cmds[] = {
   { &cmd_cantemp, "cantemp", "cantemp", "Temperatur fuer Sensor" },
   { &cmd_bastel, "bastelcmd", "bastelcmd", "bastelcontrol class object function value ... wiki->Bastelraum" },
   { &cmd_canpowermeter, "powermeter", "powermeter", "Energieverbrauch des Labors" },
+  { &cmd_gateway, "gw", "gw", "CAN-Gateway Control (ping currently)" },
   { NULL, NULL, NULL, NULL }
 };
 
@@ -109,13 +111,13 @@ Commands:\n\n" );
 int main(int argc, char *argv[])
 {
 	int tcpport  = 2342;         // TCP Port
-	char *server = "localhost"; 
+	char *server = "localhost";
 	char *serial = NULL;
 	int optc;
 
 	progname = argv[0];
 	int option_index = 0;
-	
+
 	while ((optc = getopt_long(argc, argv, optstring, longopts, &option_index)) != EOF)
 	{
 		switch (optc)
@@ -123,7 +125,7 @@ int main(int argc, char *argv[])
 			case 'v':
 				if (optarg)
 					debug_level = atoi(optarg);
-				else 
+				else
 					debug_level = 3;
 				break;
 			case 'S':
