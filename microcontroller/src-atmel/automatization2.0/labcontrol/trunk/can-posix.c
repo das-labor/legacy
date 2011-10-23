@@ -10,9 +10,9 @@
 #include "can-uart.h"
 
 /***************************************************************************
- * Implement can.h for posix systems 
+ * Implement can.h for posix systems
  *
- * Uses cann.[hc] for cand or can-uart.[hc] according to first call to 
+ * Uses cann.[hc] for cand or can-uart.[hc] according to first call to
  * can_init( ... );
  */
 
@@ -20,7 +20,7 @@
 static cann_conn_t *conn;
 
 /************************************************************************+**
- * Management 
+ * Management
  */
 
 void can_init(cann_conn_t *aconn) {
@@ -31,7 +31,7 @@ void can_setmode(can_mode_t mode)
 {
 	rs232can_msg rmsg;
 
-	rmsg.len     = 1; 
+	rmsg.len     = 1;
 	rmsg.cmd     = RS232CAN_SETMODE;
 	rmsg.data[0] = (char)mode;
 
@@ -77,11 +77,26 @@ can_message_raw* can_buffer_get_raw()
 		return cmsg;
 }
 
+//transmit a raw rs232can message
+void can_transmit_raw_gateway_message(rs232can_msg *rmsg)
+{
+	if (rmsg == NULL)
+	{
+		printf("ERROR: can_transmit_raw_gateway_message got NULL!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (conn)
+		cann_transmit(conn, &rmsg);
+	else
+		canu_transmit(&rmsg);
+}
+
 //transmit a can message
 void can_transmit_raw(can_message_raw *cmsg)
 {
 	rs232can_msg rmsg;
-	
+
 	if (cmsg == NULL)
 	{
 		printf("ERROR: can_transmit_raw got NULL!\n");
@@ -89,11 +104,7 @@ void can_transmit_raw(can_message_raw *cmsg)
 	}
 
 	rs232can_can2rs(&rmsg, cmsg);
-
-	if (conn)
-		cann_transmit(conn, &rmsg);
-	else
-		canu_transmit(&rmsg);
+	can_transmit_raw_gateway_message(&rmsg);
 }
 
 void can_transmit(can_message *cmsg)
@@ -126,7 +137,7 @@ void can_transmit(can_message *cmsg)
  */
 
 // XXX must free messages
-	
+
 //returns next can message
 can_message * can_get_nb()
 {
@@ -139,19 +150,19 @@ can_message * can_get_nb()
 	else
 		rmsg = canu_get();
 
-	if (!rmsg) 
+	if (!rmsg)
 	{
 		free(rmsg);
 		return 0;
 	}
-	
+
 	retmsg = malloc(sizeof(can_message));
 	if (retmsg == NULL)
 	{
 		printf("ERROR: Could not allocate retmsg buffer!\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	cmsg = can_buffer_get_raw();
 	rs232can_rs2can(cmsg, rmsg);
 	free(rmsg);
@@ -162,7 +173,7 @@ can_message * can_get_nb()
 	retmsg->dlc = cmsg->dlc;
 	memcpy(retmsg->data, cmsg->data, cmsg->dlc);
 
-	
+
 	free (cmsg);
 	return retmsg;
 }
@@ -201,7 +212,7 @@ can_message_raw* can_v2_to_raw(can_message_v2 *in_message)
 		exit(EXIT_FAILURE);
 	}
 	retmsg->id = 0x0000;
-	
+
 	retmsg->id |= ((uint32_t) in_message->channel << 20);
 	retmsg->id |= ((uint32_t)in_message->subchannel << 18);
 	retmsg->id |= ((uint16_t) in_message->addr_src << 8);
@@ -240,7 +251,7 @@ can_message_v2 * can_get_v2_nb()
 		printf("ERROR: Could not allocate retmsg buffer!\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	cmsg = can_buffer_get_raw();
 	rs232can_rs2can(cmsg, rmsg);
 
