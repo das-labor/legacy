@@ -22,6 +22,7 @@ typedef enum
 	RS232CAN_ERROR=0x13,
 	RS232CAN_NOTIFY_RESET=0x14,
 	RS232CAN_PING_GATEWAY=0x15,
+	RS232CAN_RESYNC=0x16
 } rs232can_cmd;
 
 #define RS232CAN_MAXLENGTH 20
@@ -154,6 +155,14 @@ rs232can_msg * canu_get_nb()
 
 /*****************************************************************************/
 
+// synchronize line
+void canu_reset()
+{  
+	unsigned char i;
+	for(i=sizeof(rs232can_msg)+2; i>0; i--)
+		uart_putc( (char)0x00 );
+}
+
 
 void process_cantun_msg(rs232can_msg *msg) {
 	can_message *cmsg;
@@ -173,6 +182,9 @@ void process_cantun_msg(rs232can_msg *msg) {
 			break;
 		case RS232CAN_PING_GATEWAY:
 			write_cmd_to_uart(RS232CAN_PING_GATEWAY);  // reply
+			break;
+		case RS232CAN_RESYNC:
+			canu_reset();
 			break;
 		default:
 			write_cmd_to_uart(RS232CAN_ERROR);  //send error
@@ -221,14 +233,6 @@ void adc_init() {
 	ADMUX = 0;
 	ADCSRA = 0x07; //slowest adc clock
 	ADCSRA |= (1<<ADEN) | (1<<ADSC) | (1<<ADIF);
-}
-
-// syncronize line
-void canu_reset()
-{  
-	unsigned char i;
-	for(i=sizeof(rs232can_msg)+2; i>0; i--)
-		uart_putc( (char)0x00 );
 }
 
 uint16_t leds, leds_old;
