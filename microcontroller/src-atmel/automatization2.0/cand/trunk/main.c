@@ -317,6 +317,11 @@ void process_client_msg( cann_conn_t *client )
 					cann_transmit(ac, msg);
 				ac = ac->next;
 			}
+			break;
+		case RS232CAN_PING_GATEWAY:
+			debug(3, ".. got gateway ping request ..");
+			if (serial) canu_transmit(msg);		//send to client on the can
+			break;
 	}
 	cann_free(msg);
 	debug(3, "...processing done.");
