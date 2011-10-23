@@ -3,12 +3,19 @@
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+#include <time.h>
 
 #include "debug.h"
 
 int debug_level  = 0;
 int debug_syslog = 0;
 FILE *debugFP;
+
+void print_time()
+{
+	time_t t = time(NULL);
+	fprintf(debugFP, "%s - ", ctime(&t));
+}
 
 void debug_init(char* debugfile)
 {
@@ -36,6 +43,8 @@ void debug( int level, char *format, ... )
 	if (debug_level < level) {
 		return;
 	}
+	
+	print_time();
 
 	if (level == 0)
 		fprintf(debugFP, "ERROR: ");
@@ -52,6 +61,8 @@ void debug_perror( int level, char *format, ... )
 
 	if (debug_level < level)
 		return;
+		
+	print_time();
 
 	if (level == 0)
 		fprintf(debugFP, "ERROR: ");
@@ -72,6 +83,8 @@ void debug_assert( int test, char *format, ... )
 		return;
 
 	va_list ap;
+	
+	print_time();
 
 	va_start(ap, format);
 	fprintf(debugFP, "ERROR: ");
@@ -85,6 +98,8 @@ void debug_assert( int test, char *format, ... )
 void debug_assert2(char *format, ... )
 {
 	va_list ap;
+	
+	print_time();
 
 	va_start(ap, format);
 	fprintf(debugFP, "ERROR: ");
