@@ -71,9 +71,9 @@ void write_can_message_to_uart(can_message * cmsg) {
  */
 void write_cmd_to_uart(uint8_t cmd)
 {
-	uint16_t crc = 0;
+	uint16_t crc;
 
-	crc = _crc16_update(crc, cmd);
+	crc = _crc16_update(0, cmd);
 	crc = _crc16_update(crc, 0);
 
 	uart_putc(cmd); 		//command
@@ -114,7 +114,7 @@ rs232can_msg * canu_get_nb()
 				{
 					canu_rcvstate = STATE_LEN;
 					canu_rcvpkt.cmd = c;
-					crc = _crc16_update(crc, c);
+					crc = _crc16_update(0, c);
 				}
 				break;
 			case STATE_LEN:
