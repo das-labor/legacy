@@ -1,0 +1,32 @@
+body { font-family:sans-serif; }
+h1 { font-size:medium; font-weight:bold }
+
+div.left { 
+                                position: absolute;
+                                width: 10em;
+                                top: 0.5em;
+                                border: 1px solid black;
+                                padding: 2px;
+}
+
+div.right { 
+                                position: absolute;
+                                left: 11em;
+                                top: 0.5em;
+                                border: 1px solid black;
+                                padding: 0.5em;
+}
+
+div.content { 
+    width: 800px;
+    margin: auto; 
+    border: 1px solid black;
+    text-align: center;
+}
+.content img { padding: 0.8em; }
+
+.range { text-align:center; }
+.range ul { align: center; display:inline; }
+.range ul li { list-style: none; display:inline; }
+.viewbox  ul li {}
+
