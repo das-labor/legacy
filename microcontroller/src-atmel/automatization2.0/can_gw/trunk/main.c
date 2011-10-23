@@ -94,7 +94,7 @@ typedef enum {STATE_START, STATE_LEN, STATE_PAYLOAD, STATE_CRC} canu_rcvstate_t;
 rs232can_msg	canu_rcvpkt;
 canu_rcvstate_t	canu_rcvstate = STATE_START;
 unsigned char 	canu_rcvlen   = 0;
-
+unsigned char	canu_failcnt  = 0;
 
 rs232can_msg * canu_get_nb()
 {
@@ -115,7 +115,8 @@ rs232can_msg * canu_get_nb()
 					canu_rcvstate = STATE_LEN;
 					canu_rcvpkt.cmd = c;
 					crc = _crc16_update(0, c);
-				}
+				} else
+					canu_failcnt = 0;
 				break;
 			case STATE_LEN:
 				canu_rcvlen       = c;
@@ -144,7 +145,11 @@ rs232can_msg * canu_get_nb()
 			case STATE_CRC:
 				canu_rcvstate = STATE_START;
 				if(crc == ((crc_in << 8) | c))
+				{
+					canu_failcnt = 0;
 					return &canu_rcvpkt;
+				}
+				canu_failcnt++;
 				break;
 		}
 	}
@@ -271,6 +276,11 @@ int main() {
 		if (rmsg) {
 			r_count ++;
 			process_cantun_msg(rmsg);
+		} else if(canu_failcnt > 1)
+		{
+			canu_reset();
+			write_cmd_to_uart(RS232CAN_RESYNC);
+			canu_failcnt = 0;
 		}
 
 		cmsg = can_get_nb();
