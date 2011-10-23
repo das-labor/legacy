@@ -44,17 +44,17 @@ uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char* buf, uint8_t len) {
 		crc = _crc16_update(crc, *buf);
 		uart_putc( *buf++);
 	}
-	
+
 	return crc;
 }
 
 void write_can_message_to_uart(can_message * cmsg) {
 	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
-	uint16_t crc = 0; 
-	
+	uint16_t crc = 0;
+
 	crc = _crc16_update(crc, RS232CAN_PKT);
 	crc = _crc16_update(crc, len);
-	
+
 	uart_putc(RS232CAN_PKT);  //command
 	uart_putc(len);           //length
 
@@ -72,10 +72,10 @@ void write_can_message_to_uart(can_message * cmsg) {
 void write_cmd_to_uart(uint8_t cmd)
 {
 	uint16_t crc = 0;
-	
+
 	crc = _crc16_update(crc, cmd);
 	crc = _crc16_update(crc, 0);
-	
+
 	uart_putc(cmd); 		//command
 	uart_putc(0);			//length
 	uart_putc(crc >> 8);	//crc16
@@ -87,7 +87,7 @@ void write_cmd_to_uart(uint8_t cmd)
 /*****************************************************************************
  * Receive a message from uart non blocking.
  * Returns Message or 0 if there is no complete message.
- */ 
+ */
 
 typedef enum {STATE_START, STATE_LEN, STATE_PAYLOAD, STATE_CRC} canu_rcvstate_t;
 
@@ -99,10 +99,9 @@ unsigned char 	canu_rcvlen   = 0;
 rs232can_msg * canu_get_nb()
 {
 	static char *uartpkt_data;
-	static uint16_t crc;
-	uint16_t crc_in;
+	static uint16_t crc, crc_in;
 	unsigned char c;
-	
+
 	while (uart_getc_nb(&c))
 	{
 		#ifdef DEBUG
@@ -157,7 +156,7 @@ rs232can_msg * canu_get_nb()
 
 // synchronize line
 void canu_reset()
-{  
+{
 	unsigned char i;
 	for(i=sizeof(rs232can_msg)+2; i>0; i--)
 		uart_putc( (char)0x00 );
@@ -241,7 +240,7 @@ int main() {
 	led_init();
 
 	buspower_on();
-	
+
 	uart_init();
 	spi_init();
 	can_init();
@@ -251,7 +250,7 @@ int main() {
 
 	//sync line
 	canu_reset();
-	
+
 	//notify host that we had a reset
 	write_cmd_to_uart(RS232CAN_NOTIFY_RESET);
 
@@ -260,12 +259,12 @@ int main() {
 
 
 	uint8_t r_count = 1, t_count = 1;
-	
+
 
 	while (1) {
 		rs232can_msg  *rmsg;
 		can_message *cmsg;
-		
+
 		wdt_reset();
 
 		rmsg = canu_get_nb();
@@ -273,14 +272,14 @@ int main() {
 			r_count ++;
 			process_cantun_msg(rmsg);
 		}
-		
+
 		cmsg = can_get_nb();
 		if (cmsg) {
 			t_count ++;
 			write_can_message_to_uart(cmsg);
 			can_free(cmsg);
 		}
-		
+
 		leds = (r_count << 8) | t_count;
 		if (leds != leds_old) {
 			leds_old = leds;
