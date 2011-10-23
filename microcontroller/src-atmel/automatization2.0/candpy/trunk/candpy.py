@@ -15,6 +15,11 @@ from LoggingPlugin import fileloggerrs232pkgread
 from LoggingPlugin import fileloggerrs232pkgwrite
 from RawTCPClientPlugin import rawtcpclientinit
 from RawTCPClientPlugin import rawtcpclientargs
+from RawTCPServerPlugin import rawtcpserverargs
+from RawTCPServerPlugin import rawtcpserverinit
+from LocalParserPlugin import localparserargs
+from LocalParserPlugin import localparserinit
+
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(
@@ -55,16 +60,20 @@ to this service over the network.
     ### register cmdargs plugins
     
     argsplugins=plugins.Hook('daslabor.cand.cmdargs')
-    argsplugins.register(serialargs, 'serial')
+    #argsplugins.register(serialargs, 'serial')
     argsplugins.register(fileloggerargsrs232pkg, 'logger')
-    argsplugins.register(rawtcpclientargs, 'rawtcpclient')
+    #argsplugins.register(rawtcpclientargs, 'rawtcpclient')
+    argsplugins.register(rawtcpserverargs, 'rawtcpserver')
+    argsplugins.register(localparserargs, 'localparser')
     
     ### register init plugins
     
     initplugins=plugins.Hook('daslabor.cand.init')
-    initplugins.register(serialinit, 'serial')
+    #initplugins.register(serialinit, 'serial')
     initplugins.register(fileloggerinitrs232pkg, 'logger')
-    initplugins.register(rawtcpclientinit, 'rawtcpclient')
+    #initplugins.register(rawtcpclientinit, 'rawtcpclient')
+    initplugins.register(rawtcpserverinit, 'rawtcpserver')
+    initplugins.register(localparserinit, 'localparser')
 
     ### register write plugins
 

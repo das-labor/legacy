@@ -6,23 +6,50 @@ from time import sleep
 from LAPPacket import LAPPacket
 from CanPacket import CanPacket
 from utils import hexdump
+from PacketSplitterModule import PacketSplitter
 
 class LocalParserPlugin(threading.Thread):
     def __init__(self, plugins):
         self.processqueue=Queue.Queue()
         self.plugins=plugins
         self.running=True
+        self.leftover=bytearray(0)
+        self.psplitter=PacketSplitter()
         threading.Thread.__init__ ( self )
 
     def run(self):
+        print "LocalParserPlugin started"
         while self.running:
             try:
-                package=bytearray(self.processqueue.get())
+                package=self.psplitter.getNextPackage()
+                # we are out off sync sometimes
+                print "localparser"
                 print package
+                self.plugins.Hook('daslabor.cand.rawtcpserver.canpkg.read', 
+                                  package.getPKTtype()).notify(package.getPayload())
+                print "/localparser"
             except Exception, msg:
                 print msg
                 sleep(1)
                 pass
+    
+    def addData(self, data):
+        self.psplitter.extendStream(data)
+        #self.processqueue.put(bytearray(data))
+
+def localparserargs(data):
+    pass
+    
+def localparserinit(data):
+    #options=data[0]
+    #args=data[1]
+    #parser=data[2]
+    plugins=data[3]
+    lparserThread=LocalParserPlugin(plugins)
+    lparserThread.setDaemon(True)
+    lparserThread.start()
+    localparserplugin=plugins.Hook('daslabor.cand.rawtcpserver.read')
+    localparserplugin.register(lparserThread.addData,)
 
 if __name__ == '__main__':
     rL=bytearray(0)

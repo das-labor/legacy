@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from utils import invertDict
+from utils import hexdump
 
 class LAPPacket(object):
     LAPPacketTypes={
@@ -10,17 +11,19 @@ class LAPPacket(object):
                     "LAP_CAN_SETMODE":0x12,
                     "LAP_CAN_ERROR":0x13,
                     "LAP_CAN_NOTIFY_RESET":0x14,
-                    "LAP_RS232_PING_GATEWAY":0x15} 
+                    "LAP_RS232_PING_GATEWAY":0x15, 
+                    "LAP_RS232_RESYNC":0x16} 
 
     def __init__(self, pkttype=None, payload=bytearray(''), rawpkt=bytearray('')):
         self.knownpkts=LAPPacket.LAPPacketTypes
         self.knownpkts_inv=invertDict(LAPPacket.LAPPacketTypes)
         self.setPKTPayload(payload)
         self.pkttype=self.setPKTtype(pkttype)
+        self.validPKG=False
 
         if rawpkt:
             self.__from_array(rawpkt)
-            
+    
     def setPKTtype(self, pkttype=None):
         """
         we are expceting a number which is registered in LAPPacketTypes
@@ -30,6 +33,9 @@ class LAPPacket(object):
             return True
         return False
         
+    def getPKTtype(self):
+        return self.pkttype
+    
     def setPKTPayload(self, payload=bytearray('')):
         self.dlc=len(payload)
         self.payload=payload
@@ -39,6 +45,9 @@ class LAPPacket(object):
         self.rawpkt.append(self.dlc)
         self.rawpkt.append(self.pkttype)
         self.rawpkt.extend(self.payload)
+    
+    def __str__(self):
+        return self.knownpkts_inv[self.pkttype] + " " + hexdump(self.rawpkt)
     
     def getRawPKT(self):
         return self.rawpkt
@@ -59,12 +68,14 @@ class LAPPacket(object):
         ### what packet are we?
         if self.setPKTtype(bs[1]):
             self.setPKTPayload(bs[2:])
-        
+            self.validPKG=True
+        self.rawpkt=rawpkt
         ### seams like we are somehow valid
-
+    
+    def isValid(self):
+        return self.validPKG
 
 if __name__ == '__main__':
-    from utils import hexdump
     rL=bytearray(0)
     rL.extend([0x0a , 0x11 , 0x00 , 0x05 , 0x06,  0x03, 0x05, 0x0b, 0x44, 0x00, 0x00, 0x00])
     lp=LAPPacket(rawpkt=rL)
