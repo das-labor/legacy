@@ -13,6 +13,6 @@ void cmd_gateway(int argc, char *argv[])
 	rmsg.cmd = RS232CAN_PING_GATEWAY;
 	rmsg.len = 0;
 
-	printf("Pinging gateway..\nReply will be visible in debug log of Cand.\n");
+	printf("Pinging gateway.. reply will be visible in debug log of Cand.\n");
 	can_transmit_raw_gateway_message(&rmsg);
 }
