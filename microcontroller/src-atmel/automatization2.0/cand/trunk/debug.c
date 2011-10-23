@@ -14,7 +14,9 @@ FILE *debugFP;
 void print_time()
 {
 	time_t t = time(NULL);
-	fprintf(debugFP, "%s - ", ctime(&t));
+	char *tbuf = ctime(&t);
+	tbuf[strlen(tbuf)-1] = 0;
+	fprintf(debugFP, "%s - ", tbuf);
 }
 
 void debug_init(char* debugfile)
