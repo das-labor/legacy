@@ -50,9 +50,9 @@ uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char* buf, uint8_t len) {
 
 void write_can_message_to_uart(can_message * cmsg) {
 	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
-	uint16_t crc = 0;
+	uint16_t crc;
 
-	crc = _crc16_update(crc, RS232CAN_PKT);
+	crc = _crc16_update(0, RS232CAN_PKT);
 	crc = _crc16_update(crc, len);
 
 	uart_putc(RS232CAN_PKT);  //command
