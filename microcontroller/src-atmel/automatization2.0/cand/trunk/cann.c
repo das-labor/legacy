@@ -58,7 +58,7 @@ void cann_listen(int port)
 {
 	struct sockaddr_in serv_addr;
 	int ret, flags;
-	char one=1; 
+	char one=1;
 
 	signal(SIGPIPE, SIG_IGN);
 
@@ -71,15 +71,15 @@ void cann_listen(int port)
 	memset((char *) &serv_addr, 0, sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serv_addr.sin_port = htons(port); 
+	serv_addr.sin_port = htons(port);
 
 	ret = bind(listen_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 	debug_assert( ret >= 0, "Could not bind listening socket"  );
-	
+
 	flags = fcntl( listen_socket, F_GETFL, 0 );
 	fcntl( listen_socket, F_SETFL, flags | O_NDELAY );
 
-	/* specify queue */ 
+	/* specify queue */
 	listen(listen_socket, 5);
 	debug_assert( ret >= 0, "Could listen() listening socket"  );
 }
@@ -90,7 +90,7 @@ cann_conn_t *cann_connect(char *server, int port)
 	int ret;
 	cann_conn_t *client;
 	struct sockaddr_in addr;
-	
+
 	// initialize client struct
 	client = malloc(sizeof(cann_conn_t));
 	if (client == NULL)
@@ -170,7 +170,7 @@ cann_conn_t *cann_accept(fd_set *set)
 	// set some options on socket
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 	int flag = 1;
-	setsockopt(fd,  
+	setsockopt(fd,
 		   IPPROTO_TCP,     /* set option at TCP level */
 		   TCP_NODELAY,     /* name of option */
 		   (char *) &flag,  /* the cast is historical cruft */
@@ -218,11 +218,11 @@ void cann_close(cann_conn_t *conn)
 {
 	// close all connections?
 	if (!conn) {
-		printf("trying to close socket");
+		debug(1, "trying to close socket");
 		conn = cann_conns_head;
 		while (conn) {
 			cann_conn_t *oldconn = conn;
-			printf("close socket");
+			debug(1, "close socket");
 			shutdown(conn->fd, SHUT_RDWR);
 			close(conn->fd);
 			conn = conn->next;
@@ -284,11 +284,11 @@ void cann_conn_free(cann_conn_t* conn)
 {
 	if(conn->next != NULL)
 		cann_conn_free(conn->next);
-	
+
 	conn->next = NULL;
 	if(conn->rcv_ptr != NULL)
 		free(conn->rcv_ptr);
-	
+
 	free(conn);
 }
 
@@ -300,24 +300,24 @@ void cann_conn_free(cann_conn_t* conn)
 /* nonblocking read on netwok -- returns msg if complete msg arrived */
 rs232can_msg *cann_get_nb(cann_conn_t *client)
 {
-	int ret; 
-	unsigned char val; 
+	int ret;
+	unsigned char val;
 
 	// sanity
-	debug_assert( !(client->error), 
-			"cann_get_nb() with error %d on %d", 
+	debug_assert( !(client->error),
+			"cann_get_nb() with error %d on %d",
 			client->error, client->fd );
 
 	// XXX das alles geht auch einfacher XXX
 	if (client->state == CANN_LEN) {
 		ret = read(client->fd, &val, 1);
-		       
+
 		if (ret == 0) goto eof;
 		if (ret < 0) goto error;
 
 		// check msg length
 		if (val > sizeof(client->msg.data)) {
-			debug( 2, "Protocol error on fd %d (size=%d)", 
+			debug( 2, "Protocol error on fd %d (size=%d)",
 					client->fd, client->missing_bytes );
 			client->error = 1;
 			return NULL;
@@ -335,7 +335,7 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 
 	if (client->state == CANN_CMD) {
 		ret = read(client->fd, &(client->msg.cmd), 1);
-		       
+
 		if (ret == 0) goto eof;
 		if (ret < 0) goto error;
 
@@ -348,7 +348,7 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 
 	if (ret == 0) goto eof;
 	if (ret < 0) goto error;
-		
+
 	client->missing_bytes -= ret;
 	client->rcv_ptr       += ret;
 
@@ -373,7 +373,7 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 	return NULL;
 
 error:
-	if ((errno == EAGAIN) || (errno==0)) 
+	if ((errno == EAGAIN) || (errno==0))
 		return NULL;
 
 eof:
@@ -415,9 +415,9 @@ void cann_transmit(cann_conn_t *conn, rs232can_msg *msg)
 		return;
 	}
 
-	if (send(conn->fd, &(msg->len), 1, MSG_NOSIGNAL) != 1) 
+	if (send(conn->fd, &(msg->len), 1, MSG_NOSIGNAL) != 1)
 		goto error;
-	
+
 	if (send(conn->fd, &(msg->cmd), 1, MSG_NOSIGNAL) != 1)
 		goto error;
 

@@ -28,7 +28,7 @@
 
 
 char *progname;
-char *serial; 
+char *serial;
 char *logfile = NULL;
 char *scriptfile = NULL;
 char *debugfile = NULL;
@@ -66,7 +66,7 @@ void help()
 void hexdump(unsigned char * addr, int size)
 {
 	unsigned char x = 0;
-	
+
 	printf( "Size: %d\n", size);
 	while (size--) {
 		printf("%02x ", *addr++);
@@ -126,11 +126,11 @@ void customscripts(rs232can_msg *msg)
 
 			// print time and metadata to buffer
 			result = snprintf(tmpstr,80,"%s : src: 0x%.2x:0x%.2x dst:0x%.2x:0x%.2x data: ",
-				    tmpstr2, 
+				    tmpstr2,
 				    dec_msg.addr_src,dec_msg.port_src,
 				    dec_msg.addr_dst,dec_msg.port_dst );
 			// result must be in range - also snprintf limits range
-			if (result <= 80 && result >= 0) 
+			if (result <= 80 && result >= 0)
 			{
 				// write to logfile
 				fwrite(tmpstr,result,1,logFP);
@@ -161,7 +161,7 @@ void customscripts(rs232can_msg *msg)
 
 
 	// 'scriptfile' is global
-	if ( scriptfile != NULL) 
+	if ( scriptfile != NULL)
 	{
 		if ( (scriptFP=fopen(scriptfile,"r")) != NULL)
 		{
@@ -169,7 +169,7 @@ void customscripts(rs232can_msg *msg)
 			// example:
 			// 0x00:0x00 0x00:0x00 0x04  -> command
 			// src:srcport dst:dstport len -> executable
-			while (fgets(line, 300, scriptFP) != NULL) 
+			while (fgets(line, 300, scriptFP) != NULL)
 			{
 			// read instructions
 				memset(tmpstr,0,80);
@@ -187,10 +187,10 @@ void customscripts(rs232can_msg *msg)
 					continue;
 				}
 				// check for match
-				if ( (match_msg.addr_dst == dec_msg.addr_dst) && 
-					(match_msg.addr_src == dec_msg.addr_src) && 
-					(match_msg.port_dst == dec_msg.port_dst) && 
-					(match_msg.port_src == dec_msg.port_src) && 
+				if ( (match_msg.addr_dst == dec_msg.addr_dst) &&
+					(match_msg.addr_src == dec_msg.addr_src) &&
+					(match_msg.port_dst == dec_msg.port_dst) &&
+					(match_msg.port_src == dec_msg.port_src) &&
 					(match_msg.dlc == dec_msg.dlc))
 				{
 					// double fork a client to exec the command right under init
@@ -207,7 +207,7 @@ void customscripts(rs232can_msg *msg)
 						{
 							_exit(0);
 						}
-						else 
+						else
 						{
 							snprintf(as_args[0],5,"0x%.2x",dec_msg.dlc);
 							snprintf(as_args[1],5,"0x%.2x",dec_msg.data[0]);
@@ -248,14 +248,14 @@ void process_cmd_pkt(rs232can_msg *msg)
 
 void process_uart_msg()
 {
-	
+
 	debug( 10, "Activity on uart_fd" );
 
 	rs232can_msg *msg = canu_get_nb();	//get message from uart
 	if (!msg) return;
-	
+
 	debug(3, "Processing message from uart..." );
-	
+
 	switch(msg->cmd)
 	{
 		case RS232CAN_PKT:
@@ -278,7 +278,7 @@ void process_uart_msg()
 			debug(0, "Whats going on? Received unknown type 0x%02x on Uart", msg->cmd);
 			break;
 	}
-	
+
 	canu_free(msg);
 	debug(3, "...processing done.");
 }
@@ -291,7 +291,7 @@ void process_client_msg( cann_conn_t *client )
 
 	rs232can_msg *msg = cann_get_nb(client);	//get message from network
 	if(!msg) return;
-	
+
 	debug(3, "Processing message from network..." );
 	if (debug_level >= 3) hexdump((void *)msg, msg->len + 2);
 
@@ -359,7 +359,7 @@ void event_loop()
 		debug( 9, "AFTER UART" );
 		cann_dumpconn();
 
-		// check client activity 
+		// check client activity
 		//
 		while ( client = cann_activity(&rset) ) {
 			debug(5, "CANN actiity found" );
@@ -389,7 +389,9 @@ void event_loop()
 }
 
 void signal_handler(int sig) {
+	debug(0, "Stopping Cand (SIGNAL: %i)", sig);
 	cann_close_errors();
+	cann_close(NULL);
 	debug_close();
 	signal (sig, SIG_DFL);
 	if (sig == SIGQUIT)
@@ -421,7 +423,7 @@ int main(int argc, char *argv[])
 			case 'v':
 				if (optarg)
 					debug_level = atoi(optarg);
-				else 
+				else
 					debug_level = 0;
 				break;
 			case 'd':
@@ -451,7 +453,9 @@ int main(int argc, char *argv[])
 		}
 		optc=getopt_long(argc, argv, optstring, longopts, (int *)0);
 	} // while
-	
+
+	debug(0, "Starting Cand");
+
 	if(!serial)
 	{
 		printf("ERROR: no serial port specified\n");
@@ -460,11 +464,11 @@ int main(int argc, char *argv[])
 	}
 
 	debug_init(debugfile);
-	
+
 	// setup serial communication
 	canu_init(serial);
 	debug(1, "Serial CAN communication established" );
-	
+
 
 	// setup network socket
 	cann_listen(tcpport);
