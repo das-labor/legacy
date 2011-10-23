@@ -63,7 +63,7 @@ void cann_listen(int port)
 	signal(SIGPIPE, SIG_IGN);
 
 	ret = listen_socket = socket(AF_INET, SOCK_STREAM, 0);
-	debug_assert( ret >= 0, "Could not open listeing socket: ");
+	debug_assert(ret >= 0, "Could not open listeing socket: ");
 
 	setsockopt(listen_socket, SOL_SOCKET, SO_REUSEADDR, &one, 1);
 
@@ -74,14 +74,14 @@ void cann_listen(int port)
 	serv_addr.sin_port = htons(port);
 
 	ret = bind(listen_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
-	debug_assert( ret >= 0, "Could not bind listening socket"  );
+	debug_assert(ret >= 0, "Could not bind listening socket");
 
 	flags = fcntl( listen_socket, F_GETFL, 0 );
 	fcntl( listen_socket, F_SETFL, flags | O_NDELAY );
 
 	/* specify queue */
 	listen(listen_socket, 5);
-	debug_assert( ret >= 0, "Could listen() listening socket"  );
+	debug_assert(ret >= 0, "Could listen() listening socket");
 }
 
 /* open connect to cand */
@@ -174,7 +174,7 @@ cann_conn_t *cann_accept(fd_set *set)
 		   IPPROTO_TCP,     /* set option at TCP level */
 		   TCP_NODELAY,     /* name of option */
 		   (char *) &flag,  /* the cast is historical cruft */
-	           sizeof(int));    /* length of option value */
+		   sizeof(int));    /* length of option value */
 
 	// initialize client struct
 	client = (cann_conn_t *)malloc(sizeof(cann_conn_t));
@@ -282,11 +282,11 @@ void cann_dumpconn()
 
 void cann_conn_free(cann_conn_t* conn)
 {
-	if(conn->next != NULL)
+	if (conn->next != NULL)
 		cann_conn_free(conn->next);
 
 	conn->next = NULL;
-	if(conn->rcv_ptr != NULL)
+	if (conn->rcv_ptr != NULL)
 		free(conn->rcv_ptr);
 
 	free(conn);
@@ -377,7 +377,7 @@ error:
 		return NULL;
 
 eof:
-	debug_perror( 5, "Error readig fd %d (ret==%d)", client->fd, ret );
+	debug_perror(5, "Error readig fd %d (ret==%d)", client->fd, ret);
 	client->error = 1;
 	return NULL;
 }
@@ -393,7 +393,7 @@ rs232can_msg *cann_get(cann_conn_t *client)
 		FD_SET(client->fd, &rset);
 
 		ret = select(client->fd + 1, &rset, (fd_set*)NULL, (fd_set*)NULL, NULL);
-		debug_assert( ret >= 0, "cann_get: select failed" );
+		debug_assert(ret >= 0, "cann_get: select failed");
 
 		rmsg = cann_get_nb(client);
 		if (rmsg)
