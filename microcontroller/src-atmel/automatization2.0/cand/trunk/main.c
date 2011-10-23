@@ -270,6 +270,10 @@ void process_uart_msg()
 		case RS232CAN_PING_GATEWAY:
 			debug(0, "GATEWAY PONG");
 			break;
+		case RS232CAN_RESYNC:
+			debug(0, "GATEWAY RESYNC REQUEST");
+			canu_reset();
+			break;
 		default:
 			debug(0, "Whats going on? Received unknown type 0x%02x on Uart", msg->cmd);
 			break;
