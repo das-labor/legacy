@@ -284,6 +284,13 @@ void process_uart_msg()
 			debug(0, "GATEWAY: resync request");
 			canu_reset();
 			break;
+		case RS232CAN_VERSION:
+		case RS232CAN_IDSTRING:
+		case RS232CAN_PACKETCOUNTERS:
+		case RS232CAN_ERRORCOUNTERS:
+		case RS232CAN_POWERDRAW:
+			process_cmd_pkt(msg);	//pipe reply to network clients
+			break;
 		default:
 			debug(0, "Whats going on? Received unknown type 0x%02x on Uart", msg->cmd);
 			break;
@@ -309,8 +316,6 @@ void process_client_msg( cann_conn_t *client )
 
 	switch(msg->cmd) {
 		case RS232CAN_SETFILTER:
-			/* XXX */
-			break;
 		case RS232CAN_SETMODE:
 			/* XXX */
 			break;
@@ -322,7 +327,21 @@ void process_client_msg( cann_conn_t *client )
 			break;
 		case RS232CAN_PING_GATEWAY:
 			debug(3, ".. got gateway ping request ..");
+			msg->len = 0;
 			if (serial) canu_transmit(msg);		//send to client on the can
+			break;
+		case RS232CAN_VERSION:
+		case RS232CAN_IDSTRING:
+		case RS232CAN_PACKETCOUNTERS:
+		case RS232CAN_ERRORCOUNTERS:
+		case RS232CAN_POWERDRAW:
+			msg->len = 0;
+			if (serial) canu_transmit(msg);		//send to client on the can
+			break;
+		case RS232CAN_ERROR:
+		case RS232CAN_NOTIFY_RESET:
+		case RS232CAN_RESYNC:
+			//don't react on these commands
 			break;
 	}
 	cann_free(msg);
