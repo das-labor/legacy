@@ -95,7 +95,7 @@ cann_conn_t *cann_connect(char *server, int port)
 	client = malloc(sizeof(cann_conn_t));
 	if (client == NULL)
 	{
-		printf("ERROR: Could not allocate client buffer!\n");
+		debug(0, "Could not allocate client buffer!\n");
 		free(client);
 		exit(EXIT_FAILURE);
 	}
@@ -180,7 +180,7 @@ cann_conn_t *cann_accept(fd_set *set)
 	client = (cann_conn_t *)malloc(sizeof(cann_conn_t));
 	if (client == NULL)
 	{
-		printf("ERROR: Could not allocate client buffer!\n");
+		debug(0, "Could not allocate client buffer!\n");
 		exit(EXIT_FAILURE);
 	}
 	client->next  = cann_conns_head;
@@ -257,7 +257,7 @@ rs232can_msg *cann_buffer_get()
 	rs232can_msg *cmsg = malloc(sizeof(rs232can_msg));
 	if (cmsg == NULL)
 	{
-		printf("ERROR: cann_buffer_get malloc fail!\n");
+		debug(0, "cann_buffer_get malloc fail!\n");
 		exit(EXIT_FAILURE);
 	}
 	else
