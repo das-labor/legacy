@@ -40,6 +40,9 @@ struct { uint16_t rx_count, tx_count, rx_size, tx_size; } pkt_cnt = {0, 0, 0, 0}
 //error counters and flags from the mcp2515 chip
 struct { uint8_t rx_errors, tx_errors, error_flags; } err_cnt = {0, 0, 0};
 
+//bus power measurement struct
+struct { uint16_t v, i; } bus_pwr = {0, 0};
+
 //commands
 typedef enum
 {
@@ -239,6 +242,9 @@ void process_cantun_msg(rs232can_msg *msg) {
 			err_cnt.tx_errors   = mcp_read(TEC);
 			err_cnt.error_flags = mcp_read(EFLG);
 			write_cmd_to_uart(RS232CAN_PACKETCOUNTERS, (char *)&err_cnt, sizeof(err_cnt));
+			break;
+		case RS232CAN_POWERDRAW:
+			write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&bus_pwr, sizeof(bus_pwr));
 			break;
 		default:
 			write_cmd_to_uart(RS232CAN_ERROR, 0, 0);  //send error
