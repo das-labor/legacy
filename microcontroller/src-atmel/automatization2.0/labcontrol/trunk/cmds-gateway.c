@@ -60,7 +60,7 @@ void cmd_gateway_version(int argc, char *argv[])
 	char idstring[RS232CAN_MAXLENGTH+1];
 
 	//create and send gateway version request
-	printf("Requesting version.. ");
+	printf("Requesting version..\n");
 	send_gateway_command(RS232CAN_VERSION);
 
 	//anticipate reply and timeout after 2s
@@ -73,22 +73,22 @@ void cmd_gateway_version(int argc, char *argv[])
 	svn = ((unsigned char)rmsg->data[2] << 8) | (unsigned char)rmsg->data[3];
 
 	//create and send gateway id request
-	printf("Requesting id-string.. ");
+	printf("Requesting id-string..\n");
 	send_gateway_command(RS232CAN_IDSTRING);
 
 	//anticipate reply and timeout after 2s
-	rmsg = anticipate_gateway_reply(RS232CAN_IDSTRING);
+	/*rmsg = anticipate_gateway_reply(RS232CAN_IDSTRING);
 	if(!rmsg) goto timeout;
 
 	//store string
 	rmsg->len = (rmsg->len < sizeof(idstring))?rmsg->len:20;
 	memcpy(idstring, rmsg->data, rmsg->len);
-	idstring[rmsg->len] = 0;
+	idstring[rmsg->len] = 0;*/
 
 	//print answers
-	printf("Version:\t%u.%u", maj, min);
-	printf("SVN-Rev:\t%u", svn);
-	printf("Identifier:\t%s", idstring);
+	printf("Version:\t%u.%u\n", maj, min);
+	printf("SVN-Rev:\t%u\n", svn);
+	//printf("Identifier:\t%s\n", idstring);
 	return;
 
 timeout:
@@ -101,7 +101,7 @@ void cmd_gateway_packetstats(int argc, char *argv[])
 	rs232can_msg *rmsg;
 
 	//create and send gateway ping request
-	printf("Pinging packet counters.. ");
+	printf("Pinging packet counters..\n");
 	send_gateway_command(RS232CAN_PACKETCOUNTERS);
 
 	//anticipate reply and timeout after 2s
@@ -109,10 +109,10 @@ void cmd_gateway_packetstats(int argc, char *argv[])
 	if(!rmsg) goto timeout;
 
 	//print answers
-	printf("TX Packets: %u", *((uint16_t *)&rmsg->data[0]));
-	printf("RX Packets: %u", *((uint16_t *)&rmsg->data[2]));
-	printf("TX total payload data: %u", *((uint16_t *)&rmsg->data[4]));
-	printf("RX total payload data: %u", *((uint16_t *)&rmsg->data[6]));
+	printf("TX Packets:\t\t%u\n", *((uint16_t *)&rmsg->data[0]));
+	printf("RX Packets:\t\t%u\n", *((uint16_t *)&rmsg->data[2]));
+	printf("TX total payload data:\t%u bytes\n", *((uint16_t *)&rmsg->data[4]));
+	printf("RX total payload data:\t%u bytes\n", *((uint16_t *)&rmsg->data[6]));
 	return;
 
 timeout:
@@ -125,7 +125,7 @@ void cmd_gateway_errorstats(int argc, char *argv[])
 	rs232can_msg *rmsg;
 
 	//create and send gateway ping request
-	printf("Requesting error counters.. ");
+	printf("Requesting error counters..\n");
 	send_gateway_command(RS232CAN_ERRORCOUNTERS);
 
 	//anticipate reply and timeout after 2s
@@ -133,9 +133,9 @@ void cmd_gateway_errorstats(int argc, char *argv[])
 	if(!rmsg) goto timeout;
 
 	//print answers
-	printf("TX Errors:\t%u", (unsigned char)rmsg->data[0]);
-	printf("RX Errors:\t%u", (unsigned char)rmsg->data[1]);
-	printf("Error Flags:\t%u", (unsigned char)rmsg->data[2]);
+	printf("TX Errors:\t%u\n", (unsigned char)rmsg->data[0]);
+	printf("RX Errors:\t%u\n", (unsigned char)rmsg->data[1]);
+	printf("Error Flags:\t%u\n", (unsigned char)rmsg->data[2]);
 	return;
 
 timeout:
@@ -154,7 +154,7 @@ void cmd_gateway_powerdraw(int argc, char *argv[])
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_POWERDRAW);
 	if(!rmsg) goto timeout;
-	printf("not implemented yet.. ");
+	printf("not implemented yet..!\n");
 	return;
 
 timeout:
