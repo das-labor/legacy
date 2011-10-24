@@ -241,7 +241,7 @@ void process_cantun_msg(rs232can_msg *msg) {
 			err_cnt.rx_errors   = mcp_read(REC);
 			err_cnt.tx_errors   = mcp_read(TEC);
 			err_cnt.error_flags = mcp_read(EFLG);
-			write_cmd_to_uart(RS232CAN_PACKETCOUNTERS, (char *)&err_cnt, sizeof(err_cnt));
+			write_cmd_to_uart(RS232CAN_ERRORCOUNTERS, (char *)&err_cnt, sizeof(err_cnt));
 			break;
 		case RS232CAN_POWERDRAW:
 			write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&bus_pwr, sizeof(bus_pwr));
