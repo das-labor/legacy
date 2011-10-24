@@ -303,10 +303,11 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 	int ret;
 	unsigned char val;
 
-	// sanity
-	debug_assert( !(client->error),
-			"cann_get_nb() with error %d on %d",
-			client->error, client->fd );
+	if(client->error)
+	{
+		debug( 0, "cann_get_nb() with error %d on %d", client->error, client->fd );
+		return NULL;
+	}
 
 	// XXX das alles geht auch einfacher XXX
 	if (client->state == CANN_LEN) {
@@ -360,7 +361,7 @@ rs232can_msg *cann_get_nb(cann_conn_t *client)
 
 		if (rmsg == NULL)
 		{
-			printf("ERROR: Could not allocate rmsg buffer!\n");
+			debug(0, "Could not allocate rmsg buffer, exiting!\n");
 			exit(EXIT_FAILURE);
 		}
 
