@@ -25,7 +25,7 @@ static void mySignalHandler ( int reason )
 static void install_signalhandler ( void )
 {
     signal(SIGINT,mySignalHandler);
-    signal(SIGTERM,mySignalHandler);    
+    signal(SIGTERM,mySignalHandler);
 }
 
 
@@ -34,9 +34,9 @@ void uart_init(char *sport) {
 	struct termios options;
 
 	install_signalhandler();
-	
+
 	/**
-	 * O_NOCTTY -- ttyS is not our controlling terminal: 
+	 * O_NOCTTY -- ttyS is not our controlling terminal:
 	 *   kernel, do not do fancy stuff! We're not getty, stupid!
 	 *
 	 * O_NDELAY -- don't block for DTR, we're not talking to a modem
@@ -55,7 +55,7 @@ void uart_init(char *sport) {
 
 //	#if defined(__WINDOWS__) | defined(__CYGWIN__)
 		/*
-		 * needed because cfsetspeed is not available on Windows. 
+		 * needed because cfsetspeed is not available on Windows.
 		 */
 		cfsetispeed(&options, UART_BAUD_RATE);
 		cfsetospeed(&options, UART_BAUD_RATE);
@@ -94,7 +94,7 @@ void uart_putc(char c) {
 	ssize_t ret = write(uart_fd, &c, 1);
 	if (ret != 1)
 	{
-		printf("uart_putc faild: %s\n", strerror(errno));
+		debug(0, "uart_putc faild: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 }
@@ -110,7 +110,7 @@ unsigned char uart_getc_nb(char *c)
 	int ret;
 
 	ret = read(uart_fd, c, 1);
-		       
+
 	debug(3, "%d\n", c);
 	if (ret<=0) return 0;
 

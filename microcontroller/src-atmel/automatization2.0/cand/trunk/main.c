@@ -430,7 +430,7 @@ void signal_handler(int sig) {
 	if (sig == SIGQUIT)
 		exit(EXIT_SUCCESS);
 	else
-	raise (sig);
+		raise (sig);
 }
 
 int main(int argc, char *argv[])
@@ -470,7 +470,7 @@ int main(int argc, char *argv[])
 				break;
 			case 'h':
 				help();
-				exit(0);
+				exit(EXIT_SUCCESS);
 			case 'l':
 				logfile = optarg;
 				break;
