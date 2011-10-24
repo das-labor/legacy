@@ -136,6 +136,14 @@ void can_transmit(can_message *cmsg)
  * reciving
  */
 
+rs232can_msg * can_get_raw_gateway_message_nb()
+{
+	if (conn)
+		return cann_get_nb(conn);
+	else
+		return canu_get_nb();
+}
+
 // XXX must free messages
 
 //returns next can message
