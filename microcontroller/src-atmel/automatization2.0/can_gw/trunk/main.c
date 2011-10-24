@@ -1,4 +1,4 @@
-
+#include <avr/pgmspace.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
@@ -9,10 +9,38 @@
 #include "config.h"
 #include "canlib/spi.h"
 #include "canlib/can.h"
-
+#include "canlib/mcp2510regs.h"
 #include "uart/uart.h"
 
+//leds
+#define PORT_LEDS PORTD
+#define DDR_LEDS DDRD
+#define PIN_LEDCL PD5
+#define PIN_LEDCK PD6
+#define PIN_LEDD PD7
 
+//buspower
+#define PORT_BUSPOWER PORTD
+#define DDR_BUSPOWER DDRD
+#define BIT_BUSPOWER PD4
+
+//max packet data length
+#define RS232CAN_MAXLENGTH 20
+
+//hacky import of read function
+extern unsigned char mcp_read(unsigned char reg);
+
+//firmware version structure
+prog_uint8_t firmware_version[] = {FW_VERSION_MAJOR, FW_VERSION_MINOR, (FW_SVNREVISION >> 8) & 0xFF, FW_SVNREVISION & 0xFF};
+
+//packet and data counters, as seen from the gateway looking at the host
+//i.e. rx is about packets from uart and tx to uart, not from can
+struct { uint16_t rx_count, tx_count, rx_size, tx_size; } pkt_cnt = {0, 0, 0, 0};
+
+//error counters and flags from the mcp2515 chip
+struct { uint8_t rx_errors, tx_errors, error_flags; } err_cnt = {0, 0, 0};
+
+//commands
 typedef enum
 {
 	RS232CAN_RESET=0x00,
@@ -22,10 +50,13 @@ typedef enum
 	RS232CAN_ERROR=0x13,
 	RS232CAN_NOTIFY_RESET=0x14,
 	RS232CAN_PING_GATEWAY=0x15,
-	RS232CAN_RESYNC=0x16
+	RS232CAN_RESYNC=0x16,
+	RS232CAN_VERSION=0x17,
+	RS232CAN_IDSTRING=0x18,
+	RS232CAN_PACKETCOUNTERS=0x19,
+	RS232CAN_ERRORCOUNTERS=0x1A,
+	RS232CAN_POWERDRAW=0x1B
 } rs232can_cmd;
-
-#define RS232CAN_MAXLENGTH 20
 
 typedef struct {
 	unsigned char cmd;
@@ -69,7 +100,7 @@ void write_can_message_to_uart(can_message * cmsg) {
 /*****************************************************************************
  * CMD to UART
  */
-void write_cmd_to_uart(uint8_t cmd)
+void write_cmd_to_uart(uint8_t cmd, char* buf, uint8_t len)
 {
 	uint16_t crc;
 
@@ -78,6 +109,10 @@ void write_cmd_to_uart(uint8_t cmd)
 
 	uart_putc(cmd); 		//command
 	uart_putc(0);			//length
+
+	if(len)
+		crc = write_buffer_to_uart_and_crc(crc, buf, len);
+
 	uart_putc(crc >> 8);	//crc16
 	uart_putc(crc & 0xFF);
 }
@@ -102,7 +137,7 @@ rs232can_msg * canu_get_nb()
 	static uint16_t crc, crc_in;
 	unsigned char c;
 
-	while (uart_getc_nb(&c))
+	while (uart_getc_nb((char *)&c))
 	{
 		#ifdef DEBUG
 		printf("canu_get_nb received: %02x\n", c);
@@ -167,7 +202,6 @@ void canu_reset()
 		uart_putc( (char)0x00 );
 }
 
-
 void process_cantun_msg(rs232can_msg *msg) {
 	can_message *cmsg;
 
@@ -181,32 +215,37 @@ void process_cantun_msg(rs232can_msg *msg) {
 			cmsg = can_buffer_get();                      //alocate buffer
 			memcpy(cmsg, msg->data, sizeof(can_message)); //copy can message
 			can_transmit(cmsg);                           //transmit it
+			pkt_cnt.rx_size += cmsg->dlc;
 			break;
 		case RS232CAN_NOTIFY_RESET:
 			break;
 		case RS232CAN_PING_GATEWAY:
-			write_cmd_to_uart(RS232CAN_PING_GATEWAY);  // reply
+			write_cmd_to_uart(RS232CAN_PING_GATEWAY, 0, 0);  // reply
 			break;
 		case RS232CAN_RESYNC:
 			canu_reset();
 			break;
+		case RS232CAN_VERSION:
+			write_cmd_to_uart(RS232CAN_VERSION, (char *)firmware_version, sizeof(firmware_version));
+			break;
+		case RS232CAN_IDSTRING:
+			write_cmd_to_uart(RS232CAN_IDSTRING, (char *)FW_IDSTRING, (sizeof(FW_IDSTRING)-1)>20?sizeof(FW_IDSTRING)-1:20);
+			break;
+		case RS232CAN_PACKETCOUNTERS:
+			write_cmd_to_uart(RS232CAN_PACKETCOUNTERS, (char *)&pkt_cnt, sizeof(pkt_cnt));
+			break;
+		case RS232CAN_ERRORCOUNTERS:
+			err_cnt.rx_errors   = mcp_read(REC);
+			err_cnt.tx_errors   = mcp_read(TEC);
+			err_cnt.error_flags = mcp_read(EFLG);
+			write_cmd_to_uart(RS232CAN_PACKETCOUNTERS, (char *)&err_cnt, sizeof(err_cnt));
+			break;
 		default:
-			write_cmd_to_uart(RS232CAN_ERROR);  //send error
+			write_cmd_to_uart(RS232CAN_ERROR, 0, 0);  //send error
 			break;
 	}
 }
 
-
-#define PORT_LEDS PORTD
-#define DDR_LEDS DDRD
-#define PIN_LEDCL PD5
-#define PIN_LEDCK PD6
-#define PIN_LEDD PD7
-
-
-#define PORT_BUSPOWER PORTD
-#define DDR_BUSPOWER DDRD
-#define BIT_BUSPOWER PD4
 
 void buspower_on() {
 	DDR_BUSPOWER |= (1<<BIT_BUSPOWER);
@@ -239,32 +278,29 @@ void adc_init() {
 	ADCSRA |= (1<<ADEN) | (1<<ADSC) | (1<<ADIF);
 }
 
-uint16_t leds, leds_old;
-
 int main() {
+	static uint16_t leds, leds_old;
+
+	//init all
 	led_init();
-
 	buspower_on();
-
 	uart_init();
 	spi_init();
 	can_init();
 	wdt_enable(WDTO_250MS);
 
+	//enable interrupts (all systems go!)
 	sei();
 
 	//sync line
 	canu_reset();
 
 	//notify host that we had a reset
-	write_cmd_to_uart(RS232CAN_NOTIFY_RESET);
+	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, 0, 0);
 
+	//begin can operations
 	can_setmode(normal);
 	can_setled(0, 1);
-
-
-	uint8_t r_count = 1, t_count = 1;
-
 
 	while (1) {
 		rs232can_msg  *rmsg;
@@ -272,25 +308,29 @@ int main() {
 
 		wdt_reset();
 
+		//transmission from host to can
 		rmsg = canu_get_nb();
 		if (rmsg) {
-			r_count ++;
+			pkt_cnt.rx_count ++;
 			process_cantun_msg(rmsg);
 		} else if(canu_failcnt > 1)
 		{
 			canu_reset();
-			write_cmd_to_uart(RS232CAN_RESYNC);
+			write_cmd_to_uart(RS232CAN_RESYNC, 0, 0);
 			canu_failcnt = 0;
 		}
 
+		//transmission from can to host
 		cmsg = can_get_nb();
 		if (cmsg) {
-			t_count ++;
+			pkt_cnt.tx_count ++;
+			pkt_cnt.tx_size += cmsg->dlc;
 			write_can_message_to_uart(cmsg);
 			can_free(cmsg);
 		}
 
-		leds = (r_count << 8) | t_count;
+		//update leds
+		leds = (pkt_cnt.rx_count << 8) | pkt_cnt.tx_count;
 		if (leds != leds_old) {
 			leds_old = leds;
 			led_set(leds);

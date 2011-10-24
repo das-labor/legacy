@@ -1,6 +1,21 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+
+//firmware version defines
+#define FW_VERSION_MAJOR 1
+#define FW_VERSION_MINOR 1
+
+//firmware svn revision is set via -D compiler option
+#ifndef FW_SVNREVISION
+	#define FW_SVNREVISION 0
+#endif
+
+//firmware id string is set via -D compiler option
+#ifndef FW_IDSTRING
+	#define FW_IDSTRING "unknown"
+#endif
+
 // util.[ch] defines
 // #define F_CPU 16000000         // Oszillator-Frequenz in Hz
 
