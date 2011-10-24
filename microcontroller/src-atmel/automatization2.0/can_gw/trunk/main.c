@@ -111,7 +111,7 @@ void write_cmd_to_uart(uint8_t cmd, char* buf, uint8_t len)
 	crc = _crc16_update(crc, len);
 
 	uart_putc(cmd); 		//command
-	uart_putc(0);			//length
+	uart_putc(len);			//length
 
 	if(len)
 		crc = write_buffer_to_uart_and_crc(crc, buf, len);
