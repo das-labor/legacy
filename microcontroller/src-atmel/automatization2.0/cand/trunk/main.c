@@ -278,6 +278,7 @@ void process_uart_msg()
 			break;
 		case RS232CAN_PING_GATEWAY:
 			debug(0, "GATEWAY: pong");
+			process_cmd_pkt(msg);	//send pong to network clients
 			break;
 		case RS232CAN_RESYNC:
 			debug(0, "GATEWAY: resync request");
@@ -317,15 +318,7 @@ void process_client_msg( cann_conn_t *client )
 		default:
 			// to UART
 			if (serial) canu_transmit(msg);		//send to client on the can
-
-			// foreach client
-			ac = cann_conns_head;
-			while(ac) {
-//XXX				if ( cann_match_filter(ac, msg) )
-				if ( ac != client )
-					cann_transmit(ac, msg);
-				ac = ac->next;
-			}
+			process_cmd_pkt(msg);				//send to all network clients
 			break;
 		case RS232CAN_PING_GATEWAY:
 			debug(3, ".. got gateway ping request ..");
