@@ -219,6 +219,7 @@ void process_cantun_msg(rs232can_msg *msg) {
 			memcpy(cmsg, msg->data, sizeof(can_message)); //copy can message
 			can_transmit(cmsg);                           //transmit it
 			pkt_cnt.rx_size += cmsg->dlc;
+			pkt_cnt.rx_count ++;
 			break;
 		case RS232CAN_NOTIFY_RESET:
 			break;
@@ -317,7 +318,6 @@ int main() {
 		//transmission from host to can
 		rmsg = canu_get_nb();
 		if (rmsg) {
-			pkt_cnt.rx_count ++;
 			process_cantun_msg(rmsg);
 		} else if(canu_failcnt > 1)
 		{
