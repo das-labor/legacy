@@ -508,7 +508,7 @@ int main(int argc, char *argv[])
 
 	event_loop();  // does not return
 
-	debug(0, "Cand exited event loop.. XXX ERROR BLINK FIXME NOW", sig);
+	debug(0, "Cand exited event loop.. XXX ERROR BLINK FIXME NOW");
 	shutdown_all();
 	return EXIT_SUCCESS;
 }
