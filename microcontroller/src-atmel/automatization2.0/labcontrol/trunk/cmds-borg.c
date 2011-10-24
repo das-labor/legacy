@@ -10,7 +10,7 @@
 #include "cmds-borg.h"
 
 
-void cmd_borg_mode(int argc, char *argv[]) 
+void cmd_borg_mode(int argc, char *argv[])
 {
 	pdo_message *msg;
 	int i;
@@ -46,7 +46,7 @@ argerror:
 }
 
 void blm_frame_send(int (* bmp)[8] ){
-	
+
 	pdo_message *msg;
 	unsigned char x;
 	for(x=0;x<8;x+=2){
@@ -63,13 +63,13 @@ void blm_frame_send(int (* bmp)[8] ){
 
 		(*bmp)[x] >>= 1;
 		(*bmp)[x+1] >>= 1;
-		msg->data[1] = (*bmp)[x] & 0xff;	
-		msg->data[2] = ((*bmp)[x]>>8) & 0xff;	
+		msg->data[1] = (*bmp)[x] & 0xff;
+		msg->data[2] = ((*bmp)[x]>>8) & 0xff;
 		msg->data[3] = ((*bmp)[x]>>16) & 0xff;
 		msg->data[4] = ((*bmp)[x+1]) & 0xff;
 		msg->data[5] = ((*bmp)[x+1]>>8) & 0xff;
 		msg->data[6] = ((*bmp)[x+1]>>16) & 0xff;
-		
+
 		can_transmit((can_message*)msg);
 	}
 }
@@ -100,7 +100,7 @@ void cmd_borg_blm(int argc, char *argv[]){
 			fprintf (stderr, "Can't open '%s': %s\n", filename, strerror (errno));
 			return;
 		}
- 
+
 	lc = 1;
 	if (!bl_fgets (buf, sizeof (buf), blm) && lc++)
 		goto blerror;
@@ -114,12 +114,12 @@ void cmd_borg_blm(int argc, char *argv[]){
 
 	if (strncasecmp (buf + i, "BlinkenLights Movie", 19) != 0)
 		goto blerror;
-	
+
 	unsigned int bmp[8];
-	unsigned int linecnt=0;	
-			
+	unsigned int linecnt=0;
+
 	while (bl_fgets (buf, sizeof (buf), blm) && lc++)
-		
+
 	{
 			len = strlen (buf);
 
@@ -157,25 +157,25 @@ void cmd_borg_blm(int argc, char *argv[]){
 					bmp[linecnt] = 0;
 					for (i = 0; i < len - 1; i++){
 						bmp[linecnt] <<= 1;
-						putchar (buf[i] == '0' ? ' ' : '#'); 
+						putchar (buf[i] == '0' ? ' ' : '#');
 						bmp[linecnt] |= (buf[i] == '0' ? 0:1);
 					}
-					
+
 					linecnt++;
 					putchar ('\n');
 				}
 		}
-						
+
 	fclose (blm);
 	blm_frame_send(bmp);
 	usleep (duration*1000);
 	return 0;
 
  blerror:
-	fprintf (stderr, "Error parsing BlinkenLights movie '%s' (line %d).\n", 
+	fprintf (stderr, "Error parsing BlinkenLights movie '%s' (line %d).\n",
 					 filename, lc);
 	fclose (blm);
-	return -1;	
+	return -1;
 argerror:
 	debug(0, "borg mode <addr> <number>");
 
@@ -183,7 +183,7 @@ argerror:
 
 
 
-void cmd_borg_scroll(int argc, char *argv[]) 
+void cmd_borg_scroll(int argc, char *argv[])
 {
 	pdo_message *msg;
 	char *src, *dst;
@@ -210,7 +210,7 @@ void cmd_borg_scroll(int argc, char *argv[])
 		*dst++ = *src++;
 		msg->dlc++;
 	};
-		
+
 	// first packet
 	can_transmit((can_message*)msg);
 
@@ -229,7 +229,7 @@ void cmd_borg_scroll(int argc, char *argv[])
 			*dst++ = *src++;
 			msg->dlc++;
 		};
-		
+
 		can_transmit((can_message*)msg);
 	}
 
@@ -252,7 +252,7 @@ typedef struct {
 
 
 cmd_t borg_cmds[] = {
-  { &cmd_borg_mode, "mode", "mode", "switch bord to mode" },
+  { &cmd_borg_mode, "mode", "mode", "switch borg to mode" },
   { &cmd_borg_scroll, "scroll", "scroll", "set scrolltext" },
   { &cmd_borg_blm, "blm", "blm", "play Blinkenmovie" },
   { NULL, NULL, NULL, NULL }
@@ -263,9 +263,9 @@ void cmd_borg(int argc, char **argv)
 {
 	char *arg = argv[1];
 	cmd_t *cmd;
-	
+
 	cmd = borg_cmds;
-	while(cmd->fkt) {
+	while(cmd->fkt && argc > 1) {
 		if (strcmp(arg, cmd->cmd) == 0) {
 			(*(cmd->fkt))(argc-1, &(argv[1]));
 			goto done;
@@ -284,7 +284,7 @@ void cmd_borg(int argc, char **argv)
 	}
 	printf( "\n" );
 
-done: 
+done:
 	return;
 }
 
