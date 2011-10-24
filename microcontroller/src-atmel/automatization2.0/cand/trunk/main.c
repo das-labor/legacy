@@ -374,7 +374,7 @@ void event_loop()
 		cann_dumpconn();
 
 		num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
-		debug_assert( num >= 0, "select failed" );
+		debug_assert( num >= 0, "select failed" ); //XXX FIXME THIS CAUSES CAND CRASHES
 		debug( 10, "Select returned %d", num);
 		cann_dumpconn();
 
@@ -414,13 +414,18 @@ void event_loop()
 	}
 }
 
-void signal_handler(int sig) {
-	debug(0, "Stopping Cand (SIGNAL: %i)", sig);
+void shutdown_all()
+{
 	cann_close_errors();
 	cann_close(NULL);
 	shutdown(listen_socket, SHUT_RDWR);
 	close(listen_socket);
 	debug_close();
+}
+
+void signal_handler(int sig) {
+	debug(0, "Stopping Cand (SIGNAL: %i)", sig);
+	shutdown_all();
 	signal (sig, SIG_DFL);
 	if (sig == SIGQUIT)
 		exit(EXIT_SUCCESS);
@@ -503,5 +508,7 @@ int main(int argc, char *argv[])
 
 	event_loop();  // does not return
 
+	debug(0, "Cand exited event loop.. XXX ERROR BLINK FIXME NOW", sig);
+	shutdown_all();
 	return EXIT_SUCCESS;
 }
