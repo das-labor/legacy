@@ -34,7 +34,7 @@ rs232can_msg* anticipate_gateway_reply(uint8_t cmd)
 	rs232can_msg *rmsg_in;
 	unsigned int i = 0;
 	//anticipate reply and timeout after 2s
-	while(((rmsg_in = can_get_raw_gateway_message_nb()) == NULL || rmsg_in->cmd != RS232CAN_PING_GATEWAY) && i++ < DEFAULT_TIMEOUT) usleep(1000);
+	while(((rmsg_in = can_get_raw_gateway_message_nb()) == NULL || rmsg_in->cmd != cmd) && i++ < DEFAULT_TIMEOUT) usleep(1000);
 	return (i<DEFAULT_TIMEOUT)?rmsg_in:NULL;
 }
 
@@ -153,9 +153,8 @@ void cmd_gateway_powerdraw(int argc, char *argv[])
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_POWERDRAW);
-	printf("not implemented yet.. ");
 	if(!rmsg) goto timeout;
-
+	printf("not implemented yet.. ");
 	return;
 
 timeout:
