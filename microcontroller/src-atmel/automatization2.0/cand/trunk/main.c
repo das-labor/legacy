@@ -232,9 +232,10 @@ void customscripts(rs232can_msg *msg)
 
 }
 
-void process_cmd_pkt(rs232can_msg *msg)
+void msg_to_clients(rs232can_msg *msg)
 {
 	cann_conn_t *ac;
+	if(msg->cmd == RS232CAN_PKT);
 	customscripts(msg);
 
 	// foreach client
@@ -268,7 +269,7 @@ void process_uart_msg()
 	switch(msg->cmd)
 	{
 		case RS232CAN_PKT:
-			process_cmd_pkt(msg);
+			msg_to_clients(msg);
 			break;
 		case RS232CAN_ERROR:
 			debug(0, "GATEWAY: error");
@@ -278,7 +279,7 @@ void process_uart_msg()
 			break;
 		case RS232CAN_PING_GATEWAY:
 			debug(0, "GATEWAY: pong");
-			process_cmd_pkt(msg);	//send pong to network clients
+			msg_to_clients(msg);	//send pong to network clients
 			break;
 		case RS232CAN_RESYNC:
 			debug(0, "GATEWAY: resync request");
@@ -289,7 +290,7 @@ void process_uart_msg()
 		case RS232CAN_PACKETCOUNTERS:
 		case RS232CAN_ERRORCOUNTERS:
 		case RS232CAN_POWERDRAW:
-			process_cmd_pkt(msg);	//pipe reply to network clients
+			msg_to_clients(msg);	//pipe reply to network clients
 			break;
 		default:
 			debug(0, "Whats going on? Received unknown type 0x%02x on Uart", msg->cmd);
@@ -323,7 +324,7 @@ void process_client_msg( cann_conn_t *client )
 		default:
 			// to UART
 			if (serial) canu_transmit(msg);		//send to client on the can
-			process_cmd_pkt(msg);				//send to all network clients
+			msg_to_clients(msg);				//send to all network clients
 			break;
 		case RS232CAN_PING_GATEWAY:
 			debug(3, ".. got gateway ping request ..");
