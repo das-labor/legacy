@@ -235,8 +235,8 @@ void customscripts(rs232can_msg *msg)
 void msg_to_clients(rs232can_msg *msg)
 {
 	cann_conn_t *ac;
-	if(msg->cmd == RS232CAN_PKT);
-	customscripts(msg);
+	if(msg->cmd == RS232CAN_PKT)
+		customscripts(msg);
 
 	// foreach client
 	ac = cann_conns_head;
