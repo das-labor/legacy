@@ -31,7 +31,7 @@
 extern unsigned char mcp_read(unsigned char reg);
 
 //firmware version structure
-prog_uint8_t firmware_version[] = {FW_VERSION_MAJOR, FW_VERSION_MINOR, (FW_SVNREVISION >> 8) & 0xFF, FW_SVNREVISION & 0xFF};
+uint8_t firmware_version[] = {FW_VERSION_MAJOR, FW_VERSION_MINOR, (FW_SVNREVISION >> 8) & 0xFF, FW_SVNREVISION & 0xFF};
 
 //packet and data counters, as seen from the gateway looking at the host
 //i.e. rx is about packets from uart and tx to uart, not from can
