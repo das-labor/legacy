@@ -19,6 +19,6 @@ void cmd_gateway(int argc, char *argv[])
 	can_transmit_raw_gateway_message(&rmsg);
 
 	//anticipate reply and timeout after 2s
-	while((rmsg_in = can_get_raw_gateway_message_nb() == NULL) && i++ < 2000) usleep(1000);
+	while(((rmsg_in = can_get_raw_gateway_message_nb()) == NULL || rmsg_in->cmd != RS232CAN_PING_GATEWAY) && i++ < 2000) usleep(1000);
 	printf((i<2000)?"and got a reply!\n":"but timed out after 2 seconds :-(\n");
 }
