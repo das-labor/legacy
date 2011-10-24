@@ -418,6 +418,8 @@ void signal_handler(int sig) {
 	debug(0, "Stopping Cand (SIGNAL: %i)", sig);
 	cann_close_errors();
 	cann_close(NULL);
+	shutdown(listen_socket, SHUT_RDWR);
+	close(listen_socket);
 	debug_close();
 	signal (sig, SIG_DFL);
 	if (sig == SIGQUIT)
