@@ -74,22 +74,21 @@ void cmd_gateway_version(int argc, char *argv[])
 
 	//create and send gateway id request
 	printf("Requesting id-string..\n");
-	//send_gateway_command(RS232CAN_VERSION);
 	send_gateway_command(RS232CAN_IDSTRING);
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_IDSTRING);
-	/*if(!rmsg) goto timeout;
+	if(!rmsg) goto timeout;
 
 	//store string
 	rmsg->len = (rmsg->len < sizeof(idstring))?rmsg->len:20;
 	memcpy(idstring, rmsg->data, rmsg->len);
-	idstring[rmsg->len] = 0;*/
+	idstring[rmsg->len] = 0;
 
 	//print answers
 	printf("Version:\t%u.%u\n", maj, min);
 	printf("SVN-Rev:\t%u\n", svn);
-	//printf("Identifier:\t%s\n", idstring);
+	printf("Identifier:\t%s\n", idstring);
 	return;
 
 timeout:
