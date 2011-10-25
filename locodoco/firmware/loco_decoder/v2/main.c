@@ -9,4 +9,9 @@ int main (void)
 {
 	motor_init();
 	rfm12_init();
+	
+	while (42)
+	{
+		rfm12_tick();
+	}
 }

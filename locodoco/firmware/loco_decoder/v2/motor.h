@@ -18,11 +18,13 @@
 
 /* initialize
  */
-inline void motor_init(void);
+void motor_init(void);
 
 /* stop the motor, eventually disable other
  * hardware to save some power
  */
-inline void motor_sleep(void);
+void motor_sleep(void);
 
-inline void motor_awake(void);
+/* ...
+ */
+void motor_awake(void);
