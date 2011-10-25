@@ -1,4 +1,4 @@
-OBJ = main.o rfm12.o motor.o
+OBJ = main.o rfm12.o motor.o locodoco.o
 
 # hardware revision (currently only v2)
 HWREF         := 2
