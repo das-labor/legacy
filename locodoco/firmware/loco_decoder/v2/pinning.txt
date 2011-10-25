@@ -1,0 +1,8 @@
+RFM12
+	MISO/MOSI/SCK (as usual)
+	nSEL on PB1
+
+MOTOR CTRL
+	EN -> PB2 (OC1B)
+	FW -> PB0
+	RW -> PD7
