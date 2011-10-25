@@ -1,5 +1,5 @@
 #include "motor.h"
-inline void motor_init()
+void motor_init()
 {
 	DDR_MOTOR_EN |= _BV(PIN_MOTOR_EN);
 	MOTOR_OFF();
@@ -8,7 +8,7 @@ inline void motor_init()
 	MOTOR_FW(); /* set a defined state */
 }
 
-inline void motor_sleep()
+void motor_sleep()
 {
 	MOTOR_OFF();
 	#ifdef PRR
@@ -16,7 +16,7 @@ inline void motor_sleep()
 	#endif
 }
 
-inline void motor_awake()
+void motor_awake()
 {
 	#ifdef PRR
 	PRR &= ~(_BV(PRTIM1));
