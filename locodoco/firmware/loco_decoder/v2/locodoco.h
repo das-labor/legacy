@@ -3,6 +3,7 @@
 
 #include "../../common/locodoco.h"
 #include "config.h"
+#include "motor.h"
 #include "rfm12.h"
 
 #pragma once

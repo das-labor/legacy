@@ -25,10 +25,20 @@
 	/* eeprom address of our locodoco addr
 	 */
 	#define EEP_MYADDRESS 0x00
+
+	/* timer to use for motor pwm (currently only tcnt1 supported,
+	 * -> see motor.h
+	 */
+	#define MOTOR_TIMER 1
 #else
 	#error "no or unknown hardware revision (HWREF) defined!"
 #endif
 
+/* set the number of possible entries in the motor
+ * stepping table. note that each table entry will consume
+ * 2 bytes of system ram & eeprom
+ */
+#define MOTOR_ADC_STEPS 16
 
 /*
  don't forget to adjust rfm12_config.h as well (if neccessary)
