@@ -1,10 +1,10 @@
 #include "locodoco.h"
 
-volatile static uint8_t myaddress = 0x00;
+volatile static locodoco_addr_t myaddress = 0x00;
 
 void locodoco_init ()
 {
-	myaddress = eeprom_read_byte (EEP_MYADDRESS);
+	eeprom_read_block ((void*) &myaddress, EEP_MYADDRESS, sizeof(locodoco_addr_t));
 }
 
 void locodoco_tick ()
@@ -22,23 +22,31 @@ void locodoco_tick ()
 		goto out_clear;
 	if (rfm12_rx_type() != LPROTO_T0)
 		goto out_clear;
-	if (LPROTO_GET_PREFIX(rxbuf) != LPROTO_T1)
+	if (LPROTO_PREFIX(rxbuf) != LPROTO_T1)
 		goto out_clear;
 
 	/* finally! ... a valid locodoco packet
 	 */
 	
-	switch (LPROTO_GET_TYPE(rxbuf))
+	switch (LPROTO_TYPE(rxbuf))
 	{
 		case LPROTO_TYPE_RESET:
+			if (LPROTO_ADDR(rxbuf) != myaddress)
+				goto out_clear;
 			wdt_enable (WDTO_15MS);
 			rfm12_rx_clear();
 			while (23); /* wait for watchdog reset */
 		break;
 		case LPROTO_TYPE_PING:
-			LPROTO_GET_TYPE(rxbuf) = LPROTO_TYPE_PONG;
+			LPROTO_TYPE(rxbuf) = LPROTO_TYPE_PONG;
 			rfm12_rx_clear();
-			rfm12_tx (4, LPROTO_T0, rxbuf);
+
+			if (LPROTO_ADDR(rxbuf) != myaddress)
+				return;
+			rfm12_tx (LPROTO_MINLEN, LPROTO_T0, rxbuf);
+		break;
+		case LPROTO_PWM_SET:
+			
 		break;
 	}
 out_clear:
