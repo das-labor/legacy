@@ -27,7 +27,7 @@
 	#error "timer set in MOTOR_TIMER unknown, edit motor.h"
 #endif
 
-typedef motor_speed_t uint16_t;
+typedef uint16_t motor_speed_t;
 
 /* initialize
  */
