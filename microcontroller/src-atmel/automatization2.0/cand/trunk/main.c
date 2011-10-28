@@ -13,14 +13,14 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include "can.h"
 #include "cann.h"
+#include "uart-host.h"
+#include "can-uart.h"
 #include "debug.h"
 
 // Atmel ; LAP includes
 #include "config.h"
-
-#include "uart-host.h"
-#include "can-uart.h"
 
 #ifndef max
  #define max(a,b) (((a) > (b)) ? (a) : (b))
