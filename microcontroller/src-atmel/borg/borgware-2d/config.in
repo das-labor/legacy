@@ -12,7 +12,7 @@ comment "General Setup"
 	   ATmega644p     atmega644p   \
 	   ATmega8515     atmega8515" \
 	   'ATmega32' MCU
-	
+
 	int "MCU frequency" FREQ 16000000
 endmenu
 ###############################################################################
@@ -26,7 +26,8 @@ source borg_hw/config.in
 ### Features Menu #############################################################
 mainmenu_option next_comment
 comment "Features"
-	bool    "prng random number generator" RANDOM_SUPPORT y
+	bool     "prng random number generator" RANDOM_SUPPORT y
+	dep_bool "CAN Time Extension"   		LAP_TIME_EXTENSION $CAN_SUPPORT
 endmenu
 ###############################################################################
 

@@ -14,6 +14,7 @@ comment "Animations"
 	dep_bool "Breakout Demo" ANIMATION_BREAKOUT      $GAME_BREAKOUT
 	bool     "Martin Herweg" ANIMATION_MHERWEG       $RANDOM_SUPPORT
 	dep_bool "Langton Ant"   ANIMATION_LTN_ANT       $RANDOM_SUPPORT
+	dep_bool "Time Display"  ANIMATION_TIME		     $SCROLLTEXT_SUPPORT	$LAP_TIME_EXTENSION
 
 	dep_bool_menu "Bitmap Scroller" ANIMATION_BMSCROLLER y $RANDOM_SUPPORT
 		dep_bool "LABOR Logo"       ANIMATION_LABORLOGO $ANIMATION_BMSCROLLER
