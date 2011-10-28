@@ -14,7 +14,7 @@
 #include <unistd.h>
 
 #include "can.h"
-#include "cann.h"
+#include "can-tcp.h"
 #include "uart-host.h"
 #include "can-uart.h"
 #include "debug.h"
