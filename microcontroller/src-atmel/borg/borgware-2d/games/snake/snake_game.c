@@ -121,7 +121,7 @@ static void snake_drawBorder(void)
 #endif
 }
 
-
+#ifdef GAME_SNAKE
 /**
  * Translates port information into directions.
  * @return Current direction of the joystick
@@ -152,7 +152,7 @@ static snake_dir_t snake_queryJoystick(void)
 
 	return dirJoystick;
 }
-
+#endif
 
 /**
  * Initializes the structure which represents the snake itself.
