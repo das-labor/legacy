@@ -6,7 +6,7 @@
 
 #include "can.h"
 #include "can-encap.h"
-#include "cann.h"
+#include "can-tcp.h"
 #include "can-uart.h"
 
 /***************************************************************************
