@@ -13,12 +13,6 @@
 #include "../util.h"
 #include "../scrolltext/scrolltext.h"
 
-//address of the time master
-#define TIME_MASTER_ADDR 0x00
-
-//update timeout in ms
-#define TIME_UPDATE_TIMEOUT 100
-
 //hackhack
 extern can_addr myaddr;
 
