@@ -8,10 +8,10 @@
 #include <stdlib.h>
 #include <avr/pgmspace.h>
 #include "../config.h"
-#include "../can.h"
-#include "../lap.h"
+#include "../can/can.h"
+#include "../can/lap.h"
 #include "../util.h"
-#include "../scrolltext.h"
+#include "../scrolltext/scrolltext.h"
 
 //address of the time master
 #define TIME_MASTER_ADDR 0x00

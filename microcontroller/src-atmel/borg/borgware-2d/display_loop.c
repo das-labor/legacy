@@ -17,7 +17,9 @@
 #include "animations/outofspec.h"
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
+#ifdef ANIMATION_TIME
 #include "animations/borg_time.h"
+#endif
 #include "borg_hw/borg_hw.h"
 #include "can/borg_can.h"
 #include "random/prng.h"

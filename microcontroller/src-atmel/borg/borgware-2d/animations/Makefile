@@ -13,13 +13,13 @@ ifeq ($(ANIMATION_MATRIX),y)
   SRC += matrix.c
 endif
 
-ifeq ($(ANIMATION_STONEFLY),y) 
-  SRC += stonefly.c 
-endif 
+ifeq ($(ANIMATION_STONEFLY),y)
+  SRC += stonefly.c
+endif
 
-ifeq ($(ANIMATION_FLYINGDOTS),y) 
-  SRC += flyingdots.c 
-endif 
+ifeq ($(ANIMATION_FLYINGDOTS),y)
+  SRC += flyingdots.c
+endif
 
 ifeq ($(ANIMATION_GAMEOFLIFE),y)
   SRC += gameoflife.c
@@ -55,6 +55,10 @@ endif
 
 ifneq (,$(filter y,$(ANIMATION_PLASMA) $(ANIMATION_PSYCHEDELIC)))
   SRC += fpmath_patterns.c
+endif
+
+ifeq ($(ANIMATION_TIME),y)
+  SRC += borg_time.c
 endif
 
 include $(TOPDIR)/rules.mk

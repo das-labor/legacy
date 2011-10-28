@@ -15,7 +15,7 @@ SRC_SIM = \
 
 
 LAUNCH_BOOTLOADER = launch-bootloader
-#SERIAL = /dev/ttyUSB0	
+#SERIAL = /dev/ttyUSB0
 SERIAL = COM6
 export TOPDIR
 ##############################################################################
@@ -180,7 +180,7 @@ show-config: autoconf.h
 
 .PHONY: show-config
 
-autoconf.h .config: 
+autoconf.h .config:
 	@echo make\'s goal: $(MAKECMDGOALS)
 ifneq ($(MAKECMDGOALS),menuconfig)
 	# make sure menuconfig isn't called twice, on `make menuconfig'
