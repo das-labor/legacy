@@ -18,7 +18,8 @@ comment "Animations"
 	endmenu
 
 	dep_bool_menu "Matrix"        ANIMATION_MATRIX        $RANDOM_SUPPORT
-		int "Number of streamers" STREAMER_NUM		 30
+		int "Number of streamers" MATRIX_STREAMER_NUM		 30
+		int "Run for this number of rounds" MATRIX_CYCLES		 500
 	endmenu
 
 	dep_bool "Random Bright" ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
