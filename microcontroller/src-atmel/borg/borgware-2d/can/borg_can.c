@@ -13,7 +13,13 @@
 can_addr myaddr;
 extern jmp_buf newmode_jmpbuf;
 
-void bcan_init() 
+#ifdef LAP_TIME_EXTENSION
+//variables to save the last received hours and  minutes
+//(accessible via lap.h)
+uint8_t lap_time_h, lap_time_m, lap_time_update = 0;
+#endif
+
+void bcan_init()
 {
 	spi_init();
 	can_init();
@@ -53,6 +59,15 @@ void process_mgt_msg(pdo_message *msg)
 		rmsg->dlc = 1;
 		can_transmit((can_message *)rmsg);
 		break;
+
+	#ifdef LAP_TIME_EXTENSION
+	//if we get a time reply, save it
+	case FKT_MGT_TIMEREPLY:
+		lap_time_h = msg->data[0];
+		lap_time_m = msg->data[1];
+		lap_time_update = 1;
+		break;
+	#endif
 	}
 }
 
@@ -85,27 +100,27 @@ void process_borg_msg(pdo_message *msg)
 #ifdef Hansi_hat_gelernt_Werte_vorher_zu_definieren
 
 	//========== blinkenstuff
-		
+
 	//clear the blinkenbackbuffer to color
 	case FKT_BLINK_CLEARBUF:
 			blink_clearbuf(msg->data[0]);
 		break;
-		
+
 	//set auto position increment flag
 	case FKT_BLINK_SETAUTOPOS:
 			blink_setautopos(msg->data[0]);
 		break;
-	
+
 	//set the current blinkenbuffer offset position
 	case FKT_BLINK_SETPOS:
 			blink_setpos(msg->data[0]);
 		break;
-		
+
 	//puts the current blinkenbuffer to the frontbuffer
 	case FKT_BLINK_SHOW:
 			blink_show();
 		break;
-	
+
 	//puts data into the blinkenbuffer
 	case FKT_BLINK_DATA:
 			blink_data(msg->data, msg->dlc - 1);
@@ -122,10 +137,10 @@ void bcan_process_messages()
 		if (!msg)
 			return;
 
-		if(msg->addr_dst == myaddr && msg->port_dst == PORT_MGT) 
+		if(msg->addr_dst == myaddr && msg->port_dst == PORT_MGT)
 			process_mgt_msg(msg);
 
-		if(msg->addr_dst == myaddr && msg->port_dst == PORT_BORG) 
+		if(msg->addr_dst == myaddr && msg->port_dst == PORT_BORG)
 			process_borg_msg(msg);
 
 		msg = (pdo_message*) can_get_nb();
