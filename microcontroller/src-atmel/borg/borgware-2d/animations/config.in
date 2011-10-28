@@ -24,7 +24,10 @@ comment "Animations"
 	dep_bool "Random Bright" ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
 	dep_bool "Stonefly"	 ANIMATION_STONEFLY      $GAME_TETRIS_CORE
 	dep_bool "Flying Dots"	 ANIMATION_FLYINGDOTS    $RANDOM_SUPPORT
-	dep_bool "Game of Life"  ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
+	dep_bool_menu "Game of Life"  ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
+		int "Game of Life round delay (ms)" 	GOL_DELAY  100
+		int "Game of Life max rounds" 			GOL_CYCLES 360
+	endmenu
 	dep_bool "Breakout Demo" ANIMATION_BREAKOUT      $GAME_BREAKOUT
 	bool     "Martin Herweg" ANIMATION_MHERWEG       $RANDOM_SUPPORT
 	dep_bool "Langton Ant"   ANIMATION_LTN_ANT       $RANDOM_SUPPORT
