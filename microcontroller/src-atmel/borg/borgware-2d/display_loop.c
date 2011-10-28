@@ -8,7 +8,7 @@
 #include "animations/programm.h"
 #include "animations/matrix.h"
 #include "animations/gameoflife.h"
-#include "animations/stonefly.h" 
+#include "animations/stonefly.h"
 #include "animations/flyingdots.h"
 #include "animations/breakout_demo.h"
 #include "animations/ltn_ant.h"
@@ -17,6 +17,7 @@
 #include "animations/outofspec.h"
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
+#include "animations/borg_time.h"
 #include "borg_hw/borg_hw.h"
 #include "can/borg_can.h"
 #include "random/prng.h"
@@ -72,13 +73,18 @@ void display_loop(){
 		case 1:
 			scrolltext(scrolltext_text);
 
-#  ifdef RANDOM_SUPPORT
+	#ifdef RANDOM_SUPPORT
 			{
 				char a[28];
 				sprintf(a,"</# counter == %lu  ", (unsigned long) percnt_get());
 				scrolltext(a);
 			}
-#  endif
+	#endif
+#endif
+#ifdef ANIMATION_TIME
+			time_anim();
+#endif
+#ifdef ANIMATION_TIME || ANIMATION_SCROLLTEXT
 			break;
 #endif
 
@@ -112,80 +118,92 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_MATRIX
+#ifdef ANIMATION_TIME
 		case 7:
+			time_anim();
+			break;
+#endif
+
+#ifdef ANIMATION_MATRIX
+		case 8:
 			matrix();
 			break;
 #endif
 
 #ifdef ANIMATION_RANDOM_BRIGHT
-		case 8:
+		case 9:
 			random_bright(30);
 			break;
 #endif
 
-#ifdef ANIMATION_STONEFLY 
-		case 9: 
-			stonefly(); 
-			break; 
-#endif 
- 
-#ifdef ANIMATION_GAMEOFLIFE
+#ifdef ANIMATION_STONEFLY
 		case 10:
+			stonefly();
+			break;
+#endif
+
+#ifdef ANIMATION_GAMEOFLIFE
+		case 11:
 			gameoflife();
 			break;
 #endif
 
 #ifdef ANIMATION_FLYINGDOTS
-		case 11:
+		case 12:
 			flyingdots();
 			break;
 #endif
 
 #ifdef ANIMATION_BREAKOUT
-		case 12:
+		case 13:
 			breakout_demo();
 			break;
 #endif
 
 #ifdef ANIMATION_MHERWEG
-		case 13:
+		case 14:
 			mherweg();
 			break;
 #endif
 
+#ifdef ANIMATION_TIME
+		case 15:
+			time_anim();
+			break;
+#endif
+
 #ifdef ANIMATION_LTN_ANT
-		case 14:
+		case 16:
 			ltn_ant();
 			break;
 #endif
 
 #ifdef ANIMATION_LABORLOGO
-		case 15:
+		case 17:
 			laborlogo();
 			break;
 #endif
 
 #ifdef ANIMATION_AMPHIBIAN
-		case 16:
+		case 18:
 			amphibian();
 			break;
 #endif
 
 #ifdef ANIMATION_LOGO_OOS
-		case 17:
+		case 19:
 			logo_OutOfSpec();
 			break;
 #endif
 
 #ifdef ANIMATION_PLASMA
-		case 18:
+		case 20:
 			plasma();
 			break;
 #endif
 
 #ifdef ANIMATION_PSYCHEDELIC
-		case 19:
+		case 21:
 			psychedelic();
 			break;
 #endif
@@ -233,7 +251,7 @@ void display_loop(){
 #endif
 
 #ifdef MENU_SUPPORT
-		case 42: 
+		case 42:
 			mode = 1;
 			break;
 
