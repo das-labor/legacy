@@ -147,19 +147,12 @@ int main(int argc, char *argv[])
 	} // while
 	cann_conn_t *conn;
 
+	//init debugging to console, otherwise we'll experience crashes...
+	debug_init(NULL);
+
 	if (optind == argc) {
 		help();
 		exit(EXIT_FAILURE);
-	}
-
-	if (serial) {
-		debug(1, "Trying to establish CAN communication via serial %s", serial);
-		canu_init(serial);
-		can_init(NULL);		// use serial
-	} else {
-		debug(1, "Trying to establish CAN communication via cand (%s:%d)", server, tcpport);
-		conn = cann_connect(server, tcpport);
-		can_init(conn);		// use specified connection to cand
 	}
 
 	char *arg = argv[optind];
@@ -167,20 +160,34 @@ int main(int argc, char *argv[])
 	cmd_t *cmd = cmds;
 	while (cmd->fkt) {
 		if (!strcmp(arg, cmd->cmd)) {
+			//connect only if a valid command has been detected
+			if (serial) {
+				debug(1, "Trying to establish CAN communication via serial %s", serial);
+				canu_init(serial);
+				can_init(NULL);		// use serial
+			} else {
+				debug(1, "Trying to establish CAN communication via cand (%s:%d)", server, tcpport);
+				conn = cann_connect(server, tcpport);
+				can_init(conn);		// use specified connection to cand
+			}
+
 			(*(cmd->fkt))(argc-optind, &(argv[optind]));
-			goto done;
+			goto disconnect;
 		}
 		cmd++;
 	}
 
 	debug(0, "Command not understood");
 	help();
+	goto done;
 
-done:
+disconnect:
 	//cann_close(0);
 	usleep(1000); //sleep a little, so last data on socket can be sent before closing
 	close(conn->fd);
 	//cann_close_errors();
 	free(conn);
+done:
+	debug_close();
 	return 0;
 }
