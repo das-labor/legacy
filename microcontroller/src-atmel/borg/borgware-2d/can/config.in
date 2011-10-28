@@ -54,27 +54,24 @@ if [ "$CAN_SUPPORT" = "y" ]; then
        Bit7 7" \
       'Bit4' SPI_PIN_SS
 
-   dep_bool_menu "Use interrupt" CAN_INTERRUPT y
+   bool "Use AVR hardware interrupt" CAN_INTERRUPT
 
-   if [ "$CAN_INTERRUPT" = "y" ]; then
-      choice 'Interrupt Port'			\
-         "PINA  PINA \
-          PINB  PINB \
-          PINC  PINC \
-          PIND  PIND" \
-         'PIND' SPI_REG_PIN_MCP_INT
+   choice 'MCP Interrupt Port'			\
+	 "PINA  PINA \
+	  PINB  PINB \
+	  PINC  PINC \
+	  PIND  PIND" \
+	 'PIND' SPI_REG_PIN_MCP_INT
 
-      choice 'Interrupt Bit'			\
-         "Bit0 0 \
-          Bit1 1 \
-          Bit2 2 \
-          Bit3 3 \
-          Bit4 4 \
-          Bit5 5 \
-          Bit6 6 \
-          Bit7 7" \
-         'Bit2' SPI_PIN_MCP_INT
-   fi
-   endmenu
+   choice 'MCP Interrupt Bit'			\
+	 "Bit0 0 \
+	  Bit1 1 \
+	  Bit2 2 \
+	  Bit3 3 \
+	  Bit4 4 \
+	  Bit5 5 \
+	  Bit6 6 \
+	  Bit7 7" \
+	 'Bit2' SPI_PIN_MCP_INT
 fi
 endmenu
