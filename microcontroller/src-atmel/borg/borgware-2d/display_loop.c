@@ -84,10 +84,15 @@ void display_loop(){
 	#endif
 #endif
 #ifdef ANIMATION_TIME
-			time_anim();
+#ifndef ANIMATION_SCROLLTEXT
+		case 1:
 #endif
-#ifdef ANIMATION_TIME || ANIMATION_SCROLLTEXT
+			time_anim();
 			break;
+#else ANIMATION
+#ifdef ANIMATION_SCROLLTEXT
+			break;
+#endif
 #endif
 
 #ifdef ANIMATION_SPIRALE

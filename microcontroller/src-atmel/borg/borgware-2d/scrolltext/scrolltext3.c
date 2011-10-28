@@ -11,8 +11,19 @@
 #include "../pixel.h"
 #include "../util.h"
 #include "font_arial8.h"
-// #include "font_small6.h"
-// #include "font_uni53.h"
+#if SCROLLTEXT_FONT == FONT_ARIAL8
+	#include "font_arial8.h"
+	#define FONT_NAME font_arial8
+#elif SCROLLTEXT_FONT == FONT_SMALL6
+	#include "font_small6.h"
+	#define FONT_NAME font_small6
+#elif SCROLLTEXT_FONT == FONT_UNI53
+	#include "font_uni53.h"
+	#define FONT_NAME font_uni53
+#else
+	#include "font_arial8.h"
+	#define FONT_NAME font_arial8
+#endif
 
 #ifdef __CYGWIN__
 	#define strtok_r(a, b, c) strtok((a), (b))
@@ -511,7 +522,7 @@ void scrolltext(char *str) {
 	char tmp_str[SCROLLTEXT_BUFFER_SIZE];
 	int ljmp_retval;
 
-	fonts[0] = SCROLLTEXT_FONT;
+	fonts[0] = FONT_NAME;
 
 	unsigned char auto_pixmap[NUM_ROWS][LINEBYTES];
 	text_pixmap = &auto_pixmap;

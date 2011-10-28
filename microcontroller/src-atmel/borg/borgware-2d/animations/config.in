@@ -3,10 +3,24 @@ comment "Animations"
 	dep_bool "Scrolltext"    ANIMATION_SCROLLTEXT    $SCROLLTEXT_SUPPORT
 	bool     "Spirale"       ANIMATION_SPIRALE
 	bool     "Joern1"        ANIMATION_JOERN1
-	dep_bool "Snake"         ANIMATION_SNAKE         $RANDOM_SUPPORT
+
+	dep_bool_menu "Snake"   ANIMATION_SNAKE         $RANDOM_SUPPORT
+		int "Snake delay" 	SNAKE_DELAY		 		100
+	endmenu
+
 	bool     "Schachbrett"   ANIMATION_SCHACHBRETT
-	dep_bool "Feuer"         ANIMATION_FEUER         $RANDOM_SUPPORT
-	dep_bool "Matrix"        ANIMATION_MATRIX        $RANDOM_SUPPORT
+
+	dep_bool_menu "Feuer"         ANIMATION_FEUER         $RANDOM_SUPPORT
+		int "FEUER_S" 		 FEUER_S		 30
+		int "FEUER_N" 		 FEUER_N		 5
+		int "FEUER_DIV" 	 FEUER_DIV		 44
+		int "FEUER_DELAY" 	 FEUER_DELAY	 50
+	endmenu
+
+	dep_bool_menu "Matrix"        ANIMATION_MATRIX        $RANDOM_SUPPORT
+		int "Number of streamers" STREAMER_NUM		 30
+	endmenu
+
 	dep_bool "Random Bright" ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
 	dep_bool "Stonefly"	 ANIMATION_STONEFLY      $GAME_TETRIS_CORE
 	dep_bool "Flying Dots"	 ANIMATION_FLYINGDOTS    $RANDOM_SUPPORT
@@ -14,7 +28,11 @@ comment "Animations"
 	dep_bool "Breakout Demo" ANIMATION_BREAKOUT      $GAME_BREAKOUT
 	bool     "Martin Herweg" ANIMATION_MHERWEG       $RANDOM_SUPPORT
 	dep_bool "Langton Ant"   ANIMATION_LTN_ANT       $RANDOM_SUPPORT
-	dep_bool "Time Display"  ANIMATION_TIME		     $SCROLLTEXT_SUPPORT	$LAP_TIME_EXTENSION
+
+	dep_bool_menu "Time Display"  ANIMATION_TIME		     $SCROLLTEXT_SUPPORT	$LAP_TIME_EXTENSION
+		hex "Time master address (hex)"  TIME_MASTER_ADDR	0x00
+		int "Request timeout (ms)" TIME_UPDATE_TIMEOUT  	23
+	endmenu
 
 	dep_bool_menu "Bitmap Scroller" ANIMATION_BMSCROLLER y $RANDOM_SUPPORT
 		dep_bool "LABOR Logo"       ANIMATION_LABORLOGO $ANIMATION_BMSCROLLER
