@@ -1,4 +1,4 @@
-PACKAGE (VERSION) UNRELEASED; urgency=low
+cand5006 (5006-0.1) testing; urgency=low
 
   * Initial release. (Closes: #XXXXXX)
 
