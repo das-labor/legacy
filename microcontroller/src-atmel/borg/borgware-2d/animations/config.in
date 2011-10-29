@@ -5,41 +5,43 @@ comment "Animations"
 	bool     "Joern1"        ANIMATION_JOERN1
 
 	dep_bool_menu "Snake"   ANIMATION_SNAKE         $RANDOM_SUPPORT
-		int "Snake round delay" 	SNAKE_CYCLE_DELAY	100
-		int "Snake termination delay" 	SNAKE_TERMINATION_DELAY	60
-		int "Snake max length" 	SNAKE_MAX_LENGTH		64
-		int "Snake max apples" 	SNAKE_MAX_APPLES		10
+		int  "Snake round delay"        SNAKE_CYCLE_DELAY        100
+		int  "Snake termination delay"  SNAKE_TERMINATION_DELAY  60
+		uint "Snake max length"         SNAKE_MAX_LENGTH         64
+		int  "Snake max apples"         SNAKE_MAX_APPLES         10
 	endmenu
 
 	bool     "Schachbrett"   ANIMATION_SCHACHBRETT
 
-	dep_bool_menu "Feuer"         ANIMATION_FEUER         $RANDOM_SUPPORT
-		int "FEUER_S" 		 FEUER_S		 30
-		int "FEUER_N" 		 FEUER_N		 5
-		int "FEUER_DIV" 	 FEUER_DIV		 44
-		int "FEUER_DELAY" 	 FEUER_DELAY	 50
+	dep_bool_menu "Feuer"     ANIMATION_FEUER         $RANDOM_SUPPORT
+		int "FEUER_S"     FEUER_S      30
+		int "FEUER_N"     FEUER_N      5
+		int "FEUER_DIV"   FEUER_DIV    44
+		int "FEUER_DELAY" FEUER_DELAY  50
 		int "Fire number of cycles"	FIRE_CYCLES 800
 	endmenu
 
 	dep_bool_menu "Matrix"        ANIMATION_MATRIX        $RANDOM_SUPPORT
-		int "Number of streamers" MATRIX_STREAMER_NUM		 30
-		int "Run for this number of rounds" MATRIX_CYCLES		 500
+		int "Number of streamers" MATRIX_STREAMER_NUM      30
+		int "Run for this number of rounds" MATRIX_CYCLES  500
 	endmenu
 
 	dep_bool "Random Bright" ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
 	dep_bool "Stonefly"	 ANIMATION_STONEFLY      $GAME_TETRIS_CORE
 	dep_bool "Flying Dots"	 ANIMATION_FLYINGDOTS    $RANDOM_SUPPORT
+	
 	dep_bool_menu "Game of Life"  ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
-		int "Game of Life round delay (ms)" 	GOL_DELAY  100
-		int "Game of Life max rounds" 			GOL_CYCLES 360
+		int "Game of Life round delay (ms)"  GOL_DELAY  100
+		int "Game of Life max rounds"        GOL_CYCLES 360
 	endmenu
+	
 	dep_bool "Breakout Demo" ANIMATION_BREAKOUT      $GAME_BREAKOUT
-	bool     "Martin Herweg" ANIMATION_MHERWEG       $RANDOM_SUPPORT
+	dep_bool "Martin Herweg" ANIMATION_MHERWEG       $RANDOM_SUPPORT
 	dep_bool "Langton Ant"   ANIMATION_LTN_ANT       $RANDOM_SUPPORT
 
-	dep_bool_menu "Time Display"  ANIMATION_TIME		     $SCROLLTEXT_SUPPORT	$LAP_TIME_EXTENSION
-		int "Time master address (int)"  TIME_MASTER_ADDR	00
-		int "Request timeout (ms)" TIME_UPDATE_TIMEOUT  	50
+	dep_bool_menu "Time Display"  ANIMATION_TIME $SCROLLTEXT_SUPPORT $LAP_TIME_EXTENSION
+		int "Time master address (int)"  TIME_MASTER_ADDR  00
+		int "Request timeout (ms)" TIME_UPDATE_TIMEOUT     50
 	endmenu
 
 	dep_bool_menu "Bitmap Scroller" ANIMATION_BMSCROLLER y $RANDOM_SUPPORT
