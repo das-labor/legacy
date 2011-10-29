@@ -89,7 +89,7 @@ void display_loop(){
 #endif
 			time_anim();
 			break;
-#else ANIMATION
+#else
 #ifdef ANIMATION_SCROLLTEXT
 			break;
 #endif

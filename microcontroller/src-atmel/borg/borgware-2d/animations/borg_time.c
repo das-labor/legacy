@@ -13,6 +13,13 @@
 #include "../util.h"
 #include "../scrolltext/scrolltext.h"
 
+#ifndef TIME_MASTER_ADDR
+	#define TIME_MASTER_ADDR 0x00
+#endif
+#ifndef TIME_UPDATE_TIMEOUT
+	#define TIME_UPDATE_TIMEOUT 23
+#endif
+
 //hackhack
 extern can_addr myaddr;
 
@@ -62,7 +69,11 @@ void time_anim(void)
 
 	//update time and return if we had no success
 	if(time_update() == 0)
+	{
+		strcpy_P(timestring, PSTR("</#time animation timeout"));
+		scrolltext(timestring);
 		return;
+	}
 
 	//convert the time to a string
 	sprintf_P(timestring, PSTR(">+:p42d50/#%02hi#<;+p42d50/# %02hi#x49y8b255p42d50#:"), lap_time_h, lap_time_m);
