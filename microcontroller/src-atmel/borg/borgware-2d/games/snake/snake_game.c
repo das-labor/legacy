@@ -27,10 +27,13 @@ game_descriptor_t snake_game_descriptor __attribute__((section(".game_descriptor
 #define SNAKE_NEWCONTROL
 
 // limits
-#ifndef SNAKE_MAX_LENGTH
-	#define SNAKE_MAX_LENGTH 64u
+#ifndef USNAKE_MAX_LENGTH
+	#define USNAKE_MAX_LENGTH 64u
 #endif
-#define SNAKE_MAX_APPLES 10
+
+#ifndef SNAKE_MAX_APPLES
+	#define SNAKE_MAX_APPLES 10
+#endif
 
 // delays (in milliseconds)
 #ifndef SNAKE_CYCLE_DELAY
@@ -69,10 +72,10 @@ enum snake_dir
  */
 typedef struct snake_protagonist
 {
-	pixel aSegments[SNAKE_MAX_LENGTH]; /**< All segments of the snake. */
-	uint8_t nHeadIndex;                /**< Index of the head segment. */
-	uint8_t nTailIndex;                /**< Index of the tail segment. */
-	snake_dir_t dir;                   /**< Direction of the snake.    */
+	pixel aSegments[USNAKE_MAX_LENGTH]; /**< All segments of the snake. */
+	uint8_t nHeadIndex;                 /**< Index of the head segment. */
+	uint8_t nTailIndex;                 /**< Index of the tail segment. */
+	snake_dir_t dir;                    /**< Direction of the snake.    */
 } snake_protagonist_t;
 
 
@@ -166,8 +169,8 @@ static snake_dir_t snake_queryJoystick(void)
  */
 static void snake_initGameProtagonist(snake_protagonist_t *pprotSnake)
 {
-	pprotSnake->aSegments[0] = (pixel){4, NUM_ROWS - 2};
-	pprotSnake->aSegments[1] = (pixel){4, NUM_ROWS - 3};
+	pprotSnake->aSegments[0] = (pixel){NUM_COLS / 2, NUM_ROWS / 2};
+	pprotSnake->aSegments[1] = (pixel){NUM_COLS / 2, NUM_ROWS / 2 - 1};
 	pprotSnake->nTailIndex = 0;
 	pprotSnake->nHeadIndex = 1;
 	pprotSnake->dir = SNAKE_DIR_UP;
@@ -299,7 +302,7 @@ static void snake_eliminateProtagonist(snake_protagonist_t *pprotSnake)
 	while (pprotSnake->nTailIndex != pprotSnake->nHeadIndex)
 	{
 		clearpixel(pprotSnake->aSegments[pprotSnake->nTailIndex++]);
-		pprotSnake->nTailIndex %= SNAKE_MAX_LENGTH;
+		pprotSnake->nTailIndex %= USNAKE_MAX_LENGTH;
 		wait(SNAKE_TERMINATION_DELAY);
 	}
 }
@@ -394,7 +397,7 @@ void snake_engine(uint8_t bDemoMode)
 
 		// actually move head
 		pixel pxOldHead = protSnake.aSegments[protSnake.nHeadIndex];
-		protSnake.nHeadIndex = (protSnake.nHeadIndex + 1) % SNAKE_MAX_LENGTH;
+		protSnake.nHeadIndex = (protSnake.nHeadIndex + 1) % USNAKE_MAX_LENGTH;
 		protSnake.aSegments[protSnake.nHeadIndex] =
 				snake_applyDirection(pxOldHead, protSnake.dir);
 
@@ -411,7 +414,7 @@ void snake_engine(uint8_t bDemoMode)
 
 			// remove last segment
 			clearpixel(protSnake.aSegments[protSnake.nTailIndex])
-			protSnake.nTailIndex = (protSnake.nTailIndex +1) % SNAKE_MAX_LENGTH;
+			protSnake.nTailIndex = (protSnake.nTailIndex +1) % USNAKE_MAX_LENGTH;
 
 			// new apples
 			snake_spawnApples(&apples);
