@@ -4,6 +4,7 @@ OPTIMIZE       = -Os -fshort-enums
 
 FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -V -U bootloader.hex
 FUSECMD        = avrdude -p $(MCU_TARGET) -c usbasp -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m -U efuse:w:$(EFUSE):m
+LOCKCMD        = avrdude -p $(MCU_TARGET) -c usbasp -U lock:w:$(LOCKBYTE):m
 
 DEFS           = -DF_CPU=16000000
 LIBS           =
@@ -29,7 +30,7 @@ $(PRG).elf: $(SRC)
 #	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
+	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)
 
 flash:
@@ -37,7 +38,10 @@ flash:
 
 fuse:
 	$(FUSECMD)
-	
+
+lock:
+	$(LOCKCMD)
+
 lst:  $(PRG).lst
 
 %.lst: %.elf
