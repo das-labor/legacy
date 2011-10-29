@@ -51,7 +51,7 @@
 /** amount of loop cyles the counter clockwise rotation button is ignored */
 #define TETRIS_INPUT_CHATTER_TICKS_ROT_CCW 24
 /** amount of loop cyles the drop button is ignored */
-#define TETRIS_INPUT_CHATTER_TICKS_DROP    20
+#define TETRIS_INPUT_CHATTER_TICKS_DROP    36
 
 /** wait cycles per level (array of uint8_t) */
 #define TETRIS_INPUT_LVL_CYCLES 200, 133, 100, 80, 66, 57, 50, 44, 40, 36, 33, \
