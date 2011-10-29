@@ -415,13 +415,18 @@ void event_loop()
 	}
 }
 
+unsigned int running = 0;
+
 void shutdown_all()
 {
-	cann_close_errors();
-	cann_close(NULL);
-	shutdown(listen_socket, SHUT_RDWR);
-	close(listen_socket);
-	debug_close();
+	if(running)
+	{
+		cann_close_errors();
+		cann_close(NULL);
+		shutdown(listen_socket, SHUT_RDWR);
+		close(listen_socket);
+		debug_close();
+	}
 }
 
 void signal_handler(int sig) {
@@ -507,9 +512,10 @@ int main(int argc, char *argv[])
 	cann_listen(tcpport);
 	debug(1, "Listenig for network connections on port %d", tcpport );
 
+	running = 1;
+	atexit(shutdown_all);
 	event_loop();  // does not return
 
 	debug(0, "Cand exited event loop.. XXX ERROR BLINK FIXME NOW");
-	shutdown_all();
 	return EXIT_SUCCESS;
 }
