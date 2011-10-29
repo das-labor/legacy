@@ -5,10 +5,11 @@ from can import LAPPacket, CANSocket, hexdump
 import socket
 import subprocess
 from string import Template
+from time import strftime
 
 RRD_CMD = "rrdtool update powermeter.rrd N:$U1:$U2:$U3:$I1:$I2:$I3:$S1:$S2:$S3:$P1:$P2:$P3:$E1:$E2:$E3"
 CONSOLE_OUT = """
-
+%(TIME)s:
             L1           L2           L3          SUM
 ---+------------+------------+------------+------------
  U | %(U1)10.2f | %(U2)10.2f | %(U3)10.2f | %(U)10.2f
@@ -102,6 +103,7 @@ if __name__ == "__main__":
                 values['E1'] = int(values['E1'])
                 values['E2'] = int(values['E2'])
                 values['E3'] = int(values['E3'])
+                values['TIME'] = strftime("%H:%M:%S")
                 print CONSOLE_OUT % values
                 update_rrd(values)
             except:
