@@ -1,0 +1,16 @@
+Source: cand5006
+Section: non-free
+Priority: extra
+Maintainer: dennis knorr <dennis.knorr@gmx.net>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.2
+Homepage: http://www.das-labor.org
+#Vcs-Git: git://git.debian.org/collab-maint/cand5006.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/cand5006.git;a=summary
+
+Package: cand5006
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: CAN demon
+ labor CAN control demon
+
