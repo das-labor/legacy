@@ -1,3 +1,1 @@
-
-void snake();
-
+#include "borg-base/snake.h"
