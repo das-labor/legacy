@@ -1,0 +1,5 @@
+PACKAGE (VERSION) UNRELEASED; urgency=low
+
+  * Initial release. (Closes: #XXXXXX)
+
+ -- dennis knorr <knorr@tparbeit.tvc.muenchen.de>  Sat, 29 Oct 2011 18:38:23 +0200
