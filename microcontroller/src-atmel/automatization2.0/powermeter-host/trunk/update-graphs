@@ -123,18 +123,18 @@ rrdtool graph graphs/Q-minutes.png           \
     'DEF:S2_=powermeter.rrd:S2:MAX'          \
     'DEF:S3=powermeter.rrd:S3:AVERAGE'       \
     'DEF:S3_=powermeter.rrd:S3:MAX'          \
-    'CDEF:F1=S1,P1,-'                        \
-    'CDEF:F2=S2,P2,-'                        \
-    'CDEF:F3=S3,P3,-'                        \
-    'CDEF:F1_=S1_,P1_,-'                     \
-    'CDEF:F2_=S2_,P2_,-'                     \
-    'CDEF:F3_=S3_,P3_,-'                     \
-    'AREA:F1_#94541F40:'                     \
-    'AREA:F2_#948E1F40::STACK'               \
-    'AREA:F3_#1F945440::STACK'               \
-    'LINE1:F1#94541FC0:S1'                   \
-    'LINE1:F2#948E1FC0:S2:STACK'             \
-    'LINE1:F3#1F9454C0:S3:STACK'           
+    'CDEF:Q1=S1,P1,-'                        \
+    'CDEF:Q2=S2,P2,-'                        \
+    'CDEF:Q3=S3,P3,-'                        \
+    'CDEF:Q1_=S1_,P1_,-'                     \
+    'CDEF:Q2_=S2_,P2_,-'                     \
+    'CDEF:Q3_=S3_,P3_,-'                     \
+    'AREA:Q1_#94541F40:'                     \
+    'AREA:Q2_#948E1F40::STACK'               \
+    'AREA:Q3_#1F945440::STACK'               \
+    'LINE1:Q1#94541FC0:Q1'                   \
+    'LINE1:Q2#948E1FC0:Q2:STACK'             \
+    'LINE1:Q3#1F9454C0:Q3:STACK'           
 
 rrdtool graph graphs/Q-hours.png           \
     -a PNG -w 600 -h 150                     \
@@ -151,18 +151,18 @@ rrdtool graph graphs/Q-hours.png           \
     'DEF:S2_=powermeter.rrd:S2:MAX'          \
     'DEF:S3=powermeter.rrd:S3:AVERAGE'       \
     'DEF:S3_=powermeter.rrd:S3:MAX'          \
-    'CDEF:F1=S1,P1,-'                        \
-    'CDEF:F2=S2,P2,-'                        \
-    'CDEF:F3=S3,P3,-'                        \
-    'CDEF:F1_=S1_,P1_,-'                     \
-    'CDEF:F2_=S2_,P2_,-'                     \
-    'CDEF:F3_=S3_,P3_,-'                     \
-    'AREA:F1_#94541F40:'                     \
-    'AREA:F2_#948E1F40::STACK'               \
-    'AREA:F3_#1F945440::STACK'               \
-    'LINE1:F1#94541FC0:S1'                   \
-    'LINE1:F2#948E1FC0:S2:STACK'             \
-    'LINE1:F3#1F9454C0:S3:STACK'           
+    'CDEF:Q1=S1,P1,-'                        \
+    'CDEF:Q2=S2,P2,-'                        \
+    'CDEF:Q3=S3,P3,-'                        \
+    'CDEF:Q1_=S1_,P1_,-'                     \
+    'CDEF:Q2_=S2_,P2_,-'                     \
+    'CDEF:Q3_=S3_,P3_,-'                     \
+    'AREA:Q1_#94541F40:'                     \
+    'AREA:Q2_#948E1F40::STACK'               \
+    'AREA:Q3_#1F945440::STACK'               \
+    'LINE1:Q1#94541FC0:Q1'                   \
+    'LINE1:Q2#948E1FC0:Q2:STACK'             \
+    'LINE1:Q3#1F9454C0:Q3:STACK'           
 
 rrdtool graph graphs/Q-days.png           \
     -a PNG -w 600 -h 150                     \
@@ -179,18 +179,18 @@ rrdtool graph graphs/Q-days.png           \
     'DEF:S2_=powermeter.rrd:S2:MAX'          \
     'DEF:S3=powermeter.rrd:S3:AVERAGE'       \
     'DEF:S3_=powermeter.rrd:S3:MAX'          \
-    'CDEF:F1=S1,P1,-'                        \
-    'CDEF:F2=S2,P2,-'                        \
-    'CDEF:F3=S3,P3,-'                        \
-    'CDEF:F1_=S1_,P1_,-'                     \
-    'CDEF:F2_=S2_,P2_,-'                     \
-    'CDEF:F3_=S3_,P3_,-'                     \
-    'AREA:F1_#94541F40:'                     \
-    'AREA:F2_#948E1F40::STACK'               \
-    'AREA:F3_#1F945440::STACK'               \
-    'LINE1:F1#94541FC0:S1'                   \
-    'LINE1:F2#948E1FC0:S2:STACK'             \
-    'LINE1:F3#1F9454C0:S3:STACK'           
+    'CDEF:Q1=S1,P1,-'                        \
+    'CDEF:Q2=S2,P2,-'                        \
+    'CDEF:Q3=S3,P3,-'                        \
+    'CDEF:Q1_=S1_,P1_,-'                     \
+    'CDEF:Q2_=S2_,P2_,-'                     \
+    'CDEF:Q3_=S3_,P3_,-'                     \
+    'AREA:Q1_#94541F40:'                     \
+    'AREA:Q2_#948E1F40::STACK'               \
+    'AREA:Q3_#1F945440::STACK'               \
+    'LINE1:Q1#94541FC0:Q1'                   \
+    'LINE1:Q2#948E1FC0:Q2:STACK'             \
+    'LINE1:Q3#1F9454C0:Q3:STACK'           
 
 
 #############################################################################
