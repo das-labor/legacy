@@ -72,25 +72,11 @@ class CANSocket:
     def close(self):
         self.sock.close()
 
-    def get_pkt_nb(self):
-        """ Receive a CAN packet; non-blocking.
-
-            The received packet is returned as a bytearray.
-
-            If there is no complete CAN packet to return, this function
-            returns Null.
-        """
-        s = self.sock
+    def dequeue_pkt(self):
         buf = self.buf
-        
-        # Receive something
-        try:
-            buf += bytearray(s.recv(20))
-        except:
-            pass
-        
+
         # Is there something at all?
-        if len(buf) == 0:
+        if len(buf) < 3:
             return None
 
         # Did we receive a full packet?
@@ -107,14 +93,46 @@ class CANSocket:
         pkt = buf[2:next]
         self.buf = buf[next:]
         return pkt
-    
+ 
+    def get_pkt_nb(self):
+        """ Receive a CAN packet; non-blocking.
+
+            The received packet is returned as a bytearray.
+
+            If there is no complete CAN packet to return, this function
+            returns Null.
+        """
+        pkt = self.dequeue_pkt()
+
+        if pkt is not None:
+            return pkt
+
+        s = self.sock
+        buf = self.buf
+
+        # Receive something
+        s.setblocking(0)
+        try:
+            buf += bytearray(s.recv(20))
+        except:
+            pass
+        
+        pkt = self.dequeue_pkt()
+        return pkt
+        
+        
+   
     def get_pkt(self):
         """ Receive a CAN packet; non-blocking.
 
             The received packet is returned as a bytearray.
         """
-        pkt = self.get_pkt_nb()
-        while pkt is None:
-            pkt = self.get_pkt_nb()
-        return pkt
+        self.sock.setblocking(1)
 
+        pkt = self.dequeue_pkt()
+        while pkt is None:
+            # Receive something
+            self.buf += bytearray(self.sock.recv(20))
+            pkt = self.dequeue_pkt()
+
+        return pkt
