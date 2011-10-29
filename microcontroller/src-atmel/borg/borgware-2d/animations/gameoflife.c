@@ -1,9 +1,9 @@
 /**
- * Conways Game of life 
+ * Conways Game of life
  * Author: Daniel Otte
  * License: GPLv3
- * 
- * 
+ *
+ *
  */
 
 #include <stdint.h>
@@ -33,7 +33,7 @@
 /*
  *  last line is for debug information
  */
-#ifdef DEBUG 
+#ifdef DEBUG
 	#undef YSIZE
 	#define YSIZE (UNUM_ROWS-1)
 	#define DEBUG_ROW (UNUM_ROWS-1)
@@ -47,7 +47,7 @@
 		DEBUG_BIT((s)*8+4, (v)&(1<<4)); \
 		DEBUG_BIT((s)*8+5, (v)&(1<<5)); \
 		DEBUG_BIT((s)*8+6, (v)&(1<<6)); \
-		DEBUG_BIT((s)*8+7, (v)&(1<<7))   
+		DEBUG_BIT((s)*8+7, (v)&(1<<7))
 #else
 	#define DEBUG_BIT(s,v)
 	#define DEBUG_BYTE(s,v)
@@ -275,7 +275,7 @@ void gameoflife() {
 	uint8_t ldbuf_idx = 0;
 	uint16_t cycle;
 
-#ifdef GLIDER_TEST	
+#ifdef GLIDER_TEST
 	/* initialize with glider */
 	coord_t x,y;
 	for(y = YSIZE; y--;) {
@@ -287,7 +287,7 @@ void gameoflife() {
 #else
 	/* initialize the field with random */
 	pfinit(pf1);
-#endif	
+#endif
 
 	/* the main part */
 	pfprint(pf1);

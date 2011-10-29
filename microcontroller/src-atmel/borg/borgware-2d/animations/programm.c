@@ -125,6 +125,9 @@ void schachbrett(unsigned char times){
 
 
 #ifdef ANIMATION_FEUER
+#ifndef FIRE_CYCLES
+	#define FIRE_CYCLES 800
+#endif
 #define FEUER_Y (NUM_ROWS + 3)
 void feuer()
 {
@@ -132,7 +135,7 @@ void feuer()
 	unsigned int  t;
 	unsigned char world[NUM_COLS][FEUER_Y];   // double buffer
 
-	for(t=0; t<800; t++) {
+	for(t=0; t<FIRE_CYCLES; t++) {
 		// diffuse
 		for(y=1; y<FEUER_Y; y++) {
 			for(x=1; x<NUM_COLS-1; x++) {
@@ -147,12 +150,12 @@ void feuer()
 		for(x=0; x<NUM_COLS; x++) {
 			world[x][FEUER_Y-1] = RANDOM8();
 		};
-	
+
 		// copy to screen
 		for(y=0; y<NUM_ROWS; y++) {
 			for(x=0; x<NUM_COLS; x++) {
 				setpixel( (pixel){x,y}, (world[x][y] >> 5) );
-			}		
+			}
 		};
 
 		wait(FEUER_DELAY);

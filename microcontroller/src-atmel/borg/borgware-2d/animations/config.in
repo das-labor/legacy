@@ -5,7 +5,10 @@ comment "Animations"
 	bool     "Joern1"        ANIMATION_JOERN1
 
 	dep_bool_menu "Snake"   ANIMATION_SNAKE         $RANDOM_SUPPORT
-		int "Snake delay" 	SNAKE_DELAY		 		100
+		int "Snake round delay" 	SNAKE_CYCLE_DELAY	100
+		int "Snake termination delay" 	SNAKE_TERMINATION_DELAY	60
+		int "Snake max length" 	SNAKE_MAX_LENGTH		64
+		int "Snake max apples" 	SNAKE_MAX_APPLES		10
 	endmenu
 
 	bool     "Schachbrett"   ANIMATION_SCHACHBRETT
@@ -15,6 +18,7 @@ comment "Animations"
 		int "FEUER_N" 		 FEUER_N		 5
 		int "FEUER_DIV" 	 FEUER_DIV		 44
 		int "FEUER_DELAY" 	 FEUER_DELAY	 50
+		int "Fire number of cycles"	FIRE_CYCLES 800
 	endmenu
 
 	dep_bool_menu "Matrix"        ANIMATION_MATRIX        $RANDOM_SUPPORT
@@ -34,8 +38,8 @@ comment "Animations"
 	dep_bool "Langton Ant"   ANIMATION_LTN_ANT       $RANDOM_SUPPORT
 
 	dep_bool_menu "Time Display"  ANIMATION_TIME		     $SCROLLTEXT_SUPPORT	$LAP_TIME_EXTENSION
-		hex "Time master address (hex)"  TIME_MASTER_ADDR	0x00
-		int "Request timeout (ms)" TIME_UPDATE_TIMEOUT  	23
+		int "Time master address (int)"  TIME_MASTER_ADDR	00
+		int "Request timeout (ms)" TIME_UPDATE_TIMEOUT  	50
 	endmenu
 
 	dep_bool_menu "Bitmap Scroller" ANIMATION_BMSCROLLER y $RANDOM_SUPPORT

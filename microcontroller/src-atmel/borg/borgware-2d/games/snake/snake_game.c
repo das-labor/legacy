@@ -27,12 +27,18 @@ game_descriptor_t snake_game_descriptor __attribute__((section(".game_descriptor
 #define SNAKE_NEWCONTROL
 
 // limits
-#define SNAKE_MAX_LENGTH 64u
+#ifndef SNAKE_MAX_LENGTH
+	#define SNAKE_MAX_LENGTH 64u
+#endif
 #define SNAKE_MAX_APPLES 10
 
 // delays (in milliseconds)
-#define SNAKE_CYCLE_DELAY 100
-#define SNAKE_TERMINATION_DELAY 60
+#ifndef SNAKE_CYCLE_DELAY
+	#define SNAKE_CYCLE_DELAY 100
+#endif
+#ifndef SNAKE_TERMINATION_DELAY
+	#define SNAKE_TERMINATION_DELAY 60
+#endif
 
 // colors
 #define SNAKE_COLOR_BORDER 3
