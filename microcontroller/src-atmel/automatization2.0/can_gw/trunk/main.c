@@ -24,6 +24,10 @@
 #define DDR_BUSPOWER DDRD
 #define BIT_BUSPOWER PD4
 
+//reset cause status register
+#define REG_RESETCAUSE MCUCSR
+#define MSK_RESETCAUSE 0x0F
+
 //max packet data length
 #define RS232CAN_MAXLENGTH 20
 
@@ -221,8 +225,6 @@ void process_cantun_msg(rs232can_msg *msg) {
 			pkt_cnt.rx_size += cmsg->dlc;
 			pkt_cnt.rx_count ++;
 			break;
-		case RS232CAN_NOTIFY_RESET:
-			break;
 		case RS232CAN_PING_GATEWAY:
 			write_cmd_to_uart(RS232CAN_PING_GATEWAY, 0, 0);  // reply
 			break;
@@ -303,7 +305,8 @@ int main() {
 	canu_reset();
 
 	//notify host that we had a reset
-	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, 0, 0);
+	leds = REG_RESETCAUSE & MSK_RESETCAUSE;
+	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, &leds, 1);
 
 	//begin can operations
 	can_setmode(normal);
