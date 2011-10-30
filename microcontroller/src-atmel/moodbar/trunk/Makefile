@@ -5,4 +5,4 @@ MCU_TARGET     = atmega8
 
 CANADDR        = 0x31
 
-include ../make/avrx.mk
+include make/avrx.mk
