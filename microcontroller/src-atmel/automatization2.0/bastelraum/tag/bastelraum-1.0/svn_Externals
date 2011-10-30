@@ -1,0 +1,2 @@
+-r 5048 https://www.das-labor.org/svn/microcontroller/src-atmel/lib/canlib/ can
+-r 5048 https://www.das-labor.org/svn/microcontroller/src-atmel/lib/i2c/trunk/twi_master twi_master
