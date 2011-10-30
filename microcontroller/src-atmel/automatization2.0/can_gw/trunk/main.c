@@ -39,7 +39,7 @@ uint8_t firmware_version[] = {FW_VERSION_MAJOR, FW_VERSION_MINOR, (FW_SVNREVISIO
 
 //packet and data counters, as seen from the gateway looking at the host
 //i.e. rx is about packets from uart and tx to uart, not from can
-struct { uint16_t rx_count, tx_count, rx_size, tx_size; } pkt_cnt = {0, 0, 0, 0};
+struct { uint32_t rx_count, tx_count, rx_size, tx_size; } pkt_cnt = {0, 0, 0, 0};
 
 //error counters and flags from the mcp2515 chip
 struct { uint8_t rx_errors, tx_errors, error_flags; } err_cnt = {0, 0, 0};
