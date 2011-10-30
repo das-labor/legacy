@@ -31,6 +31,22 @@
 //max packet data length
 #define RS232CAN_MAXLENGTH 20
 
+//ADMUX default value
+//select AREF voltage reference, right-adjust conversion results
+#define ADMUX_REFS (0)
+
+//ADC channels
+#define CH_BUSVOLTAGE (_BV(MUX2) | _BV(MUX0))
+#define CH_BUSCURRENT (_BV(MUX2))
+#define CH_REF_1300MV (_BV(MUX3) | _BV(MUX2) | _BV(MUX1))
+#define CH_REF_GND	  (_BV(MUX3) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0))
+
+//adc start conversion
+#define ADC_START() (ADCSRA |= _BV(ADSC))
+
+//the timer frequency is approx. 61Hz @ 16MHz cpu. freq
+#define SYS_TICK_FREQ ((F_CPU / 1024) / 256)
+
 //hacky import of read function
 extern unsigned char mcp_read(unsigned char reg);
 
@@ -45,7 +61,13 @@ struct { uint32_t rx_count, tx_count, rx_size, tx_size; } pkt_cnt = {0, 0, 0, 0}
 struct { uint8_t rx_errors, tx_errors, error_flags; } err_cnt = {0, 0, 0};
 
 //bus power measurement struct
-struct { uint16_t v, i; } bus_pwr = {0, 0};
+struct { volatile uint16_t v, i, ref, gnd; } bus_pwr = {0, 0, 0, 0};
+
+//state of the adc interrupt state machine
+volatile uint8_t adc_state;
+
+//system counter
+volatile uint8_t sys_ticks;
 
 //commands
 typedef enum
@@ -280,38 +302,135 @@ void led_set(unsigned int stat) {
 	}
 }
 
-void adc_init() {
+//setup adc operations
+void adc_init()
+{
+	//
 	DDRC = 0xCF;
-	ADMUX = 0;
-	ADCSRA = 0x07; //slowest adc clock
-	ADCSRA |= (1<<ADEN) | (1<<ADSC) | (1<<ADIF);
+
+	//default to first channel
+	adc_state = CH_BUSVOLTAGE;
+
+	//set adc mux default settings
+	ADMUX = ADMUX_REFS | (CH_BUSVOLTAGE & 0x0F);
+
+	//slowest adc clock (prescaler 128)
+	ADCSRA = _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
+
+	//set adc enable, auto trigger, set interrupt enable
+	ADCSRA = _BV(ADEN) | _BV(ADIE) | _BV(ADIF);
 }
 
-int main() {
-	static uint16_t leds, leds_old;
+//measure internal references and calibrate
+void adc_calibrate()
+{
+	//wait for ongoing measurements to finish
+	while(ADCSRA & _BV(ADIF));
 
-	//init all
+	//switch state machine to reference measuring and start
+	adc_state = CH_REF_1300MV;
+	ADMUX = ADMUX_REFS | (CH_REF_1300MV & 0x0F);
+	ADC_START();
+
+	//wait for this to finish
+	while(((ADCSRA & _BV(ADIF)) != 0) && (adc_state != CH_BUSVOLTAGE));
+
+	//TODO: save offsets or do something with this
+}
+
+//adc interrupt to switch channels
+ISR(ADC_vect)
+{
+	switch(adc_state)
+	{
+		case CH_BUSVOLTAGE:
+			bus_pwr.v = ADC;
+			adc_state = CH_BUSCURRENT;
+			ADMUX = ADMUX_REFS | (CH_BUSCURRENT & 0x0F);
+			ADC_START();
+			break;
+		case CH_BUSCURRENT:
+			bus_pwr.i = ADC;
+			adc_state = CH_BUSVOLTAGE;
+			ADMUX = ADMUX_REFS | (CH_BUSVOLTAGE & 0x0F);
+			break;
+		case CH_REF_1300MV:
+			bus_pwr.ref = ADC;
+			adc_state = CH_REF_GND;
+			ADMUX = ADMUX_REFS | (CH_REF_GND & 0x0F);
+			ADC_START();
+			break;
+		case CH_REF_GND:
+			bus_pwr.gnd = ADC;
+			adc_state = CH_BUSVOLTAGE;
+			ADMUX = ADMUX_REFS | (CH_BUSVOLTAGE & 0x0F);
+			break;
+	}
+}
+
+//setup timer0 to simply count up
+void timer0_init()
+{
+	//enable timer with prescaler 1024
+	TCCR0 = _BV(CS02) | _BV(CS00);
+
+	//reset counter
+	TCNT0 = 0;
+
+	//enable interrupt
+	TIMSK |= TOIE0;
+	TIFR  |= TOV0;
+}
+
+//timer0 int acts as system counter
+ISR(TIMER0_OVF_vect)
+{
+	sys_ticks++;
+}
+
+//init the complete system
+void sys_init()
+{
+	//disable analog comparator (to save power)
+	ACSR |= _BV(ACD);
+
+	//init all subsystems
 	led_init();
 	buspower_on();
 	uart_init();
 	spi_init();
 	can_init();
+	adc_init();
+	timer0_init();
 	wdt_enable(WDTO_250MS);
 
 	//enable interrupts (all systems go!)
 	sei();
 
+	//calibrate adc
+	adc_calibrate();
+
 	//sync line
 	canu_reset();
+}
+
+int main() {
+	static uint16_t leds, leds_old;
+	uint8_t adc_last_schedule_time;
+
+	//init
+	sys_init();
 
 	//notify host that we had a reset
-	leds = REG_RESETCAUSE & MSK_RESETCAUSE;
-	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, &leds, 1);
+	adc_last_schedule_time = REG_RESETCAUSE & MSK_RESETCAUSE;
+	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, (char*)&adc_last_schedule_time, 1);
 
 	//begin can operations
 	can_setmode(normal);
 	can_setled(0, 1);
 
+	//store system counter
+	adc_last_schedule_time = sys_ticks;
 	while (1) {
 		rs232can_msg  *rmsg;
 		can_message *cmsg;
@@ -320,9 +439,9 @@ int main() {
 
 		//transmission from host to can
 		rmsg = canu_get_nb();
-		if (rmsg) {
+		if (rmsg)
 			process_cantun_msg(rmsg);
-		} else if(canu_failcnt > 1)
+		else if(canu_failcnt > 1)
 		{
 			canu_reset();
 			write_cmd_to_uart(RS232CAN_RESYNC, 0, 0);
@@ -343,6 +462,15 @@ int main() {
 		if (leds != leds_old) {
 			leds_old = leds;
 			led_set(leds);
+		}
+
+		//schedule adc measurements, approx. twice a second
+		//the timer frequency is approx. 61Hz @ 16MHz cpu. freq
+		//so our delta should be around SYS_TICK_FREQ/2
+		if((sys_ticks - adc_last_schedule_time) > (SYS_TICK_FREQ / 2))
+		{
+			adc_last_schedule_time = sys_ticks;
+			ADC_START();
 		}
 	}
 
