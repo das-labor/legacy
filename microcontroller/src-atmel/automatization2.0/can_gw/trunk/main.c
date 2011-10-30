@@ -440,13 +440,15 @@ void sys_init()
 	can_init();
 	adc_init();
 	timer0_init();
-	wdt_enable(WDTO_250MS);
 
 	//enable interrupts (all systems go!)
 	sei();
 
 	//calibrate adc
 	adc_calibrate();
+
+	//enable watchdog
+	wdt_enable(WDTO_250MS);
 
 	//sync line
 	canu_reset();
