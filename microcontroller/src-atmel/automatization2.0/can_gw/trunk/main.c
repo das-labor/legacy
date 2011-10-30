@@ -2,7 +2,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <avr/sleep.h>
+#include <avr/power.h>
 #include <util/crc16.h>
+#include <util/delay.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -305,7 +308,7 @@ void led_set(unsigned int stat) {
 //setup adc operations
 void adc_init()
 {
-	//
+	//setup adc pins
 	DDRC = 0xCF;
 
 	//default to first channel
@@ -324,18 +327,49 @@ void adc_init()
 //measure internal references and calibrate
 void adc_calibrate()
 {
+	//disable interrupts during low-noise measurement
+	cli();
+	#ifdef UART_INTERRUPT
+		//buffer old int flags, as not all ints are enabled on all devices
+		uint8_t old_uart_int_flags = UCSRB & (_BV(RXCIE) | _BV(TXCIE));
+		UCSRB &= ~(_BV(RXCIE) | _BV(TXCIE));
+	#endif
+	#ifdef CAN_INTERRUPT
+		GICR &= ~_BV(INT0);
+	#endif
+	TIMSK &= ~_BV(TOIE0);
+	sei();
+
 	//wait for ongoing measurements to finish
 	while(ADCSRA & _BV(ADIF));
 
-	//switch state machine to reference measuring and start
-	adc_state = CH_REF_1300MV;
-	ADMUX = ADMUX_REFS | (CH_REF_1300MV & 0x0F);
-	ADC_START();
+	//switch adc and state machine to reference measuring
+	adc_state = CH_REF_GND;
+	ADMUX = ADMUX_REFS | (CH_REF_GND & 0x0F);
+
+	//configure adc noise reduction sleep mode
+	MCUCR &= ~(_BV(SM2) | _BV(SM1));
+	MCUCR |= _BV(SE) | _BV(SM0);
+
+	//start ADC by issueing sleep instruction
+	sleep_cpu();
 
 	//wait for this to finish
 	while(((ADCSRA & _BV(ADIF)) != 0) && (adc_state != CH_BUSVOLTAGE));
 
-	//TODO: save offsets or do something with this
+	//disable sleep mode
+	MCUCR &= ~_BV(SE);
+
+	//re-enable interrupts
+	cli();
+	TIMSK |= _BV(TOIE0);
+	#ifdef CAN_INTERRUPT
+		GICR |= _BV(INT0);
+	#endif
+	#ifdef UART_INTERRUPT
+		UCSRB |= old_uart_int_flags;
+	#endif
+	sei();
 }
 
 //adc interrupt to switch channels
@@ -354,14 +388,18 @@ ISR(ADC_vect)
 			adc_state = CH_BUSVOLTAGE;
 			ADMUX = ADMUX_REFS | (CH_BUSVOLTAGE & 0x0F);
 			break;
+		case CH_REF_GND:
+			//measure ground to discharge the s/h cap
+			bus_pwr.gnd = ADC;
+			adc_state = CH_REF_1300MV;
+			//select internal bandgap and wait 70uS to charge s/h cap
+			ADMUX = ADMUX_REFS | (CH_REF_1300MV & 0x0F);
+			_delay_us(70);
+			//enter (previously configured) adc noise reduction sleep
+			sleep_cpu();
+			break;
 		case CH_REF_1300MV:
 			bus_pwr.ref = ADC;
-			adc_state = CH_REF_GND;
-			ADMUX = ADMUX_REFS | (CH_REF_GND & 0x0F);
-			ADC_START();
-			break;
-		case CH_REF_GND:
-			bus_pwr.gnd = ADC;
 			adc_state = CH_BUSVOLTAGE;
 			ADMUX = ADMUX_REFS | (CH_BUSVOLTAGE & 0x0F);
 			break;
@@ -378,8 +416,8 @@ void timer0_init()
 	TCNT0 = 0;
 
 	//enable interrupt
-	TIMSK |= TOIE0;
-	TIFR  |= TOV0;
+	TIMSK |= _BV(TOIE0);
+	TIFR  |= _BV(TOV0);
 }
 
 //timer0 int acts as system counter
