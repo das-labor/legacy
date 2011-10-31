@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric5 project file for project candpy -->
-<!-- Saved: 2011-10-31, 20:10:51 -->
+<!-- Saved: 2011-10-31, 20:22:51 -->
 <!-- Copyright (C) 2011 Alexander Kasper, asklepios@das-labor.org -->
 <Project version="5.1">
   <Language></Language>
@@ -19,18 +19,23 @@
     <Source>LocalParserPlugin.py</Source>
     <Source>PacketSplitterModule.py</Source>
     <Source>CanEventPlugin.py</Source>
-    <Source>core/__init__.py</Source>
     <Source>plugins/__init__.py</Source>
     <Source>plugins/serialcon/__init__.py</Source>
-    <Source>core//__init__.py</Source>
-    <Source>core/peak/__init__.py</Source>
-    <Source>core/peak/util/plugins.py</Source>
-    <Source>core/peak/util/__init__.py</Source>
     <Source>packets/__init__.py</Source>
     <Source>packets/types/__init__.py</Source>
     <Source>plugins/rawserver/__init__.py</Source>
     <Source>plugins/rawclient/__init__.py</Source>
     <Source>utils/__init__.py</Source>
+    <Source>plugins/serialcon/SerialPlugin.py</Source>
+    <Source>packets/LAPPacket.py</Source>
+    <Source>packets/types/CanPacket.py</Source>
+    <Source>plugins/rawserver/RawTCPClientPlugin.py</Source>
+    <Source>plugins/rawclient/RawTCPServerPlugin.py</Source>
+    <Source>utils/utils.py</Source>
+    <Source>core/__init__.py</Source>
+    <Source>core/peak/__init__.py</Source>
+    <Source>core/peak/util/plugins.py</Source>
+    <Source>core/peak/util/__init__.py</Source>
   </Sources>
   <Forms/>
   <Translations/>
@@ -159,8 +164,8 @@
   </Vcs>
   <FiletypeAssociations>
     <FiletypeAssociation pattern="*.pyw2" type="SOURCES"/>
-    <FiletypeAssociation pattern="*.py2" type="SOURCES"/>
     <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>
+    <FiletypeAssociation pattern="*.py2" type="SOURCES"/>
     <FiletypeAssociation pattern="*.ptl" type="SOURCES"/>
     <FiletypeAssociation pattern="*.py" type="SOURCES"/>
   </FiletypeAssociations>
