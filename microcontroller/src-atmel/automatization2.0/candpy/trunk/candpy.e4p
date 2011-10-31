@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric5 project file for project candpy -->
-<!-- Saved: 2011-10-19, 16:59:05 -->
+<!-- Saved: 2011-10-31, 20:10:51 -->
 <!-- Copyright (C) 2011 Alexander Kasper, asklepios@das-labor.org -->
 <Project version="5.1">
   <Language></Language>
@@ -14,12 +14,36 @@
   <Email>asklepios@das-labor.org</Email>
   <Sources>
     <Source>__init__.py</Source>
+    <Source>LoggingPlugin.py</Source>
+    <Source>candpy.py</Source>
+    <Source>LocalParserPlugin.py</Source>
+    <Source>PacketSplitterModule.py</Source>
+    <Source>CanEventPlugin.py</Source>
+    <Source>core/__init__.py</Source>
+    <Source>plugins/__init__.py</Source>
+    <Source>plugins/serialcon/__init__.py</Source>
+    <Source>core//__init__.py</Source>
+    <Source>core/peak/__init__.py</Source>
+    <Source>core/peak/util/plugins.py</Source>
+    <Source>core/peak/util/__init__.py</Source>
+    <Source>packets/__init__.py</Source>
+    <Source>packets/types/__init__.py</Source>
+    <Source>plugins/rawserver/__init__.py</Source>
+    <Source>plugins/rawclient/__init__.py</Source>
+    <Source>utils/__init__.py</Source>
   </Sources>
   <Forms/>
   <Translations/>
   <Resources/>
   <Interfaces/>
-  <Others/>
+  <Others>
+    <Other>packets/</Other>
+    <Other>packets/types/</Other>
+    <Other>plugins/rawserver/</Other>
+    <Other>plugins/rawclient</Other>
+    <Other>plugins/serialcon</Other>
+    <Other>utils</Other>
+  </Others>
   <Vcs>
     <VcsType>Subversion</VcsType>
     <VcsOptions>
@@ -135,8 +159,8 @@
   </Vcs>
   <FiletypeAssociations>
     <FiletypeAssociation pattern="*.pyw2" type="SOURCES"/>
-    <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>
     <FiletypeAssociation pattern="*.py2" type="SOURCES"/>
+    <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>
     <FiletypeAssociation pattern="*.ptl" type="SOURCES"/>
     <FiletypeAssociation pattern="*.py" type="SOURCES"/>
   </FiletypeAssociations>

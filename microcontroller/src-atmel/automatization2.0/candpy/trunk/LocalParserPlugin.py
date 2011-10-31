@@ -21,11 +21,13 @@ class LocalParserPlugin(threading.Thread):
         print "LocalParserPlugin started"
         while self.running:
             try:
-                package=self.psplitter.getNextPackage()
-                # we are out off sync sometimes
                 print "localparser"
-                print package
-                self.plugins.Hook('daslabor.cand.rawtcpserver.canpkg.read', 
+                package=self.psplitter.getNextPackage()
+                #print hexdump(package.getPayload())
+                # we are out off sync sometimes
+                print "object=" + str(type(package))
+                print "type=" + str(package.getPKTtype())
+                self.plugins.Hook('daslabor.cand.rawtcpserver.read', 
                                   package.getPKTtype()).notify(package.getPayload())
                 print "/localparser"
             except Exception, msg:
@@ -36,6 +38,8 @@ class LocalParserPlugin(threading.Thread):
     def addData(self, data):
         self.psplitter.extendStream(data)
         #self.processqueue.put(bytearray(data))
+
+
 
 def localparserargs(data):
     pass
