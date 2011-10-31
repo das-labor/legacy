@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric5 project file for project candpy -->
-<!-- Saved: 2011-10-31, 20:28:51 -->
+<!-- Saved: 2011-10-31, 20:30:32 -->
 <!-- Copyright (C) 2011 Alexander Kasper, asklepios@das-labor.org -->
 <Project version="5.1">
   <Language></Language>
@@ -17,7 +17,6 @@
     <Source>LoggingPlugin.py</Source>
     <Source>candpy.py</Source>
     <Source>LocalParserPlugin.py</Source>
-    <Source>PacketSplitterModule.py</Source>
     <Source>plugins/__init__.py</Source>
     <Source>plugins/serialcon/__init__.py</Source>
     <Source>packets/__init__.py</Source>
@@ -36,6 +35,7 @@
     <Source>core/peak/util/plugins.py</Source>
     <Source>core/peak/util/__init__.py</Source>
     <Source>packets/events/__init__.py</Source>
+    <Source>packets/events/CanEventPlugin.py</Source>
   </Sources>
   <Forms/>
   <Translations/>
@@ -49,6 +49,7 @@
     <Other>plugins/serialcon</Other>
     <Other>utils</Other>
     <Other>packets/events</Other>
+    <Other>packets</Other>
   </Others>
   <Vcs>
     <VcsType>Subversion</VcsType>
@@ -165,8 +166,8 @@
   </Vcs>
   <FiletypeAssociations>
     <FiletypeAssociation pattern="*.pyw2" type="SOURCES"/>
-    <FiletypeAssociation pattern="*.py2" type="SOURCES"/>
     <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>
+    <FiletypeAssociation pattern="*.py2" type="SOURCES"/>
     <FiletypeAssociation pattern="*.ptl" type="SOURCES"/>
     <FiletypeAssociation pattern="*.py" type="SOURCES"/>
   </FiletypeAssociations>
