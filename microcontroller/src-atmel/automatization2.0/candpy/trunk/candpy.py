@@ -12,29 +12,33 @@ from core.peak.util import plugins
 # the second component is the starting of the plugin with the actual
 # commandline args
 #from plugins.serialcon.SerialPlugin import serialinit, serialargs
-from core.LoggingPlugin import fileloggerargsrs232pkg, fileloggerinitrs232pkg, fileloggerrs232pkgread,  fileloggerrs232pkgwrite
-#from plugins.rawserver.RawTCPClientPlugin import rawtcpclientinit, rawtcpclientargs
-from plugins.rawclient.RawTCPServerPlugin import rawtcpserverargs, rawtcpserverinit
+from core.LoggingPlugin import fileloggerargsrs232pkg
+from core.LoggingPlugin import fileloggerinitrs232pkg
+from core.LoggingPlugin import fileloggerrs232pkgread
+from core.LoggingPlugin import fileloggerrs232pkgwrite
+#from plugins.rawserver.RawTCPClientPlugin import rawtcpclientinit
+#from plugins.rawserver.RawTCPClientPlugin import rawtcpclientargs
+from plugins.rawclient.RawTCPServerPlugin import rawtcpserverargs
+from plugins.rawclient.RawTCPServerPlugin import rawtcpserverinit
 from packets.LocalParserPlugin import localparserargs, localparserinit
 
 from packets.events.CanEventPlugin import caneventargs, caneventinit
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(
-        usage = "%prog [options] [port [baudrate]]",
-        description = "Labor Cand in python ",
-        epilog = """\
+        usage="%prog [options] [port [baudrate]]",
+        description="Labor Cand in python ",
+        epilog="""\
 NOTE: no security measures are implemented. Anyone can remotely connect
 to this service over the network.
 """)
 
     parser.add_option("-q", "--quiet",
-        dest = "quiet",
-        action = "store_true",
-        help = "suppress non error messages",
-        default = False
+        dest="quiet",
+        action="store_true",
+        help="suppress non error messages",
+        default=False
     )
-
 
     # get port and baud rate from command line arguments or the option switches
 
@@ -45,29 +49,28 @@ to this service over the network.
         #print data
         pass
 
-    rs232readplugins=plugins.Hook('daslabor.cand.rs232.read')
-    rs232readplugins.register(dummyhook,  'localparser')
-    rs232readplugins.register(dummyhook,  'remoterawclient')
-    
-    rs232readplugins.register(fileloggerrs232pkgread,  'logger')
-    
+    rs232readplugins = plugins.Hook('daslabor.cand.rs232.read')
+    rs232readplugins.register(dummyhook, 'localparser')
+    rs232readplugins.register(dummyhook, 'remoterawclient')
+
+    rs232readplugins.register(fileloggerrs232pkgread, 'logger')
+
     ### register raw input
-    rawinputreadplugins=plugins.Hook('daslabor.cand.rawtcpclient.read')
-    
-    
+    rawinputreadplugins = plugins.Hook('daslabor.cand.rawtcpclient.read')
+
     ### register cmdargs plugins
-    
-    argsplugins=plugins.Hook('daslabor.cand.cmdargs')
+
+    argsplugins = plugins.Hook('daslabor.cand.cmdargs')
     #argsplugins.register(serialargs, 'serial')
     argsplugins.register(fileloggerargsrs232pkg, 'logger')
     #argsplugins.register(rawtcpclientargs, 'rawtcpclient')
     argsplugins.register(rawtcpserverargs, 'rawtcpserver')
     argsplugins.register(localparserargs, 'localparser')
     argsplugins.register(caneventargs, 'canevent')
-    
+
     ### register init plugins
-    
-    initplugins=plugins.Hook('daslabor.cand.init')
+
+    initplugins = plugins.Hook('daslabor.cand.init')
     #initplugins.register(serialinit, 'serial')
     initplugins.register(fileloggerinitrs232pkg, 'logger')
     #initplugins.register(rawtcpclientinit, 'rawtcpclient')
@@ -77,7 +80,7 @@ to this service over the network.
 
     ### register write plugins
 
-    wrplugin=plugins.Hook('daslabor.cand.rs232.write')
+    wrplugin = plugins.Hook('daslabor.cand.rs232.write')
     wrplugin.register(fileloggerrs232pkgwrite, 'logger')
 
     ### notify about init
@@ -87,13 +90,10 @@ to this service over the network.
     (options, args) = parser.parse_args()
 
     plugins.Hook('daslabor.cand.init').notify([options, args, parser, plugins])
-    
 
-    try :
+    try:
         while True:
             print "mainloop"
             sleep(10)
     except KeyboardInterrupt:
         pass
-    
-

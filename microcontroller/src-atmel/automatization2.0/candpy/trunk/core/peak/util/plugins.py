@@ -4,12 +4,14 @@ from peak import context
 
 __all__ = ['Hook', 'Extensible', 'PluginManager']
 
+
 def additional_tests():
     import doctest
     return doctest.DocFileSuite(
         'README.txt', package='__main__',
-        optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE,
+        optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE,
     )
+
 
 class Extensible(object):
     """An object that can load hooks to extend itself (usually add-ons)"""
@@ -29,6 +31,7 @@ class Extensible(object):
         """
         for ext in _flatten_callables(self.extend_with):
             ext(self)
+
 
 def _flatten_callables(ob):
     if callable(ob):
@@ -50,15 +53,18 @@ class Hook(object):
 
     def register(self, ob, impl=None):
         if impl and self.impl and impl != self.impl:
-            raise ValueError("Can only register "+self.impl+" implementations")
+            raise ValueError("Can only register " + self.impl +
+            " implementations")
         return PluginManager.addEntryPoint(self.group, impl or self.impl, ob)
 
-    def deregister(self,ob,impl=None):
+    def deregister(self, ob, impl=None):
         if impl and self.impl and impl != self.impl:
-            raise ValueError("Can only deregister "+self.impl+" implementations")
-        return PluginManager.removeEntryPoint(self.group, impl or self.impl, ob)
+            raise ValueError("Can only deregister " + self.impl +
+            " implementations")
+        return PluginManager.removeEntryPoint(self.group,
+                                              impl or self.impl,
+                                              ob)
 
-        
     def notify(self, *args, **kw):
         """Call all registered hooks with the given arguments"""
         for hook in self.query(*args, **kw):
@@ -78,27 +84,27 @@ class Hook(object):
 
 
 struct(Hook)
+
+
 def Hook(group, impl=None):
     """Easy access to a specific entry point or group of entry points"""
     return group, impl
 
 
-
-
-
 _implementations = {}     # global implementation registry
+
 
 class PluginManager(context.Service):
     """Manage plugin eggs"""
 
     def addEntryPoint(self, group, impl, ob):
         """Register an object as a hook"""
-        _implementations.setdefault(group,[]).append((impl, ob))
+        _implementations.setdefault(group, []).append((impl, ob))
 
     def removeEntryPoint(self, group, impl, ob):
         """Deregister an object as a hook"""
         try:
-            _implementations.setdefault(group,[]).remove((impl, ob))
+            _implementations.setdefault(group, []).remove((impl, ob))
         except KeyError:
             pass
 
@@ -112,25 +118,9 @@ class PluginManager(context.Service):
             project = project.lower()
 
         for name, ob in _implementations.get(group, ()):
-            if impl and name!=impl: continue
+            if impl and name != impl:
+                continue
             yield ob
 
         for ep in pkg_resources.iter_entry_points(group, impl):
             yield ep.load()
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
