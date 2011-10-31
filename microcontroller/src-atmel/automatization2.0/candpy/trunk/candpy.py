@@ -7,6 +7,10 @@ import optparse
 # for sleeping
 from time import sleep
 
+# in general two components are needed to activate a plugin
+# the first component is the parsing and providing of commandline args
+# the second component is the starting of the plugin with the actual
+# commandline args
 from SerialPlugin import serialinit
 from SerialPlugin import serialargs
 from LoggingPlugin import fileloggerargsrs232pkg
@@ -20,6 +24,8 @@ from RawTCPServerPlugin import rawtcpserverinit
 from LocalParserPlugin import localparserargs
 from LocalParserPlugin import localparserinit
 
+from CanEventPlugin import caneventargs
+from CanEventPlugin import caneventinit
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(
@@ -65,6 +71,7 @@ to this service over the network.
     #argsplugins.register(rawtcpclientargs, 'rawtcpclient')
     argsplugins.register(rawtcpserverargs, 'rawtcpserver')
     argsplugins.register(localparserargs, 'localparser')
+    argsplugins.register(caneventargs, 'canevent')
     
     ### register init plugins
     
@@ -74,6 +81,7 @@ to this service over the network.
     #initplugins.register(rawtcpclientinit, 'rawtcpclient')
     initplugins.register(rawtcpserverinit, 'rawtcpserver')
     initplugins.register(localparserinit, 'localparser')
+    initplugins.register(caneventinit, 'canevent')
 
     ### register write plugins
 
