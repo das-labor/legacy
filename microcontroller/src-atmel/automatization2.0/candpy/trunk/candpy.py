@@ -1,31 +1,23 @@
 #!/usr/bin/env python
 
-# everything is handled via plugins
-from peak.util import plugins
 # for commandline parsing
 import optparse
 # for sleeping
 from time import sleep
 
+# everything is handled via plugins
+from core.peak.util import plugins
 # in general two components are needed to activate a plugin
 # the first component is the parsing and providing of commandline args
 # the second component is the starting of the plugin with the actual
 # commandline args
-from SerialPlugin import serialinit
-from SerialPlugin import serialargs
-from LoggingPlugin import fileloggerargsrs232pkg
-from LoggingPlugin import fileloggerinitrs232pkg
-from LoggingPlugin import fileloggerrs232pkgread
-from LoggingPlugin import fileloggerrs232pkgwrite
-from RawTCPClientPlugin import rawtcpclientinit
-from RawTCPClientPlugin import rawtcpclientargs
-from RawTCPServerPlugin import rawtcpserverargs
-from RawTCPServerPlugin import rawtcpserverinit
-from LocalParserPlugin import localparserargs
-from LocalParserPlugin import localparserinit
+#from plugins.serialcon.SerialPlugin import serialinit, serialargs
+from core.LoggingPlugin import fileloggerargsrs232pkg, fileloggerinitrs232pkg, fileloggerrs232pkgread,  fileloggerrs232pkgwrite
+#from plugins.rawserver.RawTCPClientPlugin import rawtcpclientinit, rawtcpclientargs
+from plugins.rawclient.RawTCPServerPlugin import rawtcpserverargs, rawtcpserverinit
+from packets.LocalParserPlugin import localparserargs, localparserinit
 
-from CanEventPlugin import caneventargs
-from CanEventPlugin import caneventinit
+from packets.events.CanEventPlugin import caneventargs, caneventinit
 
 if __name__ == '__main__':
     parser = optparse.OptionParser(
