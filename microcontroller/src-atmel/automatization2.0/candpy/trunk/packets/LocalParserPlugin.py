@@ -3,9 +3,9 @@
 import threading
 import Queue
 from time import sleep
-from LAPPacket import LAPPacket
-from CanPacket import CanPacket
-from utils import hexdump
+from packets.LAPPacket import LAPPacket
+from packets.types.CanPacket import CanPacket
+from utils.utils import hexdump
 from PacketSplitterModule import PacketSplitter
 
 class LocalParserPlugin(threading.Thread):
