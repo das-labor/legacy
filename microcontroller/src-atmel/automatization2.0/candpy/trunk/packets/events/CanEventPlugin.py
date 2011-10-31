@@ -3,9 +3,9 @@
 import threading
 import Queue
 from time import sleep
-from CanPacket import CanPacket
-from LAPPacket import LAPPacket
-from utils import hexdump
+from packets.types.CanPacket import CanPacket
+from packets.LAPPacket import LAPPacket
+from utils.utils import hexdump
 
 
 class CanEvent(threading.Thread):

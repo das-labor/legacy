@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from utils import hexdump
+from utils.utils import hexdump
 
 class CanPacket(object):
     def __init__(self, sa=0, sp=0, da=0, dp=0, data=bytearray(""), rawpkt=None):

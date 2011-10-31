@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from utils import invertDict
-from utils import hexdump
+from utils.utils import invertDict
+from utils.utils import hexdump
 
 class LAPPacket(object):
     LAPPacketTypes={
