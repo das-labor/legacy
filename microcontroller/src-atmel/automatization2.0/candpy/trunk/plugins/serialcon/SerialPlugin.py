@@ -60,7 +60,7 @@ class SerialWriter(threading.Thread):
 
 
 def serialargs(data):
-    parser=data[0]
+    parser = data[0]
     #plugins=data[1]
     group = optparse.OptionGroup(parser,
         "Serial Port",
@@ -119,6 +119,7 @@ def serialargs(data):
         default=None
     )
 
+
 def serialinit(data):
     options = data[0]
     args = data[1]
@@ -156,8 +157,8 @@ def serialinit(data):
         ser.open()
     except serial.SerialException, e:
         print ("Could not open serial port %s: %s\n" % (ser.portstr, e))
-        ser=None
-    
+        ser = None
+
     if options.rts_state is not None:
         ser.setRTS(options.rts_state)
 
@@ -165,14 +166,14 @@ def serialinit(data):
         ser.setDTR(options.dtr_state)
 
     # ugly but needed for plugin
-    swriter=SerialWriter(ser)
+    swriter = SerialWriter(ser)
     swriter.setDaemon(True)
     swriter.start()
 
-    serialwrplugin=plugins.Hook('daslabor.cand.rs232.write')
+    serialwrplugin = plugins.Hook('daslabor.cand.rs232.write')
     serialwrplugin.register(swriter.addText, 'default')
 
-    sreader=SerialReader(ser, plugins)
+    sreader = SerialReader(ser, plugins)
     sreader.setDaemon(True)
     sreader.start()
 
