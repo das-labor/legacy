@@ -445,7 +445,7 @@ void sys_init()
 	sei();
 
 	//calibrate adc
-	adc_calibrate();
+	//adc_calibrate();
 
 	//enable watchdog
 	wdt_enable(WDTO_250MS);
