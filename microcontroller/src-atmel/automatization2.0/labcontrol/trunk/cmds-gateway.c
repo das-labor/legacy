@@ -156,7 +156,7 @@ void cmd_gateway_powerdraw(int argc, char *argv[])
 	if(!rmsg) goto timeout;
 
 	//print answers
-	printf("Beware, this is raw 12-Bit ADC data:\n");
+	printf("Beware, this is raw 10-Bit ADC data:\n");
 	printf("Current:\t%u\n", *((uint16_t *)&rmsg->data[0]));
 	printf("Voltage:\t%u\n", *((uint16_t *)&rmsg->data[2]));
 	printf("GND:\t\t%u\n", *((uint32_t *)&rmsg->data[4]));
