@@ -148,7 +148,7 @@ void cmd_gateway_powerdraw(int argc, char *argv[])
 	rs232can_msg *rmsg;
 
 	//create and send gateway ping request
-	printf("Requesting power draw.. ");
+	printf("Requesting power draw..\n");
 	send_gateway_command(RS232CAN_POWERDRAW);
 
 	//anticipate reply and timeout after 2s
