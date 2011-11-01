@@ -58,7 +58,7 @@ static unsigned char bitmap_getAlignedChunk(bitmap_t const *const pBitmap,
 	unsigned char const x_8 = x / 8;
 
 	// we have to go through every bit plane
-	for (unsigned char i = pBitmap->nBitPlanes; i--;)
+	for (unsigned char i = 0; i < pBitmap->nBitPlanes; ++i)
 	{
 		// generate chunk
 		unsigned char nPlaneChunk;
