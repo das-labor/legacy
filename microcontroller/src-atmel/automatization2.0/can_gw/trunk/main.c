@@ -64,7 +64,7 @@ struct { uint32_t rx_count, tx_count, rx_size, tx_size; } pkt_cnt = {0, 0, 0, 0}
 struct { uint8_t rx_errors, tx_errors, error_flags; } err_cnt = {0, 0, 0};
 
 //bus power measurement struct
-struct { volatile uint16_t v, i, ref, gnd; } bus_pwr = {0, 0, 0, 0};
+volatile struct { volatile uint16_t v, i, ref, gnd; } volatile bus_pwr = {0, 0, 0, 0};
 
 //state of the adc interrupt state machine
 volatile uint8_t adc_state;
