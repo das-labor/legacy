@@ -109,10 +109,10 @@ void cmd_gateway_packetstats(int argc, char *argv[])
 	if(!rmsg) goto timeout;
 
 	//print answers
-	printf("TX Packets:\t\t%u\n", *((uint16_t *)&rmsg->data[0]));
-	printf("RX Packets:\t\t%u\n", *((uint16_t *)&rmsg->data[2]));
-	printf("TX total payload data:\t%u bytes\n", *((uint16_t *)&rmsg->data[4]));
-	printf("RX total payload data:\t%u bytes\n", *((uint16_t *)&rmsg->data[6]));
+	printf("TX Packets:\t\t%u\n", *((uint32_t *)&rmsg->data[0]));
+	printf("RX Packets:\t\t%u\n", *((uint32_t *)&rmsg->data[4]));
+	printf("TX total payload data:\t%u bytes\n", *((uint32_t *)&rmsg->data[8]));
+	printf("RX total payload data:\t%u bytes\n", *((uint32_t *)&rmsg->data[12]));
 	return;
 
 timeout:
@@ -154,7 +154,13 @@ void cmd_gateway_powerdraw(int argc, char *argv[])
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_POWERDRAW);
 	if(!rmsg) goto timeout;
-	printf("not implemented yet..!\n");
+
+	//print answers
+	printf("Beware, this is raw 12-Bit ADC data:\n");
+	printf("Current:\t%u\n", *((uint16_t *)&rmsg->data[0]));
+	printf("Voltage:\t%u\n", *((uint16_t *)&rmsg->data[2]));
+	printf("GND:\t\t%u\n", *((uint32_t *)&rmsg->data[8]));
+	printf("Bandgap:\t%u\n", *((uint32_t *)&rmsg->data[12]));
 	return;
 
 timeout:
