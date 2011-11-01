@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<avg width="1024" height="768">
+  <image id="background" href="media/background.tif" opacity="1"/>
+
+
+  <div id="thema1" x="20" y="7" opacity="0">
+    <words id="textThema1" alignment="center" x="75" y="0" height="60" opacity="1" text="Comics" color="DFFF17" fontsize="24.0"/>
+    <div id="thema1_100_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema1_100" color="000000" fillcolor="888888" />
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="100" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema1_200_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema1_200" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="200" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema1_300_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema1_300" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="300" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema1_400_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema1_400" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="400" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema1_500_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema1_500" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="500" color="0000AA" fontsize="22.0" />
+    </div>
+  </div>
+
+  <div id="thema2" x="256" y="7" opacity="0">
+    <words id="textThema2" alignment="center" x="90" y="0" height="60" opacity="1" text="Zahlen" color="DFFF17" fontsize="24.0"/>
+    <div id="thema2_100_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema2_100" color="000000" fillcolor="888888" />
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="100" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema2_200_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema2_200" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="200" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema2_300_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema2_300" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="300" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema2_400_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema2_400" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="400" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema2_500_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema2_500" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="500" color="0000AA" fontsize="22.0" />
+    </div>
+  </div>
+
+  <div id="thema3" x="512" y="7" opacity="0">
+    <words id="textThema3" alignment="center" x="90" y="0" height="60" opacity="1" text="on Enter" color="DFFF17" fontsize="24.0"/>
+    <div id="thema3_100_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema3_100" color="000000" fillcolor="888888" />
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="100" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema3_200_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema3_200" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="200" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema3_300_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema3_300" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="300" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema3_400_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema3_400" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="400" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema3_500_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema3_500" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="500" color="0000AA" fontsize="22.0" />
+    </div>
+  </div>
+
+  <div id="thema4" x="768" y="7" opacity="0">
+    <words id="textThema4" alignment="center" x="90" y="0" height="60" opacity="1" text="schwarz" color="DFFF17" fontsize="24.0"/>
+    <div id="thema4_100_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema4_100" color="000000" fillcolor="888888" />
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="100" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema4_200_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema4_200" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="200" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema4_300_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema4_300" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="300" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema4_400_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema4_400" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="400" color="0000AA" fontsize="22.0" />
+    </div>
+    <div id="thema4_500_div" x="0" y="0">
+      <rect pos="(0,0)" size="(180,50)" fillopacity="1" id="thema4_500" color="000000" fillcolor="888888"/>
+      <words alignment="center" x="90" y="14" font="Arial" variant="Bold" opacity="1" text="500" color="0000AA" fontsize="22.0" />
+    </div>
+  </div>
+
+
+  <div id="user1_div" x="0" y="0" opacity="0" active='False'>
+    <rect pos="(0,0)" size="(150,50)" fillopacity="1" id="user1" color="000000" fillcolor="888888" />
+    <words alignment="center" x="75" y="14" font="Arial" id="user1_name" variant="Bold" opacity="1" text="alfred" color="0000AA" fontsize="22.0" />
+    <words alignment="center" x="75" y="60" font="Arial" id="user1_score" variant="Bold" opacity="0" text="0" color="0000AA" fontsize="22.0" />
+  </div>
+  <div id="user2_div" x="0" y="0" opacity="0" active='False'>
+    <rect pos="(0,0)" size="(150,50)" fillopacity="1" id="user2" color="000000" fillcolor="888888"/>
+    <words alignment="center" x="75" y="14" font="Arial" id="user2_name" variant="Bold" opacity="1" text="bert" color="0000AA" fontsize="22.0" />
+    <words alignment="center" x="75" y="60" font="Arial" id="user2_score" variant="Bold" opacity="0" text="0" color="0000AA" fontsize="22.0" />
+  </div>
+  <div id="user3_div" x="0" y="0" opacity="0" active='False'>
+    <rect pos="(0,0)" size="(150,50)" fillopacity="1" id="user3" color="000000" fillcolor="888888"/>
+    <words alignment="center" x="75" y="14" font="Arial" id="user3_name" variant="Bold" opacity="1" text="carl" color="0000AA" fontsize="22.0" />
+    <words alignment="center" x="75" y="60" font="Arial" id="user3_score" variant="Bold" opacity="0" text="0" color="0000AA" fontsize="22.0" />
+  </div>
+  <div id="user4_div" x="0" y="0" opacity="0" active='False'>
+    <rect pos="(0,0)" size="(150,50)" fillopacity="1" id="user4" color="000000" fillcolor="888888"/>
+    <words alignment="center" x="75" y="14" font="Arial" id="user4_name" variant="Bold" opacity="1" text="detlef" color="0000AA" fontsize="22.0" />
+    <words alignment="center" x="75" y="60" font="Arial" id="user4_score" variant="Bold" opacity="0" text="0" color="0000AA" fontsize="22.0" />
+  </div>
+  
+  <div id="lockfield" x="0" y="0" active="False">
+    <rect pos="(0,0)" size="(1024,768)" fillopacity="0" id="fullfill" color="000000" fillcolor="888888"/>
+    <image id="hintimage" active="False" href="media/background.tif" opacity="1"/>    
+    <words alignment="center" x="500" y="300" font="Arial" id="startPlay" variant="Bold" opacity="0" text="listen!" color="0000AA" fontsize="22.0" />
+  </div>
+
+
+</avg>
