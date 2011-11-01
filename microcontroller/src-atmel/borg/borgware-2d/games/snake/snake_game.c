@@ -269,12 +269,12 @@ static void snake_autoRoute(snake_protagonist_t *pprotSnake,
 		}
 	}
 
-	for (uint8_t i = 4; i--;)
+	for (uint8_t i = 0; i < 4; ++i)
 	{
 		pixel pxTest = snake_applyDirection(pxHead, pprotSnake->dir);
 		if (get_pixel(pxTest))
 		{
-			for (uint8_t j = pApples->nAppleCount; j--;)
+			for (uint8_t j = 0; j < pApples->nAppleCount; ++j)
 			{
 				if ((pxTest.x == pApples->aApples[j].x) &&
 						(pxTest.y == pApples->aApples[j].y))
