@@ -36,7 +36,7 @@
 
 //ADMUX default value
 //select AREF voltage reference, right-adjust conversion results
-#define ADMUX_REFS (0)
+#define ADMUX_REFS (_BV(REFS0))
 
 //ADC channels
 #define CH_BUSVOLTAGE (_BV(MUX2) | _BV(MUX0))
@@ -70,7 +70,7 @@ struct { volatile uint16_t v, i, ref, gnd; } bus_pwr = {0, 0, 0, 0};
 volatile uint8_t adc_state;
 
 //system counter
-volatile uint8_t sys_ticks;
+volatile uint16_t sys_ticks;
 
 //commands
 typedef enum
@@ -320,7 +320,7 @@ void adc_init()
 	//slowest adc clock (prescaler 128)
 	ADCSRA = _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 
-	//set adc enable, auto trigger, set interrupt enable
+	//set adc enable, set interrupt enable, clear pending ints
 	ADCSRA = _BV(ADEN) | _BV(ADIE) | _BV(ADIF);
 }
 
@@ -456,7 +456,7 @@ void sys_init()
 
 int main() {
 	static uint16_t leds, leds_old;
-	uint8_t adc_last_schedule_time;
+	uint16_t adc_last_schedule_time;
 
 	//init
 	sys_init();
