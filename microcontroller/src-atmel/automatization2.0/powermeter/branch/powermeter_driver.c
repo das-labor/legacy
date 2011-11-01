@@ -30,7 +30,7 @@
 
 powermeter_t powermeter;
 
-#define DMARESET 1		//muss 1 sein, 0 == bööööse
+#define DMARESET 1		//muss 1 sein, 0 == bööööse, TODO: fix
 #define USEDMAMEMSET 0
 #define USEDMAMEMCPY 0
 
@@ -39,7 +39,7 @@ ISR(DMA_CH0_vect)
 {
 	#if DMARESET
 		DMA_ResetChannel(&DMA.CH0);
-		DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
+		DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
 	#else
 		DMA_DisableChannel(&DMA.CH0);
 	#endif
@@ -74,7 +74,7 @@ ISR(DMA_CH1_vect)
 {
 	#if DMARESET
 		DMA_ResetChannel(&DMA.CH1);
-		DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
+		DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
 	#else
 		DMA_DisableChannel(&DMA.CH1);
 	#endif
@@ -142,12 +142,12 @@ int powermeter_Start()
 	DMA_SetPriority(DMA_PRIMODE_RR0123_gc); //dma mode round robin
 	DMA_DisableChannel(&DMA.CH0);
 	DMA_ResetChannel(&DMA.CH0);
-	DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
+	DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
 	DMA0_init(&powermeter.samplebuffer[powermeter.samplebuffer_page].u[0],sizeof(int16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
 
 	DMA_DisableChannel(&DMA.CH1);
 	DMA_ResetChannel(&DMA.CH1);
-	DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
+	DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
 	DMA1_init(&powermeter.samplebuffer[powermeter.samplebuffer_page].i1[0],sizeof(int16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
 
 
@@ -231,8 +231,8 @@ void powermeter_docalculations()
 			setERROR(ERROR_SR_TOHIGH);
 		powermeter.startCalculations = 0;
 
-		DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);
-		DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_LO_gc,DMA_CH_ERRINTLVL_OFF_gc);
+		DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);
+		DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);
 
 		//disable RTC Interrupt, it modifies powermeter.powerdrawPerSecond
 		RTC_SetIntLevels( RTC_OVFINTLVL_OFF_gc, RTC_COMPINTLVL_OFF_gc );
@@ -309,10 +309,6 @@ void powermeter_copypowerdraw()
 		powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff /powermeter.samplesPerSecondDone;
 		powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff /powermeter.samplesPerSecondDone;
 
-		powermeter.powerdrawLastSecond.c1.Ieff = powermeter.powerdrawPerSecond.c1.Ieff /powermeter.samplesPerSecondDone;
-		powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff /powermeter.samplesPerSecondDone;
-		powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff /powermeter.samplesPerSecondDone;
-
 		powermeter.powerdrawLastSecond.c1.E += powermeter.powerdrawPerSecond.c1.P;
 		powermeter.powerdrawLastSecond.c2.E += powermeter.powerdrawPerSecond.c2.P;
 		powermeter.powerdrawLastSecond.c3.E += powermeter.powerdrawPerSecond.c3.P;
@@ -335,7 +331,7 @@ void TC1_init(volatile uint32_t eventsPerSecond)
 	if(eventsPerSecond > 0xF42400)		//greater than 16000000Hz ?
 		return;
 	TC1_Reset(&TCC1);
-	TC1_SetOverflowIntLevel(&TCC1,TC_OVFINTLVL_MED_gc);
+	TC1_SetOverflowIntLevel(&TCC1,TC_OVFINTLVL_LO_gc);
 	uint16_t TC1_TOP;
 	if((F_CPU/(1*eventsPerSecond))<0xFFFF){
 		TC1_TOP = ((F_CPU / 1) / eventsPerSecond);		//calculate nearest match
