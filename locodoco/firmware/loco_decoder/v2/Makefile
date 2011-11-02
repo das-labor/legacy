@@ -3,9 +3,12 @@ OBJ = main.o rfm12.o motor.o locodoco.o
 # hardware revision (currently only v2)
 HWREF         := 2
 
+# HFUSE=0xd9
+# LFUSE=0x77
+
 # Default values
 OUT           ?= locodoco-decoder-v2
-MCU_TARGET    ?= atmega168
+MCU_TARGET    ?= atmega328p
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
@@ -32,6 +35,8 @@ clean:
 flash: $(OUT).hex
 	$(ERASECMD)
 	$(FLASHCMD)
+
+		
 
 #############################################################################
 # Building Rules 
