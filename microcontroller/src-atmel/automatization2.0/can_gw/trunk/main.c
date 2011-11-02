@@ -308,9 +308,6 @@ void led_set(unsigned int stat) {
 //setup adc operations
 void adc_init()
 {
-	//setup adc pins
-	DDRC = 0xCF;
-
 	//default to first channel
 	adc_state = CH_BUSVOLTAGE;
 
