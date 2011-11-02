@@ -10,7 +10,7 @@
 #include "cmds-powermeter.h"
 
 #define POWERMETER_ADDR 0x05
-#define POWERMETER_PORT 0x06
+#define POWERMETER_PORT 0x3C
 
 
 typedef struct
@@ -30,7 +30,7 @@ typedef struct
 } powermeter_channel_t;
 
 
-void cmd_canpowermeter(int argc, char *argv[]) 
+void cmd_canpowermeter(int argc, char *argv[])
 {
 	//unsigned char addr;
 	can_message *msg;
