@@ -9,7 +9,7 @@
 #include "can_handler.h"
 #include "config.h"
 
-#define PORT_POWERMETER 0x06
+#define PORT_POWERMETER 0x3C
 uint8_t myaddr;
 
 
@@ -42,7 +42,7 @@ void can_handler()
 						break;
 				}
 			}
-			
+
 		}
 		if (rx_msg->port_dst == 0x37)
 		{
@@ -86,11 +86,11 @@ void can_createDATAPACKET()
 		(void *)&powermeter.powerdrawLastSecond.c2.Ieff,
 		(void *)&powermeter.powerdrawLastSecond.c3.Ieff,
 	};
-	
+
 	static can_message msg = {0, 0, PORT_POWERMETER, PORT_POWERMETER, 4, {}};
 	can_message * txmsg;
 	uint8_t id = 0, i;
-	
+
 	msg.addr_src = myaddr;
 	msg.dlc = 4;
 	msg.data[0] = (uint8_t)((powermeter.samplesPerSecondDone>>8)&0xff);   //counter (0=start message)
@@ -103,14 +103,14 @@ void can_createDATAPACKET()
 	msg.data[3] = (uint8_t)(powermeter.timercc1clks&0xff);
 	powermeter.timercc1clks=0;
 	powermeter.adcsamples=0;
-	
+
 	txmsg = can_buffer_get();
 	memcpy(txmsg, &msg, sizeof(can_message));
 	can_transmit(txmsg);
-	
+
 	id++;
 	msg.dlc = 5;
-	
+
 	//send all data value ram locations,
 	//assuming that _ALL_ values are 4 byte
 	for(i = 0; i < (sizeof(value_pointer) / sizeof(void*)); i++)
@@ -120,6 +120,6 @@ void can_createDATAPACKET()
 		#endif
 		can_send_value_packet(&msg, id++, value_pointer[i], 4);
 	}
-	
+
 	//powermeter_clearpowerdrawPerSecond();
 }
