@@ -357,7 +357,7 @@ void new_client( cann_conn_t *client )
 void event_loop()
 {
 	for (;;) {
-		int num;
+		int ret;
 		int highfd = 0;;
 		fd_set rset;
 		cann_conn_t *client;
@@ -374,10 +374,12 @@ void event_loop()
 		debug( 9, "VOR SELECT" );
 		cann_dumpconn();
 
-		num = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
-		debug_assert( num >= 0, "select failed" ); //XXX FIXME THIS CAUSES CAND CRASHES
-		debug( 10, "Select returned %d", num);
-		cann_dumpconn();
+		ret = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
+		if (ret < 0) {
+			debug_perror(1, "select returned %d", ret);
+			continue;
+		}
+		debug( 10, "Select returned %d", ret);
 
 		// check activity on uart_fd
 		if (serial && FD_ISSET(uart_fd, &rset))
