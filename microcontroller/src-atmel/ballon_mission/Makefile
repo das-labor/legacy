@@ -1,5 +1,5 @@
 PRG            = image
-OBJ            = main.o at45db.o spi.o uart/uart.o adc.o logger.o
+OBJ            = main.o at45db.o spi.o uart/uart.o adc.o logger.o i2c-slave.o
 MCU_TARGET     = atmega32
 OPTIMIZE       = -Os
 
