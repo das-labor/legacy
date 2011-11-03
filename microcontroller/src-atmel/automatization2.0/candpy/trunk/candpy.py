@@ -18,8 +18,7 @@ from core.LoggingPlugin import fileloggerrs232pkgread
 from core.LoggingPlugin import fileloggerrs232pkgwrite
 #from plugins.rawserver.RawTCPClientPlugin import rawtcpclientinit
 #from plugins.rawserver.RawTCPClientPlugin import rawtcpclientargs
-from plugins.rawclient.RawTCPServerPlugin import rawtcpserverargs
-from plugins.rawclient.RawTCPServerPlugin import rawtcpserverinit
+from plugins.rawclient import *
 from packets.LocalParserPlugin import localparserargs, localparserinit
 
 from packets.events.CanEventPlugin import caneventargs, caneventinit
