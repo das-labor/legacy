@@ -4,7 +4,7 @@ import threading
 from twisted.internet import reactor
 from ServerFactory import TcpServerFactory
 
-class reactorThread(threading.Thread):
+class TcpServerThread(threading.Thread):
 
     def __init__(self, plugins, options):
         self.plugins = plugins
