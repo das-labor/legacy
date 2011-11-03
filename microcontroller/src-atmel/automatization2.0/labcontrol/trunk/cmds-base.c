@@ -8,7 +8,7 @@
 
 #include "cmds-base.h"
 #include "proto_lampe.h"
-void cmd_loopback(int argc, char *argv[]) 
+void cmd_loopback(int argc, char *argv[])
 {
 	int mode;
 
@@ -32,7 +32,7 @@ argerror:
 }
 
 
-void cmd_ping(int argc, char *argv[]) 
+void cmd_ping(int argc, char *argv[])
 {
 	int addr;
 	can_message *msg;
@@ -60,7 +60,7 @@ argerror:
 	debug(0, "ping <addr>");
 };
 
-void cmd_reset(int argc, char *argv[]) 
+void cmd_reset(int argc, char *argv[])
 {
 	int addr;
 
@@ -79,7 +79,7 @@ argerror:
 void hexdump(unsigned char * addr, int size)
 {
 	unsigned char x=0, sbuf[3];
-	
+
 	while (size--)
 	{
 		printf("%02x ", *addr++);
@@ -116,9 +116,20 @@ void dump_packet(can_message *msg){
 	printf("\n");
 }
 
-void cmd_dump(int argc, char *argv[]) 
+void dump_control_packet(can_message *msg){
+	time_t muh = time(0);
+	struct tm *tme = localtime(&muh);
+	printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
+		tme->tm_hour, tme->tm_min, tme->tm_sec,
+		msg->addr_src, msg->port_src,
+		msg->addr_dst, msg->port_dst );
+	hexdump(msg->data, msg->dlc);
+	printf("\n");
+}
+
+void cmd_dump(int argc, char *argv[])
 {
-	
+
 	if (argc > 1)
 	{
 		can_message_v2 *msg;
@@ -126,7 +137,7 @@ void cmd_dump(int argc, char *argv[])
 		while (1)
 		{
 			msg = can_get_v2_nb();
-			
+
 			if (msg)
 			{
 				dump_packet_v2(msg);
@@ -141,10 +152,13 @@ void cmd_dump(int argc, char *argv[])
 		while (1)
 		{
 			msg = can_get();
-			
+
 			if (msg)
 			{
-				dump_packet(msg);
+				if(msg->cmd == 0x11) //can packet
+					dump_packet(msg);
+				else
+					dump_control_packet(msg);
 				can_free(msg);
 			}
 		}
@@ -152,7 +166,7 @@ void cmd_dump(int argc, char *argv[])
 };
 
 
-void cmd_packet(int argc, char *argv[]) 
+void cmd_packet(int argc, char *argv[])
 {
 	int src_addr, src_port;
 	int dst_addr, dst_port;
@@ -160,7 +174,7 @@ void cmd_packet(int argc, char *argv[])
 	char *tok;
 	can_message *msg;
 
-	if (argc != 4) 
+	if (argc != 4)
 		goto argerror;
 
 	if (sscanf(argv[1], "%i:%i", &src_addr, &src_port ) != 2)
@@ -197,9 +211,9 @@ argerror:
 void cmd_lamp(int argc,char *argv[])
 {
 
-	if (argc != 4) 
+	if (argc != 4)
 		goto argerror;
-	
+
 	int dst;
 	int lamp;
 	int value;

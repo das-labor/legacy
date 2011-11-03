@@ -2,7 +2,7 @@
   Provide a simmple interface to connect to a cand (or compatible) CAN gateway
 
   Example:
-  
+
     c = CANSocket(host, port)  # open connection to cand
     pkt = c.get_pkt()          # return raw CAN packet
     lpkt = LAPPacket(pkt)      # parse to LAPPacket
@@ -40,7 +40,7 @@ class LAPPacket:
     def from_array(self, arr):
         """ Parse packet from RAW (byte-)array """
         if len(arr) < 4:
-            return 
+            return
         self.da = arr[0]
         self.sa = arr[1]
         self.dp = ((arr[2] & 0x60) >> 1) + (arr[2] & 0x0f)
@@ -49,6 +49,7 @@ class LAPPacket:
         self.dlc = len(self.data)
 
     def to_array(self):
+		arr = bytearray();
         return None
 
     def __str__(self):
@@ -89,11 +90,11 @@ class CANSocket:
             return None
 
         next = l+2
-            
+
         pkt = buf[2:next]
         self.buf = buf[next:]
         return pkt
- 
+
     def get_pkt_nb(self):
         """ Receive a CAN packet; non-blocking.
 
@@ -116,12 +117,12 @@ class CANSocket:
             buf += bytearray(s.recv(20))
         except:
             pass
-        
+
         pkt = self.dequeue_pkt()
         return pkt
-        
-        
-   
+
+
+
     def get_pkt(self):
         """ Receive a CAN packet; non-blocking.
 
