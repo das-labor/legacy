@@ -70,7 +70,7 @@ to this service over the network.
     #argsplugins.register(serialargs, 'serial')
     argsplugins.register(fileloggerargsrs232pkg, 'logger')
     #argsplugins.register(rawtcpclientargs, 'rawtcpclient')
-    argsplugins.register(rawtcpserverargs, 'rawtcpserver')
+    argsplugins.register(tcpClientArgs, 'rawtcpclient')
     argsplugins.register(localparserargs, 'localparser')
     argsplugins.register(caneventargs, 'canevent')
 
@@ -82,7 +82,7 @@ to this service over the network.
     #initplugins.register(serialinit, 'serial')
     initplugins.register(fileloggerinitrs232pkg, 'logger')
     #initplugins.register(rawtcpclientinit, 'rawtcpclient')
-    initplugins.register(rawtcpserverinit, 'rawtcpserver')
+    initplugins.register(tcpClientInit, 'rawtcpclient')
     initplugins.register(localparserinit, 'localparser')
     initplugins.register(caneventinit, 'canevent')
 
