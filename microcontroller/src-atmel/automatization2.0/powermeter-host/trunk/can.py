@@ -49,7 +49,6 @@ class LAPPacket:
         self.dlc = len(self.data)
 
     def to_array(self):
-		arr = bytearray();
         return None
 
     def __str__(self):
