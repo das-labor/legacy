@@ -12,6 +12,8 @@
 
 #include "at45db.h"
 
+#include "i2c-slave.h"
+
 #define BUZZER_PORT D
 #define BUZZER_BIT  4
 
@@ -22,10 +24,10 @@
 #define PYRO_TEST_BIT  6
 
 #define CAM_BUTTON_PORT C
-#define CAM_BUTTON_BIT  1
+#define CAM_BUTTON_BIT  3
 
 #define CAM_POWER_PORT C
-#define CAM_POWER_BIT  0
+#define CAM_POWER_BIT  2
 
 //2 Stunden 10 min Pyro
 #define PYRO_TIME  7800
@@ -43,22 +45,24 @@
 
 
 
-void init_timer1(){
+void init_buzzer(){
 	//TCCR1A = (1<<COM1B1) | (1<<WGM11) | (1<<WGM10);
-	TCCR1A =               (1<<WGM11) | (1<<WGM10);
-	TCCR1B = (1<<WGM13)|(1<<WGM12)| 2; //clk/8, TOP = OCR1A
-	OCR1A  = 2000;
+	//TCCR1A =               (1<<WGM11) | (1<<WGM10);
+	//TCCR1B = (1<<WGM13)|(1<<WGM12)| 2; //clk/8, TOP = OCR1A
+	//OCR1A  = 2000;
 	SET_DDR(BUZZER);
 }
 
 void buzz(int freq){
 	if(freq){
-		TCCR1A = (1<<COM1B1) | (1<<WGM11) | (1<<WGM10);
-		uint16_t w = 2000000ul / freq;
-		OCR1A = w;
-		OCR1B = w/4;
+		//TCCR1A = (1<<COM1B1) | (1<<WGM11) | (1<<WGM10);
+		//uint16_t w = 2000000ul / freq;
+		//OCR1A = w;
+		//OCR1B = w/4;
+		OUTPUT_ON(BUZZER);
 	}else{
-		TCCR1A =               (1<<WGM11) | (1<<WGM10);
+		//TCCR1A =               (1<<WGM11) | (1<<WGM10);
+		OUTPUT_OFF(BUZZER);
 	}
 }
 
@@ -261,10 +265,12 @@ int my_putc(char c, FILE * fp){
 char test_buf[] = "Test 12345 Hallo foobar 2000";
 
 int main(){
-	init_timer1();
+	init_buzzer();
 	init_timer2();
 
 	logger_init();
+	
+	i2c_init();
 
 	SET_DDR(PYRO_FIRE);
 	SET_DDR(CAM_BUTTON);
@@ -283,8 +289,6 @@ int main(){
 	
 	buzz(1000);
 	
-	
-		
 	while(1){
 		last_second = current_second;
 		cli();
@@ -294,6 +298,5 @@ int main(){
 			statemachine();
 			cam_timer();
 		}
-			
 	}
 }
