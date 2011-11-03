@@ -2,7 +2,7 @@
 
 
 from twisted.internet.protocol import ClientFactory
-from LAPTcpClient import _LAPTcpClient
+from Client import TcpClient
 
 class TcpClientFactory(ClientFactory):
     """
@@ -13,5 +13,5 @@ class TcpClientFactory(ClientFactory):
 
     def buildProtocol(self, addr):
         print "factory create new client"
-        newclient = _LAPTcpClient(self.plugins)
+        newclient = TcpClient(self.plugins)
         return newclient
