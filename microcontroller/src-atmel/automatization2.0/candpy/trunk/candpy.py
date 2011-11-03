@@ -25,6 +25,10 @@ from packets.LocalParserPlugin import localparserargs, localparserinit
 from packets.events.CanEventPlugin import caneventargs, caneventinit
 
 if __name__ == '__main__':
+    """
+    The main candpy application. It's basicaly a routing between the main plugins.
+    The Plugins itself can also do some extra routing
+    """
     parser = optparse.OptionParser(
         usage="%prog [options] [port [baudrate]]",
         description="Labor Cand in python ",
@@ -48,17 +52,20 @@ to this service over the network.
         #print "dummyhook was called"
         #print data
         pass
-
+    # create a hook for the event if something appears on the
+    # serial device
     rs232readplugins = plugins.Hook('daslabor.cand.rs232.read')
-    rs232readplugins.register(dummyhook, 'localparser')
-    rs232readplugins.register(dummyhook, 'remoterawclient')
-
+    # send the data to plugins which can perform the data
+    # rs232readplugins.register(dummyhook, 'localparser')
+    # rs232readplugins.register(dummyhook, 'remoterawclient')
     rs232readplugins.register(fileloggerrs232pkgread, 'logger')
 
     ### register raw input
     rawinputreadplugins = plugins.Hook('daslabor.cand.rawtcpclient.read')
 
     ### register cmdargs plugins
+    # every plugin maybe needs some commandlinearguments
+    # so we pass the global optparser to them
 
     argsplugins = plugins.Hook('daslabor.cand.cmdargs')
     #argsplugins.register(serialargs, 'serial')
@@ -69,6 +76,8 @@ to this service over the network.
     argsplugins.register(caneventargs, 'canevent')
 
     ### register init plugins
+    # here the actual plugins are startet with the 
+    # parsed commandlinearguments
 
     initplugins = plugins.Hook('daslabor.cand.init')
     #initplugins.register(serialinit, 'serial')

@@ -5,6 +5,11 @@ import optparse
 
 
 def fileloggerargsrs232pkg(data):
+    """
+    @para: data = [optparse,plugins]
+    @function: Erweitert parser um die eigenen Parameter
+    
+    """
     parser = data[0]
     #plugins=data[1]
 
@@ -23,6 +28,11 @@ def fileloggerargsrs232pkg(data):
 
 
 def fileloggerinitrs232pkg(data):
+    """
+    @para: data = [parsedoptions, args, parser, plugins]
+    @function: initialisiert den logger mit den uebergebenen 
+        kommandozeilenargumenten
+    """
     pass
     options = data[0]
     #args=data[1]
@@ -36,8 +46,17 @@ def fileloggerinitrs232pkg(data):
 
 
 def fileloggerrs232pkgread(data):
+    """
+    para: Objekt, das die __str() methode unterstuetzt
+    function: logging mit prefix 'read on serial:'
+    """
     logging.info("read on serial: " + str(data).encode("hex"))
 
 
 def fileloggerrs232pkgwrite(data):
+    """
+    para: Objekt, das die __str() methode unterstuetzt
+    function: logging mit prefix 'write to serial:'
+    """
+
     logging.info("write to serial: " + str(data).encode("hex"))
