@@ -247,12 +247,31 @@ void msg_to_clients(rs232can_msg *msg)
 	}
 }
 
+#define MEGA8_RESETCAUSE_PORF 	1
+#define MEGA8_RESETCAUSE_EXTRF	2
+#define MEGA8_RESETCAUSE_BORF	4
+#define MEGA8_RESETCAUSE_WDRF	8
+#define RESETCAUSE_PORF_STR "power on "
+#define RESETCAUSE_EXTRF_STR "reset pin "
+#define RESETCAUSE_BORF_STR "brown out "
+#define RESETCAUSE_WDRF_STR "watchdog "
+
+void sprint_atmega8_resetcause(char *buf, unsigned char reset_flags)
+{
+	sprintf(buf, "%s%s%s%s",
+		(reset_flags & MEGA8_RESETCAUSE_PORF)?RESETCAUSE_PORF_STR:"",
+		(reset_flags & MEGA8_RESETCAUSE_EXTRF)?RESETCAUSE_EXTRF_STR:"",
+		(reset_flags & MEGA8_RESETCAUSE_BORF)?RESETCAUSE_BORF_STR:"",
+		(reset_flags & MEGA8_RESETCAUSE_WDRF)?RESETCAUSE_WDRF_STR:"");
+}
+
+
 void process_uart_msg()
 {
+	rs232can_msg *msg = canu_get_nb();	//get message from uart
+	char buf[sizeof(RESETCAUSE_PORF_STR) + sizeof(RESETCAUSE_EXTRF_STR) + sizeof(RESETCAUSE_BORF_STR) + sizeof(RESETCAUSE_WDRF_STR)];
 
 	debug( 10, "Activity on uart_fd" );
-
-	rs232can_msg *msg = canu_get_nb();	//get message from uart
 
 	if (!msg)
 		return;
@@ -275,7 +294,8 @@ void process_uart_msg()
 			debug(0, "GATEWAY: error");
 			break;
 		case RS232CAN_NOTIFY_RESET:
-			debug(0, "GATEWAY: reset");
+			sprint_atmega8_resetcause(buf, msg->data[0]);
+			debug(0, "GATEWAY: reset, reset cause: %s\n", buf);
 			break;
 		case RS232CAN_PING_GATEWAY:
 			debug(0, "GATEWAY: pong");
