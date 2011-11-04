@@ -13,6 +13,8 @@ class CanEvent(threading.Thread):
         self.processqueue = Queue.Queue()
         self.plugins = plugins
         self.running = True
+        self.lock=threading.Lock()
+        self.counter = 0
         threading.Thread.__init__(self)
         pass
 
@@ -24,8 +26,7 @@ class CanEvent(threading.Thread):
                 # we are out off sync sometimes
                 print "canparser"
                 print package
-                self.plugins.Hook('daslabor.cand.rawtcpserver.read',
-                "canpkg").notify(package)
+                self.plugins.Hook('daslabor.cand.canpkg.read').notify(package)
                 print "/canparser"
             except Exception, msg:
                 print msg
@@ -33,12 +34,13 @@ class CanEvent(threading.Thread):
                 pass
 
     def addData(self, data):
-        print "canparser"
-        print "laenge=" + str(len(bytearray(data)))
-        print hexdump(bytearray(data))
-        print "/canparser"
+        self.lock.acquire()
+        print str(self.counter) + "canparser: laenge=" + str(len(bytearray(data)))
+        print str(self.counter) + "canparser: data= " + hexdump(bytearray(data))
         #package=CanPacket(rawpkt=data)
         #self.processqueue.put(package)
+        self.counter = self.counter + 1
+        self.lock.release()
 
 
 def caneventargs(data):
@@ -53,6 +55,8 @@ def caneventinit(data):
     caneventThread = CanEvent(plugins)
     caneventThread.setDaemon(True)
     caneventThread.start()
-    caneventplugin = plugins.Hook('daslabor.cand.rawtcpserver.read')
-    caneventplugin.register(caneventThread.addData,
-                            LAPPacket.LAPPacketTypes["LAP_CAN_PKT"])
+
+    caneventplugin = plugins.Hook("packet." +
+                                  str(LAPPacket.LAPPacketTypes["LAP_CAN_PKT"]) +
+                                  ".read")
+    caneventplugin.register(caneventThread.addData)

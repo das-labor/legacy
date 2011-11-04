@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric5 project file for project candpy -->
-<!-- Saved: 2011-11-03, 18:57:43 -->
+<!-- Saved: 2011-11-03, 22:05:47 -->
 <!-- Copyright (C) 2011 Alexander Kasper, asklepios@das-labor.org -->
 <Project version="5.1">
   <Language></Language>
@@ -19,12 +19,10 @@
     <Source>plugins/serialcon/__init__.py</Source>
     <Source>packets/__init__.py</Source>
     <Source>packets/types/__init__.py</Source>
-    <Source>plugins/rawserver/__init__.py</Source>
     <Source>utils/__init__.py</Source>
     <Source>plugins/serialcon/SerialPlugin.py</Source>
     <Source>packets/LAPPacket.py</Source>
     <Source>packets/types/CanPacket.py</Source>
-    <Source>plugins/rawserver/RawTCPClientPlugin.py</Source>
     <Source>utils/utils.py</Source>
     <Source>core/__init__.py</Source>
     <Source>core/peak/__init__.py</Source>
@@ -39,9 +37,11 @@
     <Source>plugins/tcpclient/ClientFactory.py</Source>
     <Source>plugins/tcpclient/TcpClientThread.py</Source>
     <Source>plugins/tcpclient/__init__.py</Source>
-    <Source>plugins/rawserver/Server.py</Source>
-    <Source>plugins/rawserver/ServerFactory.py</Source>
-    <Source>plugins/rawserver/TcpServerThread.py</Source>
+    <Source>plugins/tcpserver/ServerFactory.py</Source>
+    <Source>plugins/tcpserver/TcpServerThread.py</Source>
+    <Source>plugins/tcpserver/Server.py</Source>
+    <Source>plugins/tcpserver/__init__.py</Source>
+    <Source>plugins/tcpserver/RawTCPClientPlugin.py</Source>
   </Sources>
   <Forms/>
   <Translations/>
@@ -50,13 +50,11 @@
   <Others>
     <Other>packets/</Other>
     <Other>packets/types/</Other>
-    <Other>plugins/rawserver/</Other>
     <Other>plugins/serialcon</Other>
     <Other>utils</Other>
     <Other>packets/events</Other>
     <Other>packets</Other>
     <Other>core</Other>
-    <Other>plugins/rawserver/TcpServerThread.asp</Other>
   </Others>
   <Vcs>
     <VcsType>Subversion</VcsType>
@@ -173,8 +171,8 @@
   </Vcs>
   <FiletypeAssociations>
     <FiletypeAssociation pattern="*.pyw2" type="SOURCES"/>
-    <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>
     <FiletypeAssociation pattern="*.py2" type="SOURCES"/>
+    <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>
     <FiletypeAssociation pattern="*.ptl" type="SOURCES"/>
     <FiletypeAssociation pattern="*.py" type="SOURCES"/>
   </FiletypeAssociations>
