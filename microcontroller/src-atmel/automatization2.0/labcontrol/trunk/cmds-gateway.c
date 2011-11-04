@@ -166,7 +166,7 @@ static inline double voltage_divider_mv_in(double r1, double r2, double outmv)
 static void cmd_gateway_powerdraw(int argc, char *argv[])
 {
 	rs232can_msg *rmsg;
-	double mv, ma;
+	double v, ma;
 
 	//create and send gateway ping request
 	printf("Requesting power draw..\n");
@@ -177,11 +177,11 @@ static void cmd_gateway_powerdraw(int argc, char *argv[])
 	if(!rmsg) goto timeout;
 
 	//print answers
-	mv = voltage_divider_mv_in(VOLTAGE_DIVIDER_R1, VOLTAGE_DIVIDER_R2, adc_to_mv(ADC_RES, ADC_REF_MV, *((uint16_t *)&rmsg->data[0])));
+	v = voltage_divider_mv_in(VOLTAGE_DIVIDER_R1, VOLTAGE_DIVIDER_R2, adc_to_mv(ADC_RES, ADC_REF_MV, *((uint16_t *)&rmsg->data[0]))) / 1000.0;
 	ma = adc_to_mv(ADC_RES, ADC_REF_MV, *((uint16_t *)&rmsg->data[2])) / (VSHUNT_AMPLIFICATION * SHUNT_OHMS);
-	printf("Voltage:\t%2.3lfV\n", mv / 1000.0);
+	printf("Voltage:\t%2.3lfV\n", v);
 	printf("Current:\t%4.1lfmA\n", ma);
-	printf("Power:\t\t%2.3lfW\n", (ma * mv) / 1000.0);
+	printf("Power:\t\t%2.3lfW\n", (ma * v) / 1000.0);
 	printf("Bandgap:\t%u (10-Bit ADC)\n", *((uint16_t *)&rmsg->data[4]));
 	printf("GND:\t\t%u (10-Bit ADC)\n", *((uint16_t *)&rmsg->data[6]));
 	return;
