@@ -18,7 +18,7 @@ LDFLAGS        = -Wl,-Map,$(OUT).map
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:image.hex
+FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:$(OUT).hex
 ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
 
 #############################################################################
@@ -34,12 +34,12 @@ flash: $(OUT).hex
 	$(FLASHCMD)
 
 #############################################################################
-# Building Rules 
+# Building Rules
 $(OUT).elf: $(OBJ)
 	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.c
-	$(MCU_CC) $(CFLAGS) -c $< -o $@ 
+	$(MCU_CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.S
 	$(MCU_AS) $(ASFLAGS) -o $@ $<
