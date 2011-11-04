@@ -181,7 +181,7 @@ static void cmd_gateway_powerdraw(int argc, char *argv[])
 	ma = adc_to_mv(ADC_RES, ADC_REF_MV, *((uint16_t *)&rmsg->data[2])) / (VSHUNT_AMPLIFICATION * SHUNT_OHMS);
 	printf("Voltage:\t%2.3lfV\n", mv / 1000.0);
 	printf("Current:\t%4.1lfmA\n", ma);
-	printf("Power:\t%2.3lfW\n", (ma * mv) / 1000.0);
+	printf("Power:\t\t%2.3lfW\n", (ma * mv) / 1000.0);
 	printf("Bandgap:\t%u (10-Bit ADC)\n", *((uint16_t *)&rmsg->data[4]));
 	printf("GND:\t\t%u (10-Bit ADC)\n", *((uint16_t *)&rmsg->data[6]));
 	return;
