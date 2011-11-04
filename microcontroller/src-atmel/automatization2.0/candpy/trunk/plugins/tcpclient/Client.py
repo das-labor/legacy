@@ -23,7 +23,7 @@ class TcpClient(Protocol):
         are forwarding them to everybody registered at 
         'daslabor.cand.rawtcpserver.read'
         """
-        self.plugins.Hook('daslabor.cand.rawtcpserver.read').notify(data)
+        self.plugins.Hook('connector.tcpclient.read').notify(data)
 
     def putData(self, data):
         """
@@ -43,5 +43,5 @@ class TcpClient(Protocol):
 
     def connectionMade(self):
         rawinputreadplugins = self.plugins.Hook(
-        'daslabor.cand.rawtcpserver.write')
+        'connector.tcpclient.write')
         rawinputreadplugins.register(self.putData)

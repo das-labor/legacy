@@ -16,28 +16,33 @@ class LocalParserPlugin(threading.Thread):
         self.running = True
         self.leftover = bytearray(0)
         self.psplitter = PacketSplitter()
+        self.lock=threading.Lock()
         threading.Thread.__init__(self)
 
     def run(self):
         print "LocalParserPlugin started"
+        counter = 0
         while self.running:
             try:
-                print "localparser"
                 package = self.psplitter.getNextPackage()
                 #print hexdump(package.getPayload())
                 # we are out off sync sometimes
-                print "object=" + str(type(package))
-                print "type=" + str(package.getPKTtype())
-                self.plugins.Hook('daslabor.cand.rawtcpserver.read',
-                                  package.getPKTtype()).notify(package.getPayload())
-                print "/localparser"
+                print str(counter) + "localparser: object=" + str(type(package))
+                print str(counter) + "localparser: type=" + str(package.getPKTtype())
+                print str(counter) + "localparser: data=" + hexdump(package.getPayload())
+                counter = counter + 1
+                self.plugins.Hook("packet." +
+                                  str(package.getPKTtype()) +
+                                  ".read").notify(package.getPayload())
             except Exception, msg:
                 print msg
                 sleep(1)
                 pass
 
     def addData(self, data):
+        self.lock.acquire()
         self.psplitter.extendStream(data)
+        self.lock.release()
         #self.processqueue.put(bytearray(data))
 
 
@@ -53,8 +58,8 @@ def localparserinit(data):
     lparserThread = LocalParserPlugin(plugins)
     lparserThread.setDaemon(True)
     lparserThread.start()
-    localparserplugin = plugins.Hook('daslabor.cand.rawtcpserver.read')
-    localparserplugin.register(lparserThread.addData,)
+    localparserplugin = plugins.Hook('connector.tcpclient.read')
+    localparserplugin.register(lparserThread.addData)
 
 
 if __name__ == '__main__':

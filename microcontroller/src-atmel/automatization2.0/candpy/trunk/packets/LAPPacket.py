@@ -24,7 +24,7 @@ class LAPPacket(object):
         self.pkttype = self.setPKTtype(pkttype)
         self.validPKG = False
 
-        if rawpkt:
+        if len(rawpkt) > 0:
             self.__from_array(rawpkt)
 
     def setPKTtype(self, pkttype=None):
@@ -61,6 +61,8 @@ class LAPPacket(object):
     def __from_array(self, rawpkt):
         if len(rawpkt) == 0:
             return None
+        #print "__from_array: len = " + str(len(rawpkt))
+        #print "__from_array: data = " + hexdump(rawpkt)
         # Did we receive a full packet?
         bs = bytearray(rawpkt)
         l = bs[0]

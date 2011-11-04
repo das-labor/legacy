@@ -24,7 +24,7 @@ class SerialReader(threading.Thread):
             data = "asdf"
 
             if data:
-                self.plugins.Hook('daslabor.cand.rs232.read').notify(data)
+                self.plugins.Hook('connector.rs232.read').notify(data)
 
 #    def run(self):
 #        while self.running:
@@ -33,7 +33,7 @@ class SerialReader(threading.Thread):
 #            if n:
 #                data = data + self.serial.read(n)   # and get as much as possible
 #            if data:
-#                self.plugins.Hook('daslabor.cand.rs232').notify(data)
+#                self.plugins.Hook('connector.rs232').notify(data)
 
 
 class SerialWriter(threading.Thread):
@@ -170,7 +170,7 @@ def serialinit(data):
     swriter.setDaemon(True)
     swriter.start()
 
-    serialwrplugin = plugins.Hook('daslabor.cand.rs232.write')
+    serialwrplugin = plugins.Hook('connector.rs232.write')
     serialwrplugin.register(swriter.addText, 'default')
 
     sreader = SerialReader(ser, plugins)

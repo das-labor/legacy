@@ -23,10 +23,11 @@ class CanPacket(object):
     def getDLC(self):
         return self.dlc
 
-    def setData(self, data):
+    def setData(self, data, fillDLC=True):
         self.data = bytearray(data)
         print "laenge:" + str(len(data))
-        self.setDLC(len(data))
+        if fillDLC:
+            self.setDLC(len(data))
 
     def getData(self):
         return self.data
@@ -87,8 +88,9 @@ class CanPacket(object):
             self.setSrcAddr(arr[1])
             self.setDestPort(((arr[2] & 0x60) >> 1) + (arr[2] & 0x0f))
             self.setSrcPort(((arr[3] & 0x1f) << 1) + ((arr[2] & 0x80) >> 7))
+            self.setDLC(arr[4])
             print hexdump(arr)
-            self.setData(arr[5:])
+            self.setData(arr[5:], False)
 
     def genRawPKT(self):
         """
