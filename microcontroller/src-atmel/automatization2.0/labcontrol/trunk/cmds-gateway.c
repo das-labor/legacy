@@ -10,8 +10,8 @@
 #define DEFAULT_TIMEOUT 2000
 #define ADC_RES ((double)(1<<10))
 #define ADC_REF_MV 5000.0
-#define VOLTAGE_DIVIDER_R1 1000.0
-#define VOLTAGE_DIVIDER_R2 2700.0
+#define VOLTAGE_DIVIDER_R1 2700.0
+#define VOLTAGE_DIVIDER_R2 1000.0
 #define VSHUNT_AMPLIFICATION 10.0
 #define SHUNT_OHMS 0.01
 
@@ -159,7 +159,7 @@ static inline double adc_to_mv(double adc_resolution, double reference_mv, doubl
 //compute how much millivolts are going into a voltage divider using r1, r2 and output millivolts
 static inline double voltage_divider_mv_in(double r1, double r2, double outmv)
 {
-	return (outmv * r1 + r2) / r2;
+	return (outmv * (r1 + r2)) / r2;
 }
 
 
