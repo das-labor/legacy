@@ -8,6 +8,12 @@
 #include "can.h"
 
 #define DEFAULT_TIMEOUT 2000
+#define ADC_RES ((double)(1<<10))
+#define ADC_REF_MV 5000.0
+#define VOLTAGE_DIVIDER_R1 1000.0
+#define VOLTAGE_DIVIDER_R2 2700.0
+#define VSHUNT_AMPLIFICATION 10.0
+#define SHUNT_OHMS 0.01
 
 /**
  * Available commands array
@@ -20,7 +26,7 @@ typedef struct {
 } cmd_t;
 
 
-void send_gateway_command(uint8_t cmd)
+static void send_gateway_command(uint8_t cmd)
 {
 	rs232can_msg rmsg;
 	rmsg.cmd = cmd;
@@ -29,7 +35,7 @@ void send_gateway_command(uint8_t cmd)
 }
 
 
-rs232can_msg* anticipate_gateway_reply(uint8_t cmd)
+static rs232can_msg* anticipate_gateway_reply(uint8_t cmd)
 {
 	rs232can_msg *rmsg_in;
 	unsigned int i = 0;
@@ -39,7 +45,7 @@ rs232can_msg* anticipate_gateway_reply(uint8_t cmd)
 }
 
 
-void cmd_gateway_ping(int argc, char *argv[])
+static void cmd_gateway_ping(int argc, char *argv[])
 {
 	rs232can_msg *rmsg;
 
@@ -53,7 +59,7 @@ void cmd_gateway_ping(int argc, char *argv[])
 }
 
 
-void cmd_gateway_version(int argc, char *argv[])
+static void cmd_gateway_version(int argc, char *argv[])
 {
 	rs232can_msg *rmsg;
 	unsigned int maj, min, svn;
@@ -96,7 +102,7 @@ timeout:
 }
 
 
-void cmd_gateway_packetstats(int argc, char *argv[])
+static void cmd_gateway_packetstats(int argc, char *argv[])
 {
 	rs232can_msg *rmsg;
 
@@ -120,7 +126,7 @@ timeout:
 }
 
 
-void cmd_gateway_errorstats(int argc, char *argv[])
+static void cmd_gateway_errorstats(int argc, char *argv[])
 {
 	rs232can_msg *rmsg;
 
@@ -143,7 +149,21 @@ timeout:
 }
 
 
-void cmd_gateway_powerdraw(int argc, char *argv[])
+//convert an adc voltage to millivolts
+static inline double adc_to_mv(double adc_resolution, double reference_mv, double value)
+{
+	return (value * reference_mv) / adc_resolution;
+}
+
+
+//compute how much millivolts are going into a voltage divider using r1, r2 and output millivolts
+static inline double voltage_divider_mv_in(double r1, double r2, double outmv)
+{
+	return (outmv * r1 + r2) / r2;
+}
+
+
+static void cmd_gateway_powerdraw(int argc, char *argv[])
 {
 	rs232can_msg *rmsg;
 
@@ -156,11 +176,10 @@ void cmd_gateway_powerdraw(int argc, char *argv[])
 	if(!rmsg) goto timeout;
 
 	//print answers
-	printf("Beware, this is raw 10-Bit ADC data:\n");
-	printf("Current:\t%u\n", *((uint16_t *)&rmsg->data[0]));
-	printf("Voltage:\t%u\n", *((uint16_t *)&rmsg->data[2]));
-	printf("Bandgap:\t%u\n", *((uint16_t *)&rmsg->data[4]));
-	printf("GND:\t\t%u\n", *((uint16_t *)&rmsg->data[6]));
+	printf("Voltage:\t%2.3lfV\n", voltage_divider_mv_in(VOLTAGE_DIVIDER_R1, VOLTAGE_DIVIDER_R2, adc_to_mv(ADC_RES, ADC_REF_MV, *((uint16_t *)&rmsg->data[0]))) / 1000.0);
+	printf("Current:\t%4.1lfmA\n", adc_to_mv(ADC_RES, ADC_REF_MV, *((uint16_t *)&rmsg->data[2])) / (VSHUNT_AMPLIFICATION * SHUNT_OHMS));
+	printf("Bandgap:\t%u (10-Bit ADC)\n", *((uint16_t *)&rmsg->data[4]));
+	printf("GND:\t\t%u (10-Bit ADC)\n", *((uint16_t *)&rmsg->data[6]));
 	return;
 
 timeout:
@@ -168,7 +187,7 @@ timeout:
 }
 
 
-cmd_t gateway_cmds[] = {
+static cmd_t gateway_cmds[] = {
   { &cmd_gateway_ping, "ping", "ping", "ping the gateway itself (not a CAN ping)" },
   { &cmd_gateway_version, "version", "version", "show firmware version" },
   { &cmd_gateway_packetstats, "pstats", "pstats", "show packet counters" },
