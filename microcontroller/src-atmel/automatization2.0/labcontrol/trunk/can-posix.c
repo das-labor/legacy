@@ -158,7 +158,7 @@ can_message * can_get_nb()
 	else
 		rmsg = canu_get();
 
-	if (!rmsg)
+	if (!rmsg || rmsg->cmd != RS232CAN_PKT)
 	{
 		free(rmsg);
 		return 0;
