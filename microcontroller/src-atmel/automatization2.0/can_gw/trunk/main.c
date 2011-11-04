@@ -50,27 +50,38 @@
 //the timer frequency is approx. 61Hz @ 16MHz cpu. freq
 #define SYS_TICK_FREQ ((F_CPU / 1024) / 256)
 
+//our own control "register" bit flags
+#define FLAG_AUTOREPORT_PSTATS 0
+#define FLAG_AUTOREPORT_POWERDRAW 1
+#define FLAG_BUSPOWER 2
+
 //hacky import of read function
 extern unsigned char mcp_read(unsigned char reg);
 
 //firmware version structure
-uint8_t firmware_version[] = {FW_VERSION_MAJOR, FW_VERSION_MINOR, (FW_SVNREVISION >> 8) & 0xFF, FW_SVNREVISION & 0xFF};
+static uint8_t firmware_version[] = {FW_VERSION_MAJOR, FW_VERSION_MINOR, (FW_SVNREVISION >> 8) & 0xFF, FW_SVNREVISION & 0xFF};
 
 //packet and data counters, as seen from the gateway looking at the host
 //i.e. rx is about packets from uart and tx to uart, not from can
-struct { uint32_t rx_count, tx_count, rx_size, tx_size; } pkt_cnt = {0, 0, 0, 0};
+static struct { uint32_t rx_count, tx_count, rx_size, tx_size; } pkt_cnt = {0, 0, 0, 0};
 
 //error counters and flags from the mcp2515 chip
-struct { uint8_t rx_errors, tx_errors, error_flags; } err_cnt = {0, 0, 0};
+static struct { uint8_t rx_errors, tx_errors, error_flags; } err_cnt = {0, 0, 0};
 
 //bus power measurement struct
-volatile struct { volatile uint16_t v, i, ref, gnd; } volatile bus_pwr = {0, 0, 0, 0};
+static volatile struct { volatile uint16_t v, i, ref, gnd; } volatile bus_pwr = {0, 0, 0, 0};
 
 //state of the adc interrupt state machine
-volatile uint8_t adc_state;
+static volatile uint8_t adc_state;
 
 //system counter
-volatile uint16_t sys_ticks;
+static volatile uint16_t sys_ticks;
+
+//our own control "register"
+static uint8_t ctrl_reg = 0;
+
+//schedule counters
+static uint16_t adc_last_schedule_time, autoreport_last_schedule_time;
 
 //commands
 typedef enum
@@ -87,7 +98,10 @@ typedef enum
 	RS232CAN_IDSTRING=0x18,
 	RS232CAN_PACKETCOUNTERS=0x19,
 	RS232CAN_ERRORCOUNTERS=0x1A,
-	RS232CAN_POWERDRAW=0x1B
+	RS232CAN_POWERDRAW=0x1B,
+	RS232CAN_READ_CTRL_REG=0x1C,
+	RS232CAN_WRITE_CTRL_REG=0x1D,
+	RS232CAN_GET_RESETCAUSE=0x1E
 } rs232can_cmd;
 
 typedef struct {
@@ -96,11 +110,15 @@ typedef struct {
 	char data[RS232CAN_MAXLENGTH];
 } rs232can_msg;
 
+//forward declarations
+static void buspower(uint8_t on);
+static void syscontrol(uint8_t ctrl_reg_new);
+
 
 /*****************************************************************************
  * CAN to UART
  */
-uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char* buf, uint8_t len) {
+static uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char* buf, uint8_t len) {
 	uint8_t i;
 
 	for (i = 0; i < len; i++) {
@@ -111,7 +129,7 @@ uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char* buf, uint8_t len) {
 	return crc;
 }
 
-void write_can_message_to_uart(can_message * cmsg) {
+static void write_can_message_to_uart(can_message * cmsg) {
 	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
 	uint16_t crc;
 
@@ -132,7 +150,7 @@ void write_can_message_to_uart(can_message * cmsg) {
 /*****************************************************************************
  * CMD to UART
  */
-void write_cmd_to_uart(uint8_t cmd, char* buf, uint8_t len)
+static void write_cmd_to_uart(uint8_t cmd, char* buf, uint8_t len)
 {
 	uint16_t crc;
 
@@ -163,7 +181,7 @@ canu_rcvstate_t	canu_rcvstate = STATE_START;
 unsigned char 	canu_rcvlen   = 0;
 unsigned char	canu_failcnt  = 0;
 
-rs232can_msg * canu_get_nb()
+static rs232can_msg * canu_get_nb(void)
 {
 	static char *uartpkt_data;
 	static uint16_t crc, crc_in;
@@ -227,13 +245,14 @@ rs232can_msg * canu_get_nb()
 /*****************************************************************************/
 
 // synchronize line
-void canu_reset()
+void canu_reset(void)
 {
 	unsigned char i;
 	for(i=sizeof(rs232can_msg)+2; i>0; i--)
 		uart_putc( (char)0x00 );
 }
 
+volatile uint8_t mescnt = 0;
 void process_cantun_msg(rs232can_msg *msg) {
 	can_message *cmsg;
 
@@ -274,6 +293,13 @@ void process_cantun_msg(rs232can_msg *msg) {
 		case RS232CAN_POWERDRAW:
 			write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&bus_pwr, sizeof(bus_pwr));
 			break;
+		case RS232CAN_READ_CTRL_REG:
+			write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&ctrl_reg, sizeof(ctrl_reg));
+			break;
+		case RS232CAN_WRITE_CTRL_REG:
+			syscontrol((uint8_t)msg->data[0]);
+			write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&ctrl_reg, sizeof(ctrl_reg));
+			break;
 		default:
 			write_cmd_to_uart(RS232CAN_ERROR, 0, 0);  //send error
 			break;
@@ -281,17 +307,27 @@ void process_cantun_msg(rs232can_msg *msg) {
 }
 
 
-void buspower_on() {
-	DDR_BUSPOWER |= (1<<BIT_BUSPOWER);
-	PORT_BUSPOWER |= (1<<BIT_BUSPOWER);
+static void buspower(uint8_t on) {
+	if(on)
+	{
+		DDR_BUSPOWER |= (1<<BIT_BUSPOWER);
+		PORT_BUSPOWER |= (1<<BIT_BUSPOWER);
+	}
+	else
+	{
+		DDR_BUSPOWER &= ~(1<<BIT_BUSPOWER);
+		PORT_BUSPOWER &= ~(1<<BIT_BUSPOWER);
+	}
 }
 
-void led_init() {
+
+static void led_init() {
 	DDR_LEDS |= (1<<PIN_LEDD)|(1<<PIN_LEDCL)|(1<<PIN_LEDCK);
 	PORT_LEDS |= (1<<PIN_LEDCL);
 }
 
-void led_set(unsigned int stat) {
+
+static void led_set(unsigned int stat) {
 	unsigned char x;
 	for (x = 0; x < 16; x++) {
 		if (stat & 0x01) {
@@ -306,7 +342,7 @@ void led_set(unsigned int stat) {
 }
 
 //setup adc operations
-void adc_init()
+static void adc_init(void)
 {
 	//default to first channel
 	adc_state = CH_BUSVOLTAGE;
@@ -318,11 +354,11 @@ void adc_init()
 	ADCSRA = _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0);
 
 	//set adc enable, set interrupt enable, clear pending ints
-	ADCSRA = _BV(ADEN) | _BV(ADIE) | _BV(ADIF);
+	ADCSRA |= _BV(ADEN) | _BV(ADIE) | _BV(ADIF);
 }
 
 //measure internal references and calibrate
-void adc_calibrate()
+static void adc_calibrate(void)
 {
 	//disable interrupts during low-noise measurement
 	cli();
@@ -369,6 +405,7 @@ void adc_calibrate()
 	sei();
 }
 
+
 //adc interrupt to switch channels
 ISR(ADC_vect)
 {
@@ -403,8 +440,9 @@ ISR(ADC_vect)
 	}
 }
 
+
 //setup timer0 to simply count up
-void timer0_init()
+static void timer0_init(void)
 {
 	//enable timer with prescaler 1024
 	TCCR0 = _BV(CS02) | _BV(CS00);
@@ -417,26 +455,31 @@ void timer0_init()
 	TIFR  |= _BV(TOV0);
 }
 
+
 //timer0 int acts as system counter
 ISR(TIMER0_OVF_vect)
 {
 	sys_ticks++;
 }
 
+
 //init the complete system
-void sys_init()
+static void sys_init(void)
 {
 	//disable analog comparator (to save power)
 	ACSR |= _BV(ACD);
 
 	//init all subsystems
 	led_init();
-	buspower_on();
+	buspower(1);
 	uart_init();
 	spi_init();
 	can_init();
 	adc_init();
 	timer0_init();
+
+	//init ctrl reg
+	ctrl_reg = _BV(FLAG_BUSPOWER);
 
 	//enable interrupts (all systems go!)
 	sei();
@@ -451,9 +494,26 @@ void sys_init()
 	canu_reset();
 }
 
-int main() {
+
+void syscontrol(uint8_t ctrl_reg_new)
+{
+	uint8_t changes = ctrl_reg_new ^ ctrl_reg;
+
+	if(changes & FLAG_BUSPOWER)
+		buspower(ctrl_reg & FLAG_BUSPOWER);
+
+	if(ctrl_reg_new & (FLAG_AUTOREPORT_POWERDRAW | FLAG_AUTOREPORT_PSTATS))
+	{
+		autoreport_last_schedule_time = 0;
+	}
+
+	if(changes)
+		ctrl_reg = ctrl_reg_new;
+}
+
+
+int main(void) {
 	static uint16_t leds, leds_old;
-	uint16_t adc_last_schedule_time;
 
 	//init
 	sys_init();
@@ -467,7 +527,7 @@ int main() {
 	can_setled(0, 1);
 
 	//store system counter
-	adc_last_schedule_time = sys_ticks;
+	adc_last_schedule_time = autoreport_last_schedule_time = sys_ticks;
 	while (1) {
 		rs232can_msg  *rmsg;
 		can_message *cmsg;
@@ -508,6 +568,17 @@ int main() {
 		{
 			adc_last_schedule_time = sys_ticks;
 			ADC_START();
+		}
+
+		//schedule autoreport functions approx once a second
+		if((ctrl_reg & (FLAG_AUTOREPORT_POWERDRAW | FLAG_AUTOREPORT_PSTATS)) > 0 || (sys_ticks - autoreport_last_schedule_time) > (SYS_TICK_FREQ))
+		{
+			autoreport_last_schedule_time = sys_ticks;
+
+			if(ctrl_reg & FLAG_AUTOREPORT_PSTATS)
+				write_cmd_to_uart(RS232CAN_PACKETCOUNTERS, (char *)&pkt_cnt, sizeof(pkt_cnt));
+			if(ctrl_reg & FLAG_AUTOREPORT_POWERDRAW)
+				write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&bus_pwr, sizeof(bus_pwr));
 		}
 	}
 
