@@ -252,7 +252,7 @@ void canu_reset(void)
 		uart_putc( (char)0x00 );
 }
 
-volatile uint8_t mescnt = 0;
+
 void process_cantun_msg(rs232can_msg *msg) {
 	can_message *cmsg;
 
@@ -294,11 +294,15 @@ void process_cantun_msg(rs232can_msg *msg) {
 			write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&bus_pwr, sizeof(bus_pwr));
 			break;
 		case RS232CAN_READ_CTRL_REG:
-			write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&ctrl_reg, sizeof(ctrl_reg));
+			write_cmd_to_uart(RS232CAN_READ_CTRL_REG, (char *)&ctrl_reg, sizeof(ctrl_reg));
 			break;
 		case RS232CAN_WRITE_CTRL_REG:
 			syscontrol((uint8_t)msg->data[0]);
-			write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&ctrl_reg, sizeof(ctrl_reg));
+			write_cmd_to_uart(RS232CAN_WRITE_CTRL_REG, (char *)&ctrl_reg, sizeof(ctrl_reg));
+			break;
+		case RS232CAN_GET_RESETCAUSE:
+			msg->data[0] = REG_RESETCAUSE & MSK_RESETCAUSE;
+			write_cmd_to_uart(RS232CAN_GET_RESETCAUSE, (char*)&msg->data[0], 1);
 			break;
 		default:
 			write_cmd_to_uart(RS232CAN_ERROR, 0, 0);  //send error
