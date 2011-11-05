@@ -3,7 +3,7 @@
 import threading
 import Queue
 from time import sleep
-from packets.LAPPacket import LAPPacket
+from packets.types.LAPPacket import LAPPacket
 from packets.types.CanPacket import CanPacket
 from utils.utils import hexdump
 from PacketSplitterModule import PacketSplitter
@@ -20,17 +20,9 @@ class LocalParserPlugin(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        print "LocalParserPlugin started"
-        counter = 0
         while self.running:
             try:
                 package = self.psplitter.getNextPackage()
-                #print hexdump(package.getPayload())
-                # we are out off sync sometimes
-                print str(counter) + "localparser: object=" + str(type(package))
-                print str(counter) + "localparser: type=" + str(package.getPKTtype())
-                print str(counter) + "localparser: data=" + hexdump(package.getPayload())
-                counter = counter + 1
                 self.plugins.Hook("packet." +
                                   str(package.getPKTtype()) +
                                   ".read").notify(package.getPayload())
@@ -43,23 +35,6 @@ class LocalParserPlugin(threading.Thread):
         self.lock.acquire()
         self.psplitter.extendStream(data)
         self.lock.release()
-        #self.processqueue.put(bytearray(data))
-
-
-def localparserargs(data):
-    pass
-
-
-def localparserinit(data):
-    #options=data[0]
-    #args=data[1]
-    #parser=data[2]
-    plugins = data[3]
-    lparserThread = LocalParserPlugin(plugins)
-    lparserThread.setDaemon(True)
-    lparserThread.start()
-    localparserplugin = plugins.Hook('connector.tcpclient.read')
-    localparserplugin.register(lparserThread.addData)
 
 
 if __name__ == '__main__':
