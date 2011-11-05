@@ -13,7 +13,8 @@ class LAPPacket(object):
     "LAP_CAN_ERROR": 0x13,
     "LAP_CAN_NOTIFY_RESET": 0x14,
     "LAP_RS232_PING_GATEWAY": 0x15,
-    "LAP_RS232_RESYNC": 0x16}
+    "LAP_RS232_RESYNC": 0x16, 
+    "LAP_UNKNOWN": 0xff}
 
     def __init__(self, pkttype=None,
                  payload=bytearray(''),
@@ -30,11 +31,12 @@ class LAPPacket(object):
     def setPKTtype(self, pkttype=None):
         """
         we are expceting a number which is registered in LAPPacketTypes
+        if not, we set it to unknown
         """
         if pkttype in self.knownpkts_inv:
             self.pkttype = pkttype
-            return True
-        return False
+        else:
+            self.pkttype = self.knownpkts["LAP_UNKNOWN"]
 
     def getPKTtype(self):
         return self.pkttype
@@ -61,8 +63,6 @@ class LAPPacket(object):
     def __from_array(self, rawpkt):
         if len(rawpkt) == 0:
             return None
-        #print "__from_array: len = " + str(len(rawpkt))
-        #print "__from_array: data = " + hexdump(rawpkt)
         # Did we receive a full packet?
         bs = bytearray(rawpkt)
         l = bs[0]
@@ -70,9 +70,9 @@ class LAPPacket(object):
             return None
 
         ### what packet are we?
-        if self.setPKTtype(bs[1]):
-            self.setPKTPayload(bs[2:])
-            self.validPKG = True
+        self.setPKTtype(bs[1])
+        self.setPKTPayload(bs[2:])
+        self.validPKG = True
         self.rawpkt = rawpkt
         ### seams like we are somehow valid
 

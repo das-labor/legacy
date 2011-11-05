@@ -37,8 +37,8 @@ class CanEvent(threading.Thread):
         self.lock.acquire()
         print str(self.counter) + "canparser: laenge=" + str(len(bytearray(data)))
         print str(self.counter) + "canparser: data= " + hexdump(bytearray(data))
-        #package=CanPacket(rawpkt=data)
-        #self.processqueue.put(package)
+        package=CanPacket(rawpkt=data)
+        self.processqueue.put(package)
         self.counter = self.counter + 1
         self.lock.release()
 

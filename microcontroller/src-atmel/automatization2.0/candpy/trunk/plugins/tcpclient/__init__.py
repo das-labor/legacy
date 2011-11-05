@@ -31,7 +31,6 @@ def tcpClientArgs(data):
 
 
 def tcpClientInit(data):
-    print "got init"
     options = data[0]
     #args = data[1]
     #parser = data[2]
