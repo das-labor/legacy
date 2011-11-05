@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-from utils.utils import hexdump
 
+from utils.utils import hexdump
+from datetime import datetime
 
 class CanPacket(object):
     def __init__(self, sa=0, sp=0, da=0, dp=0,
@@ -11,6 +12,7 @@ class CanPacket(object):
         self.setDestAddr(da)
         self.setDestPort(dp)
         self.data = self.setData(data)
+        self.timestamp = datetime.now()
         if rawpkt:
             self.__from_array(rawpkt)
 
@@ -25,7 +27,6 @@ class CanPacket(object):
 
     def setData(self, data, fillDLC=True):
         self.data = bytearray(data)
-        print "laenge:" + str(len(data))
         if fillDLC:
             self.setDLC(len(data))
 
@@ -60,6 +61,9 @@ class CanPacket(object):
         return self.sp
 
     def setDestPort(self, dp):
+        """
+        set a destinationport
+        """
         if dp in  range(0, 64):
             self.dp = dp
         else:
@@ -69,11 +73,14 @@ class CanPacket(object):
         return self.dp
 
     def __from_array(self, rawpkt):
-        """ Parse packet from RAW (byte-)array """
+        """ 
+        Parse packet from RAW (byte-)array.
+        @para data: raw CAN packet
+        """
         broken = True
         arr = bytearray(rawpkt)
         if not broken:
-            print hexdump(rawpkt)
+            #print hexdump(rawpkt)
             i = 0
             for x in arr[:4]:
                 i = (i + x) << 8
@@ -89,7 +96,7 @@ class CanPacket(object):
             self.setDestPort(((arr[2] & 0x60) >> 1) + (arr[2] & 0x0f))
             self.setSrcPort(((arr[3] & 0x1f) << 1) + ((arr[2] & 0x80) >> 7))
             self.setDLC(arr[4])
-            print hexdump(arr)
+            #print hexdump(arr)
             self.setData(arr[5:], False)
 
     def genRawPKT(self):
@@ -108,6 +115,9 @@ class CanPacket(object):
         return arr
 
     def __str__(self):
-        return "%02x:%02x -> %02x:%02x %s" % (self.sa, self.sp,
+        return "%02d:%02d.%02d  %02x:%02x -> %02x:%02x %s" % (self.timestamp.hour,
+                                                        self.timestamp.minute,
+                                                        self.timestamp.second,
+                                                        self.sa, self.sp,
                                               self.da, self.dp,
                                               hexdump(self.data))

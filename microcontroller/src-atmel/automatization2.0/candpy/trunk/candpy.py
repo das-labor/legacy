@@ -20,9 +20,8 @@ from core.LoggingPlugin import fileloggerrs232pkgwrite
 #from plugins.rawserver.RawTCPClientPlugin import rawtcpclientargs
 from plugins.tcpclient import *
 from plugins.tcpserver import *
-from packets.LocalParserPlugin import localparserargs, localparserinit
-
-from packets.events.CanEventPlugin import caneventargs, caneventinit
+from packets.events import *
+from core import *
 
 if __name__ == '__main__':
     """
