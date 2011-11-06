@@ -34,7 +34,7 @@
  * 	Bit 4	-> Remote Transmission Request Flag
  *  Bit 3:0 -> CAN Data Length Code (DLC)
  *
- * The field data contains 0 to 8 data bytes.
+ * The field "data" contains 0 to 8 data bytes.
  *
  * For more information on CAN frames, see Wikipedia:
  *  http://en.wikipedia.org/wiki/Controller_area_network#Data_frame
