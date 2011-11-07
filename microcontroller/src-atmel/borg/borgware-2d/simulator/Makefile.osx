@@ -11,7 +11,7 @@ override LDFLAGS       = -Wl --prebind
 
 OBJ = breakpoint.o font_arial8.o font_small6.o font_uni53.o invader_draw.o \
   invader_init.o invader_proc.o invaders2.o joystick.o main.o menu.o pixel.o \
-  programm.o scrolltext3.o snake.o trackball.o util.o tetris/input.o \
+  program.o scrolltext3.o snake.o trackball.o util.o tetris/input.o \
   tetris/logic.o tetris/piece.o tetris/playfield.o tetris/view.o
 
 all: Makefile.osx $(APP)
@@ -56,7 +56,7 @@ invaders2.o: invaders2.c util.h invaders2.h pixel.h config.h scrolltext.h \
 joystick.o: joystick.c joystick.h
 	$(CC) $(CFLAGS) -c -o joystick.o joystick.c
 
-main.o: main.c config.h pixel.h util.h programm.h menu.h tetris/logic.h \
+main.o: main.c config.h pixel.h util.h program.h menu.h tetris/logic.h \
   tetris/piece.h trackball.h snake.h scrolltext.h
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
@@ -67,8 +67,8 @@ menu.o: menu.c menu.h config.h util.h pixel.h joystick.h snake.h \
 pixel.o: pixel.c pixel.h util.h config.h
 	$(CC) $(CFLAGS) -c -o pixel.o pixel.c
 
-programm.o: programm.c pixel.h util.h config.h programm.h joystick.h
-	$(CC) $(CFLAGS) -c -o programm.o programm.c
+program.o: program.c pixel.h util.h config.h program.h joystick.h
+	$(CC) $(CFLAGS) -c -o program.o program.c
 
 scrolltext3.o: scrolltext3.c config.h scrolltext.h pixel.h util.h \
   font_arial8.h font.h font_small6.h font_uni53.h

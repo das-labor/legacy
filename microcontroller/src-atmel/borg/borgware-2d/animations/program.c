@@ -46,7 +46,7 @@ void test_palette2(){
 #endif
 
 
-#ifdef ANIMATION_SPIRALE
+#ifdef ANIMATION_SPIRAL
 static void walk(cursor_t* cur, unsigned char steps, unsigned int delay){
 	unsigned char x;
 	for(x=steps;x--;){
@@ -55,7 +55,7 @@ static void walk(cursor_t* cur, unsigned char steps, unsigned int delay){
 	}
 }
 
-void spirale(unsigned int delay){
+void spiral(unsigned int delay){
 	clear_screen(0);
 
 	cursor_t cur;
@@ -110,8 +110,8 @@ unsigned char i, j, x;
 #endif
 
 
-#ifdef ANIMATION_SCHACHBRETT
-void schachbrett(unsigned char times){
+#ifdef ANIMATION_CHESSBOARD
+void chessboard(unsigned char times){
 	while (times--) {
 		for (unsigned char row = 0; row < NUM_ROWS; ++row) {
 			for (unsigned char col = 0; col < NUM_COLS; ++col) {
@@ -124,41 +124,51 @@ void schachbrett(unsigned char times){
 #endif
 
 
-#ifdef ANIMATION_FEUER
+#ifdef ANIMATION_FIRE
 #ifndef FIRE_CYCLES
 	#define FIRE_CYCLES 800
 #endif
-#define FEUER_Y (NUM_ROWS + 3)
-void feuer()
+#define FIRE_Y (NUM_ROWS + 3)
+void fire()
 {
 	unsigned char y, x;
 	unsigned int  t;
-	unsigned char world[NUM_COLS][FEUER_Y];   // double buffer
+	unsigned char world[NUM_COLS][FIRE_Y];   // double buffer
 
-	for(t=0; t<FIRE_CYCLES; t++) {
+	for (t = 0; t < FIRE_CYCLES; t++) {
 		// diffuse
-		for(y=1; y<FEUER_Y; y++) {
-			for(x=1; x<NUM_COLS-1; x++) {
-				world[x][y-1] = (FEUER_N*world[x-1][y] + FEUER_S*world[x][y] + FEUER_N*world[x+1][y]) / FEUER_DIV;
+		for (y = 1; y < FIRE_Y; y++) {
+			for (x = 1; x < NUM_COLS - 1; x++) {
+				world[x][y - 1] =
+						(FIRE_N * world[x - 1][y] +
+						 FIRE_S * world[    x][y] +
+						 FIRE_N * world[x + 1][y]) / FIRE_DIV;
 			};
 
-			world[0][y-1] = (FEUER_N*world[NUM_COLS-1][y] + FEUER_S*world[0][y] + FEUER_N*world[1][y]) / FEUER_DIV;
-			world[NUM_COLS-1][y-1] = (FEUER_N*world[0][y] + FEUER_S*world[NUM_COLS-1][y] + FEUER_N*world[NUM_COLS-2][y]) / FEUER_DIV;
-		};
+			world[0][y - 1] =
+					(FIRE_N * world[NUM_COLS - 1][y] +
+					 FIRE_S * world[           0][y] +
+					 FIRE_N * world[           1][y]) / FIRE_DIV;
+
+			world[NUM_COLS - 1][y - 1] =
+					(FIRE_N * world[0           ][y] +
+					 FIRE_S * world[NUM_COLS - 1][y] +
+					 FIRE_N * world[NUM_COLS - 2][y]) / FIRE_DIV;
+		}
 
 		// update lowest line
-		for(x=0; x<NUM_COLS; x++) {
-			world[x][FEUER_Y-1] = RANDOM8();
-		};
+		for (x = 0; x < NUM_COLS; x++) {
+			world[x][FIRE_Y - 1] = RANDOM8();
+		}
 
 		// copy to screen
-		for(y=0; y<NUM_ROWS; y++) {
-			for(x=0; x<NUM_COLS; x++) {
-				setpixel( (pixel){x,y}, (world[x][y] >> 5) );
+		for (y = 0; y < NUM_ROWS; y++) {
+			for (x = 0; x < NUM_COLS; x++) {
+				setpixel((pixel) {x,y}, world[x][y] >> 5);
 			}
-		};
+		}
 
-		wait(FEUER_DELAY);
+		wait(FIRE_DELAY);
 	}
 }
 #endif

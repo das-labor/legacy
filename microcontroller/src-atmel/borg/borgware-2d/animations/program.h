@@ -20,10 +20,10 @@ inline static void off()
 }
 #endif
 
-void spirale(unsigned int delay);
+void spiral(unsigned int delay);
 void joern1();
-void schachbrett(unsigned char times);
-void feuer();
+void chessboard(unsigned char times);
+void fire();
 void random_bright(unsigned cycles);
 
 #endif /* PROGRAMM_H_ */

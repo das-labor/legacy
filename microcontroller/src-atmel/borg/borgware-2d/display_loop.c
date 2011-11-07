@@ -5,7 +5,7 @@
 #include "config.h"
 #include "scrolltext/scrolltext.h"
 #include "animations/snake.h"
-#include "animations/programm.h"
+#include "animations/program.h"
 #include "animations/matrix.h"
 #include "animations/gameoflife.h"
 #include "animations/stonefly.h"
@@ -95,9 +95,9 @@ void display_loop(){
 #endif
 #endif
 
-#ifdef ANIMATION_SPIRALE
+#ifdef ANIMATION_SPIRAL
 		case 2:
-			spirale(5);
+			spiral(5);
 			break;
 #endif
 
@@ -113,15 +113,15 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_SCHACHBRETT
+#ifdef ANIMATION_CHESSBOARD
 		case 5:
-			schachbrett(20);
+			chessboard(20);
 			break;
 #endif
 
-#ifdef ANIMATION_FEUER
+#ifdef ANIMATION_FIRE
 		case 6:
-			feuer();
+			fire();
 			break;
 #endif
 

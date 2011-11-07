@@ -3,7 +3,7 @@ TOPDIR = ..
 
 include $(TOPDIR)/defaults.mk
 
-SRC = programm.c
+SRC = program.c
 
 ifeq ($(ANIMATION_SNAKE),y)
   SRC += snake.c
