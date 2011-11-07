@@ -7,9 +7,9 @@ comment "General Setup"
 
 	choice 'Target MCU'           \
  	  "ATmega8        atmega8     \
-	   ATmega32		  atmega32    \
+	   ATmega32       atmega32    \
 	   ATmega644      atmega644   \
-	   ATmega644p     atmega644p   \
+	   ATmega644p     atmega644p  \
 	   ATmega8515     atmega8515" \
 	   'ATmega32' MCU
 
@@ -27,7 +27,7 @@ source borg_hw/config.in
 mainmenu_option next_comment
 comment "Features"
 	bool     "prng random number generator" RANDOM_SUPPORT y
-	dep_bool "CAN Time Extension"   		LAP_TIME_EXTENSION $CAN_SUPPORT
+	dep_bool "CAN Time Extension"   LAP_TIME_EXTENSION $CAN_SUPPORT
 endmenu
 ###############################################################################
 
@@ -48,7 +48,7 @@ source can/config.in
 
 
 ### Borg Menu #################################################################
-dep_bool "menu support" MENU_SUPPORT $JOYSTICK_SUPPORT
+dep_bool "Menu Support" MENU_SUPPORT $JOYSTICK_SUPPORT
 depends on JOYSTICK_SUPPORT
 ###############################################################################
 
@@ -62,6 +62,7 @@ source games/config.in
 source animations/config.in
 ###############################################################################
 
-### small Animations Menu ###########################################################
+
+### small Animations Menu #####################################################
 source smallani/config.in
 ###############################################################################
