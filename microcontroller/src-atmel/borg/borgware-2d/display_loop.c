@@ -113,9 +113,9 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_CHESSBOARD
+#ifdef ANIMATION_CHECKERBOARD
 		case 5:
-			chessboard(20);
+			checkerboard(20);
 			break;
 #endif
 

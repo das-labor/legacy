@@ -22,7 +22,7 @@ inline static void off()
 
 void spiral(unsigned int delay);
 void joern1();
-void chessboard(unsigned char times);
+void checkerboard(unsigned char times);
 void fire();
 void random_bright(unsigned cycles);
 
