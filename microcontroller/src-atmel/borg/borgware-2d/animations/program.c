@@ -110,8 +110,8 @@ unsigned char i, j, x;
 #endif
 
 
-#ifdef ANIMATION_CHESSBOARD
-void chessboard(unsigned char times){
+#ifdef ANIMATION_CHECKERBOARD
+void checkerboard(unsigned char times){
 	while (times--) {
 		for (unsigned char row = 0; row < NUM_ROWS; ++row) {
 			for (unsigned char col = 0; col < NUM_COLS; ++col) {

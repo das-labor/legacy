@@ -11,7 +11,7 @@ comment "Animations"
 		int  "Snake Max Apples"         SNAKE_MAX_APPLES         10
 	endmenu
 
-	bool     "Chessboard"    ANIMATION_CHESSBOARD
+	bool     "Checkerboard"    ANIMATION_CHECKERBOARD
 
 	dep_bool_menu "Fire"     ANIMATION_FIRE          $RANDOM_SUPPORT
 		int "FIRE_S"                 FIRE_S      30
@@ -29,12 +29,12 @@ comment "Animations"
 	dep_bool "Random Bright" ANIMATION_RANDOM_BRIGHT $RANDOM_SUPPORT
 	dep_bool "Stonefly"	 ANIMATION_STONEFLY      $GAME_TETRIS_CORE
 	dep_bool "Flying Dots"	 ANIMATION_FLYINGDOTS    $RANDOM_SUPPORT
-	
+
 	dep_bool_menu "Game of Life"  ANIMATION_GAMEOFLIFE    $RANDOM_SUPPORT
 		int "Game of Life Round Delay (ms)"  GOL_DELAY  100
 		int "Game of Life Max Rounds"        GOL_CYCLES 360
 	endmenu
-	
+
 	dep_bool "Breakout Demo" ANIMATION_BREAKOUT      $GAME_BREAKOUT
 	dep_bool "Martin Herweg" ANIMATION_MHERWEG       $RANDOM_SUPPORT
 	dep_bool "Langton Ant"   ANIMATION_LTN_ANT       $RANDOM_SUPPORT
