@@ -156,12 +156,10 @@ int main (void)
 			switch (mystate)
 			{
 				case NLPROTO_SLAVE_CONFIG:
-					rfm12_rx_clear();
 					nl_tx_packet (NLPROTO_SLAVE_CONFIG, sizeof(myconfig), (uint8_t *) &myconfig);
 					break;
 
 				case NLPROTO_MASTER_EHLO:
-					rfm12_rx_clear();
 					nl_tx_packet (NLPROTO_MASTER_EHLO, 0, mypage);
 					break;
 
@@ -180,7 +178,7 @@ int main (void)
 						#elif NL_VERBOSITY > 0
 						nl_tx_packet (NLPROTO_ERROR, 0, mypage);
 						#endif
-						rfm12_rx_clear();
+
 						nl_tx_packet (NLPROTO_ERROR, 0, mypage);
 						break;
 					}
@@ -189,49 +187,35 @@ int main (void)
 						rxbuf + NL_ADDRESSSIZE + 1 + sizeof(nl_flashcmd),
 						mycmd->addr_end - mycmd->addr_start);
 
-/*					memcpy (mypage + *((uint16_t *) (rxbuf + 6)),
-						rxbuf + NL_ADDRESSSIZE + 1 + sizeof(nl_flashcmd),
-						mycmd->addr_end - mycmd->addr_start);
-
-*/
-					crcsum=0;
-					for (k=mycmd->addr_start;k<mycmd->addr_end;k++)
-						crcsum = _crc16_update (crcsum,
-							*(mypage + k));
+					for (k=mycmd->addr_start, crcsum = 0;k<mycmd->addr_end;k++)
+						crcsum = _crc16_update (crcsum, *(mypage + k));
 					//crcsum = mycmd->addr_start;
-
-//					rfm12_rx_clear();
 
 					mystate = NLPROTO_PAGE_CHKSUM;
 					/* no break for retransmission purposes */
 
 				case NLPROTO_PAGE_CHKSUM:
-					rfm12_rx_clear();
 					nl_tx_packet (NLPROTO_PAGE_CHKSUM, 2, (uint8_t *) &crcsum);
 					break;
 
 				/* commit page write */
 				case NLPROTO_PAGE_COMMIT:
 					memcpy(&pagenum, rxbuf + NL_ADDRESSSIZE +1, sizeof(pagenum));
-
-					rfm12_rx_clear();
-
 					boot_program_page (pagenum, mypage);
-
 					mystate = NLPROTO_PAGE_COMMITED;
 					/* intentionally no break statement here to retransmit the commit ack */
 
 				case NLPROTO_PAGE_COMMITED:
-					rfm12_rx_clear();
 					nl_tx_packet (NLPROTO_PAGE_COMMITED, sizeof(pagenum), (uint8_t *) &pagenum);
 					break;
 
 				case NLPROTO_BOOT:
-					rfm12_rx_clear();
 					nl_boot_app();
 					break;
 
 			}
+
+			rfm12_rx_clear();
 		}
 
 		i++;
