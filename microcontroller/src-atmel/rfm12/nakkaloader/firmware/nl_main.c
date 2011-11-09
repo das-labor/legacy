@@ -17,6 +17,7 @@
 
 static void (*app_ptr)(void) = (void *)0x0000;
 static uint8_t myaddress[NL_ADDRESSSIZE];
+static nl_config myconfig = {SPM_PAGESIZE, RFM12_RX_BUFFER_SIZE, NL_VERSION};
 
 void boot_program_page (uint32_t page, uint8_t *buf)
 {
@@ -66,21 +67,19 @@ static uint8_t nl_match_packet (uint8_t *in_packet)
 static void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 {
 	static uint8_t txpacket[NL_ADDRESSSIZE + 1 + NL_PACKETSIZE];
-	uint8_t i = NL_ADDRESSSIZE + 1, k = 0;
 
+	txpacket[0] = in_type;
 //	txpacket[1] = myaddress[0];
 	txpacket[1] = 0xff;
 
 	#if NL_ADDRESSSIZE == 2
-	txpacket[2] = myaddress[1];
+		txpacket[2] = myaddress[1];
 	#endif
-
-	txpacket[0] = in_type;
 
 	if (in_len)
 		memcpy(&txpacket[NL_ADDRESSSIZE + 1], in_payload, in_len);
 
-	rfm12_tx (i, NL_PACKETTYPE, txpacket);
+	rfm12_tx (NL_ADDRESSSIZE + 1 + in_len, NL_PACKETTYPE, txpacket);
 }
 
 static void nl_boot_app ( void )
@@ -96,7 +95,6 @@ static void nl_boot_app ( void )
 	GICR = (1 << IVCE);
 	GICR = 0;
 
-
 	app_ptr();
 }
 
@@ -109,7 +107,6 @@ int main (void)
 	uint8_t mypage[SPM_PAGESIZE];
 	uint32_t pagenum = 0;
 	uint16_t crcsum = 0;
-	nl_config myconfig = {SPM_PAGESIZE, RFM12_RX_BUFFER_SIZE, NL_VERSION};
 	nl_flashcmd *mycmd;
 
 #if 0
