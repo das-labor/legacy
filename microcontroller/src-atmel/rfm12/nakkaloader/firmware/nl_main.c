@@ -78,14 +78,7 @@ static void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 	txpacket[0] = in_type;
 
 	if (in_len)
-	{
-		for (;k<in_len;k++)
-		{
-			txpacket[i] = *(in_payload + k);
-			i++;
-		}
-		//memcpy(txpacket + NL_ADDRESSSIZE + 1, in_payload, in_len);
-	}
+		memcpy(&txpacket[NL_ADDRESSSIZE + 1], in_payload, in_len);
 
 	rfm12_tx (i, NL_PACKETTYPE, txpacket);
 }
