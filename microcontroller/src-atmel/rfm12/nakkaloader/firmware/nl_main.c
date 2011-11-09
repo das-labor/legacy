@@ -13,15 +13,10 @@
 #include "nl_config.h"
 #include "../common/nl_protocol.h"
 
-//warning: rfm12_rx_clear() is inlined...
-void rxclear(void)
-{
-	rfm12_rx_clear();
-}
 
 
-void (*app_ptr)(void) = (void *)0x0000;
-uint8_t myaddress[NL_ADDRESSSIZE];
+static void (*app_ptr)(void) = (void *)0x0000;
+static uint8_t myaddress[NL_ADDRESSSIZE];
 
 void boot_program_page (uint32_t page, uint8_t *buf)
 {
@@ -54,13 +49,13 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 }
 
 #if 0
-uint8_t nl_match_packet (uint8_t *in_packet)
+static uint8_t nl_match_packet (uint8_t *in_packet)
 {
 	#if NL_ADDRESSSIZE == 1
 	if ((*(in_packet + 1) & NL_ADDRESSMASK) != (myaddress[0] & NL_ADDRESSMASK))
 		return 0;
 	#elif NL_ADDRESSSIZE == 2
-	if (*((uint16_t *) (in_packet + 1)) & (NL_ADDRESSMASK) != 
+	if (*((uint16_t *) (in_packet + 1)) & (NL_ADDRESSMASK) !=
 		(*((uint16_t *) &myaddress) & (NL_ADDRESSMASK)))
 			return 0;
 	#endif
@@ -68,10 +63,10 @@ uint8_t nl_match_packet (uint8_t *in_packet)
 }
 #endif
 
-void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
+static void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 {
 	uint8_t txpacket[NL_ADDRESSSIZE + 1 + NL_PACKETSIZE];
-	uint8_t i = NL_ADDRESSSIZE + 1, k = 0; 
+	uint8_t i = NL_ADDRESSSIZE + 1, k = 0;
 
 //	txpacket[1] = myaddress[0];
 	txpacket[1] = 0xff;
@@ -84,31 +79,31 @@ void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 
 	if (in_len)
 	{
-		for (;k<in_len;k++) 
-		{ 
-			txpacket[i] = *(in_payload + k); 
-			i++; 
-		} 
+		for (;k<in_len;k++)
+		{
+			txpacket[i] = *(in_payload + k);
+			i++;
+		}
 		//memcpy(txpacket + NL_ADDRESSSIZE + 1, in_payload, in_len);
 	}
-	
+
 	rfm12_tx (i, NL_PACKETTYPE, txpacket);
 }
 
-void nl_boot_app ( void )
+static void nl_boot_app ( void )
 {
 	#if (NL_VERBOSITY >= 100)
 	nl_tx_packet (NLPROTO_BOOT, NL_ADDRESSSIZE, myaddress);
 	rfm12_tick();
 	#endif
-	
+
 	cli();
-	
+
 	//move interrupts back (also disables rfm12 int)
 	GICR = (1 << IVCE);
 	GICR = 0;
 
-	
+
 	app_ptr();
 }
 
@@ -134,14 +129,14 @@ int main (void)
 	/* read address */
 	/*for (i=0;i<NL_ADDRESSSIZE;i++)
 	{
-		myaddress[i] = 
+		myaddress[i] =
 			eeprom_read_byte (
 				(uint8_t *) (((uint8_t) i) + ((uint8_t) NL_ADDRESSPOS)));
 	}*/
-	
+
 	myaddress[0] = 0xff;
 #endif
-	
+
 	/* move interrupt vector table to bootloader section */
 
 	GICR = (1<<IVCE);
@@ -161,7 +156,7 @@ int main (void)
 
 			if (rfm12_rx_type() != NL_PACKETTYPE)
 			{
-				rxclear();
+				rfm12_rx_clear();
 				continue;
 			}
 
@@ -178,12 +173,12 @@ int main (void)
 			switch (mystate)
 			{
 				case NLPROTO_SLAVE_CONFIG:
-					rxclear();
+					rfm12_rx_clear();
 					nl_tx_packet (NLPROTO_SLAVE_CONFIG, sizeof(myconfig), (uint8_t *) &myconfig);
 					break;
 
 				case NLPROTO_MASTER_EHLO:
-					rxclear();
+					rfm12_rx_clear();
 					nl_tx_packet (NLPROTO_MASTER_EHLO, 0, mypage);
 					break;
 
@@ -202,7 +197,7 @@ int main (void)
 						#elif NL_VERBOSITY > 0
 						nl_tx_packet (NLPROTO_ERROR, 0, mypage);
 						#endif
-						rxclear();
+						rfm12_rx_clear();
 						nl_tx_packet (NLPROTO_ERROR, 0, mypage);
 						break;
 					}
@@ -210,7 +205,7 @@ int main (void)
 					memcpy (mypage + mycmd->addr_start,
 						rxbuf + NL_ADDRESSSIZE + 1 + sizeof(nl_flashcmd),
 						mycmd->addr_end - mycmd->addr_start);
-					
+
 /*					memcpy (mypage + *((uint16_t *) (rxbuf + 6)),
 						rxbuf + NL_ADDRESSSIZE + 1 + sizeof(nl_flashcmd),
 						mycmd->addr_end - mycmd->addr_start);
@@ -222,13 +217,13 @@ int main (void)
 							*(mypage + k));
 					//crcsum = mycmd->addr_start;
 
-//					rxclear();
+//					rfm12_rx_clear();
 
 					mystate = NLPROTO_PAGE_CHKSUM;
 					/* no break for retransmission purposes */
-				
+
 				case NLPROTO_PAGE_CHKSUM:
-					rxclear();
+					rfm12_rx_clear();
 					nl_tx_packet (NLPROTO_PAGE_CHKSUM, 2, (uint8_t *) &crcsum);
 					break;
 
@@ -236,29 +231,29 @@ int main (void)
 				case NLPROTO_PAGE_COMMIT:
 					memcpy(&pagenum, rxbuf + NL_ADDRESSSIZE +1, sizeof(pagenum));
 
-					rxclear();
+					rfm12_rx_clear();
 
 					boot_program_page (pagenum, mypage);
-					
+
 					mystate = NLPROTO_PAGE_COMMITED;
 					/* intentionally no break statement here to retransmit the commit ack */
 
 				case NLPROTO_PAGE_COMMITED:
-					rxclear();
+					rfm12_rx_clear();
 					nl_tx_packet (NLPROTO_PAGE_COMMITED, sizeof(pagenum), (uint8_t *) &pagenum);
 					break;
-				
+
 				case NLPROTO_BOOT:
-					rxclear();
+					rfm12_rx_clear();
 					nl_boot_app();
 					break;
 
 			}
 		}
-		
+
 		i++;
 		rfm12_tick();
 	}
 
-	nl_boot_app();	
+	nl_boot_app();
 }
