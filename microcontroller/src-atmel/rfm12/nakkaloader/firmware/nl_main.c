@@ -7,7 +7,6 @@
 #include <string.h>
 #include <util/crc16.h>
 
-
 #include "rfm12_config.h"
 #include "rfm12.h"
 #include "nl_config.h"
@@ -110,12 +109,6 @@ int main (void)
 	nl_flashcmd *mycmd;
 
 #if 0
-	/* fill config variables */
-	myconfig.pagesize = (uint16_t) SPM_PAGESIZE;
-	myconfig.rxbufsize = (uint8_t) RFM12_RX_BUFFER_SIZE;
-	myconfig.version = NL_VERSION;
-
-
 	/* read address */
 	/*for (i=0;i<NL_ADDRESSSIZE;i++)
 	{
