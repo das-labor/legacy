@@ -130,9 +130,6 @@ int main (void)
 //	for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
 	while (2)
 	{
-
-		if (i == 0x1ffff) break;
-
 		if (rfm12_rx_status() == STATUS_COMPLETE)
 		{
 			rxbuf = rfm12_rx_buffer();
@@ -144,9 +141,7 @@ int main (void)
 			}
 
 			mystate = rxbuf[0];
-
 			i=0; /* somebody cares about us. reset error counter */
-
 		}
 
 
@@ -217,10 +212,10 @@ int main (void)
 
 			rfm12_rx_clear();
 		}
+		else if (i == 0x1ffff)
+			nl_boot_app();
 
 		i++;
 		rfm12_tick();
 	}
-
-	nl_boot_app();
 }
