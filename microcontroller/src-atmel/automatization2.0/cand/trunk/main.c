@@ -26,6 +26,30 @@
  #define max(a,b) (((a) > (b)) ? (a) : (b))
 #endif
 
+#define QUIT_EARLY(msg) \
+    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+static const char *gregs[] = {
+	"GS",
+	"FS",
+	"ES",
+	"DS",
+	"EDI",
+	"ESI",
+	"EBP",
+	"ESP",
+	"EBX",
+	"EDX",
+	"ECX",
+	"EAX",
+	"TRAPNO",
+	"ERR",
+	"EIP",
+	"CS",
+	"EFL",
+	"UESP",
+	"SS"
+};
 
 char *progname;
 char *serial;
@@ -247,6 +271,7 @@ void msg_to_clients(rs232can_msg *msg)
 	}
 }
 
+
 #define MEGA8_RESETCAUSE_PORF 	1
 #define MEGA8_RESETCAUSE_EXTRF	2
 #define MEGA8_RESETCAUSE_BORF	4
@@ -457,25 +482,95 @@ void shutdown_all()
 	}
 }
 
-void signal_handler(int sig) {
-	debug(0, "Stopping Cand (SIGNAL: %i)", sig);
-	shutdown_all();
-	signal (sig, SIG_DFL);
-	if (sig == SIGQUIT)
-		exit(EXIT_SUCCESS);
-	else
-		raise (sig);
+
+void handle_segv(int sig, siginfo_t *info, void *c)
+{
+	extern FILE *debugFP;
+	extern debug_time;
+	ucontext_t *context = c;
+	int i;
+
+	debug_time = 1;
+	if(debugFP == NULL)
+		debugFP = stderr;
+	debug(0, "Got SIGSEGV at address: 0x%lx",(long) info->si_addr);
+
+	fprintf(debugFP,
+		"si_signo:  %d\n"
+		"si_code:   %s\n"
+		"si_errno:  %d\n"
+		"si_pid:    %d\n"
+		"si_uid:    %d\n"
+		"si_addr:   %p\n"
+		"si_status: %d\n"
+		"si_band:   %ld\n",
+		info->si_signo,
+		(info->si_code == SEGV_MAPERR) ? "SEGV_MAPERR" : "SEGV_ACCERR",
+		info->si_errno, info->si_pid, info->si_uid, info->si_addr,
+		info->si_status, info->si_band
+	);
+
+	fprintf(debugFP,
+		"uc_flags:  0x%lx\n"
+		"ss_sp:     %p\n"
+		"ss_size:   %d\n"
+		"ss_flags:  0x%X\n",
+		context->uc_flags,
+		context->uc_stack.ss_sp,
+		context->uc_stack.ss_size,
+		context->uc_stack.ss_flags
+	);
+
+	fprintf(debugFP, "General Registers:\n");
+	for(i = 0; i < 19; i++)
+		fprintf(debugFP, "\t%7s: 0x%x\n", gregs[i], context->uc_mcontext.gregs[i]);
+	fprintf(debugFP, "\tOLDMASK: 0x%lx\n", context->uc_mcontext.oldmask);
+	fprintf(debugFP, "\t    CR2: 0x%lx\n", context->uc_mcontext.cr2);
+
+	exit(EXIT_FAILURE);
 }
+
+
+static void signal_handler(int sig, siginfo_t *si, void *unused)
+{
+	debug(0, "Got %s signal, shutting down..", strsignal(sig));
+	shutdown_all();
+	signal(sig, SIG_DFL);
+
+	switch(sig)
+	{
+		case SIGQUIT:
+		case SIGTERM:
+			exit(EXIT_SUCCESS);
+			break;
+		default:
+			raise(sig);
+			break;
+	}
+}
+
 
 int main(int argc, char *argv[])
 {
 	int d = 0;                   // daemon
 	int tcpport  = 2342;         // TCP Port
 	int optc;
+	struct sigaction sa;
 
-	(void) signal(SIGTERM, signal_handler);
-	(void) signal(SIGKILL, signal_handler);
-	(void) signal(SIGSEGV, signal_handler);
+	sa.sa_flags = SA_SIGINFO;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_sigaction = signal_handler;
+
+	//register various quit signals
+	if (sigaction(SIGTERM, &sa, NULL) == -1)
+        QUIT_EARLY("failed to register SIGTERM handler");
+	if (sigaction(SIGQUIT, &sa, NULL) == -1)
+        QUIT_EARLY("failed to register SIGQUIT handler");
+
+    //register segfault handler
+    sa.sa_sigaction = handle_segv;
+    if (sigaction(SIGSEGV, &sa, NULL) == -1)
+        QUIT_EARLY("failed to register SIGSEGV handler");
 
 	progname = argv[0];
 	optc=getopt_long(argc, argv, optstring, longopts, (int *)0);
