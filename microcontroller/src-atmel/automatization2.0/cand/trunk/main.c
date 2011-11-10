@@ -310,6 +310,7 @@ void process_uart_msg()
 		case RS232CAN_PACKETCOUNTERS:
 		case RS232CAN_ERRORCOUNTERS:
 		case RS232CAN_POWERDRAW:
+		case RS232CAN_READ_CTRL_REG:
 			msg_to_clients(msg);	//pipe reply to network clients
 			break;
 		default:
@@ -341,28 +342,30 @@ void process_client_msg( cann_conn_t *client )
 			/* XXX */
 			break;
 		case RS232CAN_PKT:
-		default:
 			// to UART
 			if (serial) canu_transmit(msg);		//send to client on the can
 			msg_to_clients(msg);				//send to all network clients
 			break;
 		case RS232CAN_PING_GATEWAY:
-			debug(3, ".. got gateway ping request ..");
-			msg->len = 0;
-			if (serial) canu_transmit(msg);		//send to client on the can
-			break;
 		case RS232CAN_VERSION:
 		case RS232CAN_IDSTRING:
 		case RS232CAN_PACKETCOUNTERS:
 		case RS232CAN_ERRORCOUNTERS:
 		case RS232CAN_POWERDRAW:
+		case RS232CAN_READ_CTRL_REG:
 			msg->len = 0;
 			if (serial) canu_transmit(msg);		//send to client on the can
+			break;
+		case RS232CAN_WRITE_CTRL_REG
+			if (msg->len == 1 && serial) canu_transmit(msg);		//send to client on the can
 			break;
 		case RS232CAN_ERROR:
 		case RS232CAN_NOTIFY_RESET:
 		case RS232CAN_RESYNC:
 			//don't react on these commands
+			break;
+		default:
+			if (serial) canu_transmit(msg);		//send to client on the can
 			break;
 	}
 	cann_free(msg);
