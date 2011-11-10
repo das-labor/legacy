@@ -312,6 +312,7 @@ void process_uart_msg()
 		case RS232CAN_POWERDRAW:
 		case RS232CAN_READ_CTRL_REG:
 		case RS232CAN_WRITE_CTRL_REG:
+		case RS232CAN_GET_RESETCAUSE:
 			msg_to_clients(msg);	//pipe reply to network clients
 			break;
 		default:
@@ -354,6 +355,7 @@ void process_client_msg( cann_conn_t *client )
 		case RS232CAN_ERRORCOUNTERS:
 		case RS232CAN_POWERDRAW:
 		case RS232CAN_READ_CTRL_REG:
+		case RS232CAN_GET_RESETCAUSE:
 			msg->len = 0;
 			if (serial) canu_transmit(msg);		//send to client on the can
 			break;
