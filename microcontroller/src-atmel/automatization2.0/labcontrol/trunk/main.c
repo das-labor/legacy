@@ -47,15 +47,15 @@ typedef struct {
 
 cmd_t cmds[] = {
   { &cmd_loopback,   "loopback", "loopback [0|1]", "Enable/disable loopback mode" },
-  { &cmd_test, "test", "test ...", "Test commands" },
+  { &cmd_test, "test", "test <subcommand>", "Test commands" },
   { &cmd_packet, "packet", "packet <src> <dst> <data>", "Send arbitrary packets" },
   { &cmd_dump,   "dump", "dump", "Packet dump from CAN bus" },
   { &cmd_reset,  "reset", "reset <addr>", "Send reset to <addr>" },
   { &cmd_ping,   "ping", "ping <addr>", "Send ping to <addr>" },
   { &cmd_flash,  "flash", "flash <addr> <file>" ,"flash file to device"},
   { &cmd_lamp,  "lamp", "lamp <addr> <lamp> <value>" ,"set lamp on device to value"},
-  { &cmd_borg,  "borg", "borg ..." ,"control bord device"},
-  { &cmd_mood,  "mood", "mood ..." ,"control mood device"},
+  { &cmd_borg,  "borg", "borg <subcommand>" ,"control bord device"},
+  { &cmd_mood,  "mood", "mood <subcommand>" ,"control mood device"},
   { &cmd_cansole, "cansole", "cansole <addr> <chan> <subchannel>", "connect to cansole at given address, channel and subchannel" },
   { &cmd_musicd, "musicd", "musicd", "starts a music control daemon in foreground" },
   { &cmd_treppenblink, "treppenblink", "treppenblink", "mode des treppenblinks" },
@@ -64,7 +64,7 @@ cmd_t cmds[] = {
   { &cmd_cantemp, "cantemp", "cantemp", "Temperatur fuer Sensor" },
   { &cmd_bastel, "bastelcmd", "bastelcmd", "bastelcontrol class object function value ... wiki->Bastelraum" },
   { &cmd_canpowermeter, "powermeter", "powermeter", "Energieverbrauch des Labors" },
-  { &cmd_gateway, "gw", "gw", "CAN-Gateway Control (ping currently)" },
+  { &cmd_gateway, "gw", "gw <subcommand>", "CAN-Gateway Control (ping currently)" },
   { NULL, NULL, NULL, NULL }
 };
 
