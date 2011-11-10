@@ -26,11 +26,13 @@ typedef struct {
 } cmd_t;
 
 
-static void send_gateway_command(uint8_t cmd)
+static void send_gateway_command(uint8_t cmd, uint8_t *data, uint8_t len)
 {
 	rs232can_msg rmsg;
 	rmsg.cmd = cmd;
-	rmsg.len = 0;
+	rmsg.len = (len > RS232CAN_MAXLENGTH)?RS232CAN_MAXLENGTH:0;
+	if(len && data)
+		memcpy((void *)rmsg.data, (void *)data, rmsg.len);
 	can_transmit_raw_gateway_message(&rmsg);
 }
 
@@ -51,7 +53,7 @@ static void cmd_gateway_ping(int argc, char *argv[])
 
 	//create and send gateway ping request
 	printf("Pinging gateway.. ");
-	send_gateway_command(RS232CAN_PING_GATEWAY);
+	send_gateway_command(RS232CAN_PING_GATEWAY, NULL, 0);
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_PING_GATEWAY);
@@ -67,7 +69,7 @@ static void cmd_gateway_version(int argc, char *argv[])
 
 	//create and send gateway version request
 	printf("Requesting version..\n");
-	send_gateway_command(RS232CAN_VERSION);
+	send_gateway_command(RS232CAN_VERSION, NULL, 0);
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_VERSION);
@@ -80,7 +82,7 @@ static void cmd_gateway_version(int argc, char *argv[])
 
 	//create and send gateway id request
 	printf("Requesting id-string..\n");
-	send_gateway_command(RS232CAN_IDSTRING);
+	send_gateway_command(RS232CAN_IDSTRING, NULL, 0);
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_IDSTRING);
@@ -106,9 +108,9 @@ static void cmd_gateway_packetstats(int argc, char *argv[])
 {
 	rs232can_msg *rmsg;
 
-	//create and send gateway ping request
+	//create and send gateway request
 	printf("Pinging packet counters..\n");
-	send_gateway_command(RS232CAN_PACKETCOUNTERS);
+	send_gateway_command(RS232CAN_PACKETCOUNTERS, NULL, 0);
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_PACKETCOUNTERS);
@@ -130,9 +132,9 @@ static void cmd_gateway_errorstats(int argc, char *argv[])
 {
 	rs232can_msg *rmsg;
 
-	//create and send gateway ping request
+	//create and send gateway request
 	printf("Requesting error counters..\n");
-	send_gateway_command(RS232CAN_ERRORCOUNTERS);
+	send_gateway_command(RS232CAN_ERRORCOUNTERS, NULL, 0);
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_ERRORCOUNTERS);
@@ -168,9 +170,9 @@ static void cmd_gateway_powerdraw(int argc, char *argv[])
 	rs232can_msg *rmsg;
 	double v, ma;
 
-	//create and send gateway ping request
+	//create and send gateway request
 	printf("Requesting power draw..\n");
-	send_gateway_command(RS232CAN_POWERDRAW);
+	send_gateway_command(RS232CAN_POWERDRAW, NULL, 0);
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_POWERDRAW);
@@ -190,6 +192,41 @@ timeout:
 	printf(" but timed out after 2 seconds :-(\n");
 }
 
+static void cmd_gateway_control(int argc, char *argv[])
+{
+	rs232can_msg *rmsg;
+
+	if(argc == 2)
+	{
+		uint8_t val = atoi(argv[1]);
+
+		//create and send gateway request
+		printf("Writing control register..\n");
+		send_gateway_command(RS232CAN_WRITE_CTRL_REG, val, 1);
+
+		//anticipate reply and timeout after 2s
+		rmsg = anticipate_gateway_reply(RS232CAN_WRITE_CTRL_REG);
+	}
+	else
+	{
+		//create and send gateway request
+		printf("Reading control register..\n");
+		send_gateway_command(RS232CAN_READ_CTRL_REG, NULL, 0);
+
+		//anticipate reply and timeout after 2s
+		rmsg = anticipate_gateway_reply(RS232CAN_READ_CTRL_REG);
+	}
+
+	if(!rmsg) goto timeout;
+
+	//print new value
+	printf("Control register value:\t%02x\n", (unsigned char)rmsg->data[0]);
+	return;
+
+timeout:
+	printf(" but timed out after 2 seconds :-(\n");
+}
+
 
 static cmd_t gateway_cmds[] = {
   { &cmd_gateway_ping, "ping", "ping", "ping the gateway itself (not a CAN ping)" },
@@ -197,6 +234,7 @@ static cmd_t gateway_cmds[] = {
   { &cmd_gateway_packetstats, "pstats", "pstats", "show packet counters" },
   { &cmd_gateway_errorstats, "estats", "estats", "show MCP2515 error counters" },
   { &cmd_gateway_powerdraw, "powerdraw", "powerdraw", "show current bus power draw" },
+  { &cmd_gateway_control, "control", "control [value]", "read or write control register (advanced users only!)" },
   { NULL, NULL, NULL, NULL }
 };
 
