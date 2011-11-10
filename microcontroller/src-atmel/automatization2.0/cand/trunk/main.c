@@ -525,8 +525,8 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 	fprintf(debugFP, "General Registers:\n");
 	for(i = 0; i < 19; i++)
 		fprintf(debugFP, "\t%7s: 0x%x\n", gregs[i], context->uc_mcontext.gregs[i]);
-	fprintf(debugFP, "\tOLDMASK: 0x%lx\n", context->uc_mcontext.oldmask);
-	fprintf(debugFP, "\t    CR2: 0x%lx\n", context->uc_mcontext.cr2);
+	/*fprintf(debugFP, "\tOLDMASK: 0x%lx\n", context->uc_mcontext.oldmask);
+	fprintf(debugFP, "\t    CR2: 0x%lx\n", context->uc_mcontext.cr2);*/
 
 	exit(EXIT_FAILURE);
 }
