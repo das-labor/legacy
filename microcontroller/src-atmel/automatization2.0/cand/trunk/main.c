@@ -356,7 +356,7 @@ void process_client_msg( cann_conn_t *client )
 			msg->len = 0;
 			if (serial) canu_transmit(msg);		//send to client on the can
 			break;
-		case RS232CAN_WRITE_CTRL_REG
+		case RS232CAN_WRITE_CTRL_REG:
 			if (msg->len == 1 && serial) canu_transmit(msg);		//send to client on the can
 			break;
 		case RS232CAN_ERROR:
