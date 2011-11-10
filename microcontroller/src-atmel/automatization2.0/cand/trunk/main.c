@@ -251,9 +251,9 @@ void msg_to_clients(rs232can_msg *msg)
 #define MEGA8_RESETCAUSE_EXTRF	2
 #define MEGA8_RESETCAUSE_BORF	4
 #define MEGA8_RESETCAUSE_WDRF	8
-#define RESETCAUSE_PORF_STR "power on "
-#define RESETCAUSE_EXTRF_STR "reset pin "
-#define RESETCAUSE_BORF_STR "brown out "
+#define RESETCAUSE_PORF_STR "power_on "
+#define RESETCAUSE_EXTRF_STR "reset_pin "
+#define RESETCAUSE_BORF_STR "brown_out "
 #define RESETCAUSE_WDRF_STR "watchdog "
 
 void sprint_atmega8_resetcause(char *buf, unsigned char reset_flags)
