@@ -311,6 +311,7 @@ void process_uart_msg()
 		case RS232CAN_ERRORCOUNTERS:
 		case RS232CAN_POWERDRAW:
 		case RS232CAN_READ_CTRL_REG:
+		case RS232CAN_WRITE_CTRL_REG:
 			msg_to_clients(msg);	//pipe reply to network clients
 			break;
 		default:
