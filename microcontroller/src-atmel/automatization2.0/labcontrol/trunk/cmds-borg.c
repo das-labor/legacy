@@ -265,7 +265,7 @@ void cmd_borg(int argc, char **argv)
 	cmd_t *cmd;
 
 	cmd = borg_cmds;
-	while(cmd->fkt && argc > 1) {
+	while(argc > 1 && cmd->fkt) {
 		if (strcmp(arg, cmd->cmd) == 0) {
 			(*(cmd->fkt))(argc-1, &(argv[1]));
 			goto done;

@@ -33,7 +33,7 @@ cmd_t mood_cmds[] = {
 
 
 
-void cmd_mood_set(int argc, char *argv[]) 
+void cmd_mood_set(int argc, char *argv[])
 {
 	pdo_message *msg;
 	int i;
@@ -92,12 +92,9 @@ void cmd_mood(int argc, char **argv)
 {
 	char *arg = argv[1];
 	cmd_t *cmd;
-	
-	if (!arg)
-		goto argerror;
 
 	cmd = mood_cmds;
-	while(cmd->fkt) {
+	while(argc > 1 && cmd->fkt) {
 		if (strcmp(arg, cmd->cmd) == 0) {
 			(*(cmd->fkt))(argc-1, &(argv[1]));
 			goto done;
@@ -105,7 +102,6 @@ void cmd_mood(int argc, char **argv)
 		cmd++;
 	}
 
-argerror:
 	/* show help */
 	printf( "\nUsage: lapcontrol [OPTIONS] mood <SUBCOMMAND>\n\n" );
 	printf( "Available Subcommands:\n\n" );
@@ -117,7 +113,7 @@ argerror:
 	}
 	printf( "\n" );
 
-done: 
+done:
 	return;
 }
 
