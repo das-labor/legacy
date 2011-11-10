@@ -261,7 +261,7 @@ static void cmd_gateway_resetcause(int argc, char *argv[])
 	if(!rmsg) goto timeout;
 
 	//print answer
-	sprint_atmega8_resetcause(buf, msg->data[0]);
+	sprint_atmega8_resetcause(buf, rmsg->data[0]);
 	printf("Reset cause: %s\n", buf);
 	return;
 
