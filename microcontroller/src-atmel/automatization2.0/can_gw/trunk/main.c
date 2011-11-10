@@ -503,10 +503,10 @@ void syscontrol(uint8_t ctrl_reg_new)
 {
 	uint8_t changes = ctrl_reg_new ^ ctrl_reg;
 
-	if(changes & FLAG_BUSPOWER)
-		buspower(ctrl_reg & FLAG_BUSPOWER);
+	if(changes & _BV(FLAG_BUSPOWER))
+		buspower(ctrl_reg_new & _BV(FLAG_BUSPOWER));
 
-	if(ctrl_reg_new & (FLAG_AUTOREPORT_POWERDRAW | FLAG_AUTOREPORT_PSTATS))
+	if(ctrl_reg_new & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS)))
 	{
 		autoreport_last_schedule_time = 0;
 	}
