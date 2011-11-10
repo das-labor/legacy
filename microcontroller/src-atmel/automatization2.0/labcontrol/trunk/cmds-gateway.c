@@ -232,9 +232,9 @@ timeout:
 #define MEGA8_RESETCAUSE_EXTRF	2
 #define MEGA8_RESETCAUSE_BORF	4
 #define MEGA8_RESETCAUSE_WDRF	8
-#define RESETCAUSE_PORF_STR "power on "
-#define RESETCAUSE_EXTRF_STR "reset pin "
-#define RESETCAUSE_BORF_STR "brown out "
+#define RESETCAUSE_PORF_STR "power_on "
+#define RESETCAUSE_EXTRF_STR "reset_pin "
+#define RESETCAUSE_BORF_STR "brown_out "
 #define RESETCAUSE_WDRF_STR "watchdog "
 
 static void sprint_atmega8_resetcause(char *buf, unsigned char reset_flags)
@@ -276,6 +276,7 @@ static cmd_t gateway_cmds[] = {
   { &cmd_gateway_packetstats, "pstats", "pstats", "show packet counters" },
   { &cmd_gateway_errorstats, "estats", "estats", "show MCP2515 error counters" },
   { &cmd_gateway_powerdraw, "powerdraw", "powerdraw", "show current bus power draw" },
+  { &cmd_gateway_resetcause, "resetcause", "resetcause", "question gateway about the cause of its last reset" },
   { &cmd_gateway_control, "control", "control [value]", "read or write control register (advanced users only!)" },
   { NULL, NULL, NULL, NULL }
 };
