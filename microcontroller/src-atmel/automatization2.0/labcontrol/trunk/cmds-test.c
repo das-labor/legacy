@@ -22,8 +22,8 @@ void test_loopback(int argc, char **argv)
 		msg->addr_dst = 0x00;
 		msg->port_dst = 0x23;
 		msg->dlc      = 2;
-		msg->data[0]  = 0x00; 
-		msg->data[1]  = i; 
+		msg->data[0]  = 0x00;
+		msg->data[1]  = i;
 		can_transmit(msg);
 
 		msg = can_get_nb();
@@ -57,9 +57,9 @@ void cmd_test(int argc, char **argv)
 {
 	char *arg = argv[1];
 	cmd_t *cmd;
-	
+
 	cmd = test_cmds;
-	while(cmd->fkt) {
+	while(argc > 1 && cmd->fkt) {
 		if (strcmp(arg, cmd->cmd) == 0) {
 			(*(cmd->fkt))(argc-1, &(argv[1]));
 			goto done;
@@ -77,7 +77,7 @@ void cmd_test(int argc, char **argv)
 	}
 	printf( "\n" );
 
-done: 
+done:
 	return;
 }
 
