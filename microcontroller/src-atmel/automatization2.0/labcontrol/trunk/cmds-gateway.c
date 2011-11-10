@@ -228,6 +228,48 @@ timeout:
 }
 
 
+#define MEGA8_RESETCAUSE_PORF 	1
+#define MEGA8_RESETCAUSE_EXTRF	2
+#define MEGA8_RESETCAUSE_BORF	4
+#define MEGA8_RESETCAUSE_WDRF	8
+#define RESETCAUSE_PORF_STR "power on "
+#define RESETCAUSE_EXTRF_STR "reset pin "
+#define RESETCAUSE_BORF_STR "brown out "
+#define RESETCAUSE_WDRF_STR "watchdog "
+
+static void sprint_atmega8_resetcause(char *buf, unsigned char reset_flags)
+{
+	sprintf(buf, "%s%s%s%s",
+		(reset_flags & MEGA8_RESETCAUSE_PORF)?RESETCAUSE_PORF_STR:"",
+		(reset_flags & MEGA8_RESETCAUSE_EXTRF)?RESETCAUSE_EXTRF_STR:"",
+		(reset_flags & MEGA8_RESETCAUSE_BORF)?RESETCAUSE_BORF_STR:"",
+		(reset_flags & MEGA8_RESETCAUSE_WDRF)?RESETCAUSE_WDRF_STR:"");
+}
+
+
+static void cmd_gateway_resetcause(int argc, char *argv[])
+{
+	rs232can_msg *rmsg;
+	char buf[sizeof(RESETCAUSE_PORF_STR) + sizeof(RESETCAUSE_EXTRF_STR) + sizeof(RESETCAUSE_BORF_STR) + sizeof(RESETCAUSE_WDRF_STR)];
+
+	//create and send gateway request
+	printf("Requesting reset cause..\n");
+	send_gateway_command(RS232CAN_GET_RESETCAUSE, NULL, 0);
+
+	//anticipate reply and timeout after 2s
+	rmsg = anticipate_gateway_reply(RS232CAN_GET_RESETCAUSE);
+	if(!rmsg) goto timeout;
+
+	//print answer
+	sprint_atmega8_resetcause(buf, msg->data[0]);
+	printf("Reset cause: %s\n", buf);
+	return;
+
+timeout:
+	printf(" but timed out after 2 seconds :-(\n");
+}
+
+
 static cmd_t gateway_cmds[] = {
   { &cmd_gateway_ping, "ping", "ping", "ping the gateway itself (not a CAN ping)" },
   { &cmd_gateway_version, "version", "version", "show firmware version" },
