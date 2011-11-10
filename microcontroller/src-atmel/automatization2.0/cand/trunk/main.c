@@ -6,6 +6,7 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <ucontext.h>
 #include <unistd.h>
 #include <time.h>
 #include <locale.h>
