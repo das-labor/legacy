@@ -30,8 +30,8 @@ static void send_gateway_command(uint8_t cmd, uint8_t *data, uint8_t len)
 {
 	rs232can_msg rmsg;
 	rmsg.cmd = cmd;
-	rmsg.len = (len > RS232CAN_MAXLENGTH)?RS232CAN_MAXLENGTH:0;
-	if(len && data)
+	rmsg.len = (len > RS232CAN_MAXLENGTH)?RS232CAN_MAXLENGTH:len;
+	if(len > 0 && data != NULL)
 		memcpy((void *)rmsg.data, (void *)data, rmsg.len);
 	can_transmit_raw_gateway_message(&rmsg);
 }
@@ -202,7 +202,7 @@ static void cmd_gateway_control(int argc, char *argv[])
 
 		//create and send gateway request
 		printf("Writing control register..\n");
-		send_gateway_command(RS232CAN_WRITE_CTRL_REG, val, 1);
+		send_gateway_command(RS232CAN_WRITE_CTRL_REG, &val, 1);
 
 		//anticipate reply and timeout after 2s
 		rmsg = anticipate_gateway_reply(RS232CAN_WRITE_CTRL_REG);
