@@ -427,6 +427,21 @@ void event_loop()
 		cann_dumpconn();
 
 		ret = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
+		switch(ret)
+		{
+			case EBADF:
+				debug_perror(1, "select: bad file descriptor");
+				continue;
+			case EINTR:
+				fprintf(stderr, "select: interrupted by signal\n");
+				debug_perror(1, "select: interrupted by signal");
+				break;
+			case EINVAL:
+			case ENOMEM:
+			default:
+				debug_perror(1, "select: help, it's all broken");
+				break;
+		}
 		if (ret < 0) {
 			debug_perror(1, "select returned %d", ret);
 			continue;
