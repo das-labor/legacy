@@ -427,24 +427,21 @@ void event_loop()
 		debug( 9, "VOR SELECT" );
 		cann_dumpconn();
 
-		ret = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL);
-		switch(ret)
-		{
-			case EBADF:
-				fprintf(stderr, "select: bad file descriptor\n");
-				debug_perror(1, "select: bad file descriptor");
-				continue;
-			case EINTR:
-				fprintf(stderr, "select: interrupted by signal\n");
-				debug_perror(1, "select: interrupted by signal");
-				break;
-			case EINVAL:
-			case ENOMEM:
-			default:
-				fprintf(stderr, "select: help, it's all broken, giving up!\n");
-				debug_perror(1, "select: help, it's all broken, giving up!");
-				return;
-		}
+		if( ret = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL) < 0)
+			switch(errno)
+			{
+				case EBADF:
+					debug_perror(1, "select: bad file descriptor");
+					continue;
+				case EINTR:
+					debug_perror(1, "select: interrupted by signal");
+					break;
+				case EINVAL:
+				case ENOMEM:
+				default:
+					debug_perror(0, "select: help, it's all broken, giving up!");
+					return;
+			}
 		debug( 10, "Select returned %d", ret);
 
 		// check activity on uart_fd
@@ -654,6 +651,6 @@ int main(int argc, char *argv[])
 	atexit(shutdown_all);
 	event_loop();  // does not return
 
-	debug(0, "Cand exited event loop.. XXX ERROR BLINK FIXME NOW");
+	debug(0, "Cand exiting...");
 	return EXIT_SUCCESS;
 }
