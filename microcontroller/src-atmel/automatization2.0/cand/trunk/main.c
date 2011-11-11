@@ -548,6 +548,7 @@ static void signal_handler(int sig, siginfo_t *si, void *unused)
 
 	switch(sig)
 	{
+		case SIGINT:
 		case SIGQUIT:
 		case SIGTERM:
 			exit(EXIT_SUCCESS);
@@ -571,6 +572,8 @@ int main(int argc, char *argv[])
     sa.sa_sigaction = signal_handler;
 
 	//register various quit signals
+	if (sigaction(SIGINT, &sa, NULL) == -1)
+        QUIT_EARLY("failed to register SIGINT handler");
 	if (sigaction(SIGTERM, &sa, NULL) == -1)
         QUIT_EARLY("failed to register SIGTERM handler");
 	if (sigaction(SIGQUIT, &sa, NULL) == -1)
