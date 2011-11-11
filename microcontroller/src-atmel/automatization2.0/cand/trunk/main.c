@@ -431,6 +431,7 @@ void event_loop()
 		switch(ret)
 		{
 			case EBADF:
+				fprintf(stderr, "select: bad file descriptor\n");
 				debug_perror(1, "select: bad file descriptor");
 				continue;
 			case EINTR:
@@ -441,7 +442,7 @@ void event_loop()
 			case ENOMEM:
 			default:
 				debug_perror(1, "select: help, it's all broken");
-				break;
+				return;
 		}
 		if (ret < 0) {
 			debug_perror(1, "select returned %d", ret);
