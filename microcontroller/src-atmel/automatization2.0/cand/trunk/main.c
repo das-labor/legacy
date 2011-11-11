@@ -431,11 +431,8 @@ void event_loop()
 			switch(errno)
 			{
 				case EBADF:
-					debug_perror(1, "select: bad file descriptor");
+					debug_perror(1, "select");
 					continue;
-				case EINTR:
-					debug_perror(1, "select: interrupted by signal");
-					break;
 				case EINVAL:
 				case ENOMEM:
 				default:
