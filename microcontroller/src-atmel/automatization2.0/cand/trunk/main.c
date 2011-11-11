@@ -441,12 +441,9 @@ void event_loop()
 			case EINVAL:
 			case ENOMEM:
 			default:
-				debug_perror(1, "select: help, it's all broken");
+				fprintf(stderr, "select: help, it's all broken, giving up!\n");
+				debug_perror(1, "select: help, it's all broken, giving up!");
 				return;
-		}
-		if (ret < 0) {
-			debug_perror(1, "select returned %d", ret);
-			continue;
 		}
 		debug( 10, "Select returned %d", ret);
 
