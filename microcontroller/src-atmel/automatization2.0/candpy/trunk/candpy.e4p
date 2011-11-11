@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-5.1.dtd">
 <!-- eric5 project file for project candpy -->
-<!-- Saved: 2011-11-05, 00:58:40 -->
+<!-- Saved: 2011-11-08, 23:51:55 -->
 <!-- Copyright (C) 2011 Alexander Kasper, asklepios@das-labor.org -->
 <Project version="5.1">
   <Language></Language>
@@ -42,6 +42,10 @@
     <Source>core/LocalParserPlugin.py</Source>
     <Source>core/PacketSplitterModule.py</Source>
     <Source>packets/types/LAPPacket.py</Source>
+    <Source>listener/__init__.py</Source>
+    <Source>core/threadpool.py</Source>
+    <Source>plugins/actionhandler/__init__.py</Source>
+    <Source>plugins/actionhandler/ActionHandlerThread.py</Source>
   </Sources>
   <Forms/>
   <Translations/>
@@ -171,8 +175,8 @@
   </Vcs>
   <FiletypeAssociations>
     <FiletypeAssociation pattern="*.pyw2" type="SOURCES"/>
-    <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>
     <FiletypeAssociation pattern="*.py2" type="SOURCES"/>
+    <FiletypeAssociation pattern="*.idl" type="INTERFACES"/>
     <FiletypeAssociation pattern="*.ptl" type="SOURCES"/>
     <FiletypeAssociation pattern="*.py" type="SOURCES"/>
   </FiletypeAssociations>

@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
+__all__ = ["tcpServerArgs", "tcpServerInit"]
+
 import optparse
+from TcpServerThread import TcpServerThread
 
-
-
-
-
-def rawtcpclientargs(data):
+def tcpServerArgs(data):
     parser = data[0]
     #plugins = data[1]
 
@@ -25,7 +24,7 @@ def rawtcpclientargs(data):
     )
 
 
-def rawtcpclientinit(data):
+def tcpServerInit(data):
     print "got init"
     options = data[0]
     #args = data[1]
@@ -33,6 +32,6 @@ def rawtcpclientinit(data):
     plugins = data[3]
 
     #setup
-    rThread = reactorThread(plugins, options)
+    rThread = TcpServerThread(plugins, options)
     rThread.setDaemon(True)
     rThread.start()
