@@ -542,7 +542,7 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 
 static void signal_handler(int sig, siginfo_t *si, void *unused)
 {
-	debug(0, "Got %s signal, shutting down..", strsignal(sig));
+	debug(0, "Caught signal (%s), shutting down..", strsignal(sig));
 	shutdown_all();
 	signal(sig, SIG_DFL);
 
