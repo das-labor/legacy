@@ -13,6 +13,7 @@
 #include <langinfo.h>
 #include <signal.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "can.h"
 #include "can-tcp.h"
