@@ -1,5 +1,27 @@
 #!/bin/sh
 
+echo "Exiting for safty reasons! Running this script will DELETE ALL collected data"
+exit 0
+
+rrdtool create gateway.rrd \
+	-s 1 \
+	DS:RXpkts:COUNTER:3:50:10000     \
+	DS:TXpkts:COUNTER:3:50:10000     \
+	DS:RXbytes:COUNTER:3:50:1000000  \
+	DS:TXbytes:COUNTER:3:0:1000000   \
+	DS:RXerrors:COUNTER:3:0:10000    \
+	DS:TXerrors:COUNTER:3:0:10000    \
+	RRA:AVERAGE:0.5:3:28800   \
+	RRA:AVERAGE:0.5:60:14400  \
+	RRA:AVERAGE:0.5:3600:8760 \
+	RRA:AVERAGE:0.0:86400:3560 \
+	RRA:MAX:0.5:3:28800   \
+	RRA:MAX:0.5:60:14400  \
+	RRA:MAX:0.5:3600:8760 \
+	RRA:MAX:0.0:86400:3560 \
+	
+
+
 rrdtool create powermeter.rrd \
 	-s 1 \
 	DS:U1:GAUGE:3:50:500     \
@@ -21,7 +43,7 @@ rrdtool create powermeter.rrd \
 	RRA:AVERAGE:0.5:60:14400  \
 	RRA:AVERAGE:0.5:3600:8760 \
 	RRA:AVERAGE:0.0:86400:3560 \
-	RRA:MAX:0.5:2:43200   \
+	RRA:MAX:0.5:3:28800   \
 	RRA:MAX:0.5:60:14400  \
 	RRA:MAX:0.5:3600:8760 \
 	RRA:MAX:0.0:86400:3560 \

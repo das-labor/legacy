@@ -24,7 +24,7 @@ rrdtool graph graphs/I-minutes.png                     \
 
 rrdtool graph graphs/I-hours.png                     \
     -a PNG -w 600 -h 150                     \
-    --title="Strom [A]" -l 0 -s -6h            \
+    --title="Strom [A]" -l 0 -s -8h            \
     'DEF:I1=powermeter.rrd:I1:AVERAGE'       \
     'DEF:I1_=powermeter.rrd:I1:MAX'          \
     'DEF:I2=powermeter.rrd:I2:AVERAGE'       \
@@ -40,7 +40,7 @@ rrdtool graph graphs/I-hours.png                     \
 
 rrdtool graph graphs/I-days.png              \
     -a PNG -w 600 -h 150                     \
-    --title="Strom [A]" -l 0 -s -3d            \
+    --title="Strom [A]" -l 0 -s -7d            \
     'DEF:I1=powermeter.rrd:I1:AVERAGE'       \
     'DEF:I1_=powermeter.rrd:I1:MAX'          \
     'DEF:I2=powermeter.rrd:I2:AVERAGE'       \
@@ -71,11 +71,15 @@ rrdtool graph graphs/P-minutes.png                     \
     'AREA:P3_#1F945440::STACK'               \
     'LINE1:P1#94541FC0:P1'                   \
     'LINE1:P2#948E1FC0:P2:STACK'             \
-    'LINE1:P3#1F9454C0:P3:STACK'           
+    'LINE1:P3#1F9454C0:P3:STACK'             \
+    'CDEF:P=P1,P2,P3,+,+'                    \
+    'CDEF:P_=P1_,P2_,P3_,+,+'                \
+    'GPRINT:P:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:P:AVERAGE:Durchschnitt %6.2lf %sW'
 
 rrdtool graph graphs/P-hours.png                     \
     -a PNG -w 600 -h 150                     \
-    --title="Wirkleistung [W]" -l 0 -s -6h              \
+    --title="Wirkleistung [W]" -l 0 -s -8h              \
     'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
     'DEF:P1_=powermeter.rrd:P1:MAX'          \
     'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
@@ -87,11 +91,15 @@ rrdtool graph graphs/P-hours.png                     \
     'AREA:P3_#1F945440::STACK'               \
     'LINE1:P1#94541FC0:P1'                   \
     'LINE1:P2#948E1FC0:P2:STACK'             \
-    'LINE1:P3#1F9454C0:P3:STACK'           
+    'LINE1:P3#1F9454C0:P3:STACK'             \
+    'CDEF:P=P1,P2,P3,+,+'                    \
+    'CDEF:P_=P1_,P2_,P3_,+,+'                \
+    'GPRINT:P:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:P:AVERAGE:Durchschnitt %6.2lf %sW'
 
 rrdtool graph graphs/P-days.png                     \
     -a PNG -w 600 -h 150                     \
-    --title="Wirkleistung [W]" -l 0 -s -3d              \
+    --title="Wirkleistung [W]" -l 0 -s -7d   \
     'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
     'DEF:P1_=powermeter.rrd:P1:MAX'          \
     'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
@@ -103,7 +111,11 @@ rrdtool graph graphs/P-days.png                     \
     'AREA:P3_#1F945440::STACK'               \
     'LINE1:P1#94541FC0:P1'                   \
     'LINE1:P2#948E1FC0:P2:STACK'             \
-    'LINE1:P3#1F9454C0:P3:STACK'           
+    'LINE1:P3#1F9454C0:P3:STACK'             \
+    'CDEF:P=P1,P2,P3,+,+'                    \
+    'CDEF:P_=P1_,P2_,P3_,+,+'                \
+    'GPRINT:P:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:P:AVERAGE:Durchschnitt %6.2lf %sW'
 
 #############################################################################
 # Q
@@ -134,11 +146,14 @@ rrdtool graph graphs/Q-minutes.png           \
     'AREA:Q3_#1F945440::STACK'               \
     'LINE1:Q1#94541FC0:Q1'                   \
     'LINE1:Q2#948E1FC0:Q2:STACK'             \
-    'LINE1:Q3#1F9454C0:Q3:STACK'           
+    'LINE1:Q3#1F9454C0:Q3:STACK'             \
+    'CDEF:Q=Q1,Q2,Q3,+,+'                    \
+    'GPRINT:Q:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:Q:AVERAGE:Durchschnitt %6.2lf %sW'
 
 rrdtool graph graphs/Q-hours.png           \
     -a PNG -w 600 -h 150                     \
-    --title="Blindleistung [W]" -l 0 -s -6h  \
+    --title="Blindleistung [W]" -l 0 -s -8h  \
     'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
     'DEF:P1_=powermeter.rrd:P1:MAX'          \
     'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
@@ -162,11 +177,14 @@ rrdtool graph graphs/Q-hours.png           \
     'AREA:Q3_#1F945440::STACK'               \
     'LINE1:Q1#94541FC0:Q1'                   \
     'LINE1:Q2#948E1FC0:Q2:STACK'             \
-    'LINE1:Q3#1F9454C0:Q3:STACK'           
+    'LINE1:Q3#1F9454C0:Q3:STACK'             \
+    'CDEF:Q=Q1,Q2,Q3,+,+'                    \
+    'GPRINT:Q:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:Q:AVERAGE:Durchschnitt %6.2lf %sW'
 
 rrdtool graph graphs/Q-days.png           \
     -a PNG -w 600 -h 150                     \
-    --title="Blindleistung [W]" -l 0 -s -3d  \
+    --title="Blindleistung [W]" -l 0 -s -7d  \
     'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
     'DEF:P1_=powermeter.rrd:P1:MAX'          \
     'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
@@ -190,7 +208,10 @@ rrdtool graph graphs/Q-days.png           \
     'AREA:Q3_#1F945440::STACK'               \
     'LINE1:Q1#94541FC0:Q1'                   \
     'LINE1:Q2#948E1FC0:Q2:STACK'             \
-    'LINE1:Q3#1F9454C0:Q3:STACK'           
+    'LINE1:Q3#1F9454C0:Q3:STACK'             \
+    'CDEF:Q=Q1,Q2,Q3,+,+'                    \
+    'GPRINT:Q:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:Q:AVERAGE:Durchschnitt %6.2lf %sW'
 
 
 #############################################################################
@@ -214,7 +235,7 @@ rrdtool graph graphs/E-minutes.png                     \
 
 rrdtool graph graphs/E-hours.png                     \
     -a PNG -w 600 -h 150                     \
-    --title="Power [W]" -l 0 -s -6h              \
+    --title="Power [W]" -l 0 -s -8h              \
     'DEF:E1=powermeter.rrd:E1:AVERAGE'       \
     'DEF:E1_=powermeter.rrd:E1:MAX'          \
     'DEF:E2=powermeter.rrd:E2:AVERAGE'       \
@@ -230,7 +251,7 @@ rrdtool graph graphs/E-hours.png                     \
 
 rrdtool graph graphs/E-days.png              \
     -a PNG -w 600 -h 150                     \
-    --title="Power [W]" -l 0 -s -3d              \
+    --title="Power [W]" -l 0 -s -7d              \
     'DEF:E1=powermeter.rrd:E1:AVERAGE'       \
     'DEF:E1_=powermeter.rrd:E1:MAX'          \
     'DEF:E2=powermeter.rrd:E2:AVERAGE'       \
@@ -248,9 +269,9 @@ rrdtool graph graphs/E-days.png              \
 #############################################################################
 # U
 
-rrdtool graph graphs/U-minutes.png                     \
-    -a PNG -w 600 -h 150                     \
-    --title="Spannung [V]" -l 0 -s -30m            \
+rrdtool graph graphs/U-minutes.png           \
+    -a PNG -w 600 -h 150 -r -l 220 -u 250    \
+    --title="Spannung [V]" -s -30m           \
     'DEF:U1=powermeter.rrd:U1:AVERAGE'       \
     'DEF:U1_=powermeter.rrd:U1:MAX'          \
     'DEF:U2=powermeter.rrd:U2:AVERAGE'       \
@@ -258,12 +279,15 @@ rrdtool graph graphs/U-minutes.png                     \
     'DEF:U3=powermeter.rrd:U3:AVERAGE'       \
     'DEF:U3_=powermeter.rrd:U3:MAX'          \
     'LINE1:U1#94541FC0:U1'                   \
-    'LINE1:U2#948E1FC0:U2'             \
-    'LINE1:U3#1F9454C0:U3'           
+    'LINE1:U2#948E1FC0:U2'                \
+    'LINE1:U3#1F9454C0:U3'                \
+    'GPRINT:U1:LAST:U1=%5.2lf V, '        \
+    'GPRINT:U2:LAST:U2=%5.2lf V, '        \
+    'GPRINT:U3:LAST:U3=%5.2lf V'        
 
 rrdtool graph graphs/U-hours.png             \
-    -a PNG -w 600 -h 150                     \
-    --title="Spannung [V]" -l 0 -s -6h            \
+    -a PNG -w 600 -h 150 -r -l 220 -u 250    \
+    --title="Spannung [V]" -s -8h            \
     'DEF:U1=powermeter.rrd:U1:AVERAGE'       \
     'DEF:U1_=powermeter.rrd:U1:MAX'          \
     'DEF:U2=powermeter.rrd:U2:AVERAGE'       \
@@ -272,11 +296,14 @@ rrdtool graph graphs/U-hours.png             \
     'DEF:U3_=powermeter.rrd:U3:MAX'          \
     'LINE1:U1#94541FC0:U1'                   \
     'LINE1:U2#948E1FC0:U2'                   \
-    'LINE1:U3#1F9454C0:U3'           
+    'LINE1:U3#1F9454C0:U3'                \
+    'GPRINT:U1:LAST:U1=%5.2lf V, '        \
+    'GPRINT:U2:LAST:U2=%5.2lf V, '        \
+    'GPRINT:U3:LAST:U3=%5.2lf V'        
 
 rrdtool graph graphs/U-days.png              \
-    -a PNG -w 600 -h 150                     \
-    --title="Spannung [V]" -l 0 -s -3d            \
+    -a PNG -w 600 -h 150 -r -l 220 -u 250    \
+    --title="Spannung [V]" -s -7d            \
     'DEF:U1=powermeter.rrd:U1:AVERAGE'       \
     'DEF:U1_=powermeter.rrd:U1:MAX'          \
     'DEF:U2=powermeter.rrd:U2:AVERAGE'       \
@@ -285,6 +312,9 @@ rrdtool graph graphs/U-days.png              \
     'DEF:U3_=powermeter.rrd:U3:MAX'          \
     'LINE1:U1#94541FC0:U1'                   \
     'LINE1:U2#948E1FC0:U2'                   \
-    'LINE1:U3#1F9454C0:U3'           
+    'LINE1:U3#1F9454C0:U3'                \
+    'GPRINT:U1:LAST:U1=%5.2lf V, '        \
+    'GPRINT:U2:LAST:U2=%5.2lf V, '        \
+    'GPRINT:U3:LAST:U3=%5.2lf V'        
 
 
