@@ -83,7 +83,7 @@ if __name__ == "__main__":
         pkt = LAPPacket(c.get_pkt())
 
         # Is it the powermeter talking?
-        if pkt.sa != 5 or pkt.sp != 6:
+        if pkt.sa != 5 or pkt.sp != 0x3c:
             continue
 
         name, val = parse_pm_pkt(pkt)
