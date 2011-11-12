@@ -2,6 +2,7 @@
 
 from can import LAPPacket, CANSocket, hexdump
 
+import sys
 import socket
 import subprocess
 from string import Template
@@ -70,8 +71,8 @@ def parse_pm_pkt(pkt):
 def update_rrd(vals):
     cmd_tmpl  = Template(RRD_CMD)
     cmd = cmd_tmpl.substitute(vals)
-    output = subprocess.check_output(cmd.split())
-    print output
+    if subprocess.call(cmd.split()) != 0:
+        raise Error("Updateing rrd failrd")
 
 if __name__ == "__main__":
     c = CANSocket()
