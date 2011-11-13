@@ -21,9 +21,9 @@
 #define PRF_TLS12_H_
 
 #include <stdint.h>
-#include <crypto/hashfunction_descriptor.h>
-#include <crypto/hfal-basic.h>
-#include <crypto/hfal-hmac.h>
+#include "hashfunction_descriptor.h"
+#include "hfal-basic.h"
+#include "hfal-hmac.h"
 
 typedef struct{
 	hfhmacgen_ctx_t mainctx;
