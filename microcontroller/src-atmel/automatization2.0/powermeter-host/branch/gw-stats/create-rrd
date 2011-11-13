@@ -6,14 +6,12 @@ if test "x$1" != "x--really"; then
     exit 1
 fi
 
-rrdtool create gateway.rrd \
+rrdtool create gateway-pstats.rrd \
 	-s 1 \
 	DS:RXpkts:COUNTER:3:50:10000     \
 	DS:TXpkts:COUNTER:3:50:10000     \
 	DS:RXbytes:COUNTER:3:50:1000000  \
 	DS:TXbytes:COUNTER:3:0:1000000   \
-	DS:RXerrors:COUNTER:3:0:10000    \
-	DS:TXerrors:COUNTER:3:0:10000    \
 	RRA:AVERAGE:0.5:3:28800   \
 	RRA:AVERAGE:0.5:60:14400  \
 	RRA:AVERAGE:0.5:3600:8760 \
@@ -23,7 +21,22 @@ rrdtool create gateway.rrd \
 	RRA:MAX:0.5:3600:8760 \
 	RRA:MAX:0.0:86400:3560 \
 	
+rrdtool create gateway-power.rrd \
+	-s 1 \
+	DS:U:GAUGE:3:0.:15.     \
+	DS:I:GAUGE:3:0.:10.     \
+	RRA:AVERAGE:0.5:3:28800   \
+	RRA:AVERAGE:0.5:60:14400  \
+	RRA:AVERAGE:0.5:3600:8760 \
+	RRA:AVERAGE:0.0:86400:3560 \
+	RRA:MAX:0.5:3:28800   \
+	RRA:MAX:0.5:60:14400  \
+	RRA:MAX:0.5:3600:8760 \
+	RRA:MAX:0.0:86400:3560 \
 
+
+
+exit 0
 
 rrdtool create powermeter.rrd \
 	-s 1 \
