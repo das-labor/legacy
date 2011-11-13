@@ -4,7 +4,7 @@ LIB_ALGOS:= \
     BASE64 \
     BIGINT_C \
     BLAKE_C \
-    BMW \
+    BMW_C \
     CAST5 \
     CAST6 \
     CSCIPHER_SMALL_C \
@@ -20,6 +20,7 @@ LIB_ALGOS:= \
     MICKEY128 \
     NOEKEON_C \
     PRESENT \
+    PRF_TLS12 \
     RABBIT_C \
     RC5 \
     RC6 \
@@ -27,7 +28,7 @@ LIB_ALGOS:= \
     SEED_C \
     SERPENT_BITSLICE \
     SHA1_C \
-    SHA256_C \
+    SHA2_C \
     SHABAL_C \
     SKEIN_C \
     TDES \
@@ -35,4 +36,9 @@ LIB_ALGOS:= \
     XTEA_C \
     HFAL_HMAC \
     BCAL_BASIC \
-    SCAL_BASIC 
+    SCAL_BASIC \
+    HFAL_ALGOS \
+    BCAL_ALGOS \
+    SCAL_ALGOS
+
+

@@ -74,7 +74,7 @@ uint32_t k[]={
  * block must be, 512, Bit = 64, Byte, long !!!
  */
 void sha2_small_common_nextBlock (sha2_small_common_ctx_t *state, const void* block){
-	uint32_t w[16], wx;	/* this is 256, byte, large, */
+	uint32_t w[16], wx;
 	uint8_t  i;
 	uint32_t a[8],t1,t2;
 

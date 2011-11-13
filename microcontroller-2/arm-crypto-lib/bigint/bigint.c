@@ -81,6 +81,38 @@ void bigint_adjust(bigint_t* a){
 
 /******************************************************************************/
 
+uint32_t bigint_get_first_set_bit(bigint_t* a){
+	if(a->length_B==0){
+		return (uint32_t)(-1);
+	}
+	return (a->length_B-1)*sizeof(bigint_word_t)*8+GET_FBS(a);
+}
+
+
+/******************************************************************************/
+
+uint32_t bigint_get_last_set_bit(bigint_t* a){
+	uint32_t r=0;
+	uint8_t b=0;
+	bigint_word_t x=1;
+	if(a->length_B==0){
+		return (uint32_t)(-1);
+	}
+	while(a->wordv[r]==0 && r<a->length_B){
+		++r;
+	}
+	if(a->wordv[r] == 0){
+		return (uint32_t)(-1);
+	}
+	while((x&a->wordv[r])==0){
+		++b;
+		x <<= 1;
+	}
+	return r*BIGINT_WORD_SIZE+b;
+}
+
+/******************************************************************************/
+
 void bigint_copy(bigint_t* dest, const bigint_t* src){
 	memcpy(dest->wordv, src->wordv, src->length_B*sizeof(bigint_word_t));
 	dest->length_B = src->length_B;
@@ -619,7 +651,7 @@ void bigint_sub_u_bitscale(bigint_t* a, const bigint_t* b, uint16_t bitscale){
 /******************************************************************************/
 
 void bigint_reduce(bigint_t* a, const bigint_t* r){
-//	bigint_adjust(r);
+//	bigint_adjust((bigint_t*)r);
 	uint8_t rfbs = GET_FBS(r);
 
 //	cli_putstr("\r\nDBG: (a) = "); bigint_print_hex(a);
@@ -638,8 +670,10 @@ void bigint_reduce(bigint_t* a, const bigint_t* r){
 	}
 	uint16_t shift;
 	while(a->length_B > r->length_B){
-		shift = (a->length_B-r->length_B)*8*sizeof(bigint_word_t)+GET_FBS(a)-rfbs-1;
+		shift = (a->length_B - r->length_B) * 8 * sizeof(bigint_word_t) + GET_FBS(a) - rfbs - 1;
 //		cli_putstr("\r\nDBG: (p) shift = "); cli_hexdump_rev(&shift, 2);
+//		cli_putstr(" a_len = "); cli_hexdump_rev(&a->length_B, 2);
+//		cli_putstr(" r_len = "); cli_hexdump_rev(&r->length_B, 2);
 //		uart_flush(0);
 		bigint_sub_u_bitscale(a, r, shift);
 //		cli_putstr("\r\nDBG: (1) = "); bigint_print_hex(a);
@@ -672,14 +706,21 @@ void bigint_expmod_u(bigint_t* dest, const bigint_t* a, const bigint_t* exp, con
 	bigint_word_t t, base_b[MAX(a->length_B,r->length_B*2)], res_b[r->length_B*2];
 	uint16_t i;
 	uint8_t j;
+//	uint16_t *xaddr = &i;
+//	cli_putstr("\r\npre-alloc (");
+//	cli_hexdump_rev(&xaddr, 4);
+//	cli_putstr(") ...");
 	res.wordv = res_b;
 	base.wordv = base_b;
 	bigint_copy(&base, a);
+//	cli_putstr("\r\npost-copy");
 	bigint_reduce(&base, r);
 	res.wordv[0]=1;
 	res.length_B=1;
 	res.info = 0;
+//	cli_putstr("\r\nadjust ");
 	bigint_adjust(&res);
+//	cli_putstr("\r\nexpmod ");
 	for(i=0; i+1<exp->length_B; ++i){
 		t=exp->wordv[i];
 		for(j=0; j<BIGINT_WORD_SIZE; ++j){
@@ -693,6 +734,8 @@ void bigint_expmod_u(bigint_t* dest, const bigint_t* a, const bigint_t* exp, con
 		}
 	}
 	t=exp->wordv[i];
+
+//	cli_putc('+');
 	while(t){
 		if(t&1){
 			bigint_mul_u(&res, &res, &base);

@@ -23,9 +23,9 @@
 
 #include "main-test-common.h"
 #include "prf_tls12.h"
-#include <crypto/hashfunction_descriptor.h>
-#include <crypto/hfal_sha512.h>
-#include <crypto/hfal_sha256.h>
+#include "hashfunction_descriptor.h"
+#include "hfal_sha512.h"
+#include "hfal_sha256.h"
 const char* algo_name = "PRF-TLS1.2";
 
 /*****************************************************************************

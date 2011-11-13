@@ -78,6 +78,7 @@ uint8_t hfal_hmac_ctxcopy(hfhmacgen_ctx_t* dest, hfhmacgen_ctx_t* src){
 	memcpy(dest->ctx, src->ctx, dest->desc->ctxsize_B);
 	dest->finctx = malloc(dest->desc->ctxsize_B);
 	if(dest->finctx == NULL){
+		free(dest->ctx);
 		return 1;
 	}
 	memcpy(dest->finctx, src->finctx, dest->desc->ctxsize_B);
