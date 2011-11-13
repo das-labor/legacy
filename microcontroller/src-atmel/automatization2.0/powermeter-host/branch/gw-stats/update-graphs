@@ -1,0 +1,320 @@
+#!/bin/sh
+
+cd /home/joerg/src/automatization2.0/powermeter-host/trunk/
+
+
+#############################################################################
+# I
+
+rrdtool graph graphs/I-minutes.png                     \
+    -a PNG -w 600 -h 150                     \
+    --title="Strom [A]" -l 0 -s -30m            \
+    'DEF:I1=powermeter.rrd:I1:AVERAGE'       \
+    'DEF:I1_=powermeter.rrd:I1:MAX'          \
+    'DEF:I2=powermeter.rrd:I2:AVERAGE'       \
+    'DEF:I2_=powermeter.rrd:I2:MAX'          \
+    'DEF:I3=powermeter.rrd:I3:AVERAGE'       \
+    'DEF:I3_=powermeter.rrd:I3:MAX'          \
+    'AREA:I1_#94541F40:'                     \
+    'AREA:I2_#948E1F40::STACK'               \
+    'AREA:I3_#1F945440::STACK'               \
+    'LINE1:I1#94541FC0:I1'                   \
+    'LINE1:I2#948E1FC0:I2:STACK'             \
+    'LINE1:I3#1F9454C0:I3:STACK'           
+
+rrdtool graph graphs/I-hours.png                     \
+    -a PNG -w 600 -h 150                     \
+    --title="Strom [A]" -l 0 -s -8h            \
+    'DEF:I1=powermeter.rrd:I1:AVERAGE'       \
+    'DEF:I1_=powermeter.rrd:I1:MAX'          \
+    'DEF:I2=powermeter.rrd:I2:AVERAGE'       \
+    'DEF:I2_=powermeter.rrd:I2:MAX'          \
+    'DEF:I3=powermeter.rrd:I3:AVERAGE'       \
+    'DEF:I3_=powermeter.rrd:I3:MAX'          \
+    'AREA:I1_#94541F40:'                     \
+    'AREA:I2_#948E1F40::STACK'               \
+    'AREA:I3_#1F945440::STACK'               \
+    'LINE1:I1#94541FC0:I1'                   \
+    'LINE1:I2#948E1FC0:I2:STACK'             \
+    'LINE1:I3#1F9454C0:I3:STACK'           
+
+rrdtool graph graphs/I-days.png              \
+    -a PNG -w 600 -h 150                     \
+    --title="Strom [A]" -l 0 -s -7d            \
+    'DEF:I1=powermeter.rrd:I1:AVERAGE'       \
+    'DEF:I1_=powermeter.rrd:I1:MAX'          \
+    'DEF:I2=powermeter.rrd:I2:AVERAGE'       \
+    'DEF:I2_=powermeter.rrd:I2:MAX'          \
+    'DEF:I3=powermeter.rrd:I3:AVERAGE'       \
+    'DEF:I3_=powermeter.rrd:I3:MAX'          \
+    'AREA:I1_#94541F40:'                     \
+    'AREA:I2_#948E1F40::STACK'               \
+    'AREA:I3_#1F945440::STACK'               \
+    'LINE1:I1#94541FC0:I1'                   \
+    'LINE1:I2#948E1FC0:I2:STACK'             \
+    'LINE1:I3#1F9454C0:I3:STACK'           
+
+#############################################################################
+# P
+
+rrdtool graph graphs/P-minutes.png                     \
+    -a PNG -w 600 -h 150                     \
+    --title="Wirkleistung [W]" -l 0 -s -30m              \
+    'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
+    'DEF:P1_=powermeter.rrd:P1:MAX'          \
+    'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
+    'DEF:P2_=powermeter.rrd:P2:MAX'          \
+    'DEF:P3=powermeter.rrd:P3:AVERAGE'       \
+    'DEF:P3_=powermeter.rrd:P3:MAX'          \
+    'AREA:P1_#94541F40:'                     \
+    'AREA:P2_#948E1F40::STACK'               \
+    'AREA:P3_#1F945440::STACK'               \
+    'LINE1:P1#94541FC0:P1'                   \
+    'LINE1:P2#948E1FC0:P2:STACK'             \
+    'LINE1:P3#1F9454C0:P3:STACK'             \
+    'CDEF:P=P1,P2,P3,+,+'                    \
+    'CDEF:P_=P1_,P2_,P3_,+,+'                \
+    'GPRINT:P:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:P:AVERAGE:Durchschnitt %6.2lf %sW'
+
+rrdtool graph graphs/P-hours.png                     \
+    -a PNG -w 600 -h 150                     \
+    --title="Wirkleistung [W]" -l 0 -s -8h              \
+    'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
+    'DEF:P1_=powermeter.rrd:P1:MAX'          \
+    'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
+    'DEF:P2_=powermeter.rrd:P2:MAX'          \
+    'DEF:P3=powermeter.rrd:P3:AVERAGE'       \
+    'DEF:P3_=powermeter.rrd:P3:MAX'          \
+    'AREA:P1_#94541F40:'                     \
+    'AREA:P2_#948E1F40::STACK'               \
+    'AREA:P3_#1F945440::STACK'               \
+    'LINE1:P1#94541FC0:P1'                   \
+    'LINE1:P2#948E1FC0:P2:STACK'             \
+    'LINE1:P3#1F9454C0:P3:STACK'             \
+    'CDEF:P=P1,P2,P3,+,+'                    \
+    'CDEF:P_=P1_,P2_,P3_,+,+'                \
+    'GPRINT:P:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:P:AVERAGE:Durchschnitt %6.2lf %sW'
+
+rrdtool graph graphs/P-days.png                     \
+    -a PNG -w 600 -h 150                     \
+    --title="Wirkleistung [W]" -l 0 -s -7d   \
+    'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
+    'DEF:P1_=powermeter.rrd:P1:MAX'          \
+    'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
+    'DEF:P2_=powermeter.rrd:P2:MAX'          \
+    'DEF:P3=powermeter.rrd:P3:AVERAGE'       \
+    'DEF:P3_=powermeter.rrd:P3:MAX'          \
+    'AREA:P1_#94541F40:'                     \
+    'AREA:P2_#948E1F40::STACK'               \
+    'AREA:P3_#1F945440::STACK'               \
+    'LINE1:P1#94541FC0:P1'                   \
+    'LINE1:P2#948E1FC0:P2:STACK'             \
+    'LINE1:P3#1F9454C0:P3:STACK'             \
+    'CDEF:P=P1,P2,P3,+,+'                    \
+    'CDEF:P_=P1_,P2_,P3_,+,+'                \
+    'GPRINT:P:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:P:AVERAGE:Durchschnitt %6.2lf %sW'
+
+#############################################################################
+# Q
+
+rrdtool graph graphs/Q-minutes.png           \
+    -a PNG -w 600 -h 150                     \
+    --title="Blindleistung [W]" -l 0 -s -30m             \
+    'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
+    'DEF:P1_=powermeter.rrd:P1:MAX'          \
+    'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
+    'DEF:P2_=powermeter.rrd:P2:MAX'          \
+    'DEF:P3=powermeter.rrd:P3:AVERAGE'       \
+    'DEF:P3_=powermeter.rrd:P3:MAX'          \
+    'DEF:S1=powermeter.rrd:S1:AVERAGE'       \
+    'DEF:S1_=powermeter.rrd:S1:MAX'          \
+    'DEF:S2=powermeter.rrd:S2:AVERAGE'       \
+    'DEF:S2_=powermeter.rrd:S2:MAX'          \
+    'DEF:S3=powermeter.rrd:S3:AVERAGE'       \
+    'DEF:S3_=powermeter.rrd:S3:MAX'          \
+    'CDEF:Q1=S1,P1,-'                        \
+    'CDEF:Q2=S2,P2,-'                        \
+    'CDEF:Q3=S3,P3,-'                        \
+    'CDEF:Q1_=S1_,P1_,-'                     \
+    'CDEF:Q2_=S2_,P2_,-'                     \
+    'CDEF:Q3_=S3_,P3_,-'                     \
+    'AREA:Q1_#94541F40:'                     \
+    'AREA:Q2_#948E1F40::STACK'               \
+    'AREA:Q3_#1F945440::STACK'               \
+    'LINE1:Q1#94541FC0:Q1'                   \
+    'LINE1:Q2#948E1FC0:Q2:STACK'             \
+    'LINE1:Q3#1F9454C0:Q3:STACK'             \
+    'CDEF:Q=Q1,Q2,Q3,+,+'                    \
+    'GPRINT:Q:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:Q:AVERAGE:Durchschnitt %6.2lf %sW'
+
+rrdtool graph graphs/Q-hours.png           \
+    -a PNG -w 600 -h 150                     \
+    --title="Blindleistung [W]" -l 0 -s -8h  \
+    'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
+    'DEF:P1_=powermeter.rrd:P1:MAX'          \
+    'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
+    'DEF:P2_=powermeter.rrd:P2:MAX'          \
+    'DEF:P3=powermeter.rrd:P3:AVERAGE'       \
+    'DEF:P3_=powermeter.rrd:P3:MAX'          \
+    'DEF:S1=powermeter.rrd:S1:AVERAGE'       \
+    'DEF:S1_=powermeter.rrd:S1:MAX'          \
+    'DEF:S2=powermeter.rrd:S2:AVERAGE'       \
+    'DEF:S2_=powermeter.rrd:S2:MAX'          \
+    'DEF:S3=powermeter.rrd:S3:AVERAGE'       \
+    'DEF:S3_=powermeter.rrd:S3:MAX'          \
+    'CDEF:Q1=S1,P1,-'                        \
+    'CDEF:Q2=S2,P2,-'                        \
+    'CDEF:Q3=S3,P3,-'                        \
+    'CDEF:Q1_=S1_,P1_,-'                     \
+    'CDEF:Q2_=S2_,P2_,-'                     \
+    'CDEF:Q3_=S3_,P3_,-'                     \
+    'AREA:Q1_#94541F40:'                     \
+    'AREA:Q2_#948E1F40::STACK'               \
+    'AREA:Q3_#1F945440::STACK'               \
+    'LINE1:Q1#94541FC0:Q1'                   \
+    'LINE1:Q2#948E1FC0:Q2:STACK'             \
+    'LINE1:Q3#1F9454C0:Q3:STACK'             \
+    'CDEF:Q=Q1,Q2,Q3,+,+'                    \
+    'GPRINT:Q:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:Q:AVERAGE:Durchschnitt %6.2lf %sW'
+
+rrdtool graph graphs/Q-days.png           \
+    -a PNG -w 600 -h 150                     \
+    --title="Blindleistung [W]" -l 0 -s -7d  \
+    'DEF:P1=powermeter.rrd:P1:AVERAGE'       \
+    'DEF:P1_=powermeter.rrd:P1:MAX'          \
+    'DEF:P2=powermeter.rrd:P2:AVERAGE'       \
+    'DEF:P2_=powermeter.rrd:P2:MAX'          \
+    'DEF:P3=powermeter.rrd:P3:AVERAGE'       \
+    'DEF:P3_=powermeter.rrd:P3:MAX'          \
+    'DEF:S1=powermeter.rrd:S1:AVERAGE'       \
+    'DEF:S1_=powermeter.rrd:S1:MAX'          \
+    'DEF:S2=powermeter.rrd:S2:AVERAGE'       \
+    'DEF:S2_=powermeter.rrd:S2:MAX'          \
+    'DEF:S3=powermeter.rrd:S3:AVERAGE'       \
+    'DEF:S3_=powermeter.rrd:S3:MAX'          \
+    'CDEF:Q1=S1,P1,-'                        \
+    'CDEF:Q2=S2,P2,-'                        \
+    'CDEF:Q3=S3,P3,-'                        \
+    'CDEF:Q1_=S1_,P1_,-'                     \
+    'CDEF:Q2_=S2_,P2_,-'                     \
+    'CDEF:Q3_=S3_,P3_,-'                     \
+    'AREA:Q1_#94541F40:'                     \
+    'AREA:Q2_#948E1F40::STACK'               \
+    'AREA:Q3_#1F945440::STACK'               \
+    'LINE1:Q1#94541FC0:Q1'                   \
+    'LINE1:Q2#948E1FC0:Q2:STACK'             \
+    'LINE1:Q3#1F9454C0:Q3:STACK'             \
+    'CDEF:Q=Q1,Q2,Q3,+,+'                    \
+    'GPRINT:Q:LAST:Aktuell %6.2lf %sW, '        \
+    'GPRINT:Q:AVERAGE:Durchschnitt %6.2lf %sW'
+
+
+#############################################################################
+# E
+
+rrdtool graph graphs/E-minutes.png                     \
+    -a PNG -w 600 -h 150                     \
+    --title="Power [W]" -l 0 -s -30m              \
+    'DEF:E1=powermeter.rrd:E1:AVERAGE'       \
+    'DEF:E1_=powermeter.rrd:E1:MAX'          \
+    'DEF:E2=powermeter.rrd:E2:AVERAGE'       \
+    'DEF:E2_=powermeter.rrd:E2:MAX'          \
+    'DEF:E3=powermeter.rrd:E3:AVERAGE'       \
+    'DEF:E3_=powermeter.rrd:E3:MAX'          \
+    'AREA:E1#94541F40:'                     \
+    'AREA:E2#948E1F40::STACK'               \
+    'AREA:E3#1F945440::STACK'               \
+    'LINE1:E1#94541FC0:E1'                   \
+    'LINE1:E2#948E1FC0:E2:STACK'             \
+    'LINE1:E3#1F9454C0:E3:STACK'           
+
+rrdtool graph graphs/E-hours.png                     \
+    -a PNG -w 600 -h 150                     \
+    --title="Power [W]" -l 0 -s -8h              \
+    'DEF:E1=powermeter.rrd:E1:AVERAGE'       \
+    'DEF:E1_=powermeter.rrd:E1:MAX'          \
+    'DEF:E2=powermeter.rrd:E2:AVERAGE'       \
+    'DEF:E2_=powermeter.rrd:E2:MAX'          \
+    'DEF:E3=powermeter.rrd:E3:AVERAGE'       \
+    'DEF:E3_=powermeter.rrd:E3:MAX'          \
+    'AREA:E1#94541F40:'                     \
+    'AREA:E2#948E1F40::STACK'               \
+    'AREA:E3#1F945440::STACK'               \
+    'LINE1:E1#94541FC0:E1'                   \
+    'LINE1:E2#948E1FC0:E2:STACK'             \
+    'LINE1:E3#1F9454C0:E3:STACK'           
+
+rrdtool graph graphs/E-days.png              \
+    -a PNG -w 600 -h 150                     \
+    --title="Power [W]" -l 0 -s -7d              \
+    'DEF:E1=powermeter.rrd:E1:AVERAGE'       \
+    'DEF:E1_=powermeter.rrd:E1:MAX'          \
+    'DEF:E2=powermeter.rrd:E2:AVERAGE'       \
+    'DEF:E2_=powermeter.rrd:E2:MAX'          \
+    'DEF:E3=powermeter.rrd:E3:AVERAGE'       \
+    'DEF:E3_=powermeter.rrd:E3:MAX'          \
+    'AREA:E1#94541F40:'                     \
+    'AREA:E2#948E1F40::STACK'               \
+    'AREA:E3#1F945440::STACK'               \
+    'LINE1:E1#94541FC0:E1'                   \
+    'LINE1:E2#948E1FC0:E2:STACK'             \
+    'LINE1:E3#1F9454C0:E3:STACK'           
+
+
+#############################################################################
+# U
+
+rrdtool graph graphs/U-minutes.png           \
+    -a PNG -w 600 -h 150 -r -l 220 -u 250    \
+    --title="Spannung [V]" -s -30m           \
+    'DEF:U1=powermeter.rrd:U1:AVERAGE'       \
+    'DEF:U1_=powermeter.rrd:U1:MAX'          \
+    'DEF:U2=powermeter.rrd:U2:AVERAGE'       \
+    'DEF:U2_=powermeter.rrd:U2:MAX'          \
+    'DEF:U3=powermeter.rrd:U3:AVERAGE'       \
+    'DEF:U3_=powermeter.rrd:U3:MAX'          \
+    'LINE1:U1#94541FC0:U1'                   \
+    'LINE1:U2#948E1FC0:U2'                \
+    'LINE1:U3#1F9454C0:U3'                \
+    'GPRINT:U1:LAST:U1=%5.2lf V, '        \
+    'GPRINT:U2:LAST:U2=%5.2lf V, '        \
+    'GPRINT:U3:LAST:U3=%5.2lf V'        
+
+rrdtool graph graphs/U-hours.png             \
+    -a PNG -w 600 -h 150 -r -l 220 -u 250    \
+    --title="Spannung [V]" -s -8h            \
+    'DEF:U1=powermeter.rrd:U1:AVERAGE'       \
+    'DEF:U1_=powermeter.rrd:U1:MAX'          \
+    'DEF:U2=powermeter.rrd:U2:AVERAGE'       \
+    'DEF:U2_=powermeter.rrd:U2:MAX'          \
+    'DEF:U3=powermeter.rrd:U3:AVERAGE'       \
+    'DEF:U3_=powermeter.rrd:U3:MAX'          \
+    'LINE1:U1#94541FC0:U1'                   \
+    'LINE1:U2#948E1FC0:U2'                   \
+    'LINE1:U3#1F9454C0:U3'                \
+    'GPRINT:U1:LAST:U1=%5.2lf V, '        \
+    'GPRINT:U2:LAST:U2=%5.2lf V, '        \
+    'GPRINT:U3:LAST:U3=%5.2lf V'        
+
+rrdtool graph graphs/U-days.png              \
+    -a PNG -w 600 -h 150 -r -l 220 -u 250    \
+    --title="Spannung [V]" -s -7d            \
+    'DEF:U1=powermeter.rrd:U1:AVERAGE'       \
+    'DEF:U1_=powermeter.rrd:U1:MAX'          \
+    'DEF:U2=powermeter.rrd:U2:AVERAGE'       \
+    'DEF:U2_=powermeter.rrd:U2:MAX'          \
+    'DEF:U3=powermeter.rrd:U3:AVERAGE'       \
+    'DEF:U3_=powermeter.rrd:U3:MAX'          \
+    'LINE1:U1#94541FC0:U1'                   \
+    'LINE1:U2#948E1FC0:U2'                   \
+    'LINE1:U3#1F9454C0:U3'                \
+    'GPRINT:U1:LAST:U1=%5.2lf V, '        \
+    'GPRINT:U2:LAST:U2=%5.2lf V, '        \
+    'GPRINT:U3:LAST:U3=%5.2lf V'        
+
+

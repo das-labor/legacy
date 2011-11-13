@@ -1,0 +1,53 @@
+#!/bin/sh
+
+if test "x$1" != "x--really"; then
+    echo "Exiting for safty reasons! Running this script will DELETE ALL collected data"
+    echo "Run $0 --really to proceed..."
+    exit 1
+fi
+
+rrdtool create gateway.rrd \
+	-s 1 \
+	DS:RXpkts:COUNTER:3:50:10000     \
+	DS:TXpkts:COUNTER:3:50:10000     \
+	DS:RXbytes:COUNTER:3:50:1000000  \
+	DS:TXbytes:COUNTER:3:0:1000000   \
+	DS:RXerrors:COUNTER:3:0:10000    \
+	DS:TXerrors:COUNTER:3:0:10000    \
+	RRA:AVERAGE:0.5:3:28800   \
+	RRA:AVERAGE:0.5:60:14400  \
+	RRA:AVERAGE:0.5:3600:8760 \
+	RRA:AVERAGE:0.0:86400:3560 \
+	RRA:MAX:0.5:3:28800   \
+	RRA:MAX:0.5:60:14400  \
+	RRA:MAX:0.5:3600:8760 \
+	RRA:MAX:0.0:86400:3560 \
+	
+
+
+rrdtool create powermeter.rrd \
+	-s 1 \
+	DS:U1:GAUGE:3:50:500     \
+	DS:U2:GAUGE:3:50:500     \
+	DS:U3:GAUGE:3:50:500     \
+	DS:I1:GAUGE:3:0:50       \
+	DS:I2:GAUGE:3:0:50       \
+	DS:I3:GAUGE:3:0:50       \
+	DS:S1:GAUGE:3:0:10000     \
+	DS:S2:GAUGE:3:0:10000     \
+	DS:S3:GAUGE:3:0:10000     \
+	DS:P1:GAUGE:3:0:10000     \
+	DS:P2:GAUGE:3:0:10000     \
+	DS:P3:GAUGE:3:0:10000     \
+	DS:E1:COUNTER:3:0:10000   \
+	DS:E2:COUNTER:3:0:10000   \
+	DS:E3:COUNTER:3:0:10000   \
+	RRA:AVERAGE:0.5:3:28800   \
+	RRA:AVERAGE:0.5:60:14400  \
+	RRA:AVERAGE:0.5:3600:8760 \
+	RRA:AVERAGE:0.0:86400:3560 \
+	RRA:MAX:0.5:3:28800   \
+	RRA:MAX:0.5:60:14400  \
+	RRA:MAX:0.5:3600:8760 \
+	RRA:MAX:0.0:86400:3560 \
+	
