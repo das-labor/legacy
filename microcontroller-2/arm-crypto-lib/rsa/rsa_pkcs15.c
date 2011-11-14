@@ -69,7 +69,9 @@ uint8_t rsa_decrypt_pkcs15(void* dest, uint16_t* out_length, const void* src,
 	uint16_t m_length, pad_length=0, idx=0;
 	x.wordv = dest;
 	rsa_os2ip(&x, src, length_B);
+	cli_putstr("\r\ncalling rsa_dec() ...");
 	rsa_dec(&x, key);
+	cli_putstr("\r\nfinished rsa_dec() ...");
 	rsa_i2osp(NULL, &x, &m_length);
 	while(((uint8_t*)x.wordv)[idx]==0 && idx<m_length){
 		++idx;
