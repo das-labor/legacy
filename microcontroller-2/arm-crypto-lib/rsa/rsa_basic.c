@@ -29,8 +29,55 @@ void rsa_enc(bigint_t* data, rsa_publickey_t* key){
 	bigint_expmod_u(data, data, key->exponent, key->modulus);
 }
 
-void rsa_dec(bigint_t* data, rsa_privatekey_t* key){
-	bigint_expmod_u(data, data, key->exponent, key->modulus);
+/*
+(p,q,dp,dq,qinv)
+m1 = c**dp % p
+m2 = c**dq % q
+h = (m1 - m2) * qinv % p
+m = m2 + q * h
+*/
+
+uint8_t rsa_dec_crt_mono(bigint_t* data, rsa_privatekey_t* key){
+	bigint_t m1, m2;
+	m1.wordv = malloc(key->components[0]->length_B * sizeof(bigint_word_t));
+	m2.wordv = malloc(key->components[1]->length_B * sizeof(bigint_word_t));
+	if(!m1.wordv || !m2.wordv){
+		free(m1.wordv);
+		free(m2.wordv);
+		return 1;
+	}
+	bigint_expmod_u(&m1, data, key->components[2], key->components[0]);
+	bigint_expmod_u(&m2, data, key->components[3], key->components[1]);
+	bigint_sub_s(&m1, &m1, &m2);
+	while(BIGINT_NEG_MASK & m1.info){
+		bigint_add_s(&m1, &m1, key->components[0]);
+	}
+	bigint_reduce(&m1, key->components[0]);
+	bigint_mul_u(data, &m1, key->components[4]);
+	bigint_reduce(data, key->components[0]);
+	bigint_mul_u(data, data, key->components[1]);
+	bigint_add_u(data, data, &m2);
+	free(m1.wordv);
+	free(m2.wordv);
+	return 0;
+}
+
+uint8_t rsa_dec(bigint_t* data, rsa_privatekey_t* key){
+	if(key->n == 1){
+		bigint_expmod_u(data, data, key->components[0], key->modulus);
+		return 0;
+	}
+	if(key->n == 5){
+		if (rsa_dec_crt_mono(data, key)){
+			return 3;
+		}
+		return 0;
+	}
+	if(key->n<8 || (key->n-5)%3 != 0){
+		return 1;
+	}
+	//rsa_dec_crt_multi(data, key, (key->n-5)/3);
+	return 2;
 }
 
 void rsa_os2ip(bigint_t* dest, const void* data, uint32_t length_B){
