@@ -11,7 +11,7 @@
 
 void gui_container_add (gui_container_t * c, gui_element_t * e) {
 	list_append(&c->childs, e);
-	
+
 	if (c->orientation == ORIENTATION_HORIZONTAL) {
 		//add new element on right side of container
 		e->update_position(e, c->box.x + c->pos, c->box.y);
@@ -28,7 +28,7 @@ void gui_container_add (gui_container_t * c, gui_element_t * e) {
 			c->box.h = c->pos;
 		}
 	}
-	
+
 	if (c->on_screen) {
 		e->draw(e,0);
 		e->set_on_screen(e,1);
@@ -36,37 +36,32 @@ void gui_container_add (gui_container_t * c, gui_element_t * e) {
 	}
 }
 
-void gui_container_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff){
+void gui_container_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff) {
 	gui_container_t * s = (gui_container_t *) self;
 			
 	s->box.x += x_diff;
 	s->box.y += y_diff;
-	
+
 	list_iterator_t it;
 	gui_element_t * child;
 	list_foreach_begin(&it, &s->childs);
-	
+
 	while ( (child = list_foreach(&it, &s->childs)) != 0 ) {
 		child->update_position(child, x_diff, y_diff);
 	}
-	
-	
-	
 }
 
-static gui_element_t * child_at (gui_container_t * s,uint16_t x, uint16_t y){
+static gui_element_t * child_at (gui_container_t * s,uint16_t x, uint16_t y) {
 	list_iterator_t it;
 	gui_element_t * child;
 	list_foreach_begin(&it, &s->childs);
-	
+
 	while ( (child = list_foreach(&it, &s->childs)) != 0 ) {
-		if(rectangle_contains(child->box, x, y)){
+		if (rectangle_contains(child->box, x, y)) {
 			return child;
 		}
 	}
-	
 	return 0;
-	
 }
 
 //#define DEBUG_GUI_CONTAINER
@@ -80,12 +75,11 @@ static gui_element_t * child_at (gui_container_t * s,uint16_t x, uint16_t y){
 	void gui_object_info(gui_element_t * obj){
 		printf("%08X: draw=%08X sos=%08X th=%08X up=%08X", obj, obj->draw, obj->set_on_screen, obj->touch_handler, obj->update_position);
 		
-		if(obj->draw == gui_button_draw ){
+		if (obj->draw == gui_button_draw ) {
 			printf(" type=button");
-		}else if(obj->draw == gui_container_draw ){
+		} else if (obj->draw == gui_container_draw ) {
 			printf(" type=container");
 		}
-		
 	}
 #endif
 
@@ -94,35 +88,34 @@ void gui_container_draw (gui_element_t * self, uint8_t redraw) {
 
 	list_iterator_t it;
 	gui_element_t * child;
-	
+
 	#ifdef DEBUG_GUI_CONTAINER
 		printf("gui_container_draw ", s);
 		gui_object_info(s);
 		printf("\r\n");
 
 		list_foreach_begin(&it, &s->childs);
-	
+
 		while ( (child = list_foreach(&it, &s->childs)) != 0 ) {
 			gui_object_info(child);
-			printf("\r\n");			
+			printf("\r\n");
 			//hexdump(child, 0x10);
 		}
 	#endif
-	
+
 	if (s->frame_size & 0x80) {
 		g_set_draw_color(1);
 		g_draw_rectangle(&s->box);
 	}
-	
+
 	list_foreach_begin(&it, &s->childs);
-	
+
 	while ( (child = list_foreach(&it, &s->childs)) != 0 ) {
 		#ifdef DEBUG_GUI_CONTAINER
 			printf("     drawing child %08X\r\n", child);
 		#endif
 		child->draw(child, 0);
 	}
-
 }
 
 void gui_container_set_on_screen (gui_element_t *self, uint8_t state) {
@@ -133,8 +126,8 @@ void gui_container_touch_handler (gui_element_t *self, touch_event_t t) {
 	gui_container_t * s = (gui_container_t*)self;
 	
 	gui_element_t * child;
-	if( (child = child_at(s, t.x, t.y)) != 0){
-		if(child->touch_handler != 0)
+	if ( (child = child_at(s, t.x, t.y)) != 0) {
+		if (child->touch_handler != 0)
 			child->touch_handler(child, t);
 	}
 }
@@ -145,7 +138,7 @@ void gui_container_delete_all_childs (gui_container_t * self) {
 	list_iterator_t it;
 	gui_element_t * child;
 	list_foreach_begin(&it, &s->childs);
-	
+
 	while ( (child = list_foreach(&it, &s->childs)) != 0 ) {
 		child->delete(child);
 	}
@@ -161,7 +154,7 @@ void gui_container_delete (gui_element_t * self) {
 }
 
 //constructor for subclasses (no malloc)
-void gui_container_init(gui_container_t * c){
+void gui_container_init(gui_container_t * c) {
 	c->draw = gui_container_draw;
 	c->set_on_screen = gui_container_set_on_screen;
 	c->update_position = gui_container_update_position;
@@ -176,8 +169,9 @@ void gui_container_init(gui_container_t * c){
 }
 
 //constructor
-gui_container_t * new_gui_container(){
+gui_container_t * new_gui_container() {
 	gui_container_t * c = malloc(sizeof(gui_container_t));
 	gui_container_init(c);
 	return c;
 }
+

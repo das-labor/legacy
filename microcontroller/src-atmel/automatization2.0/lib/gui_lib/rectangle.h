@@ -7,7 +7,7 @@ typedef struct{
 	uint16_t y;
 	uint16_t w;
 	uint16_t h;
-}rectangle_t;
+} rectangle_t;
 
 uint8_t rectangle_contains (rectangle_t r, uint16_t x, uint16_t y);
 

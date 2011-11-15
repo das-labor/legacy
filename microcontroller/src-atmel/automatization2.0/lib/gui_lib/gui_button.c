@@ -9,34 +9,33 @@
 
 void gui_button_draw (gui_element_t * self, uint8_t redraw) {
 	gui_button_t * s = (gui_button_t*)self;
-	
-	if(s->state){
+
+	if (s->state) {
 		g_set_draw_color(1);
-	}else{
+	} else {
 		g_set_draw_color(0);
 	}
-		
-	g_fill_rectangle   (&s->box);
+
+	g_fill_rectangle(&s->box);
 	
-	if(s->state){
+	if (s->state) {
 		g_set_draw_color(0);
-	}else{
+	} else {
 		g_set_draw_color(1);
 	}
-	
+
 	if (s->frame_size & 0x80) {
 		g_draw_rectangle(&s->box);
 	}
 	rectangle_t r = s->box;
-	
-	if(s->icon){
-		uint8_t icon_x = (s->box.w - s->icon->width)/2; 
+
+	if (s->icon) {
+		uint8_t icon_x = (s->box.w - s->icon->width) / 2;
 		g_draw_icon(s->box.x + icon_x, s->box.y, s->icon);
 		r.y += s->icon->height;
 		r.h -= s->icon->height;
 	}
-	
-	
+
 	g_draw_string_in_rect(&r, s->text);
 }
 
@@ -57,21 +56,20 @@ void gui_button_touch_handler (gui_element_t *self, touch_event_t t) {
 		}
 	}
 */
-	
-	if(t.flags & TOUCH_FLAG_DOWN){
+
+	if (t.flags & TOUCH_FLAG_DOWN){
 		s->state = 1;
 		s->draw(self, 0);
 	}
-	
-	if((t.flags & TOUCH_FLAG_UP) && (s->state == 1)){
-		if(s->click_handler){
+
+	if ((t.flags & TOUCH_FLAG_UP) && (s->state == 1)) {
+		if (s->click_handler){
 			s->click_handler(self);
 		}
-		
+
 		s->state = 0;
 		s->draw(self, 0);
 	}
-	
 }
 
 
@@ -79,16 +77,16 @@ void gui_button_delete (gui_element_t *self) {
 	free (self);
 }
 
-void gui_button_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff){
+void gui_button_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff) {
 	gui_button_t * s = (gui_button_t *) self;
-			
+
 	s->box.x += x_diff;
 	s->box.y += y_diff;
 }
 
 
 //constructor
-gui_button_t * new_gui_button(){
+gui_button_t * new_gui_button() {
 	gui_button_t * b = malloc(sizeof(gui_button_t));
 	b->draw = gui_button_draw;
 	b->set_on_screen = gui_button_set_on_screen;

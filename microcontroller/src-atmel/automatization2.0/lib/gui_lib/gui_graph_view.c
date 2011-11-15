@@ -51,7 +51,7 @@ void gui_graph_view_delete (gui_element_t *self) {
 	free (self);
 }
 
-void gui_graph_view_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff){
+void gui_graph_view_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff) {
 	gui_graph_view_t * s = (gui_graph_view_t *) self;
 			
 	s->box.x += x_diff;
@@ -60,7 +60,7 @@ void gui_graph_view_update_position(gui_element_t * self, int16_t x_diff, int16_
 
 
 //constructor
-gui_graph_view_t * new_gui_graph_view(char * txt, uint8_t idx){
+gui_graph_view_t * new_gui_graph_view(char * txt, uint8_t idx) {
 	gui_graph_view_t * b = malloc(sizeof(gui_graph_view_t));
 	b->draw = gui_graph_view_draw;
 	b->set_on_screen = gui_graph_view_set_on_screen;
