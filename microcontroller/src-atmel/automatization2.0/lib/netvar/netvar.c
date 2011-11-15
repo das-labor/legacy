@@ -20,63 +20,62 @@
 
 extern uint8_t myaddr;
 
-typedef struct{
+typedef struct {
 	uint16_t idx;
 	uint8_t sidx;
 	 netvar_desc * nd;
-}netvar_dir_element_t;
+} netvar_dir_element_t;
 
 netvar_dir_element_t netvar_dir[40];
 
 uint8_t netvar_dir_size;
 
-uint8_t find_netvar_position(uint16_t idx, uint8_t sidx){
+uint8_t find_netvar_position(uint16_t idx, uint8_t sidx) {
 	uint8_t a, b, m;
 	uint16_t m_idx;
 	uint8_t m_sidx;
 	
-	if(netvar_dir_size == 0) return 0;
+	if (netvar_dir_size == 0) return 0;
 
 	a = 0;
 	b = netvar_dir_size - 1;
-	
+
 	//binary search
-	while(a != b){
+	while (a != b) {
 		m = (a + b) / 2;
 		m_idx = netvar_dir[m].idx;
 		
-		if(m_idx < idx){
+		if (m_idx < idx) {
 			a = m + 1;
-		}else if(m_idx > idx){
+		} else if (m_idx > idx) {
 			b = m;
-		}else{
+		} else {
 			m_sidx = netvar_dir[m].sidx;
-			if(m_sidx < sidx){
+			if (m_sidx < sidx) {
 				a = m + 1;
-			}else if(m_sidx > sidx){
+			} else if (m_sidx > sidx) {
 				b = m;
-			}else{
+			} else {
 				a = m;
 				break;
 			}
 		}
 	}
-	
 	return a;
 }
 
-netvar_desc * get_netvar_by_idx(uint16_t idx, uint8_t sidx){
+netvar_desc * get_netvar_by_idx(uint16_t idx, uint8_t sidx) {
 	uint8_t i = find_netvar_position(idx, sidx);
-	if((netvar_dir[i].idx == idx) && (netvar_dir[i].sidx == sidx) ){
+	if ((netvar_dir[i].idx == idx) && (netvar_dir[i].sidx == sidx) ) {
 		return netvar_dir[i].nd;
-	}else{
+	} else {
 		return 0;
 	}
 }
 
-void netvar_insert(uint8_t pos, uint16_t idx, uint8_t sidx, netvar_desc * nd){
+void netvar_insert(uint8_t pos, uint16_t idx, uint8_t sidx, netvar_desc * nd) {
 	uint8_t i;
-	for(i = netvar_dir_size;i > pos; i--){
+	for (i = netvar_dir_size;i > pos; i--) {
 		memcpy(&netvar_dir[i], &netvar_dir[i-1], sizeof(netvar_dir_element_t));
 	}
 	netvar_dir_size ++;
@@ -97,15 +96,15 @@ typedef struct {
 } netvar_desc;
 */
 
-netvar_desc * new_netvar(uint16_t idx, uint8_t sidx, uint8_t size ){
+netvar_desc * new_netvar(uint16_t idx, uint8_t sidx, uint8_t size ) {
 	netvar_desc * nd = malloc(sizeof(netvar_desc));
 	nd->idx = idx;
 	nd->sidx = sidx;
 	nd->size = size;
-	if(size <= 5){
+	if (size <= 5) {
 		//normal netvar - data is malloced during lifetime
 		nd->data = malloc(size);
-	}else{
+	} else {
 		//bulk netvar. the data is malloced on reception
 		nd->data = 0;
 	}
@@ -115,14 +114,14 @@ netvar_desc * new_netvar(uint16_t idx, uint8_t sidx, uint8_t size ){
 }
 
 //register a netvar. returns the same handle if a netvar is registered multiple times.
-netvar_desc * netvar_register(uint16_t idx, uint8_t sidx, uint8_t size){
+netvar_desc * netvar_register(uint16_t idx, uint8_t sidx, uint8_t size) {
 	netvar_desc * nd;
 
 	uint8_t i = find_netvar_position(idx, sidx);
-	if((netvar_dir[i].idx == idx) && (netvar_dir[i].sidx == sidx) ){
+	if ((netvar_dir[i].idx == idx) && (netvar_dir[i].sidx == sidx)) {
 		//netvar allready registered
 		return netvar_dir[i].nd;
-	}else{
+	} else {
 		nd = new_netvar(idx, sidx, size);
 		netvar_insert(i, idx, sidx, nd);
 		return nd;
@@ -130,7 +129,7 @@ netvar_desc * netvar_register(uint16_t idx, uint8_t sidx, uint8_t size){
 }
 
 //adds handler for incoming netvar, which will be called with the user supplied reference as argument.
-void netvar_add_handler(netvar_desc * nd, void (*fkt)(netvar_desc *, void *), void * ref){
+void netvar_add_handler(netvar_desc * nd, void (*fkt)(netvar_desc *, void *), void * ref) {
 	if(nd->handlers == 0){
 		//need to create handler list
 		nd->handlers = new_list();
@@ -138,34 +137,34 @@ void netvar_add_handler(netvar_desc * nd, void (*fkt)(netvar_desc *, void *), vo
 	handler_descriptor_t * hd = malloc(sizeof(handler_descriptor_t));
 	hd->fkt = fkt;
 	hd->ref = ref;
-	
-	list_append(nd->handlers, hd);	
+
+	list_append(nd->handlers, hd);
 }
 
 //calls handlers on nd if any
-void nd_call_handlers(netvar_desc * nd){
-	if(nd->handlers){
+void nd_call_handlers(netvar_desc * nd) {
+	if (nd->handlers) {
 		//printf("calling handlers for %d, %X\r\n", i, nd->handlers);
 		list_iterator_t it;
 		list_foreach_begin(&it, nd->handlers);
 		handler_descriptor_t * hd;
-		while(((hd = list_foreach(&it, nd->handlers)) != 0)){
+		while (((hd = list_foreach(&it, nd->handlers)) != 0)) {
 			//printf("calling %X, ref=%X\r\n", hd->fkt, hd->ref );
 			hd->fkt(nd, hd->ref);
 		}
 	}
 }
 
-typedef struct{
+typedef struct {
 	uint8_t data[8];
-}netvar_data_store_t;
+} netvar_data_store_t;
 
 //double buffered nd table.
 //one is used to store the events we are working on, while the other one is filled with the new events.
 //the event data for the new events is therewhile stored in the single buffered event_data_table,
 //as we don't need the event data anymore since it has been copied to all netvars before
 //the new events are processed.
-netvar_desc *          event_nd_table[2][32];
+netvar_desc *         event_nd_table[2][32];
 
 netvar_data_store_t   event_data_table[32];
 
@@ -176,7 +175,7 @@ uint8_t in_buffer_select;
 uint8_t event_table_index;
 
 
-void netvar_store_event(netvar_desc * nd, void * data){
+void netvar_store_event(netvar_desc * nd, void * data) {
 	event_nd_table[in_buffer_select][event_table_index] = nd;
 	memcpy(event_data_table[event_table_index].data, data, 5);
 	event_table_index++;
@@ -193,11 +192,11 @@ netvar_desc * in_fifo_nd[IN_FIFO_SIZE];
 
 
 
-void in_fifo_store(netvar_desc * nd, void * data){
+void in_fifo_store(netvar_desc * nd, void * data) {
 	in_fifo_nd[in_fifo_head] = nd;
 	memcpy(in_fifo_data[in_fifo_head].data, data, 5);
 	in_fifo_head++;
-	if(in_fifo_head == IN_FIFO_SIZE){
+	if (in_fifo_head == IN_FIFO_SIZE) {
 		in_fifo_head = 0;
 	}
 }
@@ -217,12 +216,12 @@ char * bulk_data;
 
 
 //called when netvar on bulk port is received
-void netvar_bulk_received(can_message * msg){
-	if(bulk_state == BS_RECEIVE){
-		if(msg->addr_src == akt_bulk_addr){
+void netvar_bulk_received(can_message * msg) {
+	if (bulk_state == BS_RECEIVE) {
+		if (msg->addr_src == akt_bulk_addr) {
 			akt_bulk_received += 8;
 			memcpy(bulk_data, msg->data, 8);
-			if(akt_bulk_received >= akt_bulk_size){
+			if (akt_bulk_received >= akt_bulk_size) {
 				akt_bulk_nd->data = bulk_data; //pass malloced buffer to handlers in nd data field
 				nd_call_handlers(akt_bulk_nd); //call the handlers - the data is ony valid during the handler
 				free(bulk_data);               //free the data buffer again. handler must make local copy if it still needs the data.
@@ -235,13 +234,13 @@ void netvar_bulk_received(can_message * msg){
 
 //called from netvar received if nd indicates bulk netvar.
 //set the bulk receiver up to receive the data from that address
-void netvar_bulk_begin(netvar_desc * nd, uint8_t src_addr, uint16_t size){
-	if(bulk_state == BS_RECEIVE){
+void netvar_bulk_begin(netvar_desc * nd, uint8_t src_addr, uint16_t size) {
+	if (bulk_state == BS_RECEIVE) {
 		//drop ongoing transmission if any
 		free(bulk_data);
 		akt_bulk_nd->data = 0;
 	}
-	
+
 	akt_bulk_nd = nd;
 	akt_bulk_addr = src_addr;
 	akt_bulk_size = size;
@@ -251,7 +250,7 @@ void netvar_bulk_begin(netvar_desc * nd, uint8_t src_addr, uint16_t size){
 }
 
 //called when can message on netvar port is received
-void netvar_received(can_message * msg){
+void netvar_received(can_message * msg) {
 	uint16_t idx;
 	uint8_t sidx;
 	idx = msg->data[0] | ((uint16_t)(msg->data[1])<<8);
@@ -261,28 +260,28 @@ void netvar_received(can_message * msg){
 	netvar_desc * nd;
 	nd = get_netvar_by_idx(idx,sidx);
 	
-	if(nd){
+	if (nd) {
 		//found
-		if(nd->size > 5){
+		if (nd->size > 5) {
 			uint16_t size = (((uint16_t)msg->data[4])<<8) | msg->data[3];
 			netvar_bulk_begin(nd, msg->addr_src, size);
-		}else{
+		} else {
 			in_fifo_store(nd, &msg->data[3]);
 		}
 	}
 }
 
 
-void netvar_write(netvar_desc * nd, void * data){
+void netvar_write(netvar_desc * nd, void * data) {
 	netvar_store_event(nd, data);
 }
 
-uint8_t netvar_read(netvar_desc * nd, void * data){
+uint8_t netvar_read(netvar_desc * nd, void * data) {
 	memcpy(data, nd->data, nd->size);
 	return 0;
 }
 
-void netvar_transmit(netvar_desc * nd){
+void netvar_transmit(netvar_desc * nd) {
 	static can_message msg = {0, 0, PORT_NETVAR, PORT_NETVAR, 1, {0,0,0,0,0,0,0,0}};
 	uint16_t idx;
 	uint8_t sidx;
@@ -304,14 +303,14 @@ void netvar_transmit(netvar_desc * nd){
 
 extern void lap_button_nv_handler(void);
 
-void netvar_handle_events(){
+void netvar_handle_events() {
 	uint8_t i;
 	uint8_t event_table_size = event_table_index;
 	event_table_index = 0;
-	
+
 	//swap buffers
 	in_buffer_select ^= 1;
-	
+
 	//update data and transmit can message for each event
 	for (i = 0; i < event_table_size; i++ ) {
 		netvar_desc * nd = event_nd_table[in_buffer_select ^ 1][i];
@@ -319,22 +318,22 @@ void netvar_handle_events(){
 		netvar_transmit(nd);
 	}
 	
-	
+
 	//call event handlers if any
 	for (i = 0; i < event_table_size; i++ ) {
 		netvar_desc * nd = event_nd_table[in_buffer_select ^ 1][i];
 		nd_call_handlers(nd);
 	}
-	
+
 	//handle in fifo
-	while(in_fifo_tail != in_fifo_head){
+	while (in_fifo_tail != in_fifo_head) {
 		netvar_desc * nd = in_fifo_nd[in_fifo_tail];
 		memcpy(nd->data, in_fifo_data[in_fifo_tail].data, nd->size); //update netvar data from event data
-		
+
 		nd_call_handlers(nd);
-	
+
 		in_fifo_tail++;
-		if(in_fifo_tail == IN_FIFO_SIZE){
+		if (in_fifo_tail == IN_FIFO_SIZE) {
 			in_fifo_tail = 0;
 		}
 	}
