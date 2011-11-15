@@ -37,12 +37,12 @@ void update_touchscreen() {
 	static pixel p;
 	static uint16_t akk;
 	static uint8_t count;
-	
-	switch(state){
+
+	switch (state) {
 		case 0:
 			TOUCH_CLEAR_DDR();
 			TOUCH_CLEAR_PORT();
-	
+
 			TOUCH_SET_PORT_TO_READ_Y();
 			TOUCH_SET_DDR_TO_READ_Y(); //charge cap
 			state = 1;
@@ -51,17 +51,17 @@ void update_touchscreen() {
 			//_delay_us(100);
 			TOUCH_CLEAR_DDR();
 			TOUCH_SET_DDR_TO_READ_X();
-  			ADMUX = TOUCHSCREEN_AREFS | TOUCH_Y_CHANNEL;
-  			state = 2;
-			break; 
+			ADMUX = TOUCHSCREEN_AREFS | TOUCH_Y_CHANNEL;
+			state = 2;
+			break;
 		case 2:
-			if(ADC > TOUCH_THRESHOLD){
+			if (ADC > TOUCH_THRESHOLD) {
 				touchscreen_position_raw.x = -1;
 				touchscreen_position_raw.y = -1;
 				ADMUX = TOUCHSCREEN_AREFS | TOUCH_Y_CHANNEL;
 				state = 2;
 				got_data = 0;
-			}else{
+			} else {
 				if(got_data){
 					touchscreen_position_raw.x = p.x;
 					touchscreen_position_raw.y = p.y;
@@ -71,7 +71,7 @@ void update_touchscreen() {
 				TOUCH_SET_DDR_TO_READ_X();
 				TOUCH_SET_PORT_TO_READ_X();
 				//_delay_us(100);
-				
+
 				//read y channel while X-Resistor is powered
 				ADMUX = TOUCHSCREEN_AREFS | TOUCH_Y_CHANNEL;
 				akk = 0;
@@ -80,20 +80,20 @@ void update_touchscreen() {
 			}
 			break;
 		case 3:
-			if(count < TOUCH_FILTER){
+			if (count < TOUCH_FILTER) {
 				count++;
 				akk += ADC;
 				ADMUX = TOUCHSCREEN_AREFS | TOUCH_Y_CHANNEL;
-			}else{
+			} else {
 				p.x = akk/TOUCH_FILTER;
-			
+
 				TOUCH_CLEAR_DDR();
 				TOUCH_CLEAR_PORT();
 				TOUCH_SET_DDR_TO_READ_Y();
 				TOUCH_SET_PORT_TO_READ_Y();
-					
+
 				//_delay_us(100);
-			
+
 				ADMUX = TOUCHSCREEN_AREFS | TOUCH_X_CHANNEL;
 				akk = 0;
 				count = 0;
@@ -101,17 +101,17 @@ void update_touchscreen() {
 			}
 			break;
 		case 4:
-			if(count < TOUCH_FILTER){
+			if (count < TOUCH_FILTER) {
 				count++;
 				akk += ADC;
 				ADMUX = TOUCHSCREEN_AREFS | TOUCH_X_CHANNEL;
-			}else{				
+			} else {
 				p.y = akk/TOUCH_FILTER;
 				got_data = 1;
-				
+
 				TOUCH_CLEAR_DDR();
 				TOUCH_CLEAR_PORT();
-		
+
 				TOUCH_SET_PORT_TO_READ_Y();
 				TOUCH_SET_DDR_TO_READ_Y(); //charge cap
 				//_delay_us(100);
@@ -123,16 +123,16 @@ void update_touchscreen() {
 
 uint16_t adc_backlight;
 
-ISR(ADC_vect){
+ISR(ADC_vect) {
 	static uint8_t state;
-	if(state == 0){
+	if (state == 0) {
 		//read for backlight completed. conversion for touchscreen is going.
 		state = 1;
 		adc_backlight = ADC;
 		backlight();
 		//select AVCC reference and backlight channel again for next conversion
 		ADMUX = (1<<REFS0) | ADC_CHANNEL_BACKLIGHT;
-	}else{
+	} else {
 		state = 0;
 		//read for touchscreen completed.
 		update_touchscreen();
@@ -140,7 +140,7 @@ ISR(ADC_vect){
 
 }
 
-void init_adc(){
+void init_adc() {
 	//REFS1 REFS0 ADLAR MUX4 MUX3 MUX2 MUX1 MUX0      ADMUX
 	//REFS1 REFS0 Voltage Reference Selection
 	//0 0 AREF, Internal Vref turned off

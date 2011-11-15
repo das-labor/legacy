@@ -17,7 +17,7 @@ pixel read_mean() {
 	rectangle_t progress_bar = {40,100,160,40};
 	
 	g_draw_rectangle(&progress_bar);
-	
+
 	while (1) {
 		p = read_touch_raw();
 		if (p.x != -1) {
@@ -25,10 +25,9 @@ pixel read_mean() {
 			mean_y += p.y;
 			bar += 10;
 			progress_bar.w = bar;
-			g_fill_rectangle(&progress_bar);	
-		
+			g_fill_rectangle(&progress_bar);
+
 			if (bar == 160) break;
-		
 		} else {
 			mean_x = 0;
 			mean_y = 0;
@@ -36,15 +35,15 @@ pixel read_mean() {
 				bar = 0;
 				progress_bar.w = 160;
 				g_set_draw_color(0);
-				g_fill_rectangle(&progress_bar);	
+				g_fill_rectangle(&progress_bar);
 				g_set_draw_color(1);
 				g_draw_rectangle(&progress_bar);
 			}
 		}
 	}
-	
+
 	pixel rp = (pixel){mean_x / 16, mean_y / 16};
-	
+
 	do {
 		p = read_touch_raw();
 		
@@ -52,7 +51,7 @@ pixel read_mean() {
 
 	progress_bar.w = 160;
 	g_set_draw_color(0);
-	g_fill_rectangle(&progress_bar);	
+	g_fill_rectangle(&progress_bar);
 
 	return(rp);
 }
@@ -126,14 +125,13 @@ void test_touchscreen() {
 				break;
 			}
 		}
-		
+
 	#ifdef OSZI
 	//Oszi
 		static uint16_t xc = 0;
 
 		if (p.x != -1 )
 			g_draw_cross(xc, p.x);
-
 
 		xc++;
 		if (xc == 320) {
@@ -158,28 +156,28 @@ void calibrate_touch() {
 	//g_clear_screen();
 
 	draw_crosses();
-	
+
 	pixel p[NUM_CALIB_POINTS];
-	
+
 	uint8_t i;
 	for (i = 0; i < NUM_CALIB_POINTS; i++) {
 		p[i] = calibrate_point(i);
 	}
-	
+
 	uint16_t xl,xh,yl,yh;
 	xl = p[0].x + p[2].x;
 	xh = p[1].x + p[3].x;
 	yl = p[0].y + p[1].y;
 	yh = p[2].y + p[3].y;
-	
-	uint16_t xd = xh-xl;	
+
+	uint16_t xd = xh-xl;
 	uint16_t xg = 300ul * 1024ul * 2ul / xd;
 	uint16_t xz = (xl - xd / 30) / 2 ;
 
-	uint16_t yd = yh - yl;	
+	uint16_t yd = yh - yl;
 	uint16_t yg = 220ul * 1024ul * 2ul / yd;
 	uint16_t yz = (yl - yd / 22) / 2 ;
-	
+
 	calibration_values.xz = xz;
 	calibration_values.xg = xg;
 	calibration_values.yz = yz;
@@ -196,7 +194,7 @@ void calibrate_touch() {
 	sprintf(textbuf,"yg:%d  yz:%d", yg, yz);
 	g_draw_string_in_rect(&(rectangle_t){200,180,100,100}, textbuf);
 
-	
+
 /*
 	g_clear_screen();
 	g_draw_rectangle(&((rectangle_t){5,5,10,10}));

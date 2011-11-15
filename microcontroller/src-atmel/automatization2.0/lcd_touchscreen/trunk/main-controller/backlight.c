@@ -10,29 +10,29 @@ uint8_t backlight_brightnes = 32;
 
 #define PWM_MAX 1024l
 
-void backlight(){
-	int16_t ist, soll, diff, p, d, out;
+void backlight() {
+	int16_t ist, soll, diff, p, out;
 	static int32_t i = 0;
 
 	soll = backlight_brightnes * 4;
 	ist = adc_backlight;
-				
-	diff = soll-ist;
+
+	diff = soll - ist;
 	
-	if(soll < 64) diff *= 4;
-	if(soll < 32) diff *= 2;
+	if (soll < 64) diff *= 4;
+	if (soll < 32) diff *= 2;
 	
 	p = diff;
 	i += diff;
 	
-	if(i > (I_CONST*PWM_MAX)) i = (I_CONST*PWM_MAX);
+	if (i > (I_CONST*PWM_MAX)) i = (I_CONST*PWM_MAX);
 	
-	if(1<0) i = 0;
+	if (1 < 0) i = 0;
 	
 	out = p / P_CONST +  i / I_CONST;
 	
-	if(out > (PWM_MAX-1)) out = PWM_MAX-1;
-	if(out < 0) out = 0;
+	if (out > (PWM_MAX-1)) out = PWM_MAX-1;
+	if (out < 0) out = 0;
 	
 		
 	OCR1A = out;
@@ -56,5 +56,5 @@ void init_backlight(){
 	TCCR1B = (1<<WGM12) | 1;           // fast pwm 10 bit, clk/1
 	
 	DDRB |= (1<<PB5);
-
 }
+
