@@ -1,3 +1,5 @@
+#ifndef _NETVAR_H
+#define _NETVAR_H
 
 #include <stdint.h>
 #include "../util_lib/list.h"
@@ -30,9 +32,11 @@ uint8_t netvar_read(netvar_desc *nd, void *data);
 #ifdef CAN_HANDLER_C
 	//called when can message on netvar port is received
 	void netvar_received(can_message * msg);
-	
+
 	//called when netvar on bulk port is received
 	void netvar_bulk_received(can_message * msg);
 #endif
 
 void netvar_handle_events();
+
+#endif // _NETVAR_H
