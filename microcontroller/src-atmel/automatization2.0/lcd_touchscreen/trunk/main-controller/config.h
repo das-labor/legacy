@@ -13,6 +13,7 @@
 #define SPI_PIN_MCP_INT      PE7
 //#define CAN_INTERRUPT
 
+#define CAN_HANDLER_C
 
 #define F_MCP F_CPU
 

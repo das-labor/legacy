@@ -89,21 +89,20 @@ void navigation_bar_init () {
 }
 
 
-void navigation_bar_draw () {	
-	bar->draw((gui_element_t *)bar,0);
+void navigation_bar_draw () {
+	bar->draw((gui_element_t *)bar, 0);
 }
 
 
 void init_main_window() {
 	navigation_bar_init();
 	navigation_bar_draw();
-	//while(1);
-	
+
 	menu_browser_init();
 
 	menu_browser_set_dir(test_dir);
 
-	menu_browser_draw();	
+	menu_browser_draw();
 }
 
 
@@ -119,8 +118,8 @@ void handle_touch (uint16_t x, uint16_t y, uint8_t click) {
 
 void handle_touchscreen() {
 	static uint16_t click_timer = 0;
-  	static pixel p1 = {-1, -1};
-  	
+	static pixel p1 = {-1, -1};
+
 	pixel p;
 	p = read_touch_screen_coordinates();
 

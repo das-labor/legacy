@@ -19,8 +19,6 @@
 #define WAIT_ATN_HIGH()    {while ((PIN_HANDSHAKE & _BV(BIT_ATN)) == 0);}
 
 
-
-
 void dc_byte_put(uint8_t b) {
 	PORT_DC_DATA = b;
 
@@ -36,14 +34,10 @@ void init_dc_com() {
 	PORT_HANDSHAKE |=  (_BV(BIT_ATN) | _BV(BIT_ACK));
 	DDR_DC_DATA = 0xff;
 	int x;
-	for(x=0;x<32;x++){
+	for(x = 0; x < 32; x++) {
 		dc_byte_put(DC_RESET);
 	}
 }
-
-
-
-
 
 void transmit_to_dc(uint8_t command, uint16_t size, void *data) {
 	uint16_t i;
@@ -54,7 +48,6 @@ void transmit_to_dc(uint8_t command, uint16_t size, void *data) {
 		dc_byte_put(((uint8_t*)data)[i]);
 	}
 }
-
 
 void transmit_to_dc_data(void * data, uint16_t size) {
 	uint16_t i;
@@ -67,15 +60,12 @@ void transmit_to_dc_data(void * data, uint16_t size) {
 	}
 }
 
-
-
 void transmit_to_dc_raw(void *data, uint16_t size) {
 	uint16_t i;
 	for (i = 0; i < size; i++) {
 		dc_byte_put(((uint8_t*)data)[i]);
 	}
 }
-
 
 void transmit_to_dc_string(const char *data) {
 	char c;
@@ -84,6 +74,8 @@ void transmit_to_dc_string(const char *data) {
 		dc_byte_put(c);
 	} while (c != 0);
 }
+
+
 
 
 void g_draw_cross(uint16_t x, uint16_t y) {
@@ -119,8 +111,8 @@ void g_fill_rectangle(rectangle_t *r) {
 
 void g_draw_string(uint16_t x, uint16_t y, const char *str) {
 	dc_byte_put(DC_DRAW_STRING);
-	transmit_to_dc_raw(&x      , 2);
-	transmit_to_dc_raw(&y      , 2);
+	transmit_to_dc_raw(&x, 2);
+	transmit_to_dc_raw(&y, 2);
 	transmit_to_dc_string(str);
 }
 
@@ -139,15 +131,16 @@ void g_draw_string_in_rect_vert(rectangle_t *r, const char *str) {
 	transmit_to_dc_string(str);
 }
 
-void g_draw_icon(uint16_t x, uint16_t y, icon_t * i) {	
+void g_draw_icon(uint16_t x, uint16_t y, icon_t * i) {
 	dc_byte_put(DC_DRAW_ICON);
-	transmit_to_dc_raw(&x      , 2);
-	transmit_to_dc_raw(&y      , 2);
-	transmit_to_dc_data(i      , i->size);
+	transmit_to_dc_raw(&x, 2);
+	transmit_to_dc_raw(&y, 2);
+	transmit_to_dc_data(i, i->size);
 }
 
-void g_draw_pixel(uint16_t x, uint16_t y) {	
+void g_draw_pixel(uint16_t x, uint16_t y) {
 	dc_byte_put(DC_DRAW_PIXEL);
-	transmit_to_dc_raw(&x      , 2);
-	transmit_to_dc_raw(&y      , 2);
+	transmit_to_dc_raw(&x, 2);
+	transmit_to_dc_raw(&y, 2);
 }
+

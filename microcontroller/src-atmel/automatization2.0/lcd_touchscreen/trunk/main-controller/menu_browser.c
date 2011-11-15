@@ -24,16 +24,16 @@ menu_browser_state_t state;
 void parse_dir_to_main_container (uint8_t * dir_data) {
 
 	gui_container_delete_all_childs(state.main_container);
-	
+
 	gui_container_t * akt_container = state.main_container;
-	
+
 	gui_container_t * container_stack[10];
 	uint8_t stack_pointer = 0;
 
 	uint8_t b;
-		
-	while((b = *dir_data++) != 0){
-		switch(b){
+
+	while ((b = *dir_data++) != 0) {
+		switch (b) {
 			case GUI_BUTTON: {
 				gui_button_t * b = new_gui_button();
 				b->box.w = 32;
@@ -71,7 +71,6 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 				gui_container_add(akt_container, (gui_element_t *) new_container);
 
 			} break;
-			
 		}
 	}
 }
@@ -96,8 +95,8 @@ void menu_browser_draw () {
 }
 
 
-void menu_browser_touch_handler(touch_event_t t){
-	if(state.main_container){
+void menu_browser_touch_handler(touch_event_t t) {
+	if (state.main_container) {
 		state.main_container->touch_handler ( (gui_element_t *) state.main_container, t);
 	}
 }
