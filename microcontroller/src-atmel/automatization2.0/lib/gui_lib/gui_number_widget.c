@@ -33,21 +33,21 @@ typedef struct {
 
 void gui_number_widget_draw (gui_element_t * self, uint8_t redraw) {
 	gui_number_widget_t * s = (gui_number_widget_t*)self;
-	
+
 	g_set_draw_color(0);
-	
-	g_fill_rectangle   (&s->box);
-	
-	if(s->state){
+
+	g_fill_rectangle(&s->box);
+
+	if (s->state) {
 		g_set_draw_color(0);
-	}else{
+	} else {
 		g_set_draw_color(1);
 	}
-	
-	g_draw_rectangle   (&s->box);
+
+	g_draw_rectangle(&s->box);
 
 	rectangle_t r = s->box;
-	
+
 	/*
 	if(s->icon){
 		uint8_t icon_x = (s->box.w - s->icon->width)/2; 
@@ -56,20 +56,16 @@ void gui_number_widget_draw (gui_element_t * self, uint8_t redraw) {
 		r.h -= s->icon->height;
 	}
 	*/
-	
-	
+
+
 	g_draw_string_in_rect(&r, s->text);
-	
+
 	r.y += 100;
 	r.h -= 100;
-	
+
 	char strbuf[12];
 	sprintf(strbuf, s->get(s->ref));
 	g_draw_string_in_rect(&r, strbuf);
-	
-	
-	
-	
 }
 
 void gui_number_widget_set_on_screen (gui_element_t *self, uint8_t state) {
@@ -78,9 +74,9 @@ void gui_number_widget_set_on_screen (gui_element_t *self, uint8_t state) {
 
 void gui_number_widget_touch_handler (gui_element_t *self, touch_event_t t) {
 	gui_number_widget_t * s = (gui_number_widget_t*)self;
-	
-	if(t.click){
-		s->state ^= 1;	
+
+	if (t.click) {
+		s->state ^= 1;
 	}
 	self->draw(self, 0);
 }
@@ -91,13 +87,13 @@ void gui_number_widget_delete (gui_element_t *self) {
 }
 
 
-void gui_number_widget_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff){
+void gui_number_widget_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff) {
 	self->box.x += x_diff;
 	self->box.y += y_diff;
 }
 
 //constructor
-gui_number_widget_t * new_gui_number_widget(){
+gui_number_widget_t * new_gui_number_widget() {
 	gui_number_widget_t * s = malloc(sizeof(gui_number_widget_t));
 	s->draw = gui_number_widget_draw;
 	s->set_on_screen = gui_number_widget_set_on_screen;
@@ -109,3 +105,4 @@ gui_number_widget_t * new_gui_number_widget(){
 	s->state = 0;
 	return b;
 }
+

@@ -20,11 +20,12 @@
 #define TOUCH_FLAG_UP      0x02
 #define TOUCH_FLAG_LEAVE   0x04
 
-typedef struct{
+typedef struct {
 	uint16_t x;
 	uint16_t y;
 	uint8_t flags;
-}touch_event_t;
+	uint8_t click;
+} touch_event_t;
 ////////////////////////////////////////////////////////////////////////////////
 
 //gui element is the abstract base class of all elements////////////////////////
@@ -44,8 +45,8 @@ struct gui_element_t_s {
 
 //handler types for conevnience ////////////////////////////////////////////////
 
-typedef void(*touch_handler_t)(gui_element_t *self, touch_event_t t)  ;
-typedef void(*click_handler_t)(gui_element_t *)                       ;
+typedef void(*touch_handler_t)(gui_element_t *self, touch_event_t t);
+typedef void(*click_handler_t)(gui_element_t *);
 ////////////////////////////////////////////////////////////////////////////////
 
 //the innermost touchhandler saves itself here so we can implement mouse up
@@ -154,7 +155,7 @@ typedef struct {
 
 	char * text;
 	icon_t * icon;
-	
+
 	//graph data
 	uint8_t idx;
 	uint16_t data_size;
