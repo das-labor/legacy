@@ -10,6 +10,7 @@
 """
 
 import socket
+import errno
 import struct
 
 #=============================================================================
@@ -22,8 +23,20 @@ def hexdump(data):
         ret += "%02x " % c
     return ret
 
+
+#=============================================================================
+# Exception class
+
+class CANError(Exception):
+    def __init__(self, reason):
+        self.reason = reason
+    
+    def __repr__(self):
+        return repr(self.reason)
+
 #=============================================================================
 # Packet types / parsers
+
 class ParseException(Exception):
     pass
 
@@ -118,9 +131,12 @@ class CANSocket:
     def __init__(self, host="10.0.1.2", port=2342):
         BUFFER_SIZE = 1024
 
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((host, port))
-        s.setblocking(0)
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((host, port))
+            s.setblocking(0)
+        except socket.error as err:
+            raise CANError("Could not connect")
 
         self.sock = s
         self.buf = bytearray("")
@@ -152,40 +168,50 @@ class CANSocket:
     def get_pkt_nb(self):
         """ Receive a CAN packet; non-blocking.
 
-            The received packet is returned as a bytearray.
-
             If there is no complete CAN packet to return, this function
             returns Null.
         """
+        s = self.sock
+        buf = self.buf
+
         pkt = self.dequeue_pkt()
 
         if pkt is not None:
             return pkt
 
-        s = self.sock
-        buf = self.buf
-
-        # Receive something
+        # Try to receive something
         s.setblocking(0)
+
         try:
-            buf += bytearray(s.recv(20))
-        except:
-            pass
+            data = s.recv(1024)
+        except socket.error as err:
+            if err.errno == errno.EWOULDBLOCK or err.errno == errno.EAGAIN:
+                return None
+            else:
+                raise err
+
+        if len(data) == 0:
+            raise CANError("Connection lost")
+        buf += bytearray(data)
 
         return self.dequeue_pkt()
 
 
     def get_pkt(self):
-        """ Receive a CAN packet; non-blocking.
-
-            The received packet is returned as a bytearray.
+        """ Receive a CAN packet; blocking.
         """
-        self.sock.setblocking(1)
+        s = self.sock
+        buf = self.buf
+
+        s.setblocking(1)
 
         pkt = self.dequeue_pkt()
         while pkt is None:
             # Receive something
-            self.buf += bytearray(self.sock.recv(20))
+            data = self.sock.recv(1024)
+            if len(data) == 0:
+                raise CANError("Connection lost")
+            self.buf += bytearray(data)
             pkt = self.dequeue_pkt()
 
         return pkt

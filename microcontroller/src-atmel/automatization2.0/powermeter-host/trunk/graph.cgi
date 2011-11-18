@@ -33,15 +33,16 @@ graph_templates = {
         'DEF:I2_=$POWERRRD/powermeter.rrd:I2:MAX'      
         'DEF:I3=$POWERRRD/powermeter.rrd:I3:AVERAGE'  
         'DEF:I3_=$POWERRRD/powermeter.rrd:I3:MAX'
-        'AREA:I1_#$ACOLOR1:'
-        'AREA:I2_#$ACOLOR2::STACK'
-        'AREA:I3_#$ACOLOR3::STACK'
+        'AREA:I1#$ACOLOR1:'
+        'AREA:I2#$ACOLOR2::STACK'
+        'AREA:I3#$ACOLOR3::STACK'
         'LINE1:I1#$LCOLOR1:I1'
         'LINE1:I2#$LCOLOR2:I2:STACK'
         'LINE1:I3#$LCOLOR3:I3:STACK'
     """,
     "power-P": """
         --title="Wirkleistung [W]"
+        -E
         -l 0
         'DEF:P1=$POWERRRD/powermeter.rrd:P1:AVERAGE'
         'DEF:P1_=$POWERRRD/powermeter.rrd:P1:MAX'
@@ -49,9 +50,9 @@ graph_templates = {
         'DEF:P2_=$POWERRRD/powermeter.rrd:P2:MAX'
         'DEF:P3=$POWERRRD/powermeter.rrd:P3:AVERAGE'
         'DEF:P3_=$POWERRRD/powermeter.rrd:P3:MAX'
-        'AREA:P1_#$ACOLOR1:'
-        'AREA:P2_#$ACOLOR2::STACK'
-        'AREA:P3_#$ACOLOR3::STACK'
+        'AREA:P1#$ACOLOR1:'
+        'AREA:P2#$ACOLOR2::STACK'
+        'AREA:P3#$ACOLOR3::STACK'
         'LINE1:P1#$LCOLOR1:P1'
         'LINE1:P2#$LCOLOR2:P2:STACK'
         'LINE1:P3#$LCOLOR3:P3:STACK'
@@ -81,9 +82,9 @@ graph_templates = {
         'CDEF:Q1_=S1_,P1_,-'                     
         'CDEF:Q2_=S2_,P2_,-'                     
         'CDEF:Q3_=S3_,P3_,-'                     
-        'AREA:Q1_#$ACOLOR1:'                     
-        'AREA:Q2_#$ACOLOR2::STACK'               
-        'AREA:Q3_#$ACOLOR3::STACK'               
+        'AREA:Q1#$ACOLOR1:'                     
+        'AREA:Q2#$ACOLOR2::STACK'               
+        'AREA:Q3#$ACOLOR3::STACK'               
         'LINE1:Q1#$LCOLOR1:Q1'                   
         'LINE1:Q2#$LCOLOR2:Q2:STACK'             
         'LINE1:Q3#$LCOLOR3:Q3:STACK'             
@@ -222,10 +223,13 @@ graph_templates = {
         'LINE1:RX#$LCOLOR1::'
         'LINE1:TX#$LCOLOR2::STACK'
     """,
+#        -l -2000000
+#        -u 500000
     "uplink": """
         --title="DSL Uplink [Bytes/s]"
-        -l -2000000
-        -u 500000
+        -E
+        -u 128000
+        -l -1600000
         'DEF:rx=$COLLECTDRRD/casino/interface/if_octets-ppp0.rrd:rx:AVERAGE'
         'DEF:rx_=$COLLECTDRRD/casino/interface/if_octets-ppp0.rrd:rx:MAX'
         'DEF:tx=$COLLECTDRRD/casino/interface/if_octets-ppp0.rrd:tx:AVERAGE'
@@ -240,14 +244,14 @@ graph_templates = {
         'CDEF:tx4_=tx_,tx6_,-'
         'CDEF:mrx6=rx6,-1,*'
         'CDEF:mrx6_=rx6_,-1,*'
-        'AREA:tx4_#$ACOLOR1:'
-        'AREA:tx6_#$ACOLOR2::STACK'
-        'AREA:mrx4_#$ACOLOR3:'
-        'AREA:mrx6_#$ACOLOR4::STACK'
-        'LINE1:tx4_#$LCOLOR1:TX IPv4'
-        'LINE1:tx6_#$LCOLOR2:TX IPv6:STACK'
-        'LINE1:mrx4_#$LCOLOR3:RX IPv4'
-        'LINE1:mrx6_#$LCOLOR4:RX IPv6:STACK'
+        'AREA:tx4_#$ACOLOR4:'
+        'AREA:tx6_#$BCOLOR4::STACK'
+        'AREA:mrx4_#$ACOLOR2:'
+        'AREA:mrx6_#$BCOLOR2::STACK'
+        'LINE1:tx4_#$LCOLOR4:TX IPv4'
+        'LINE1:tx6_#$LCOLOR4:TX IPv6:STACK'
+        'LINE1:mrx4_#$LCOLOR2:RX IPv4'
+        'LINE1:mrx6_#$LCOLOR2:RX IPv6:STACK'
         'GPRINT:tx:LAST:TX=%5.2lf %sB/s, '        
         'GPRINT:rx:LAST:RX=%5.2lf %sB/s, '        
     """,
@@ -278,6 +282,29 @@ themes = {
         "MGRID":   "aaaaaa",
         "FRAME":   "202020",
         "ARROW":   "FFFFFF",
+        "LCOLOR1": "95EC00",
+        "BCOLOR1": "80B12C",
+        "ACOLOR1": "619A00",
+        "LCOLOR2": "028E9B",
+        "BCOLOR2": "1E6D74",
+        "ACOLOR2": "015C65",
+        "LCOLOR3": "FF7800",
+        "BCOLOR3": "BFAA30",
+        "ACOLOR3": "A68D00",
+        "LCOLOR4": "D2006B",
+        "BCOLOR4": "9D2763",
+        "ACOLOR4": "880045"
+    },
+    "black2": {
+        "BACK":    "000000",
+        "SHADEA":  "000000",
+        "SHADEB":  "000000",
+        "FONT":    "dddddd",
+        "CANVAS":  "202020",
+        "GRID":    "666666",
+        "MGRID":   "aaaaaa",
+        "FRAME":   "202020",
+        "ARROW":   "FFFFFF",
         "LCOLOR1": "00FF00",
         "ACOLOR1": "408040",
         "LCOLOR2": "0000FF",
@@ -296,11 +323,11 @@ if __name__ == "__main__":
     subst = {
         "WIDTH":       "600",
         "HEIGHT":      "150",
-        "START":       "-6h",
+        "HOST":        "kvm",
+        "START":       "-1h",
         "END":         "-0s",
         "POWERRRD":    "/home/joerg/automatization2.0/powermeter-host/trunk/",
         "COLLECTDRRD": "/var/lib/collectd/rrd/",
-        "HOST":        "kvm"
     }
 
     form = cgi.FieldStorage()

@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-from can import ControlPacket, LAPPacket, CANSocket, hexdump
+from can import ControlPacket, LAPPacket, CANSocket, hexdump, CANError
 
 import sys
 import socket
 import subprocess
 from string import Template
-from time import strftime, time
+from time import strftime, time, sleep
 
 POWERMETER_RRD_CMD = "rrdtool update powermeter.rrd N:$U1:$U2:$U3:$I1:$I2:$I3:$S1:$S2:$S3:$P1:$P2:$P3:$E1:$E2:$E3"
 GW_POWER_RRD_CMD   = "rrdtool update gateway-power.rrd N:$U:$I"
@@ -77,61 +77,68 @@ def update_rrd(cmd, vals):
     if subprocess.call(cmd.split()) != 0:
         raise Error("Updateing rrd failrd")
 
+
+
+#############################################################################
+# Main
+
 if __name__ == "__main__":
-    c = CANSocket()
+    while 1:
+        try:
+            c = CANSocket()
 
-    # We start with an empty set
-    values = all_unknowm_values()
-    gw_power_ts = 0
-    gw_pstats_ts = 0
+            # We start with an empty set
+            values = all_unknowm_values()
+            gw_power_ts = 0
+            gw_pstats_ts = 0
 
-    while True:
-        pkt = c.get_pkt()
+            while True:
+                pkt = c.get_pkt()
 
-        if isinstance(pkt, ControlPacket):
-            if pkt.id == "POWER_DRAW":
-                if (time()-gw_power_ts) < 1.:
-                    continue
-                print "GW_POWER_DRAW: U=%5.2f I=%5.2f" % (pkt.u, pkt.i)
-                gw_power_ts = time()
-                vals = {"U": pkt.u, "I": pkt.i}
-                update_rrd(GW_POWER_RRD_CMD, vals)
-            elif pkt.id == "PSTATS":
-                if (time()-gw_pstats_ts) < 1.:
-                    continue
-                print "GW_PSTATS: RX_pkts=%d TX_pkts=%d RX_bytes=%d TX_bytes=%d" % (pkt.rx_pkts, pkt.tx_pkts, pkt.rx_bytes, pkt.tx_bytes)
-                gw_pstats_ts = time()
-                vals = {"RXPKT": pkt.rx_pkts, "TXPKT": pkt.tx_pkts, "RXBYTES": pkt.rx_bytes, "TXBYTES": pkt.tx_bytes}
-                update_rrd(GW_PSTATS_RRD_CMD, vals)
-                
-        elif isinstance(pkt, LAPPacket):
-            # Is it the powermeter talking?
-            if pkt.sa != 5 or pkt.sp != 0x3c:
-                continue
+                if isinstance(pkt, ControlPacket):
+                    if pkt.id == "POWER_DRAW":
+                        if (time()-gw_power_ts) < 1.:
+                            continue
+                        print "GW_POWER_DRAW: U=%5.2f I=%5.2f" % (pkt.u, pkt.i)
+                        gw_power_ts = time()
+                        vals = {"U": pkt.u, "I": pkt.i}
+                        update_rrd(GW_POWER_RRD_CMD, vals)
+                    elif pkt.id == "PSTATS":
+                        if (time()-gw_pstats_ts) < 1.:
+                            continue
+                        print "GW_PSTATS: RX_pkts=%d TX_pkts=%d RX_bytes=%d TX_bytes=%d" % (pkt.rx_pkts, pkt.tx_pkts, pkt.rx_bytes, pkt.tx_bytes)
+                        gw_pstats_ts = time()
+                        vals = {"RXPKT": pkt.rx_pkts, "TXPKT": pkt.tx_pkts, "RXBYTES": pkt.rx_bytes, "TXBYTES": pkt.tx_bytes}
+                        update_rrd(GW_PSTATS_RRD_CMD, vals)
+                elif isinstance(pkt, LAPPacket):
+                    # Is it the powermeter talking?
+                    if pkt.sa != 5 or pkt.sp != 0x3c:
+                        continue
 
-            name, val = parse_pm_pkt(pkt)
-    
-            if name is None:   # unknown value 
-                continue
+                    name, val = parse_pm_pkt(pkt)
+                    if name is None:   # unknown value 
+                        continue
         
-            values[name] = val
+                    values[name] = val
 
-            # All values received?
-            if name == "E3":
-                try:
-                    values['U'] = (values['U1'] + values['U2'] + values['U3']) / 3
-                    values['I'] = values['I1'] + values['I2'] + values['I3'] 
-                    values['S'] = values['S1'] + values['S2'] + values['S3'] 
-                    values['P'] = values['P1'] + values['P2'] + values['P3'] 
-                    values['E1'] = int(values['E1'])
-                    values['E2'] = int(values['E2'])
-                    values['E3'] = int(values['E3'])
-                    values['TIME'] = strftime("%H:%M:%S")
-                    print CONSOLE_OUT % values
-                    update_rrd(POWERMETER_RRD_CMD, values)
-                except:
-                    pass
+                    # All values received?
+                    if name == "E3":
+                        try:
+                            values['U'] = (values['U1'] + values['U2'] + values['U3']) / 3
+                            values['I'] = values['I1'] + values['I2'] + values['I3'] 
+                            values['S'] = values['S1'] + values['S2'] + values['S3'] 
+                            values['P'] = values['P1'] + values['P2'] + values['P3'] 
+                            values['E1'] = int(values['E1'])
+                            values['E2'] = int(values['E2'])
+                            values['E3'] = int(values['E3'])
+                            values['TIME'] = strftime("%H:%M:%S")
+                            print CONSOLE_OUT % values
+                            update_rrd(POWERMETER_RRD_CMD, values)
+                        except:
+                            pass
+                        values = all_unknowm_values()
+        except CANError as err:
+            print "CANError: ", err
+            sleep(10)
+            c.close()
 
-                values = all_unknowm_values()
-
-    c.close()
