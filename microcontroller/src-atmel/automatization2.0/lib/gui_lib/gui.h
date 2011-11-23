@@ -23,7 +23,7 @@
 typedef struct {
 	uint16_t x;
 	uint16_t y;
-	uint8_t flags;
+	//uint8_t flags; replaced by flags
 	uint8_t click;
 } touch_event_t;
 ////////////////////////////////////////////////////////////////////////////////
