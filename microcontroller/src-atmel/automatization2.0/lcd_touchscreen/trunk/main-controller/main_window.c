@@ -106,16 +106,12 @@ void init_main_window() {
 }
 
 
-void handle_touch (uint16_t x, uint16_t y, uint8_t click) {
-	touch_event_t t;
-	t.x = x;
-	t.y = y;
-	t.click = click;
+void handle_touch (touch_event_t t) {
 	bar->touch_handler( (gui_element_t *) bar, t);
 	menu_browser_touch_handler(t);
 }
 
-
+/*
 void handle_touchscreen() {
 	static uint16_t click_timer = 0;
 	static pixel p1 = {-1, -1};
@@ -142,3 +138,48 @@ void handle_touchscreen() {
 
 	p1 = p;
 }
+*/
+
+void handle_touchscreen() {
+  	static pixel p1 = {-1, -1};
+		
+	pixel p;
+	p = read_touch_screen_coordinates();
+
+	uint8_t down = 0, up = 0;
+  	if (p.x != -1 && p1.x == -1){
+		down = 1;
+	}
+	
+	if (p1.x != -1 && p.x == -1){
+		up = 1;
+	}
+	
+	
+	uint8_t flags = 0;
+	
+	if(down){
+		flags |= TOUCH_FLAG_DOWN;
+	}
+	
+	if(up){
+		flags |= TOUCH_FLAG_UP;
+	}
+
+	touch_event_t t;
+	t.x = p.x;
+	t.y = p.y;
+	t.flags = flags;
+	
+	if (p.x != -1) {
+		handle_touch(t);
+	}else if(last_touched_gui_element != 0){
+		last_touched_gui_element->touch_handler(last_touched_gui_element, t);
+		last_touched_gui_element = 0;
+	}
+	
+	p1 = p;
+}
+
+
+
