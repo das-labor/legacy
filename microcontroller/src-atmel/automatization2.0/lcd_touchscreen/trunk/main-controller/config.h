@@ -6,8 +6,8 @@
 #define MC_MOSI    PB2
 #define MC_CLK     PB1
 
-#define MCP_CS        PB4
-#define MCP_CMD_PORT  PORTB
+#define MCP_CS_BIT   PB4
+#define MCP_CS_PORT  PORTB
 
 #define SPI_REG_PIN_MCP_INT  PINE
 #define SPI_PIN_MCP_INT      PE7

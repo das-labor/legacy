@@ -18,6 +18,7 @@
 #endif
 
 #include "can_handler.h"
+#include "netvar/netvar.h"
 
 uint8_t myaddr;
 

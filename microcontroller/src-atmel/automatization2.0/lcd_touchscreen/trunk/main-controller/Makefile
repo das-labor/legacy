@@ -14,8 +14,8 @@ OUT           ?= image
 MCU_TARGET    ?= atmega128
 MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS)
+WARNINGS      ?= -Wall -pedantic
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=gnu99
 LDFLAGS        = -Wl,-Map,$(OUT).map
 CANADDR       ?= XXX
 
