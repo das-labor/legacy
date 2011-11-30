@@ -48,6 +48,7 @@ comment "Animations"
 		dep_bool "LABOR Logo"       ANIMATION_LABORLOGO $ANIMATION_BMSCROLLER
 		dep_bool "Amphibian"        ANIMATION_AMPHIBIAN $ANIMATION_BMSCROLLER
 		dep_bool "Out of Spec Logo" ANIMATION_LOGO_OOS  $ANIMATION_BMSCROLLER
+		dep_bool "28c3 Logo"        ANIMATION_LOGO_28C3 $ANIMATION_BMSCROLLER
 	endmenu
 
 	bool "Plasma"            ANIMATION_PLASMA
