@@ -53,6 +53,10 @@ ifeq ($(ANIMATION_LOGO_OOS),y)
   SRC += outofspec.c
 endif
 
+ifeq ($(ANIMATION_LOGO_28C3),y)
+  SRC += 28c3.c
+endif
+
 ifneq (,$(filter y,$(ANIMATION_PLASMA) $(ANIMATION_PSYCHEDELIC)))
   SRC += fpmath_patterns.c
 endif

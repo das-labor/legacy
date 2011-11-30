@@ -15,6 +15,7 @@
 #include "animations/amphibian.h"
 #include "animations/laborlogo.h"
 #include "animations/outofspec.h"
+#include "animations/28c3.h"
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
 #ifdef ANIMATION_TIME
@@ -203,14 +204,20 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_PLASMA
+#ifdef ANIMATION_LOGO_28C3
 		case 20:
+			logo_28c3();
+			break;
+#endif
+
+#ifdef ANIMATION_PLASMA
+		case 21:
 			plasma();
 			break;
 #endif
 
 #ifdef ANIMATION_PSYCHEDELIC
-		case 21:
+		case 22:
 			psychedelic();
 			break;
 #endif
