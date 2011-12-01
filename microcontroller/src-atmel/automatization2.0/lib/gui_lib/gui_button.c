@@ -46,18 +46,8 @@ void gui_button_set_on_screen (gui_element_t *self, uint8_t state) {
 void gui_button_touch_handler (gui_element_t *self, touch_event_t t) {
 	gui_button_t * s = (gui_button_t*)self;
 	last_touched_gui_element = self;
-/*
-	if(t.click){
-		if(s->click_handler){
-			s->click_handler(self);
-		}else{
-			s->state ^= 1;
-			self->draw(self, 0);
-		}
-	}
-*/
 
-	if (t.flags & TOUCH_FLAG_DOWN){
+	if (t.flags & TOUCH_FLAG_DOWN) {
 		s->state = 1;
 		s->draw(self, 0);
 	}
@@ -93,7 +83,7 @@ gui_button_t * new_gui_button() {
 	b->touch_handler = gui_button_touch_handler;
 	b->update_position = gui_button_update_position;
 	b->delete = gui_button_delete;
-	b->box = (rectangle_t){0,0,0,0};
+	b->box = (rectangle_t){0, 0, 0, 0};
 	b->icon = 0;
 	b->state = 0;
 	b->click_handler = 0;
