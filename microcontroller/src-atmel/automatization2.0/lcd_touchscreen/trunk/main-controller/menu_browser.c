@@ -52,7 +52,6 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 				b->box.h = 30;
 				gui_container_add(akt_container,(gui_element_t *) b);
 			} break;
-			
 			case V_CONTAINER: {
 				gui_container_t * c = new_gui_container();
 				c->orientation = ORIENTATION_VERTICAL;
@@ -65,11 +64,21 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 				container_stack[stack_pointer++] = akt_container;
 				akt_container = c;
 			} break;
+			case V_SLIDER: {
+				gui_slider_t * b = new_gui_slider();
+				b->box.w = 32;
+				b->box.h = 80;
+				b->text = (char *) dir_data;
+				dir_data += strlen((char *) dir_data) + 1;
+				gui_container_add(akt_container,(gui_element_t *) b);
+				b->min_value = 0;
+				b->max_value = 255;
+				b->value = 30;
+			} break;
 			case END_CONTAINER: {
 				gui_container_t * new_container = akt_container;
 				akt_container = container_stack[--stack_pointer];
 				gui_container_add(akt_container, (gui_element_t *) new_container);
-
 			} break;
 		}
 	}
@@ -79,7 +88,6 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 void menu_browser_set_dir (uint8_t * dir_data) {
 	state.dir_data = dir_data;
 	parse_dir_to_main_container(dir_data);
-	
 }
 
 void menu_browser_init () {
@@ -97,6 +105,6 @@ void menu_browser_draw () {
 
 void menu_browser_touch_handler(touch_event_t t) {
 	if (state.main_container) {
-		state.main_container->touch_handler ( (gui_element_t *) state.main_container, t);
+		state.main_container->touch_handler((gui_element_t *) state.main_container, t);
 	}
 }
