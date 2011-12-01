@@ -37,8 +37,7 @@ uint8_t test_dir[] = {
 		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x10,
 	END_CONTAINER,
 	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x10,
+		V_SLIDER, 'H','a','l','l','o',0,
 	END_CONTAINER,
 
 	0
@@ -59,7 +58,7 @@ gui_button_t * room_button;
 gui_button_t * main_button;
 
 
-void navigation_bar_init () {
+void navigation_bar_init() {
 	bar = new_gui_container();
 	bar->box.w = 320;
 	bar->box.h = 30;
@@ -111,35 +110,6 @@ void handle_touch (touch_event_t t) {
 	menu_browser_touch_handler(t);
 }
 
-/*
-void handle_touchscreen() {
-	static uint16_t click_timer = 0;
-	static pixel p1 = {-1, -1};
-
-	pixel p;
-	p = read_touch_screen_coordinates();
-
-	uint8_t click = 0;
-
-	if (p.x != -1 && p1.x == -1 && click_timer == 0) {
-		click = 1;
-		click_timer = 20;
-	}
-
-	if (p.x != -1) {
-		handle_touch(p.x, p.y, click);
-	}
-
-	if (click_timer > 0) {
-		click_timer--;
-	}
-
-//	draw_menu(0);
-
-	p1 = p;
-}
-*/
-
 void handle_touchscreen() {
 	static pixel p1 = {-1, -1};
 
@@ -157,12 +127,12 @@ void handle_touchscreen() {
 
 
 	uint8_t flags = 0;
-	
-	if(down) {
+
+	if (down) {
 		flags |= TOUCH_FLAG_DOWN;
 	}
-	
-	if(up) {
+
+	if (up) {
 		flags |= TOUCH_FLAG_UP;
 	}
 
@@ -170,14 +140,14 @@ void handle_touchscreen() {
 	t.x = p.x;
 	t.y = p.y;
 	t.flags = flags;
-	
+
 	if (p.x != -1) {
 		handle_touch(t);
 	} else if (last_touched_gui_element != 0) {
 		last_touched_gui_element->touch_handler(last_touched_gui_element, t);
 		last_touched_gui_element = 0;
 	}
-	
+
 	p1 = p;
 }
 
