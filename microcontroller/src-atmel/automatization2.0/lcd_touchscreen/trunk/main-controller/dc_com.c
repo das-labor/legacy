@@ -144,3 +144,9 @@ void g_draw_pixel(uint16_t x, uint16_t y) {
 	transmit_to_dc_raw(&y, 2);
 }
 
+int g_get_last_text_height() {
+#warning "g_get_last_text_height() is not implemented"
+	return 23;
+}
+
+
