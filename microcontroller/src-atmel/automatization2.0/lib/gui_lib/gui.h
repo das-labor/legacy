@@ -70,7 +70,7 @@ typedef struct {
 	uint8_t on_screen;
 	uint8_t orientation;//horizontal or vertical
 	uint8_t frame_size;//how many pixels frame? 0x80+num draws bounding box
-		
+
 	list_t childs;
 	uint16_t pos;//x or y position that we will place the next element in
 } gui_container_t;

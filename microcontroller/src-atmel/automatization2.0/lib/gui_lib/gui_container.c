@@ -9,7 +9,7 @@
 #include "../util_lib/list.h"
 
 
-void gui_container_add (gui_container_t * c, gui_element_t * e) {
+void gui_container_add(gui_container_t * c, gui_element_t * e) {
 	list_append(&c->childs, e);
 
 	if (c->orientation == ORIENTATION_HORIZONTAL) {
@@ -51,7 +51,7 @@ void gui_container_update_position(gui_element_t * self, int16_t x_diff, int16_t
 	}
 }
 
-static gui_element_t * child_at (gui_container_t * s,uint16_t x, uint16_t y) {
+static gui_element_t * child_at(gui_container_t * s,uint16_t x, uint16_t y) {
 	list_iterator_t it;
 	gui_element_t * child;
 	list_foreach_begin(&it, &s->childs);
@@ -69,21 +69,21 @@ static gui_element_t * child_at (gui_container_t * s,uint16_t x, uint16_t y) {
 
 #ifdef DEBUG_GUI_CONTAINER
 
-	extern void gui_button_draw (gui_element_t * self, uint8_t redraw);
-	extern void gui_container_draw (gui_element_t * self, uint8_t redraw);
+	extern void gui_button_draw(gui_element_t * self, uint8_t redraw);
+	extern void gui_container_draw(gui_element_t * self, uint8_t redraw);
 	
-	void gui_object_info(gui_element_t * obj){
+	void gui_object_info(gui_element_t * obj) {
 		printf("%08X: draw=%08X sos=%08X th=%08X up=%08X", obj, obj->draw, obj->set_on_screen, obj->touch_handler, obj->update_position);
 		
-		if (obj->draw == gui_button_draw ) {
+		if (obj->draw == gui_button_draw) {
 			printf(" type=button");
-		} else if (obj->draw == gui_container_draw ) {
+		} else if (obj->draw == gui_container_draw) {
 			printf(" type=container");
 		}
 	}
 #endif
 
-void gui_container_draw (gui_element_t * self, uint8_t redraw) {
+void gui_container_draw(gui_element_t * self, uint8_t redraw) {
 	gui_container_t * s = (gui_container_t*)self;
 
 	list_iterator_t it;
@@ -118,7 +118,7 @@ void gui_container_draw (gui_element_t * self, uint8_t redraw) {
 	}
 }
 
-void gui_container_set_on_screen (gui_element_t *self, uint8_t state) {
+void gui_container_set_on_screen(gui_element_t *self, uint8_t state) {
 
 }
 
@@ -132,7 +132,7 @@ void gui_container_touch_handler (gui_element_t *self, touch_event_t t) {
 	}
 }
 
-void gui_container_delete_all_childs (gui_container_t * self) {
+void gui_container_delete_all_childs(gui_container_t * self) {
 	gui_container_t * s = self;
 
 	list_iterator_t it;
@@ -145,12 +145,12 @@ void gui_container_delete_all_childs (gui_container_t * self) {
 }
 
 //destructor
-void gui_container_delete (gui_element_t * self) {
+void gui_container_delete(gui_element_t * self) {
 	gui_container_t * s = (gui_container_t*) self;
 
 	gui_container_delete_all_childs (s);
 	uninit_list(&s->childs);
-	free (s);
+	free(s);
 }
 
 //constructor for subclasses (no malloc)
@@ -160,7 +160,7 @@ void gui_container_init(gui_container_t * c) {
 	c->update_position = gui_container_update_position;
 	c->delete = gui_container_delete;
 	c->touch_handler = gui_container_touch_handler;
-	c->box = (rectangle_t){0,0,0,0};
+	c->box = (rectangle_t){0, 0, 0, 0};
 	c->on_screen = 0;
 	c->orientation = ORIENTATION_HORIZONTAL;
 	c->frame_size = 0;
