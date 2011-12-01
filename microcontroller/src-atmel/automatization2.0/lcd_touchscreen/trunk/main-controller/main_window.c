@@ -141,28 +141,28 @@ void handle_touchscreen() {
 */
 
 void handle_touchscreen() {
-  	static pixel p1 = {-1, -1};
-		
+	static pixel p1 = {-1, -1};
+
 	pixel p;
 	p = read_touch_screen_coordinates();
 
 	uint8_t down = 0, up = 0;
-  	if (p.x != -1 && p1.x == -1){
+	if (p.x != -1 && p1.x == -1) {
 		down = 1;
 	}
-	
-	if (p1.x != -1 && p.x == -1){
+
+	if (p1.x != -1 && p.x == -1) {
 		up = 1;
 	}
-	
-	
+
+
 	uint8_t flags = 0;
 	
-	if(down){
+	if(down) {
 		flags |= TOUCH_FLAG_DOWN;
 	}
 	
-	if(up){
+	if(up) {
 		flags |= TOUCH_FLAG_UP;
 	}
 
@@ -173,13 +173,11 @@ void handle_touchscreen() {
 	
 	if (p.x != -1) {
 		handle_touch(t);
-	}else if(last_touched_gui_element != 0){
+	} else if (last_touched_gui_element != 0) {
 		last_touched_gui_element->touch_handler(last_touched_gui_element, t);
 		last_touched_gui_element = 0;
 	}
 	
 	p1 = p;
 }
-
-
 

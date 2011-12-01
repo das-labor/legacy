@@ -62,7 +62,7 @@ void update_touchscreen() {
 				state = 2;
 				got_data = 0;
 			} else {
-				if(got_data){
+				if (got_data) {
 					touchscreen_position_raw.x = p.x;
 					touchscreen_position_raw.y = p.y;
 				}
@@ -161,7 +161,4 @@ void init_adc() {
 	//1 1 0 64
 	//1 1 1 128
 	ADCSRA = (1<<ADEN) | (1<<ADSC) | (1<<ADFR) | (1<<ADIE) | 7;
-	
-
-
 }
