@@ -223,22 +223,73 @@ static uint16_t VCP_DataTx (uint8_t* Buf, uint32_t Len)
 
 #define APP_TX_BUF_SIZE 128
 uint8_t APP_Tx_Buffer[APP_TX_BUF_SIZE];
-uint32_t APP_tx_ptr_in;
+uint32_t APP_tx_ptr_head;
+uint32_t APP_tx_ptr_tail;
+
 
 static uint16_t VCP_DataRx (uint8_t* Buf, uint32_t Len)
 {
-#if 0
   uint32_t i;
-	
+
   for (i = 0; i < Len; i++)
   {
-	 APP_Tx_Buffer[APP_tx_ptr_in]= *(Buf + i);
-	 APP_tx_ptr_in++;
-	  if(APP_tx_ptr_in ==  APP_TX_BUF_SIZE)
-		  return USBD_OK;
+	 APP_Tx_Buffer[APP_tx_ptr_head] = *(Buf + i);
+	 APP_tx_ptr_head++;
+	  if(APP_tx_ptr_head == APP_TX_BUF_SIZE)
+		 APP_tx_ptr_head = 0;
+
+	  if(APP_tx_ptr_head == APP_tx_ptr_tail)
+		 return USBD_FAIL;
   } 
-#endif 
+	
   return USBD_OK;
+}
+
+uint8_t VCP_get_char(uint8_t *buf)
+{
+ if(APP_tx_ptr_head == APP_tx_ptr_tail)
+ 	return 0;
+	
+ *buf = APP_Tx_Buffer[APP_tx_ptr_tail];
+ APP_tx_ptr_tail++;
+ if(APP_tx_ptr_tail == APP_TX_BUF_SIZE)
+  APP_tx_ptr_tail = 0;
+	
+ return 1;
+}
+
+uint8_t VCP_get_string(uint8_t *buf)
+{
+ if(APP_tx_ptr_head == APP_tx_ptr_tail)
+ 	return 0;
+	
+ while(!APP_Tx_Buffer[APP_tx_ptr_tail] || APP_Tx_Buffer[APP_tx_ptr_tail] == '\n' || APP_Tx_Buffer[APP_tx_ptr_tail] == '\r')
+	{
+		APP_tx_ptr_tail++;
+		if(APP_tx_ptr_tail == APP_TX_BUF_SIZE)
+   			APP_tx_ptr_tail = 0;
+		if(APP_tx_ptr_head == APP_tx_ptr_tail)
+ 			return 0;
+	}
+       
+ int i=0;
+ do
+  {
+  *(buf+i) = APP_Tx_Buffer[i+APP_tx_ptr_tail];
+  i++;
+	  
+  if((APP_tx_ptr_tail+i) == APP_TX_BUF_SIZE)
+   i = -APP_tx_ptr_tail;
+  if(APP_tx_ptr_head == (APP_tx_ptr_tail+i))
+ 	return 0;
+
+ }while(APP_Tx_Buffer[APP_tx_ptr_tail+i] && APP_Tx_Buffer[APP_tx_ptr_tail+i] != '\n' && APP_Tx_Buffer[APP_tx_ptr_tail+i] != '\r');
+
+ *(buf+i) = 0;
+ APP_tx_ptr_tail+= i;
+ if(APP_tx_ptr_tail >= APP_TX_BUF_SIZE)
+   APP_tx_ptr_tail -= APP_TX_BUF_SIZE;
+ return i;
 }
 
 /**

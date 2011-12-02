@@ -55,6 +55,10 @@ void VCP_put_char(uint8_t buf);
 
 void VCP_send_str(uint8_t* buf);
 
+uint8_t VCP_get_char(uint8_t *buf);
+
+uint8_t VCP_get_string(uint8_t *buf);
+
 #define DEFAULT_CONFIG                  0
 #define OTHER_CONFIG                    1
 
