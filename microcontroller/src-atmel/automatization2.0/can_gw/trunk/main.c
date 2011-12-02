@@ -51,9 +51,10 @@
 #define SYS_TICK_FREQ ((F_CPU / 1024) / 256)
 
 //our own control "register" bit flags
-#define FLAG_AUTOREPORT_PSTATS 0
-#define FLAG_AUTOREPORT_POWERDRAW 1
-#define FLAG_BUSPOWER 2
+#define FLAG_AUTOREPORT_PSTATS		0
+#define FLAG_AUTOREPORT_POWERDRAW	1
+#define FLAG_BUSPOWER				2
+#define FLAG_RESET					7
 
 //hacky import of read function
 extern unsigned char mcp_read(unsigned char reg);
@@ -503,6 +504,9 @@ void syscontrol(uint8_t ctrl_reg_new)
 {
 	uint8_t changes = ctrl_reg_new ^ ctrl_reg;
 
+	if(ctrl_reg_new & _BV(FLAG_RESET))
+		while(23) wdt_enable(WDTO_15MS);
+
 	if(changes & _BV(FLAG_BUSPOWER))
 		buspower(ctrl_reg_new & _BV(FLAG_BUSPOWER));
 
@@ -575,13 +579,13 @@ int main(void) {
 		}
 
 		//schedule autoreport functions approx once a second
-		if((ctrl_reg & (FLAG_AUTOREPORT_POWERDRAW | FLAG_AUTOREPORT_PSTATS)) > 0 || (sys_ticks - autoreport_last_schedule_time) > (SYS_TICK_FREQ))
+		if((ctrl_reg & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS))) > 0 || (sys_ticks - autoreport_last_schedule_time) > (SYS_TICK_FREQ))
 		{
 			autoreport_last_schedule_time = sys_ticks;
 
-			if(ctrl_reg & FLAG_AUTOREPORT_PSTATS)
+			if(ctrl_reg & _BV(FLAG_AUTOREPORT_PSTATS))
 				write_cmd_to_uart(RS232CAN_PACKETCOUNTERS, (char *)&pkt_cnt, sizeof(pkt_cnt));
-			if(ctrl_reg & FLAG_AUTOREPORT_POWERDRAW)
+			if(ctrl_reg & _BV(FLAG_AUTOREPORT_POWERDRAW))
 				write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&bus_pwr, sizeof(bus_pwr));
 		}
 	}
