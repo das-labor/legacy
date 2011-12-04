@@ -97,8 +97,12 @@ void display_loop(){
 #endif
 
 #ifdef ANIMATION_SPIRAL
+#		ifndef SPIRAL_DELAY
+#			define SPIRAL_DELAY 5
+#		endif
+
 		case 2:
-			spiral(5);
+			spiral(SPIRAL_DELAY);
 			break;
 #endif
 

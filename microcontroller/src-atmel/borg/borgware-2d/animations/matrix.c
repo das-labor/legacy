@@ -11,6 +11,9 @@
 #ifndef MATRIX_STREAMER_NUM
 	#define MATRIX_STREAMER_NUM 30
 #endif
+#ifndef MATRIX_DELAY
+	#define MATRIX_STREAMER_NUM 60
+#endif
 
 typedef struct{
 	pixel start;
