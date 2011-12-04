@@ -1,0 +1,18 @@
+mainmenu_option next_comment
+comment "Ancient Borg Port Setup"
+
+choice 'Column Port'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTC' COLPORT
+
+choice 'Row Port'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTA' ROWPORT
+
+endmenu
