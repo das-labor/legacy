@@ -46,6 +46,10 @@ ifeq ($(BORG_HW),HW_GIGABORG)
   SRC = borg_hw_gigaborg.c
 endif
 
+ifeq ($(BORG_HW),HW_ANCIENTBORG)
+  SRC = borg_hw_ancient.c
+endif
+
 ifeq ($(SRC),'')
   $(error no valid hardware driver selected )
 endif

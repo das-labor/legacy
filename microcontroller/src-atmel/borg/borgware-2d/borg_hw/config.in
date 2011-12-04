@@ -10,14 +10,15 @@ int "Number of brightnes-levels" NUMPLANE 3
 
 choice 'Hardware Driver'			\
    "Borg-16                HW_BORG_16 \
-    Andre-borg             HW_BORG_ANDRE \
-    Laufschrift-borg	   HW_BORG_LS \
-    Laufschrift-borg-mh    HW_BORG_MH \
-    Borg-mini              HW_BORG_MINI \
+    Andre-Borg             HW_BORG_ANDRE \
+    Laufschrift-Borg	   HW_BORG_LS \
+    Laufschrift-Borg-MH    HW_BORG_MH \
+    Borg-Mini              HW_BORG_MINI \
     Panel-One              HW_PANEL_ONE \
     4xPD1165               HW_PD1165 \
-    PingPong               HW_PINGPONG \
-    Gigaborg               HW_GIGABORG" \
+    Ping-Pong              HW_PINGPONG \
+    Giga-Borg              HW_GIGABORG \
+    Ancient-Borg           HW_ANCIENTBORG" \
    'Borg-16' BORG_HW
 
 
@@ -61,17 +62,9 @@ if [ "$BORG_HW" == "HW_GIGABORG" ] ; then
   source borg_hw/config_gigaborg.in
 fi
 
-
-
-
-#		case $x in
-#		y) flag="*" ;;
-#		m) flag="M" ;;
-#		*) flag=" " ;;
-#		esac
-
-
-
+if [ "$BORG_HW" == "HW_ANCIENTBORG" ] ; then
+  source borg_hw/config_ancient.in
+fi
 
 endmenu
 
