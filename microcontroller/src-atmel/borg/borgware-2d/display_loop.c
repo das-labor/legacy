@@ -18,6 +18,7 @@
 #include "animations/28c3.h"
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
+#include "animations/blackhole.h"
 #ifdef ANIMATION_TIME
 #include "animations/borg_time.h"
 #endif
@@ -226,6 +227,11 @@ void display_loop(){
 			break;
 #endif
 
+#ifdef ANIMATION_BLACKHOLE
+		case 23:
+			blackhole();
+			break;
+#endif
 
 #ifdef ANIMATION_TESTS
 		case 31:
@@ -276,6 +282,7 @@ void display_loop(){
 		case 43:
 			menu();
 			mode = oldOldmode;
+			break;
 #else
 
 		case 42:

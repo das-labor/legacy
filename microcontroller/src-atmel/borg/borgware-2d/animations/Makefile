@@ -61,6 +61,10 @@ ifneq (,$(filter y,$(ANIMATION_PLASMA) $(ANIMATION_PSYCHEDELIC)))
   SRC += fpmath_patterns.c
 endif
 
+ifeq ($(ANIMATION_BLACKHOLE),y)
+  SRC += blackhole.c
+endif
+
 ifeq ($(ANIMATION_TIME),y)
   SRC += borg_time.c
 endif

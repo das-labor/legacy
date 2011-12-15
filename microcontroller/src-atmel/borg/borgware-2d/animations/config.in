@@ -58,6 +58,7 @@ comment "Animations"
 
 	bool "Plasma"            ANIMATION_PLASMA
 	bool "Psychedelic"       ANIMATION_PSYCHEDELIC
+	bool "Black Hole"        ANIMATION_BLACKHOLE
 
 	comment  "Special Animations"
 	bool     "Test Animations"  ANIMATION_TESTS
