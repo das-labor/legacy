@@ -29,14 +29,14 @@ static signed char sin_i(unsigned char angle) {
 	if (angle < 16) {
 		index = angle;
 	} else if (angle < 32) {
-		index = 32 - angle;
+		index = 31 - angle;
 	} else if (angle < 48) {
 		index = angle - 32;
 	} else {
-		index = 64 - angle;
+		index = 63 - angle;
 	}
 
-	return (unsigned char)(PGM(sinus_table[index])) * (angle < 32 ? 1 : -1);
+	return (signed char)(PGM(sinus_table[index])) * (angle < 32 ? 1 : -1);
 }
 
 
