@@ -15,7 +15,7 @@
 #include "animations/amphibian.h"
 #include "animations/laborlogo.h"
 #include "animations/outofspec.h"
-#include "animations/28c3.h"
+#include "animations/fairydust.h"
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
 #include "animations/blackhole.h"
@@ -209,9 +209,9 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_LOGO_28C3
+#ifdef ANIMATION_FAIRYDUST
 		case 20:
-			logo_28c3();
+			fairydust();
 			break;
 #endif
 
