@@ -1,0 +1,61 @@
+mainmenu_option next_comment
+comment "Borg16 HGMod port setup"
+
+#define COLPORT  PORTC
+#define COLDDR   DDRC
+
+choice 'TLC5940 Control Port'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTC' COLPORT
+
+choice 'port for row shiftregisters'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTD' ROWPORT
+
+comment "pin numbers on shiftregister port"
+
+choice '/MCLR Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin4' PIN_MCLR
+
+choice 'CLK Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin6' PIN_CLK
+
+choice 'DATA Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin7' PIN_DATA
+
+comment "fixing hardwareproblems in software"
+
+bool "reverse cols" REVERSE_COLS n
+bool "invert rows " INVERT_ROWS n
+
+endmenu
