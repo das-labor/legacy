@@ -10,6 +10,7 @@ int "Number of brightnes-levels" NUMPLANE 3
 
 choice 'Hardware Driver'			\
    "Borg-16                HW_BORG_16 \
+    Borg-16-HGMod          HW_BORG_16_HGM \
     Andre-Borg             HW_BORG_ANDRE \
     Laufschrift-Borg	   HW_BORG_LS \
     Laufschrift-Borg-MH    HW_BORG_MH \
@@ -24,6 +25,10 @@ choice 'Hardware Driver'			\
 
 if [ "$BORG_HW" == "HW_BORG_16" ] ; then
   source borg_hw/config_borg16.in
+fi
+
+if [ "$BORG_HW" == "HW_BORG_16_HGM" ] ; then
+  source borg_hw/config_borg16_hgmod.in
 fi
 
 if [ "$BORG_HW" == "HW_BORG_ANDRE" ] ; then
