@@ -1,13 +1,17 @@
 TARGET = libborg_hw.a
 TOPDIR = ..
 
-SRC_SIM := 
+SRC_SIM :=
 
 include $(TOPDIR)/defaults.mk
 
 
 ifeq ($(BORG_HW),HW_BORG_16)
   SRC = borg_hw_borg16.c
+endif
+
+ifeq ($(BORG_HW),HW_BORG_16_HGM)
+  SRC = borg_hw_borg16_hgmod.c
 endif
 
 ifeq ($(BORG_HW),HW_BORG_ANDRE)
