@@ -19,17 +19,17 @@
 #define TLC_PIN_DCPRG	4
 #define TLC_PIN_XERR	6
 
-#define COLDDR  DDR(COLPORT)
+#define COLDDR  DDR(TLCPORT)
 #define ROWDDR  DDR(ROWPORT)
 
 #define SCLK() 	{									\
-					COLPORT |= _BV(TLC_PIN_SCLK);	\
-					COLPORT &= ~_BV(TLC_PIN_SCLK);	\
+					TLCPORT |= _BV(TLC_PIN_SCLK);	\
+					TLCPORT &= ~_BV(TLC_PIN_SCLK);	\
 				}
 
 #define XLAT() 	{									\
-					COLPORT |= _BV(TLC_PIN_XLAT);	\
-					COLPORT &= ~_BV(TLC_PIN_XLAT);	\
+					TLCPORT |= _BV(TLC_PIN_XLAT);	\
+					TLCPORT &= ~_BV(TLC_PIN_XLAT);	\
 				}
 
 /* more ifdef magic :-( */
@@ -45,9 +45,6 @@ unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 static void nextrow(uint8_t row) {
 	unsigned char i;
 	static unsigned char row = 0;
-
-	//blank outputs of low-side (column) driver
-	COLPORT |= _BV(TLC_PIN_BLANK);
 
 	//increment & wrap row counter
 	if (++row == NUM_ROWS) row = 0;
@@ -101,15 +98,15 @@ static void rowshow(unsigned char row, unsigned char plane) {
 	tmp = (tmp >> 4) | (tmp << 4);
 	tmp = ((tmp & 0xcc) >> 2) | ((tmp & 0x33)<< 2); //0xcc = 11001100, 0x33 = 00110011
 	tmp = ((tmp & 0xaa) >> 1) | ((tmp & 0x55)<< 1); //0xaa = 10101010, 0x55 = 1010101
-	COLPORT2 = tmp;
+	TLCPORT2 = tmp;
 	tmp = tmp1;
 	tmp = (tmp >> 4) | (tmp << 4);
 	tmp = ((tmp & 0xcc) >> 2) | ((tmp & 0x33) << 2); //0xcc = 11001100, 0x33 = 00110011
 	tmp = ((tmp & 0xaa) >> 1) | ((tmp & 0x55) << 1); //0xaa = 10101010, 0x55 = 1010101
-	COLPORT1 = tmp;
+	TLCPORT1 = tmp;
 #else
-	COLPORT1 = tmp;
-	COLPORT2 = tmp1;
+	TLCPORT1 = tmp;
+	TLCPORT2 = tmp1;
 #endif
 }
 */
@@ -117,11 +114,20 @@ static void rowshow(unsigned char row, unsigned char plane) {
 
 // depending on the plane this interrupt triggers at 50 kHz, 31.25 kHz or
 // 12.5 kHz
-SIGNAL(SIG_OUTPUT_COMPARE0) {
+ISR(TIMER0_COMP_vect ) {
 	uint8_t i, x;
 
 	// reset watchdog
 	wdt_reset();
+
+	//sync to timer 1
+	while(!(TIFR1 & _BV(OCF1A)));
+
+	//blank outputs of low-side (column) driver
+	TLCPORT |= _BV(TLC_PIN_BLANK);
+
+	//disable timer 1
+	TCCR1B &= ~_BV(CS10);
 
 	// switch rows
 	nextrow(row);
@@ -135,22 +141,33 @@ SIGNAL(SIG_OUTPUT_COMPARE0) {
 		//shift in 12 bit words
 		for(x = 0; x < 12; x++)
 		{
-			COLPORT &= ~_BV(TLC_PIN_SIN);
-			COLPORT |= ((uint8_t)((uint16_t)0xFFF >> x) & 1) << TLC_PIN_SIN;
+			TLCPORT &= ~_BV(TLC_PIN_SIN);
+			TLCPORT |= ((uint8_t)((uint16_t)0xFFF >> x) & 1) << TLC_PIN_SIN;
 			SCLK();
 		}
 	}
 
-	//latch data and disable blanking
+	//latch data, disable blanking, enable and reset timers
 	XLAT();
-	COLPORT &= ~_BV(TLC_PIN_BLANK);
+	TCNT1    =   0;
+	TIFR1    =  _BV(OCF1A)
+	TLCPORT &= ~_BV(TLC_PIN_BLANK);
+	TCNT0 	 =   0; //be a little faster than timer 1
+	TCCR1B  |=  _BV(CS10); // clk/1
+}
+
+
+ISR(TIMER1_COMPA_vect)
+{
+	TLCPORT |= _BV(TLC_PIN_BLANK);
+	TLCPORT &= ~_BV(TLC_PIN_BLANK);
 }
 
 
 void timer0_off() {
 	cli();
 
-	COLPORT = 0;
+	TLCPORT = 0;
 	ROWPORT = 0;
 
 	#ifdef __AVR_ATmega644P__
@@ -160,11 +177,14 @@ void timer0_off() {
 		TCCR0 = 0x00;
 	#endif
 
+	//disable timer 1 also
+	TCCR1B &= ~_BV(CS10);
+
 	sei();
 }
 
 
-// initialize timer which triggers the interrupt
+// initialize timers which trigger the interrupts
 static void timer0_on() {
 	/* TCCR0: FOC0 WGM00 COM01 COM00 WGM01 CS02 CS01 CS00
 	 * CS02 CS01 CS00
@@ -180,14 +200,20 @@ static void timer0_on() {
 		TCCR0A = 0x02; // CTC Mode
 		TCCR0B = 0x04; // clk/256
 		TCNT0  = 0;    // reset timer
-		OCR0   = 20;   // compare with this value
+		OCR0   = 0xFF; // compare with this value
 		TIMSK0 = 0x02; // compare match Interrupt on
 	#else
 		TCCR0  = 0x0C; // CTC Mode, clk/256
 		TCNT0  = 0;    // reset timer
-		OCR0   = 20;   // compare with this value
+		OCR0   = 0xFF; // compare with this value
 		TIMSK  = 0x02; // compare match Interrupt on
 	#endif
+
+	//setup timer1 also (for blanking pulse)
+	TCCR1A = 0x00;
+	TCCR0B = _BV(WGM12); // CTC Mode
+	OCR1A  = 8192; // top value
+	TIMSK1 = _BV(OCIE1A); // compare match interrupt on
 }
 
 
@@ -206,18 +232,18 @@ void tlc5940_init()
 	//set blank flag (disable led-outputs)
 	//dcprog is high -> use values from dc register
 	//vprg is high -> dot correction mode mode
-	COLPORT = _BV(TLC_PIN_XERR) | _BV(TLC_PIN_BLANK) | _BV(TLC_PIN_DCPRG) | _BV(TLC_PIN_VPRG);
+	TLCPORT = _BV(TLC_PIN_XERR) | _BV(TLC_PIN_BLANK) | _BV(TLC_PIN_DCPRG) | _BV(TLC_PIN_VPRG);
 
 	//set max power (6bit * 16 LEDs)
-	COLPORT |= _BV(TLC_PIN_SIN);
+	TLCPORT |= _BV(TLC_PIN_SIN);
 	for(i = 0; i < 96; i++) SCLK();
 	XLAT();
 
 	//switch to grayscale mode
-	COLPORT &= ~_BV(TLC_PIN_VPRG);
+	TLCPORT &= ~_BV(TLC_PIN_VPRG);
 
 	//flush input shift register (12bit * 16 LEDs)
-	COLPORT &= ~_BV(TLC_PIN_SIN);
+	TLCPORT &= ~_BV(TLC_PIN_SIN);
 	for(i = 0; i < 192; i++) SCLK();
 	XLAT();
 
