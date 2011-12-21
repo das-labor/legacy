@@ -9,7 +9,7 @@ choice 'TLC5940 Control Port'			\
     PORTB  PORTB \
     PORTC  PORTC \
     PORTD  PORTD" \
-   'PORTC' COLPORT
+   'PORTC' TLCPORT
 
 choice 'port for row shiftregisters'			\
    "PORTA  PORTA \
