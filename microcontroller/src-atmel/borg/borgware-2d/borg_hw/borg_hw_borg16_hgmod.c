@@ -112,8 +112,8 @@ static void rowshow(unsigned char row, unsigned char plane) {
 */
 
 
-// depending on the plane this interrupt triggers at 50 kHz, 31.25 kHz or
-// 12.5 kHz
+//this int runs with multiples of half the frequency of timer 1,
+//meaning that new row data gets laoded every 2n pwm periods of the tlc
 ISR(TIMER0_COMP_vect ) {
 	uint8_t i, x;
 
