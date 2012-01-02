@@ -1,0 +1,6 @@
+                                        600DPI
+
+Höhe Motorachse             99.6 mm     2353
+Durchmesser Spiegel         40   mm     945
+Höhe Laser                  59   mm
+x-Abstand Laser Motorachse  62   mm
