@@ -9,10 +9,10 @@
  */
 void *display_loop(void * unused) {
 	while (1) {
-	    aufgabe3();
+	    //aufgabe3();
 
-		/*
-		snake3d();
+
+		//snake3d();
 		growingCubeFilled();
 		planeAnimation2(30);
 		spirale();
@@ -35,7 +35,7 @@ void *display_loop(void * unused) {
 		test3();
 		test2();
 		test2();
-		*/
+		
 	}
 }
 

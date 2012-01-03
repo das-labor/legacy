@@ -11,8 +11,8 @@
 
 /* and should be replaced throug the following macros.
  */
-#define LEN_X 16
-#define LEN_Y 16
-#define LEN_Z 16
+#define LEN_X 8
+#define LEN_Y 8
+#define LEN_Z 8
 
 #endif

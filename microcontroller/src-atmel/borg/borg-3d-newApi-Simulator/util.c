@@ -7,10 +7,18 @@
 #	include <windows.h>
 #endif
 
+extern volatile unsigned int speed;
+extern int curFrame;
+
 void myWait(unsigned int ms) {
+    curFrame++;
 #ifdef _WIN32
-	Sleep(ms);
+    while (speed == 0)
+        Sleep(10);
+	Sleep((ms*100)/speed);
 #else
-	usleep(ms*1000);
+	while (speed == 0)
+        usleep(10000); // pause
+	usleep(ms*10*(10000/speed));
 #endif
 }

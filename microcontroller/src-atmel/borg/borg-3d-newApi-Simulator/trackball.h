@@ -1,20 +1,20 @@
-/* 
+/*
   *  Simple trackball-like motion adapted (ripped off) from projtex.c
   *  (written by David Yu and David Blythe).  See the SIGGRAPH '96
   *  Advanced OpenGL course notes.
   *
-  *
+  *sp
   *  Usage:
-  *  
+  *
   *  o  call gltbInit() in before any other gltb call
   *  o  call gltbReshape() from the reshape callback
   *  o  call gltbMatrix() to get the trackball matrix rotation
   *  o  call gltbStartMotion() to begin trackball movememt
   *  o  call gltbStopMotion() to stop trackball movememt
   *  o  call gltbMotion() from the motion callback
-  *  o  call gltbAnimate(GL_TRUE) if you want the trackball to continue 
+  *  o  call gltbAnimate(GL_TRUE) if you want the trackball to continue
   *     spinning after the mouse button has been released
-  *  o  call gltbAnimate(GL_FALSE) if you want the trackball to stop 
+  *  o  call gltbAnimate(GL_FALSE) if you want the trackball to stop
   *     spinning after the mouse button has been released
   *
   *  Typical setup:
@@ -75,10 +75,10 @@
 
 
  /* functions */
- void tbInit(GLuint button);
+    void tbInit(GLuint button);
 
  void tbMatrix(void);
-
+ void tbReset(void);
  void tbReshape(int width, int height);
 
  void tbMouse(int button, int state, int x, int y);
