@@ -11,21 +11,18 @@
  *     with all animationprograms
  */
 
-// type make -f Makefile.osx
-// to compile the simulator for MacOSX (tested on 10.2, 10.3, 10.4)
 #ifdef OSX_
 #  include <GLUT/glut.h>
 #else
 #  include <GL/glut.h>  
 #endif
 
-// To Compile the Simulator on Windows, you have to install DevCpp
-// And also the glut.devpack for DevCpp
-// You can download it there:
-//   http://www.bloodshed.net/dev/devcpp.html
-//   http://vis.computer.org/vis2005contest/hand/glut.3.7.6+.DevPak
-// 
-// please use for windows the DevCpp projectfile. _WIN32 is set there
+// To Compile the Simulator on Windows, you have to install Code::Blocks with mingw.
+// http://www.codeblocks.org/
+// Addionally extract the following zip archive into the MinGW Subfolder (C:\Programme\CodeBlocks\MinGW ).
+// http://www.das-labor.org/files/madex/glut.3.7.6_mingw_codeblocks.zip
+// And open the projectfile "win32_code_blocks.cbp". (_WIN32 is set there)
+
 #ifdef _WIN32
 #  include <windows.h>
 #  include <process.h>
@@ -33,6 +30,7 @@
 #else
 #  include <pthread.h>   // for threads in linux
 #  include <stdlib.h>
+#  include <stdarg.h>
 #  include <sys/time.h>
 #  include <sys/types.h>
 #  include <unistd.h>
@@ -42,16 +40,24 @@
 #include "programs.h"
 #include "trackball.h"
 
+char strInit[] = "Test";
+char *animStr = strInit;
+volatile unsigned int curFrame   =   0;  // counts the waits
+volatile unsigned int speed      = 100;  // speed in %
+volatile unsigned int speedSave  = 100;  // saved speed for pause
+volatile unsigned char showKoord =   1;  // show or hide coordinate system
+volatile int debug_val_1 = 0, debug_val_2 = 0, debug_val_3 = 0;
+
 // variables for the simulator screensize
 int WindWidth, WindHeight;
 
 /** 
  *
  */
-unsigned short pixmap[NUM_LEVELS][LEN_Z][LEN_Y];
+unsigned char pixmap[NUM_LEVELS][LEN_Z][LEN_Y];
 
 // rotations variables for keyboardrotation
-float view_rotx = 0, view_roty = 0, view_rotz = 0;
+float view_rotx = -30., view_roty = 0., view_rotz = 210.;
 // stores the glut window 
 int win;
 // manage the joystick -> please look at joystick.h 
@@ -62,6 +68,21 @@ pthread_t simthread;
 // its needed to draw spheres
 GLUquadric* quad;
 
+// sets the name of the animation and stopps skipping
+void setAnimName(char* str) {
+	curFrame = 0;
+	
+	debug_val_1 = 0;
+	
+	debug_val_2 = 0;
+	
+	debug_val_3 = 0;
+	
+	if (str)
+		animStr = str;
+	if (speed > 1000)
+		speed = 100;
+}
 
 /** draws a LED to the position (pos_x, pos_y, poy_z) to the screen.
  *  It has the brightness color. 0 = off -> 3 = full on. Its done by 
@@ -75,39 +96,111 @@ void drawLED(int color, float pos_x, float pos_y, float pos_z) {
 	glPopMatrix();
 }
 
+/** draws the coordinate system. red for x, green for y and blue for z-axis.
+ */
+void drawKoord(float dist, float size) {
+	glPushMatrix();
+	glTranslatef(-dist, -dist, -dist);
+	glColor3f(1., 0., 0.); // red == x
+	glBegin(GL_LINES);
+                glVertex3f(0., 0., 0.);
+                glVertex3f(size, 0., 0.);
+	glEnd();
+	glColor3f(0., 1., 0.); // red == x
+	glBegin(GL_LINES);
+                glVertex3f(0., 0., 0.);
+                glVertex3f(0., size, 0.);
+	glEnd();
+	glColor3f(0., 0., 1.); // red == x
+	glBegin(GL_LINES);
+                glVertex3f(0., 0., 0.);
+                glVertex3f(0., 0., size);
+	glEnd();
+	glPopMatrix();
+	
+}
+
+/** writes text on the simulator
+ */
+void output(GLfloat x, GLfloat y, char *format,...)
+{
+	va_list args;
+	char buffer[200], *p;
+	
+	va_start(args, format);
+	vsprintf(buffer, format, args);
+	va_end(args);
+	glPushMatrix();
+	glTranslatef(x, y, 0);
+	for (p = buffer; *p; p++)
+		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *p);
+	glPopMatrix();
+}
+
 
 /** This is the most importend function, because it puts the virtual LEDs 
  *  onto the screen.
  */
 void display(void){
-  	int x, y, z, level, color;
-  	tbReshape(WindWidth, WindHeight);
-  	glClear(GL_COLOR_BUFFER_BIT);
-  	glPushMatrix();
-	glTranslatef(LEN_Z*2., LEN_Y*2., LEN_X*2.);
-	tbMatrix(); // Adds the rotationspart of the trackball 
-  	glRotatef(view_rotx, 1.0, 0.0, 0.0);
-  	glRotatef(view_roty, 0.0, 1.0, 0.0);
-	glRotatef(view_rotz, 0.0, 0.0, 1.0);
-	glTranslatef(-LEN_Z*2., -LEN_Y*2., -LEN_X*2.);
-  	for (x = 0; x < LEN_X; x++) {
-		for (y = 0; y < LEN_Y; y++) { 
-			for (z = 0; z < LEN_Z; z++) {
-				color = 0;
-				// checks what level the LED has got.
-				for (level = 0; level < NUM_LEVELS; level++) {
-					if (pixmap[level][z][y] & (1 << x)) {
-						color = level+1;		
-					}
-				}
-				// display the LEDs in a the original size raster
-				// in the real one are also 4cm beetween the LEDs
-				drawLED(color, (float)x*4.0, (float)y*4.0, (float)z*4.);
-			}
-		}
-  	}
-	glPopMatrix();
-	glutSwapBuffers();
+    int x, y, z, level, color = 0;
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+
+
+    tbReshape(WindWidth, WindHeight);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glPushMatrix();
+    glTranslatef(LEN_Z*2., LEN_Y*2., LEN_X*2.);
+    tbMatrix(); // Adds the rotationspart of the trackball 
+    glRotatef(view_rotx, 1.0, 0.0, 0.0);
+    glRotatef(view_roty, 0.0, 1.0, 0.0);
+    glRotatef(view_rotz, 0.0, 0.0, 1.0);
+    if (showKoord)
+            drawKoord(LEN_X*2.+2., LEN_X+2.);	
+
+    glTranslatef(-LEN_Z*2., -LEN_Y*2., -LEN_X*2.);
+    for (x = 0; x < LEN_X; x++) {
+            for (y = 0; y < LEN_Y; y++) { 
+                    for (z = 0; z < LEN_Z; z++) {
+                            color = 0;
+                            // checks what level the LED has got.
+                            for (level = 0; level < NUM_LEVELS; level++) {
+                                    if (pixmap[level][z][y] & (1 << x)) {
+                                            color = level+1;		
+                                    }
+                            }
+                            // display the LEDs in a the original size raster
+                            // in the real one are also 4cm beetween the LEDs
+                            drawLED(color, (float)x*4.0, (float)y*4.0, (float)z*4.);
+                    }
+            }
+    }
+    glPopMatrix();
+    
+    // Overlay Textdarstellung
+    glPushAttrib(GL_ENABLE_BIT);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, (WindWidth*5000)/WindHeight, 0, 5000);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1., 0., 0.);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(2.0);
+    output(100, 4800, "Animation: %s - Speed = %d %%", animStr, speed);
+    output(100, 4600, "Waits: %d, x1: %d, x2: %d, x3: %d", curFrame, debug_val_1, debug_val_2, debug_val_3);
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glPopAttrib();
+	
+    glutSwapBuffers();
 	// waits. If this value is lower, only the CPU-time rises. you cant see it.
 #ifdef _WIN32
 	Sleep(20);
@@ -121,22 +214,74 @@ void display(void){
  */
 void keyboard(unsigned char key, int x, int y){
 	switch (key) {  
-		case 'q': printf("Quit\n");
-    		glutDestroyWindow(win);
-    		exit(0); 
-			break;
-        case 'w':
-    	    joy1_up++;
-   	        break;
-        case 's':
-   	        joy1_down++;
-     	    break;
-        case 'd':	
-   	        joy1_right++;
-     	    break;
-        case 'a':
-     	    joy1_left++;
-     	    break;
+		case 'q': 
+                    printf("Quit\n");
+                    glutDestroyWindow(win);
+                    exit(0); 
+                    break;
+			
+		case 'r':
+                    view_rotx = -30.;
+                    view_roty =   0.;
+                    view_rotz = 210.;
+                    tbReset();
+                    break;
+			
+		case ' ':
+                    if (speed) { // pause
+                            speedSave = speed;
+                            speed = 0;
+                    } else { // resume
+                            speed = speedSave;
+                    }
+
+                    break;
+			
+		case 'z':
+                    if (showKoord)
+                            showKoord = 0;
+                    else
+                            showKoord = 1;
+                    break;
+			
+		case 't':
+                    speed++;
+                    break;
+			
+		case 'i':	
+                    debug_val_1++;
+                    break;
+			
+			
+                case 'k':
+                    debug_val_1--;
+                    break;
+			
+			
+		case 'x':
+                    speed = 100000;
+                    break;
+			
+		case 'g':
+                    if (speed)
+                        speed--;
+                    break;
+			
+                case 'w':
+                    joy1_up++;
+                    break;
+
+                case 's':
+                    joy1_down++;
+                    break;
+
+                case 'd':
+                    joy1_right++;
+                    break;
+
+                case 'a':
+                    joy1_left++;
+                    break;
 	}
 }
 
@@ -156,61 +301,61 @@ void motion(int x, int y)
  */
 void reshape(int width, int height)
 {
-  tbReshape(width, height);
-
-  glViewport(0, 0, width, height);
-  
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(60.0, (float)WindHeight/(float)WindWidth, 5., 1000.);
-  gluLookAt(LEN_Z*2., LEN_Y*2.+50., LEN_X*2.,
-            LEN_Z*2., LEN_Y*2., LEN_X*2.,
-            0.0, 0.0, 1.0); 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  WindWidth = width;
-  WindHeight = height;
+	tbReshape(width, height);
+	glViewport(0, 0, width, height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glClearColor(0.1,0.1,0.1,0.1);
+	gluPerspective(60.0, (float) width / (float) height, 5., 1000.);
+	gluLookAt(LEN_X*2., LEN_Y*2.+65., LEN_Z*2.,
+	          LEN_X*2., LEN_Y*2.,     LEN_Z*2.,
+                  0.0,      0.0,          1.0);
+	glMatrixMode(GL_MODELVIEW);
+	
+	glLoadIdentity();
+	
+	
+	WindWidth  = width;
+	WindHeight = height;
 }
 
 /* change view angle */
 static void special(int k, int x, int y) {
   switch (k) {
+      
   case GLUT_KEY_UP:
     view_rotx += 5.0;
     break;
+    
   case GLUT_KEY_DOWN:
     view_rotx -= 5.0;
     break;
+    
   case GLUT_KEY_LEFT:
     view_rotz += 5.0;
     break;
+    
   case GLUT_KEY_RIGHT:
     view_rotz -= 5.0;
     break;
+    
   default:
     return;
   }
   glutPostRedisplay();
 }
-/* // tried it out, but it didn«t function.
-void timf(int value) {
-  glutPostRedisplay();
-  glutTimerFunc(1, timf, 0);
-}
-*/
 
 int main(int argc, char **argv) {
     // init
     WindHeight = 600;
-    WindWidth = 600;         
+    WindWidth  = 600;         
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
     glutInitWindowSize(WindHeight, WindWidth);
-    win = glutCreateWindow("Borg 3D 16^3 Simulator");
+    win = glutCreateWindow("Borg 3D 8^3 Simulator (new api)");
      
     // callback functions
-    //glutReshapeFunc(reshape);
+    glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glutIdleFunc(display);
     glutKeyboardFunc(keyboard);
@@ -220,38 +365,38 @@ int main(int argc, char **argv) {
     
     // clearcolor & main loop
     glClearColor(0.1,0.1,0.1,0.1);
-    gluPerspective(60.0, (float)WindHeight/(float)WindWidth, 5., 1000.);
-    gluLookAt(LEN_Z*2., LEN_Y*2.+100., LEN_X*2.,
+    gluPerspective(60.0, 1.0, 5., 1000.);
+    gluLookAt(LEN_Z*2., LEN_Y*2.+65., LEN_X*2.,
               LEN_Z*2., LEN_Y*2., LEN_X*2.,
               0.0, 0.0, 1.0); 
 
-	// init Call List for LED. The List number is
-	// the brightnessnumber of the LED	
-	quad = gluNewQuadric();
-	glNewList(0, GL_COMPILE);
-		glColor4f(0.30, 0.30, 0.30 , 1.);
-	  	gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
-		glTranslatef(0., 0., 1.);
-		gluSphere(quad, 0.25, 8, 8);		
-	glEndList();
-	glNewList(1, GL_COMPILE);
-		glColor4f(0.45, 0.45, 0.45, 1.);
-		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
-		glTranslatef(0., 0., 1.);
-		gluSphere(quad, 0.25, 8, 8);
-	glEndList();
-	glNewList(2, GL_COMPILE);
-		glColor4f(0.70, 0.7, 0.7, 1.);
-		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
-		glTranslatef(0., 0., 1.);
-		gluSphere(quad, 0.25, 8, 8);
-	glEndList();
-	glNewList(3, GL_COMPILE);
-		glColor4f(1.00, 1.0, 1.0, 1.);
-		gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
-		glTranslatef(0., 0., 1.);
-		gluSphere(quad, 0.25, 8, 8	);
-	glEndList();
+    // init Call List for LED. The List number is
+    // the brightnessnumber of the LED	
+    quad = gluNewQuadric();
+    glNewList(0, GL_COMPILE);
+            glColor4f(0.30, 0., 0. , 1.);
+            gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
+            glTranslatef(0., 0., 1.);
+            gluSphere(quad, 0.25, 8, 8);		
+    glEndList();
+    glNewList(1, GL_COMPILE);
+            glColor4f(0.45, 0., 0., 1.);
+            gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
+            glTranslatef(0., 0., 1.);
+            gluSphere(quad, 0.25, 8, 8);
+    glEndList();
+    glNewList(2, GL_COMPILE);
+            glColor4f(0.70, 0., 0., 1.);
+            gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
+            glTranslatef(0., 0., 1.);
+            gluSphere(quad, 0.25, 8, 8);
+    glEndList();
+    glNewList(3, GL_COMPILE);
+            glColor4f(1.00, 0., 0., 1.);
+            gluCylinder(quad, 0.25, 0.25, 1.0, 6, 1);
+            glTranslatef(0., 0., 1.);
+            gluSphere(quad, 0.25, 8, 8	);
+    glEndList();
 	
    tbInit(GLUT_LEFT_BUTTON);
    tbAnimate(GL_FALSE);

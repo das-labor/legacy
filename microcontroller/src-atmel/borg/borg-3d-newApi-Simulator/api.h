@@ -33,7 +33,7 @@
  *  z_bits & (1<<z-coordinate) => value of coordinate (x,y,z) 
 #endif 
  */
-extern unsigned short pixmap[NUM_LEVELS][LEN_Z][LEN_Y];
+extern unsigned char pixmap[NUM_LEVELS][LEN_Z][LEN_Y];
 
 #ifndef PIXEL_C
 extern unsigned short shl_table[];
@@ -45,20 +45,20 @@ typedef struct {
 	unsigned char y;
 	unsigned char z;
 //	unsigned char dummy;  // the optimation of the avr-gcc could be better with it
-} pixel3d;
+} voxel;
 
 /** see the set_plane(..) comment in the c-file. */
 typedef enum {right, left, forward, back, up, down} direction;
 
 void clear_screen(unsigned char value);
-void setpixel3d(pixel3d p, unsigned char value);
+void set_voxel(voxel p, unsigned char value);
 /* be carefull clearpixel3d() is only a macro */ 
-#define clearpixel3d(p) setpixel3d(p, 0);
+#define clear_voxel(p) set_voxel(p, 0);
 
-unsigned char get_pixel3d(pixel3d p);
-unsigned char get_next_pixel3d(pixel3d p, direction dir);
+unsigned char get_voxel(voxel p);
+unsigned char get_next_voxel(voxel p, direction dir);
 
-pixel3d next_pixel3d(pixel3d pix, direction dir);
+voxel next_pixel3d(voxel pix, direction dir);
 
 direction direction_r(direction dir);
 direction turn_right(direction dir);
@@ -70,16 +70,16 @@ unsigned char easyRandom();
 
 void shift3d(direction dir);
 void set_plane(direction dir, unsigned char num, unsigned char color);
-pixel3d mulMatrixPoint(char *mat, pixel3d *p);
+voxel mulMatrixPoint(char *mat, voxel *p);
 
 char Sin(unsigned char a);
 #define Cos(a) Sin((a)+16)
 
-void scale(char sx, char sy, char sz, pixel3d* points, 
-		   pixel3d* resPoints, int numPoint, pixel3d scaleP);
-void rotate(char a, char b, char c, pixel3d* points, 
-			pixel3d* resPoints, int numPoint, pixel3d rotP);
+void scale(char sx, char sy, char sz, voxel* points, 
+		   voxel* resPoints, int numPoint, voxel scaleP);
+void rotate(char a, char b, char c, voxel* points, 
+			voxel* resPoints, int numPoint, voxel rotP);
 void drawLine3D(char px1, char py1, char pz1, 
- 			    char px2, char py2, char pz2, unsigned char value);
+ 		char px2, char py2, char pz2, unsigned char value);
 
 #endif // API_H
