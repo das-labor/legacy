@@ -17,6 +17,9 @@ volatile uint8_t channels_active[NUM_CHANNELS];
 
 //synchronize to zero cross
 ISR(TIMER1_CAPT_vect) {
+	if(channels_active[3])
+		PORTC |= _BV(PC5);	//activate triac on zero-cross(EVG)
+	
 	TCNT1 = 620;
 }
 
@@ -26,7 +29,7 @@ ISR(TIMER1_COMPB_vect) {
 
 	static uint8_t channels[NUM_CHANNELS];
 	static uint16_t dim_vals[NUM_CHANNELS];
-
+	
 	if (state == 0) {
 		//load new soft-PWM values if no update is in progress
 		if (!update_in_progress) {
@@ -180,8 +183,8 @@ void enable_channel(uint8_t channel, uint8_t enable)
 					case 3: PORTD |= _BV(PD5); break;
 				}
 			}
-			if(channel == 3)
-				PORTC |= _BV(PC5);	//activate triac (EVG)
+		//	if(channel == 3)
+		//		PORTC |= _BV(PC5);	//activate triac (EVG)
 		}
 		else
 		switch (channel) {
