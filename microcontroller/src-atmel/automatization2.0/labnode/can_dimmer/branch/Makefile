@@ -1,4 +1,4 @@
-OBJ = main.o can/can.o can/spi.o can_handler.o dimmer.o
+OBJ = main.o lcap/can/can.o lcap/can/spi.o can_handler.o dimmer.o
 
 # Default values
 OUT           ?= main
