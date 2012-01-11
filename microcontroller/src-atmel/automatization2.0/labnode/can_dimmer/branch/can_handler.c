@@ -3,9 +3,9 @@
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h> 
 
-#include "can/can.h"
-#include "can_handler.h"
-#include "can/lap.h"
+#include "lcap/can/can.h"
+#include "lcap/can_handler.h"
+#include "lcap/can/lap.h"
 
 #include "dimmer.h"
 

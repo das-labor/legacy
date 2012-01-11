@@ -10,10 +10,10 @@
 
 #include "dimmer.h"
 
-#include "can/can.h"
-#include "can_handler.h"
-#include "can/spi.h"
-#include "can/lap.h"
+#include "lcap/can/can.h"
+#include "lcap/can_handler.h"
+#include "lcap/can/spi.h"
+#include "lcap/can/lap.h"
 
 /*
 ISR(TIMER0_COMP_vect) {
