@@ -91,7 +91,7 @@ error:
 
 void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 {
-
+	time_t timeout;
 	
 	can_message *msg = can_buffer_get();
 
@@ -110,22 +110,29 @@ void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 	
 	can_transmit(msg);
 
-
+	timeout = time (NULL);
+	
+	while (1)
+	{
+		can_message *incoming = can_get();
+		if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
+		    incoming->addr_src == dst)
+		{
+			free(incoming);
+			break;
+		}
+		if((time (NULL)) - timeout > 3)		/* 3 seconds timeout */
+		{
+			can_transmit(msg);
+			timeout = time (NULL);
+		}
+	}
+	
 	uint8_t *ptr = buf;
 	int missing = size;
 
 	while (missing > 0)
 	{
-		while (1)
-		{
-			can_message *incoming = can_get();
-			if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
-			    incoming->addr_src == dst)
-			{
-				free(incoming);
-				break;
-			}
-		}
 		
 		can_message *to_transmit = can_buffer_get();
 		to_transmit->addr_src = 0x00;
@@ -143,18 +150,28 @@ void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 
 		
 		can_transmit(to_transmit);
+
+		timeout = time (NULL);
+	
+		while (1)
+		{
+			can_message *incoming = can_get();
+			if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
+				incoming->addr_src == dst)
+			{
+				free(incoming);
+				break;
+			}
+			if((time (NULL)) - timeout > 3)		/* 3 seconds timeout */
+			{
+			can_transmit(msg);
+			timeout = time (NULL);
+			}
+		}
+		
 	}
 
-	while (1)
-	{
-		can_message *incoming = can_get();
-		if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
-		    incoming->addr_src == dst)
-		{
-			free(incoming);
-			break;
-		}
-	}
+	
 }
 
 
