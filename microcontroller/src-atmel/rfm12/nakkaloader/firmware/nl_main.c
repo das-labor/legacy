@@ -65,20 +65,18 @@ static uint8_t nl_match_packet (uint8_t *in_packet)
 
 static void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 {
-	static uint8_t txpacket[NL_ADDRESSSIZE + 1 + NL_PACKETSIZE];
-
-	txpacket[0] = in_type;
-//	txpacket[1] = myaddress[0];
-	txpacket[1] = 0xff;
+	rf_tx_buffer.buffer[0] = in_type;
+//	rf_tx_buffer.buffer[0] = myaddress[0];
+	rf_tx_buffer.buffer[1] = 0xff;
 
 	#if NL_ADDRESSSIZE == 2
-		txpacket[2] = myaddress[1];
+		rf_tx_buffer.buffer[2] = myaddress[1];
 	#endif
 
 	if (in_len)
-		memcpy(&txpacket[NL_ADDRESSSIZE + 1], in_payload, in_len);
+		memcpy(&rf_tx_buffer.buffer[NL_ADDRESSSIZE+1], in_payload, in_len);
 
-	rfm12_tx (NL_ADDRESSSIZE + 1 + in_len, NL_PACKETTYPE, txpacket);
+	rfm12_start_tx (NL_ADDRESSSIZE + 1 + in_len, NL_PACKETTYPE);
 }
 
 static void nl_boot_app ( void )
