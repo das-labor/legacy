@@ -1,5 +1,5 @@
 /**** RFM 12 library for Atmel AVR Microcontrollers *******
- * 
+ *
  * This software is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2 of the License,
@@ -63,8 +63,8 @@
 #define BIT_MISO 6
 #define BIT_SCK  7
 #define BIT_SPI_SS 4
-//this is the hardware SS pin of the AVR - it 
-//needs to be set to output for the spi-interface to work 
+//this is the hardware SS pin of the AVR - it
+//needs to be set to output for the spi-interface to work
 //correctly, independently of the CS pin used for the RFM12
 
 
@@ -99,7 +99,7 @@
  * INTERRUPT VECTOR
  * set the name for the interrupt vector here
  */
- 
+
 //the interrupt vector
 #define RFM12_INT_VECT (INT1_vect)
 
@@ -122,7 +122,7 @@
 /************************
  * FEATURE CONFIGURATION
  */
- 
+
 /*
 FIXME: noreturn stuff here
 	This is a bitmask that defines how "rude" this library behaves
@@ -132,16 +132,17 @@ FIXME: noreturn stuff here
 /* control rate, frequency, etc during runtime
  * this setting will certainly add a bit code
  **/
-#define RFM12_LIVECTRL 0
-#define RFM12_NORETURNS 1
-#define RFM12_NOCOLLISIONDETECTION 0
-#define RFM12_TRANSMIT_ONLY 0
-#define RFM12_SPI_SOFTWARE 0
-#define RFM12_USE_POLLING 0
-#define RFM12_RECEIVE_ASK 0
-#define RFM12_TRANSMIT_ASK 0
+#define RFM12_LIVECTRL		0
+#define RFM12_NORETURNS		1
+#define RFM12_NOCOLLISIONDETECTION 1
+#define RFM12_TRANSMIT_ONLY	0
+#define RFM12_SPI_SOFTWARE	0
+#define RFM12_USE_POLLING	0
+#define RFM12_RECEIVE_ASK	0
+#define RFM12_TRANSMIT_ASK	0
 #define RFM12_USE_WAKEUP_TIMER 0
-#define RFM12_LOW_POWER 0
+#define RFM12_LOW_POWER		0
+#define RFM12_SMALLAPI		1
 
 /*
  * UART DEBUGGING
