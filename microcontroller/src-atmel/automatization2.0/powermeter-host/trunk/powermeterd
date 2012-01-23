@@ -11,6 +11,7 @@ from time import strftime, time, sleep
 POWERMETER_RRD_CMD = "rrdtool update powermeter.rrd N:$U1:$U2:$U3:$I1:$I2:$I3:$S1:$S2:$S3:$P1:$P2:$P3:$E1:$E2:$E3"
 GW_POWER_RRD_CMD   = "rrdtool update gateway-power.rrd N:$U:$I"
 GW_PSTATS_RRD_CMD  = "rrdtool update gateway-pstats.rrd N:$RXPKT:$TXPKT:$RXBYTES:$TXBYTES"
+AUTOREPORT_CMD = "lapcontrol -s kvm  gw control 07"
 
 CONSOLE_OUT = """
 %(TIME)s:
@@ -83,6 +84,11 @@ def update_rrd(cmd, vals):
 # Main
 
 if __name__ == "__main__":
+
+    # Enabe auto-reporting
+    print "Enabling autoreport..."
+    subprocess.call(AUTOREPORT_CMD.split())
+
     while 1:
         try:
             c = CANSocket()
