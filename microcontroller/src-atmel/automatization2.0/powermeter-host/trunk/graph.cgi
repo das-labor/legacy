@@ -94,7 +94,7 @@ graph_templates = {
     """,
     "power-U": """
         --title="Spannung [V]" 
-        -l 220 -u 250
+        -l 220 -u 250 -r
         'DEF:U1=$POWERRRD/powermeter.rrd:U1:AVERAGE'       
         'DEF:U1_=$POWERRRD/powermeter.rrd:U1:MAX'          
         'DEF:U2=$POWERRRD/powermeter.rrd:U2:AVERAGE'       
@@ -244,14 +244,14 @@ graph_templates = {
         'CDEF:tx4_=tx_,tx6_,-'
         'CDEF:mrx6=rx6,-1,*'
         'CDEF:mrx6_=rx6_,-1,*'
-        'AREA:tx4_#$ACOLOR4:'
-        'AREA:tx6_#$BCOLOR4::STACK'
-        'AREA:mrx4_#$ACOLOR2:'
-        'AREA:mrx6_#$BCOLOR2::STACK'
-        'LINE1:tx4_#$LCOLOR4:TX IPv4'
-        'LINE1:tx6_#$LCOLOR4:TX IPv6:STACK'
-        'LINE1:mrx4_#$LCOLOR2:RX IPv4'
-        'LINE1:mrx6_#$LCOLOR2:RX IPv6:STACK'
+        'AREA:tx4#$ACOLOR4:'
+        'AREA:tx6#$BCOLOR4::STACK'
+        'AREA:mrx4#$ACOLOR2:'
+        'AREA:mrx6#$BCOLOR2::STACK'
+        'LINE1:tx4#$LCOLOR4:TX IPv4'
+        'LINE1:tx6#$LCOLOR4:TX IPv6:STACK'
+        'LINE1:mrx4#$LCOLOR2:RX IPv4'
+        'LINE1:mrx6#$LCOLOR2:RX IPv6:STACK'
         'GPRINT:tx:LAST:TX=%5.2lf %sB/s, '        
         'GPRINT:rx:LAST:RX=%5.2lf %sB/s, '        
     """,
