@@ -1,0 +1,15 @@
+
+#Set You CPU up here for the Makefile!
+
+DEVICE  = atmega8
+F_CPU   = 16000000	# in Hz
+FUSE_L  = 0x9f
+FUSE_H  = 0xc9
+
+# for the old Dil Version, use HWREF = 1
+#
+# HWREF = 2 is the newer SMD-version of this  board.
+#
+# HWREF = 3 is for the LABNODE
+ 
+HWREF   = 2

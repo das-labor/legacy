@@ -3,7 +3,12 @@
 #ifndef RFMUSB_HW_H
 #define RFMUSB_HW_H
 
-/* Set your hardware setup here. If you've
+/* 
+ * Please set your hardware revision in personal_config.mk !
+ * there is a template for that file as personal_config.mk.example .
+ *   
+ * Assume default hardware setup if none given.
+ * If you've
  * built the old Dil Version, use HWREF = 1
  *
  * HWREF = 2 is the newer SMD-version of this
