@@ -2,7 +2,7 @@
 
 #pragma once
 #if (MMMUX_USE_RFM12USB == 1)
-#include "muxd_hw_rfm12usb.h"
+//#include "muxd_hw_rfm12usb.h"
 #endif
 
 /* hardware init function */

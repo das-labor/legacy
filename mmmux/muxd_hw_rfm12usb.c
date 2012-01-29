@@ -14,7 +14,7 @@ int rfm12usb_match_usbid (int in_vid, int in_pid)
 /* close the usb connection, remove the hardware from the list */
 void rfm12usb_close (void *in_ctx)
 {
-	rfm12usb_t *rs = (mmmux_hw_t*) in_ctx->udata;
+	rfm12usb_t *rs = ((mmmux_hw_t*) in_ctx)->udata;
 	usb_close (rs->uhandle);
 	rs->uhandle = NULL;
 	mmmux_hw_remove ((mmmux_hw_t*) in_ctx);
@@ -24,7 +24,7 @@ ssize_t rfm12usb_tx (void *in_ctx, size_t in_len, void* in_data)
 {
 	size_t txlen = in_len;
 	int rv;
-	rfm12usb_t *rs = (mmmux_hw_t*) in_ctx->udata;
+	rfm12usb_t *rs = ((mmmux_hw_t*) in_ctx)->udata;
 
 	if (txlen > rs->txlen)
 		txlen = rs->txlen;
@@ -35,14 +35,14 @@ ssize_t rfm12usb_tx (void *in_ctx, size_t in_len, void* in_data)
 		DEFAULT_USB_TIMEOUT);
 
 	if (rv > 0)
-		(mmmux_hw_t*) in_ctx->txcount += rv;
+		((mmmux_hw_t*) in_ctx)->txcount += rv;
 
 	return (ssize_t) rv;
 }
 
 ssize_t rfm12usb_rx (void *in_ctx, size_t in_maxlen, void* out_data)
 {
-	rfm12usb_t *rs = (mmmux_hw_t*) in_ctx->udata;
+	rfm12usb_t *rs = ((mmmux_hw_t*) in_ctx)->udata;
 	int rv;
 
 	memset (out_data, 0x00, in_maxlen);
@@ -53,7 +53,7 @@ ssize_t rfm12usb_rx (void *in_ctx, size_t in_maxlen, void* out_data)
 		DEFAULT_USB_TIMEOUT);
 
 	if (rv > 0)
-		(mmmux_hw_t*) in_ctx->rx_count += rv;
+		((mmmux_hw_t*) in_ctx)->rxcount += rv;
 
 	return (ssize_t) rv;
 }
