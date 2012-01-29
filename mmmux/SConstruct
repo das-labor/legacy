@@ -1,0 +1,6 @@
+import sys,glob,os
+env = Environment(CPPPATH = ['../'], parse_flags='-lusb')
+
+#mmuxdbuild = env.Program ('mmmuxd', [glob.glob('*.c')])
+mmuxdbuild = env.SharedLibrary ('mmmuxd', ['muxd.c', 'muxd_client.c', 'muxd_server.c'])
+
