@@ -1,7 +1,8 @@
 import sys,glob,os
-env = Environment(CPPPATH = ['../'], parse_flags='-lusb')
+envlib = Environment(parse_flags='-lusb')
+envprog = Environment(LIBPATH = ['./'], CPPPATH = ['./'], parse_flags='-lusb -lmmmuxd')
 
-#mmuxdbuild = env.Program ('mmmuxd', [glob.glob('*.c')])
-mmuxdbuild = env.SharedLibrary ('mmmuxd', ['muxd.c', 'muxd_client.c', 'muxd_server.c',
+mmuxdbuild = envlib.SharedLibrary ('mmmuxd', ['muxd.c', 'muxd_client.c', 'muxd_server.c',
 	'muxd_hw.c', 'muxd_hw_rfm12usb.c'])
+testbuild = envprog.Program ('mmmuxd_test', ['muxd_test.c'])
 
