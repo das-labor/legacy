@@ -11,6 +11,50 @@ int rfm12usb_match_usbid (int in_vid, int in_pid)
 	return 0;
 }
 
+/* close the usb connection, remove the hardware from the list */
+void rfm12usb_close (void *in_ctx)
+{
+	rfm12usb_t *rs = (mmmux_hw_t*) in_ctx->udata;
+	usb_close (rs->uhandle);
+	rs->uhandle = NULL;
+	mmmux_hw_remove ((mmmux_hw_t*) in_ctx);
+}
+
+ssize_t rfm12usb_tx (void *in_ctx, size_t in_len, void* in_data)
+{
+	size_t txlen = in_len;
+	int rv;
+	rfm12usb_t *rs = (mmmux_hw_t*) in_ctx->udata;
+
+	if (txlen > rs->txlen)
+		txlen = rs->txlen;
+	
+	rv = usb_control_msg (rs->uhandle,
+		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
+		RFMUSB_RQ_RFM12_PUT, 0, 0, (char *) in_data, txlen,
+		DEFAULT_USB_TIMEOUT);
+
+	return (ssize_t) rv;
+}
+
+ssize_t rfm12usb_rx (void *in_ctx, size_t in_maxlen, void* out_data)
+{
+	rfm12usb_t *rs = (mmmux_hw_t*) in_ctx->udata;
+	int rv;
+
+	memset (out_data, 0x00, in_maxlen);
+
+	rv = usb_control_msg (rs->uhandle,
+		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
+		RFMUSB_RQ_RFM12_GET, 0, 0, (char *) out_data, in_maxlen,
+		DEFAULT_USB_TIMEOUT);
+
+	return (ssize_t) rv;
+}
+
+/* walk along the usb busses and devices, search for rfm12usb devices
+ * and add them to the hardware list.
+ */
 int rfm12usb_find (void *in_ctx)
 {
 	struct usb_bus *bus;
@@ -41,6 +85,7 @@ int rfm12usb_find (void *in_ctx)
 				dev->descriptor.idVendor, dev->descriptor.idProduct);
 
 			hws = malloc (sizeof(mmmux_hw_t));
+			memset (hws, 0x00, sizeof(mmmux_hw_t));
 
 			/* store rfm12usb specific data in the udata area */
 			hws->udata = malloc (sizeof(rfm12usb_t));
@@ -48,9 +93,11 @@ int rfm12usb_find (void *in_ctx)
 
 			rs->vid = dev->descriptor.idVendor;
 			rs->pid = dev->descriptor.idProduct;
+			rs->txlen = 64; /* XXX hardcoded values for now */
+			rs->rxlen = 64;
 			rs->uhandle = h;
 			sprintf (hws->name, "RFM12USB device #%u", c++);
-			hws->init = rfm12usb_init;
+			hws->init = NULL;
 			hws->close = rfm12usb_close;
 			hws->tx = rfm12usb_tx;
 			hws->rx = rfm12usb_rx;

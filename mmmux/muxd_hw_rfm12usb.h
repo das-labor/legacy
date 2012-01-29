@@ -7,6 +7,8 @@ typedef struct
 {
 	int vid;
 	int pid;
+	size_t rxlen;
+	size_t txlen;
 	usb_dev_handle *uhandle;
 } rfm12usb_t;
 
