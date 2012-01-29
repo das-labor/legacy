@@ -16,7 +16,7 @@
 #include <stdint.h>
 
 #pragma once
-
+#include "muxd_config.h"
 
 #define SOCKNAME_DEFAULT "/tmp/mmmuxd.sock"
 
