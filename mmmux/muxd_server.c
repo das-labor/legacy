@@ -33,7 +33,12 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 		return 0;
 	}
 
-	/* remove socket file */
+	pipe(c->pfds_hw);
+	pipe(c->pfds_sock);
+
+	mmmux_hw_init (c);
+
+	/* remove socket file when killed */
 	signal (SIGKILL, mmmux_sigh_cleanup);
 	signal (SIGINT, mmmux_sigh_cleanup);
 	signal (SIGHUP, mmmux_sigh_cleanup);
@@ -45,15 +50,19 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 	FD_ZERO (&c->fds_read);
 	FD_ZERO (&c->fds_write);
 
+	/* add pipe */
+	FD_SET (c->pfds_sock[0], &c->fds_master);
+	c->nfds = MAX(c->pfds_sock[0], c->nfds);
+
 	dbg(" fs task: initializing, ctx: %p", c);
 	if (mmmux_server_create_socket(c) != 0)
 	{
-		dbg("hw task: can't create socket");
+		dbg("sock task: can't create socket");
 		return - __LINE__;
 	}
 	mmmux_server_drop_privs (c);
 
-	dbg("hw task: socket created, starting main loop");
+	dbg("sock task: socket created, starting main loop");
 
 	while (23)
 	{
@@ -72,10 +81,11 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 
 		if (rv == 0)
 		{
-			dbg ("hw task stats: %i clients", c->nclients);
+			dbg ("sock task stats: %i clients", c->nclients);
 			continue;
 		}
 		
+		/* data from client */
 		mmmux_server_handle_data(c);
 	}
 	return 0;
@@ -110,7 +120,11 @@ void mmmux_server_drop_privs (mmmux_sctx_t *in_c)
 	   error conditions intentionally not handled, since these calls
 	   may fail when not invoked by mr. r00t
 	 */
+
+	chown (in_c->sockname, u, u);
+	chmod (in_c->sockname, S_IWOTH | S_IROTH);
 	mkdir (new_dir, 0);
+	chmod (new_dir, S_IWOTH | S_IROTH);
 	chdir (new_dir);
 	chroot (new_dir);
 	setgid(u);
@@ -135,20 +149,20 @@ int mmmux_server_connect (mmmux_sctx_t *in_c)
 	e = errno;
 	if (new_fd < 0)
 	{
-		dbg ("hw task: can't accept() connection: %s", strerror(e));
+		dbg ("sock task: can't accept() connection: %s", strerror(e));
 		return - __LINE__;
 	}
 
 	FD_SET (new_fd, &in_c->fds_master);
 	in_c->nfds = MAX(new_fd, in_c->nfds);
 	in_c->nclients++;
-	dbg ("hw task: new client connection (%i clients total)", in_c->nclients);
+	dbg ("sock task: new client connection (%i clients total)", in_c->nclients);
 }
 
 void mmmux_server_disconnect (mmmux_sctx_t *in_c, int in_fd)
 {
 	close (in_fd);
-	dbg ("hw task: client %i disconnected", in_fd);
+	dbg ("sock task: client %i disconnected", in_fd);
 	in_c->nclients--;
 	FD_CLR (in_fd, &in_c->fds_master);
 }
@@ -156,6 +170,8 @@ void mmmux_server_disconnect (mmmux_sctx_t *in_c, int in_fd)
 int mmmux_server_handle_data (mmmux_sctx_t *in_c)
 {
 	int i;
+	char buf[1024];
+	int rv;
 
 	for (i=0;i<=in_c->nfds;i++)
 	{
@@ -169,12 +185,24 @@ int mmmux_server_handle_data (mmmux_sctx_t *in_c)
 			continue;
 		}
 		
+		/* data from pipe (hw device) */
+		if (i == in_c->pfds_sock[0])
+		{
+			int k;
+
+			rv = read (in_c->pfds_sock[0], buf, sizeof(buf));
+			for (k=0;k<=in_c->nfds;k++)
+			{
+				if (k == i)
+					continue;
+				
+				send (k, buf, rv, 0);
+			}
+		} else
 		/* data from client */
 		{
-			char foo[128];
-			int rv;
 			
-			rv = recv (i, foo, sizeof(foo), 0);
+			rv = recv (i, buf, sizeof(buf), 0);
 
 			if (rv <= 0)
 			{
@@ -182,7 +210,8 @@ int mmmux_server_handle_data (mmmux_sctx_t *in_c)
 				continue;
 			}
 
-			dbg ("data from client: %08X", foo);
+			dbg ("%i bytes from client: %08X", rv, buf);
+			write (in_c->pfds_hw[1], buf, rv);
 		}
 	}
 }
@@ -199,27 +228,27 @@ int mmmux_server_create_socket (mmmux_sctx_t *in_c)
 	in_c->sl.sun_family = AF_UNIX;
 	strncpy (in_c->sl.sun_path, in_c->sockname, strlen(in_c->sockname));
 	unlink (in_c->sl.sun_path);
-	dbg ("hw task: creating socket: %s", in_c->sl.sun_path);	
+	dbg ("sock task: creating socket: %s", in_c->sl.sun_path);	
 
 	len = strlen(in_c->sl.sun_path) + sizeof(in_c->sl.sun_family);
 	if (bind (in_c->listenfd, (struct sockaddr *)&in_c->sl, len) < 0)
 	{
 		e = errno;
-		dbg("hw task: bind() failed: %s", strerror(e));
+		dbg("sock task: bind() failed: %s", strerror(e));
 		return - __LINE__;
 	}
 
 	if (setsockopt(in_c->listenfd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(int)) < 0)
 	{
 		e = errno;
-		dbg("hw task: setsockopt() failed: %s", strerror(e));
+		dbg("sock task: setsockopt() failed: %s", strerror(e));
 		return - __LINE__;
 	}
 
 	if (listen (in_c->listenfd, 4) < 0)
 	{
 		e = errno;
-		dbg("hw task: listen() failed: %s", strerror(e));
+		dbg("sock task: listen() failed: %s", strerror(e));
 		return - __LINE__;
 	}
 

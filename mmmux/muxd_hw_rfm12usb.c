@@ -61,7 +61,7 @@ ssize_t rfm12usb_rx (void *in_ctx, size_t in_maxlen, void* out_data)
 /* walk along the usb busses and devices, search for rfm12usb devices
  * and add them to the hardware list.
  */
-int rfm12usb_find ()
+int rfm12usb_find (mmmux_sctx_t *in_c)
 {
 	struct usb_bus *bus;
 	struct usb_device *dev;
@@ -107,8 +107,9 @@ int rfm12usb_find ()
 			hws->close = rfm12usb_close;
 			hws->tx = rfm12usb_tx;
 			hws->rx = rfm12usb_rx;
+			hws->sdelay = 5000; /* 10ms */
 
-			mmmux_hw_add (hws);
+			mmmux_hw_add (in_c, hws);
 		}
 		bus = bus->next;
 	}

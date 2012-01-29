@@ -28,8 +28,9 @@ typedef struct
 	void *next;
 	size_t txcount;
 	size_t rxcount;
+	useconds_t sdelay;      /* sleep delay in usecs (for polled devices) */
 } mmmux_hw_t;
 
-int mmmux_hw_init (void);
-int mmmux_hw_add (mmmux_hw_t *in_h);
+int mmmux_hw_init (mmmux_sctx_t *);
+int mmmux_hw_add (mmmux_sctx_t *in_c, mmmux_hw_t *in_h);
 void mmmux_hw_remove (mmmux_hw_t *in_h);
