@@ -1,6 +1,9 @@
 #include "muxd.h"
 
 #pragma once
+#if (MMMUX_USE_RFM12USB == 1)
+#include "muxd_hw_rfm12usb.h"
+#endif
 
 /* hardware init function */
 typedef void (*mmmux_hw_init_f)  (void*);
@@ -23,6 +26,8 @@ typedef struct
 	mmmux_hw_close_f close; /* close function */
 	void *udata;            /* extra data */
 	void *next;
+	size_t txcount;
+	size_t rxcount;
 } mmmux_hw_t;
 
 int mmmux_hw_init (void);

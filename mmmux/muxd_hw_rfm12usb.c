@@ -34,6 +34,9 @@ ssize_t rfm12usb_tx (void *in_ctx, size_t in_len, void* in_data)
 		RFMUSB_RQ_RFM12_PUT, 0, 0, (char *) in_data, txlen,
 		DEFAULT_USB_TIMEOUT);
 
+	if (rv > 0)
+		(mmmux_hw_t*) in_ctx->txcount += rv;
+
 	return (ssize_t) rv;
 }
 
@@ -49,13 +52,16 @@ ssize_t rfm12usb_rx (void *in_ctx, size_t in_maxlen, void* out_data)
 		RFMUSB_RQ_RFM12_GET, 0, 0, (char *) out_data, in_maxlen,
 		DEFAULT_USB_TIMEOUT);
 
+	if (rv > 0)
+		(mmmux_hw_t*) in_ctx->rx_count += rv;
+
 	return (ssize_t) rv;
 }
 
 /* walk along the usb busses and devices, search for rfm12usb devices
  * and add them to the hardware list.
  */
-int rfm12usb_find (void *in_ctx)
+int rfm12usb_find ()
 {
 	struct usb_bus *bus;
 	struct usb_device *dev;
