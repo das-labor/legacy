@@ -75,4 +75,6 @@ typedef struct
 	int nclients;
 	char sockname[256];
 	char chdir[256];
+	int pfds_sock[2];
+	int pfds_hw[2];
 } mmmux_sctx_t;

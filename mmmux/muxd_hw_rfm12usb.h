@@ -23,5 +23,5 @@ typedef struct
 	usb_dev_handle *uhandle;
 } rfm12usb_t;
 
-int rfm12usb_find ();
+int rfm12usb_find (mmmux_sctx_t *in_c);
 #endif
