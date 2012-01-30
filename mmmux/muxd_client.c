@@ -35,3 +35,28 @@ int mmmux_client_connect (mmmux_sctx_t *in_c)
 	return 0;
 }
 
+int mmmux_send (mmmux_sctx_t *in_c, void* in_buf, size_t in_len)
+{
+	size_t sent = 0;
+	int rv, e;
+
+	while (sent < in_len)
+	{
+		rv = send (in_c->listenfd, (void*) ((size_t) in_buf + in_len), in_len - sent, 0);
+		e = errno;
+
+		if (rv < 0)
+		{
+			err ("error sending: %s", strerror(e));
+			return rv;
+		}
+
+		sent -= rv;
+	}
+	return sent;
+}
+
+int mmmux_receive (mmmux_sctx_t *in_c, void* out_buf, size_t in_maxlen)
+{
+	return recv (in_c->listenfd, out_buf, in_maxlen, 0);
+}

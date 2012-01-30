@@ -78,3 +78,5 @@ typedef struct
 	int pfds_sock[2];
 	int pfds_hw[2];
 } mmmux_sctx_t;
+
+mmmux_sctx_t* mmmuxd_init (int in_debug, char* in_sockname);
