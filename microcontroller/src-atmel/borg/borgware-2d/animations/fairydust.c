@@ -204,6 +204,6 @@ static uint8_t fairydust_getChunk(unsigned char const nBitPlane,
 
 void fairydust()
 {
-	// width 72, height 30+x, 2 bitplanes (4 colors), 600 frames à 50ms (20 fps)
-	bitmap_scroll(72, nMargin + 30 + nMargin, 2, 600, 50, fairydust_getChunk);
+	bitmap_scroll(72, nMargin + 30 + nMargin, 2, 2400, 12, 1, 4,
+			fairydust_getChunk);
 }

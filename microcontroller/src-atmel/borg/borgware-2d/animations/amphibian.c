@@ -146,5 +146,5 @@ static uint8_t amphibian_getChunk(unsigned char const nBitPlane,
 
 void amphibian()
 {
-	bitmap_scroll(48, 38, 2, 400, 75, amphibian_getChunk);
+	bitmap_scroll(48, 38, 2, 400, 75, 1, 1, amphibian_getChunk);
 }

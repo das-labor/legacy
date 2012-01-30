@@ -26,8 +26,10 @@ typedef uint8_t (*bitmap_getChunk_t)(unsigned char const nBitPlane,
 void bitmap_scroll(unsigned char const nWidth,
                    unsigned char const nHeight,
                    unsigned char const nBitPlanes,
-                   unsigned int const nFrameCount,
-                   unsigned int const nFrameTick,
+                   unsigned int const nTickCount,
+                   unsigned int const nTick,
+                   unsigned char const nFrameTickDivider,
+                   unsigned char const nMovementTickDivider,
                    bitmap_getChunk_t fpGetChunk);
 
 #endif /* BITMAP_SCROLLER_H_ */
