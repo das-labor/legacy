@@ -176,18 +176,24 @@ static void bitmap_recalculateVector(bitmap_t const *const pBitmap,
  * @param nWidth Width of the bitmap.
  * @param nHeight Height of bitmap.
  * @param nBitPlanes Amount of bit planes.
- * @param nFrameCount How many frames shall be shown.
- * @param nFrameTick Duration of a displayed frame in milliseconds.
+ * @param nTickCount How many ticks the animation will last.
+ * @param nTick Time quantum in milliseconds.
+ * @param nFrameTickDivider Amount of ticks between frame changes.
+ * @param nMovementTickDiver Amount of ticks between movement changes.
  * @param fpGetChunk Function that returns an eight-by-one chunk of a bitmap.
  */
 void bitmap_scroll(unsigned char const nWidth,
                    unsigned char const nHeight,
                    unsigned char const nBitPlanes,
-                   unsigned int const nFrameCount,
-                   unsigned int const nFrameTick,
+                   unsigned int const nTickCount,
+                   unsigned int const nTick,
+                   unsigned char const nFrameTickDivider,
+                   unsigned char const nMovementTickDivider,
                    bitmap_getChunk_t fpGetChunk)
 {
 	assert((nBitPlanes > 0) && (nBitPlanes <= 8));
+	assert(nFrameTickDivider > 0);
+	assert(nFrameTickDivider > 0);
 
 	bitmap_t bitmap;
 
@@ -206,18 +212,25 @@ void bitmap_scroll(unsigned char const nWidth,
 	bitmap.nChunkCount = (((bitmap.nViewportWidth - 1) / 8) + 1);
 
 	// initial starting point
+	bitmap.nFrame = 0;
 	unsigned char x = bitmap.nXDomain > 0 ? random8() % bitmap.nXDomain : 0;
 	unsigned char y = bitmap.nYDomain > 0 ? random8() % bitmap.nYDomain : 0;
 	signed char dx = 0;
 	signed char dy = 0;
 
-	for (bitmap.nFrame = 0; bitmap.nFrame < nFrameCount; ++bitmap.nFrame)
+	for (unsigned int i = 0; i < nTickCount; ++i)
 	{
 		bitmap_drawViewport(&bitmap, x, y);
-		bitmap_recalculateVector(&bitmap, x, y, &dx, &dy);
-		x += bitmap.nWidth > bitmap.nViewportWidth ? dx : 0;
-		y += bitmap.nHeight > bitmap.nViewportHeight ? dy : 0;
-
-		wait(nFrameTick);
+		if ((i % nFrameTickDivider) == 0)
+		{
+			++bitmap.nFrame;
+		}
+		if ((i % nMovementTickDivider) == 0)
+		{
+			bitmap_recalculateVector(&bitmap, x, y, &dx, &dy);
+			x += bitmap.nWidth > bitmap.nViewportWidth ? dx : 0;
+			y += bitmap.nHeight > bitmap.nViewportHeight ? dy : 0;
+		}
+		wait(nTick);
 	}
 }

@@ -125,6 +125,5 @@ static uint8_t logo_OutOfSpec_getChunk(unsigned char const nBitPlane,
 
 void logo_OutOfSpec()
 {
-	// width 64, height 50, 2 bitplanes (4 colors), 600 frames à 50ms (20 fps)
-	bitmap_scroll(64, 50, 2, 600, 50, logo_OutOfSpec_getChunk);
+	bitmap_scroll(64, 50, 2, 600, 50, 1, 1, logo_OutOfSpec_getChunk);
 }
