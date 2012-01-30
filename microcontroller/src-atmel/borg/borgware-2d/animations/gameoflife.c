@@ -300,7 +300,7 @@ void gameoflife() {
 		/* loop detection */
 		if (!pfcmp(pf1, pf2)) {
 			insertglider(pf1);
-			cycle = 1;
+//			cycle = 1;
 		}
 		if (pfempty(pf1)) {
 			/* kill game */
@@ -311,7 +311,7 @@ void gameoflife() {
 		for (i = 0; i < LOOP_DETECT_BUFFER_SIZE; ++i) {
 			if (!pfcmp(pf1, ldbuf[i])) {
 				insertglider(pf1);
-				cycle = 1;
+//				cycle = 1;
 			}
 		}
 		pfcopy(ldbuf[ldbuf_idx], pf1);
