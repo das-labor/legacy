@@ -1,4 +1,3 @@
-#include <avr/io.h>
 
 #ifndef RFMUSB_HW_H
 #define RFMUSB_HW_H
