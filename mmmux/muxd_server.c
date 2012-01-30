@@ -8,8 +8,12 @@ void mmmux_sigh_cleanup (int in_s)
 
 	dbg ("signal %i received - cleaning up", in_s);
 	close (my_ctx->listenfd);
+	/* XXX we won't be able to clean up this one when in chroot */
 	unlink (my_ctx->sockname);
+	/* this will fail when in chroot */
 	rmdir (my_ctx->chdir);
+	/* good thing, rmdir does not delete non-empty dirs... */
+	rmdir ("."); 
 	free (my_ctx);
 }
 
@@ -124,7 +128,8 @@ void mmmux_server_drop_privs (mmmux_sctx_t *in_c)
 	chown (in_c->sockname, u, u);
 	chmod (in_c->sockname, S_IWOTH | S_IROTH);
 	mkdir (new_dir, 0);
-	chmod (new_dir, S_IWOTH | S_IROTH);
+	chown (new_dir, u, u);
+	chmod (new_dir, S_IRUSR | S_IXUSR | S_IWUSR);
 	chdir (new_dir);
 	chroot (new_dir);
 	setgid(u);
