@@ -83,7 +83,6 @@ mmmux_sctx_t* mmmuxd_init (int in_debug, char* in_sockname)
 	} else if (r != 0)
 	{
 		dbg ("socket already exists, using client mode");
-		mmmux_client_connect (sc);
 	} else
 	{
 		dbg ("starting fs socket process, socket name: %s", sc->sockname);
@@ -94,6 +93,7 @@ mmmux_sctx_t* mmmuxd_init (int in_debug, char* in_sockname)
 			return NULL;
 		}
 	}
+	mmmux_client_connect (sc);
 
 	return sc;
 }
