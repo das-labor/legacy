@@ -57,7 +57,7 @@ int socket_ping (char* in_sockname)
 	return 1;
 }
 
-int mmmuxd_init (int in_debug, char* in_sockname)
+mmmux_sctx_t* mmmuxd_init (int in_debug, char* in_sockname)
 {
 	mmmux_sctx_t *sc; /* server context */
 	int i,r;
@@ -79,7 +79,7 @@ int mmmuxd_init (int in_debug, char* in_sockname)
 	if (r < 0)
 	{
 		err ("socket_ping() returned an error - won't start.");
-		return - __LINE__;
+		return NULL;
 	} else if (r != 0)
 	{
 		dbg ("socket already exists, using client mode");
@@ -91,9 +91,9 @@ int mmmuxd_init (int in_debug, char* in_sockname)
 		if (r != 0)
 		{
 			err ("server task ended");
-			return r;
+			return NULL;
 		}
 	}
 
-	return 0;
+	return sc;
 }
