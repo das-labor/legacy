@@ -1,3 +1,22 @@
+/*   MMMUX - a device access multiplexing library
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *   Copyright (C) 2012 Soeren Heisrath (forename at surename dot org)
+ */
+
 #include "muxd_server.h"
 static mmmux_sctx_t *my_ctx = NULL;
 
@@ -25,6 +44,7 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 
 	my_pid = fork();
 	e = errno;
+	v = c->debugfd;
 	if (my_pid < 0)
 	{
 		dbg ("can't create task: %s", strerror(e));
@@ -37,6 +57,7 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 		return 0;
 	}
 
+	printf ("debug fd is %i\n", v);
 	pipe(c->pfds_hw);
 	pipe(c->pfds_sock);
 
@@ -126,7 +147,7 @@ void mmmux_server_drop_privs (mmmux_sctx_t *in_c)
 	 */
 
 	chown (in_c->sockname, u, u);
-	chmod (in_c->sockname, S_IWOTH | S_IROTH);
+	chmod (in_c->sockname, S_IWUSR | S_IRUSR | S_IWOTH | S_IROTH);
 	mkdir (new_dir, 0);
 	chown (new_dir, u, u);
 	chmod (new_dir, S_IRUSR | S_IXUSR | S_IWUSR);
