@@ -1,3 +1,22 @@
+/*   MMMUX - a device access multiplexing library
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *   Copyright (C) 2012 Soeren Heisrath (forename at surename dot org)
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,13 +43,17 @@
 	#define MIN(a,b) ((a>b)?b:a)
 #endif
 
-#define dbg(f, a...) printf ("% 20s:% 22s:% 5i:\t" f "\n", __FILE__, __func__, __LINE__, ##a)
+#define dbg(f, a...) dprintf (v, "% 20s:% 22s:% 5i:\t" f "\n", __FILE__, __func__, __LINE__, ##a)
 #define err(f, a...) fprintf (stderr, "% 20s:% 22s:% 5i:\t" f "\n", __FILE__, __func__, __LINE__, ##a)
 #ifndef MAX
 	#define MAX(a,b) ((a>b)?a:b)
 #endif
 
-static int v = 0;
+#define MDBG_STDOUT -1
+#define MDBG_NONE    0
+#define MDBG_STDERR -2
+
+volatile static int v;
 
 typedef enum
 {
@@ -63,6 +86,7 @@ typedef struct
 typedef struct
 {
 	int listenfd;
+	int debugfd;
 	mmmux_socktype_t type;
 	mmmux_mode_t mode;
 	struct sockaddr_un sl;
