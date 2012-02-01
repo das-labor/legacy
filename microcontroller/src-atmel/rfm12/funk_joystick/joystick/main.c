@@ -10,8 +10,10 @@ extern rfm12_control_t ctrl;
 
 int main ( void )
 {	
-	PORTB = 0x1f; //Pullups on
+	PORTB = 0x0f; //Pullups on
 	PORTD = 0x60;
+
+	DDRD = _BV(PD3) | _BV(PD1); //set not connected pins to output (save power)
 	
 	ACSR |= (1<<ACD);//disable analog comparator to save power
 
@@ -19,26 +21,19 @@ int main ( void )
 	_delay_ms(10);
 	_delay_ms(10);
 	DDRD &= ~0x01;
-	
-	DDRD |= (1<<PD4);
-	PORTD |= (1<<PD4);
-	
+		
 	//init the rfm module
 	_delay_ms(250);
 	rfm12_init();
-	
-	//setup the low battery detector to 2.2v
-	//Vlb = 2.2 + (val * 0.1)
-	//hint: minimum measured supply voltage is 1.98V !
-	rfm12_set_batt_detector(0);
+	sei();
 	
 	//set the wakeup timer to 10 ms
 	rfm12_set_wakeup_timer(10);
 	
-	sei();
 
 	uint8_t joy = 0;
 	uint8_t joy_old = 0;
+	uint8_t ticker = 0;
 	
 	while (42)
 	{		
@@ -55,8 +50,10 @@ int main ( void )
 		joy = ( (PINB & 0x0f) | ((PIND & 0x60)>>1) );
 		joy ^= 0x3f;
 		
-		if(joy ^ joy_old)
+		if((joy ^ joy_old) || (ticker == 50))
 		{
+			ticker = 0;
+			
 			//use rfm12_start_tx instead of rfm12_tx  to avoid memcpy for 1 byte
 			*rf_tx_buffer.buffer = joy;
 			if(RFM12_TX_ENQUEUED == rfm12_start_tx (0x69, 1))
@@ -70,19 +67,24 @@ int main ( void )
 
 		rfm12_tick();
 		
-		if(rfm12_get_batt_status() == RFM12_BATT_LOW)
+		ticker ++;
+		
+		while(rfm12_get_batt_status() == RFM12_BATT_LOW)
 		{
 			joy = 0x3;	
 			while(rfm12_tx (1, 0x69, &joy) != RFM12_TX_ENQUEUED);
 			rfm12_tick();
-			_delay_ms(250);
-			_delay_ms(250);
-			_delay_ms(250);
-			_delay_ms(250);
+			_delay_ms(1000);
 		}
+		
 		
 		//sleep
 		//set_sleep_mode(SLEEP_MODE_PWR_DOWN);	
-		sleep_mode();
+		
+		
+		while(!ctrl.wkup_flag){
+			sleep_mode();
+		}
+		ctrl.wkup_flag = 0;
 	}
 }

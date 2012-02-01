@@ -14,11 +14,7 @@ int main ( void )
 		
 //	uart_init();
 
-	uint16_t x = 800;
-	
-	while(x--){
-		_delay_ms(1);
-	}
+	_delay_ms(800);
 	
 	rfm12_init();
 	
@@ -62,18 +58,6 @@ int main ( void )
 			rfm12_rx_clear();
 
 		}
-
-/*		
-		joy = ( (PINB & 0x0f) | ((PIND & 0x60)>>1) );
-		joy ^= 0x3f;
-		
-		if(joy ^ joy_old)
-		{
-			if(RFM12_TX_ENQUEUED == rfm12_tx (2, 0x69, &joy)){
-				joy_old = joy;
-			}
-		}
-*/
 		
 		rfm12_tick();
 	}
