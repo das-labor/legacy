@@ -38,28 +38,40 @@ void mmmux_sigh_cleanup (int in_s)
 
 int mmmux_server_sock_task (mmmux_sctx_t *c)
 {
-	pid_t my_pid;
 	struct timeval tv;
 	int e, rv, nfds;
 
-	my_pid = fork();
-	e = errno;
-	v = c->debugfd;
-	if (my_pid < 0)
+//	if (daemon (0,0) != 0)
 	{
-		dbg ("can't create task: %s", strerror(e));
-		return my_pid; /* error */
+		/* fallback: try fork() */
+		pid_t my_pid;
+		my_pid = fork();
+		e = errno;
+		//v = c->debugfd;
+		if (my_pid < 0)
+		{
+			dbg ("can't create socket task: %s", strerror(e));
+			return my_pid; /* error */
+		}
+
+		if (my_pid > 0) /* master: return to main */
+		{
+			dbg ("sock task: pid %i", my_pid);
+			return 0;
+		}
+
+		my_pid = setsid ();
+		dbg ("new session id: %i", my_pid);
 	}
 
-	if (my_pid > 0) /* master: return to main */
-	{
-		dbg (" fs task: pid %i", my_pid);
-		return 0;
-	}
-
-	printf ("debug fd is %i\n", v);
-	pipe(c->pfds_hw);
+	/* pipe hw -> socket server */
 	pipe(c->pfds_sock);
+	
+	my_ctx = c;
+	
+	FD_ZERO (&c->fds_master);
+	FD_ZERO (&c->fds_read);
+	FD_ZERO (&c->fds_write);
 
 	mmmux_hw_init (c);
 
@@ -69,17 +81,12 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 	signal (SIGHUP, mmmux_sigh_cleanup);
 	signal (SIGTERM, mmmux_sigh_cleanup);
 
-	my_ctx = c;
-	
-	FD_ZERO (&c->fds_master);
-	FD_ZERO (&c->fds_read);
-	FD_ZERO (&c->fds_write);
 
 	/* add pipe */
 	FD_SET (c->pfds_sock[0], &c->fds_master);
 	c->nfds = MAX(c->pfds_sock[0], c->nfds);
 
-	dbg(" fs task: initializing, ctx: %p", c);
+	dbg("sock task: initializing, ctx: %p", c);
 	if (mmmux_server_create_socket(c) != 0)
 	{
 		dbg("sock task: can't create socket");
@@ -97,6 +104,9 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 		
 		rv = select (c->nfds+1, &c->fds_read, NULL, NULL, &tv);
 		e = errno;
+
+		if (rv < 0 && e == EINTR)
+			continue;
 
 		if (rv < 0)
 		{
@@ -217,6 +227,7 @@ int mmmux_server_handle_data (mmmux_sctx_t *in_c)
 			int k;
 
 			rv = read (in_c->pfds_sock[0], buf, sizeof(buf));
+			/* send to all sockets */
 			for (k=0;k<=in_c->nfds;k++)
 			{
 				if (k == i)

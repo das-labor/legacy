@@ -20,11 +20,17 @@
 #include "muxd_hw.h"
 static mmmux_hw_t *hw_first = NULL;
 
+/* the hardware task is forked for each device found.
+ */
 int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 {
 	int e, rv;
 	pid_t p;
 	uint8_t buf[1024];
+	
+	/* each hw task has its own pipe */
+	pipe (in_c->pfds_hw);
+	in_c->nfds = MAX(in_c->pfds_hw[1], in_c->nfds);
 
 	p = fork();
 	e = errno;
