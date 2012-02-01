@@ -166,5 +166,9 @@ int mmmux_hw_init (mmmux_sctx_t *in_c)
 		return rv;
 	}
 #endif
+
+#if MMMUX_USE_DUMMYHW == 1
+	rv = dummyhw_find (in_c);
+#endif
 	return 0;
 }

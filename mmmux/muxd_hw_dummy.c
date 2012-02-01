@@ -21,6 +21,26 @@
 
 #include "muxd_hw_dummy.h"
 
+#if MMMUX_USE_DUMMYHW == 1
+
+ssize_t dummyhw_rx (void *in_ctx, size_t in_maxlen, void* out_data)
+{
+	static int c = 0;
+
+	c++;
+	if (c < 4)
+		return 0;
+
+	memset (out_data, 0x00, in_maxlen);
+	snprintf (out_data, in_maxlen, "dummy hardware's counter is at %i\n", c);
+
+	return strlen (out_data) + 1;
+}
+ssize_t dummyhw_tx (void *in_ctx, size_t in_len, void* in_data)
+{
+	return in_len;
+}
+
 int dummyhw_find (mmmux_sctx_t *in_c)
 {
 	mmmux_hw_t *hws;
@@ -31,7 +51,8 @@ int dummyhw_find (mmmux_sctx_t *in_c)
 	hws->sdelay = 1000000; /* once per second */
 	hws->init = NULL;
 	hws->close = NULL;
-	hws->rx = NULL;
-	hws->tx = NULL;
+	hws->rx = dummyhw_rx;
+	hws->tx = dummyhw_tx;
 	mmmux_hw_add (in_c, hws);
 }
+#endif
