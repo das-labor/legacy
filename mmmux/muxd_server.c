@@ -41,28 +41,23 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 	struct timeval tv;
 	int e, rv, nfds;
 
-//	if (daemon (0,0) != 0)
+	pid_t my_pid;
+	my_pid = fork();
+	e = errno;
+	if (my_pid < 0)
 	{
-		/* fallback: try fork() */
-		pid_t my_pid;
-		my_pid = fork();
-		e = errno;
-		//v = c->debugfd;
-		if (my_pid < 0)
-		{
-			dbg ("can't create socket task: %s", strerror(e));
-			return my_pid; /* error */
-		}
-
-		if (my_pid > 0) /* master: return to main */
-		{
-			dbg ("sock task: pid %i", my_pid);
-			return 0;
-		}
-
-		my_pid = setsid ();
-		dbg ("new session id: %i", my_pid);
+		dbg ("can't create socket task: %s", strerror(e));
+		return my_pid; /* error */
 	}
+
+	if (my_pid > 0) /* master: return to main */
+	{
+		dbg ("sock task: pid %i", my_pid);
+		return 0;
+	}
+
+	my_pid = setsid ();
+	dbg ("new session id: %i", my_pid);
 
 	/* pipe hw -> socket server */
 	pipe(c->pfds_sock);

@@ -47,6 +47,8 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 			in_h->name, p);
 		return 0;
 	}
+
+	p = setsid ();
 	v = in_c->debugfd;
 
 	mmmux_server_drop_privs (in_c);
