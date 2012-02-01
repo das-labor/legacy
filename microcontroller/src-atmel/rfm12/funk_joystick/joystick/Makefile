@@ -1,6 +1,8 @@
 PRG            = main
 OBJ            = main.o rfm12.o
 MCU_TARGET     = at90s2313
+#MCU_TARGET     = atmega32
+
 OPTIMIZE       = -Os
 
 FLASHCMD       = avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:main.hex:i

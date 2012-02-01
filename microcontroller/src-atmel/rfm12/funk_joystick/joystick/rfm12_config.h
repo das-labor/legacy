@@ -67,9 +67,32 @@
 /************************
  * RFM12 CONFIGURATION OPTIONS
  */
- 
-//frequency to use
+
+//baseband of the module (either RFM12_BAND_433, RFM12_BAND_868 or RFM12_BAND_912)
+#define RFM12_BASEBAND RFM12_BAND_433
+
+//center frequency to use (+- FSK frequency shift)
 #define FREQ 433000000UL
+
+//FSK frequency shift in kHz
+#define FSK_SHIFT 45000
+
+//Receive RSSI Threshold
+#define RFM12_RSSI_THRESHOLD  RFM12_RXCTRL_RSSI_79
+
+//Receive Filter Bandwidth
+#define RFM12_FILTER_BW       RFM12_RXCTRL_BW_134
+
+//Output power relative to maximum (0dB is maximum)
+#define RFM12_POWER           RFM12_TXCONF_POWER_0
+
+//Receive LNA gain
+#define RFM12_LNA_GAIN        RFM12_RXCTRL_LNA_6
+
+//crystal load capacitance - the frequency can be verified by measuring the
+//clock output of RFM12 and comparing to 1MHz.
+//11.5pF seems to be o.k. for RFM12, and 10.5pF for RFM12BP, but this may vary.
+#define RFM12_XTAL_LOAD RFM12_XTAL_11_5PF
 
 //use this for datarates >= 2700 Baud
 #define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(9600.0)
@@ -80,11 +103,7 @@
 //TX BUFFER SIZE
 #define RFM12_TX_BUFFER_SIZE 10
 
-/*
- * RX BUFFER SIZE
- * there are going to be 2 Buffers of this size
- * (double_buffering)
- */
+//RX BUFFER SIZE (there are going to be 2 Buffers of this size for double_buffering)
 #define RFM12_RX_BUFFER_SIZE 10
 
 
@@ -108,8 +127,8 @@
 //the interrupt bit in the flag register
 #define RFM12_FLAG_BIT (INTF0)
 
-//setup the interrupt to trigger on negative level
-#define RFM12_INT_SETUP()   MCUCR &= ~((1 << ISC01) | (1 << ISC00))
+//setup the interrupt to trigger on negative edge
+#define RFM12_INT_SETUP()   MCUCR |= (1 << ISC01)
 
 
 /************************
@@ -120,6 +139,12 @@
 #define RFM12_USE_WAKEUP_TIMER 1
 #define RFM12_TRANSMIT_ONLY 1
 #define RFM12_SPI_SOFTWARE 1
+
+//setup the low battery detector to 2.2v
+//Vlb = 2.2 + (val * 0.1)
+//hint: minimum measured supply voltage is 1.98V !
+	
+#define RFM12_LBD_VOLTAGE             RFM12_LBD_VOLTAGE_2V2
 
 
 /**** UART DEBUGGING
