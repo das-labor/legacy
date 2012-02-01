@@ -136,7 +136,7 @@ mmmux_sctx_t* mmmuxd_init (int in_debug, char* in_sockname)
 		if (i >= MMMUX_SOCK_WAIT_DELAY)
 		{
 			err ("connection failed for above reason.\n");
-			return - __LINE__;
+			return NULL;
 		}
 		dbg ("server ready, starting client");
 	}

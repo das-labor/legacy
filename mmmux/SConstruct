@@ -3,7 +3,7 @@ envlib = Environment(parse_flags='-lusb')
 envstatic = Environment(parse_flags='-lusb')
 envprog = Environment(LIBPATH = ['./'], CPPPATH = ['./'], parse_flags='-lusb -lmmmuxd')
 
-mmuxdbuild = envlib.SharedLibrary ('mmmuxd', ['muxd.c', 'muxd_client.c', 'muxd_server.c','muxd_hw.c', 'muxd_hw_rfm12usb.c'])
+mmuxdbuild = envlib.SharedLibrary ('mmmuxd', ['muxd.c', 'muxd_client.c', 'muxd_server.c','muxd_hw.c', 'muxd_hw_rfm12usb.c', 'muxd_hw_dummy.c'])
 testbuild = envprog.Program ('mmmuxd_test', ['muxd_test.c'])
 
 #staticbuild = envstatic.Program ('mmmuxd_test_static', ['muxd.c', 'muxd_client.c', 'muxd_server.c','muxd_hw_rfm12usb.c', 'muxd_hw.c', 'muxd_test.c'])

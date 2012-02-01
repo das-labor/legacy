@@ -32,7 +32,10 @@
 #define DEFAULT_USB_TIMEOUT        1000
 
 
-/* additional userdata struct for the hw description */
+/* additional userdata struct for the hw description. this
+ * struct holds additional information that is stored in the
+ * udata field.
+ */
 typedef struct
 {
 	int vid;

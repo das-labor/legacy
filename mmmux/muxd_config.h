@@ -30,6 +30,9 @@
  */
 #define MMMUX_USE_CANUSB   0
 
+/* dummy hardware task */
+#define MMMUX_USE_DUMMYHW 1
+
 
 /* maximum wait delay for client until server socket is established (usec) */
 #define MMMUX_SOCK_WAIT_DELAY (1024 * 5000)
