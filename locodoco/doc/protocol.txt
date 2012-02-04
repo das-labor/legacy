@@ -1,0 +1,54 @@
+LOCODOCO PROTOCOL SPECIFICATION 1.0
+=========================================================================
+
+1) Packet format
+   
+   |  8b  |  8b  |  8b  |    16b    |    16b    |len-2 Bytes|
+   +------+------+------+-----+-----+-----+-----+--  ...  --+
+   |      |      |      |           |           |           |
+   | TYPE | LEN  |LTYPE | CHECKSUM  |  ADDRESS  | PAYLOAD   |
+   |      |      |      |           |           |           |
+   +------+------+------+-----+-----+-----+-----+--  ...  --+
+
+   The basic packet format contains only one addional field (LTYPE) that
+   denotes the locodoco command to follow. Some commands have an implicit
+   fixed length, while others may need the LEN field in order to determine
+   length of the command.
+
+
+
+2) Commands
+   
+   Some commands require to be acknowledged by the target device. Unless
+   otherwise noted, a reply from the target device is made by sending the
+   same command again with its own address as target address. Transmission
+   of the payload data may be omitted in acknowledgement packets and should
+   not be checked on the receipient side.
+
+   In general, two distinct command types exist: Query and setting commands.
+   An acknowledgement to a set-command is signalled by sending an empty package
+   with the same LTYPE field. Queries are responded to by sending a package
+   with the same LTYPE field and the response included in the payload field.
+
+   2.1)
+   The following list provides a list of cammands in protocol version 1.0:
+
+   LTYPE BYTE   #Follow-up   Function
+   [SET],[QRY]               Bytes   
+
+   0x00              2       Emergency stop
+   0x01              2       End-of base timeslot countdown
+         0x02        4       Timeslot assignment request
+   0x03              2       Timeslot assignment acknowledge
+
+   0x10,0x20         4       Light control
+   0x11,0x21        n*3      Servo control
+   0x12,0x22         1       Coupler control
+   0x13,0x23         1       Pantograph control
+   0x14,0x24         2       Smoke generator control
+   0x15,0x25         2       Speed control
+   0x16,0x26         6       Position (set & report)
+   0x17,0x27         2       Target speed setting
+   0x18,0x28         3       Drive-to command
+   0x19,0x29        0,var.   Loco info request
+
