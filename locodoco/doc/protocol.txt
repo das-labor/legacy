@@ -64,9 +64,9 @@ LOCODOCO PROTOCOL SPECIFICATION 1.0
 
 2 Commands
 
-   The address field contains the source/destination address. All clients communicate
-   exclusively with the master and destination/source address is therefore implicitly
-   the master.
+   The address field contains the address of the sending or receiving client device.
+   All clients communicate exclusively with the master and destination/source address
+   is therefore implicitly the master address (0x0000).
    
    Some commands require to be acknowledged by the target device. Unless
    otherwise noted, a reply from the target device is made by sending the
@@ -93,18 +93,19 @@ LOCODOCO PROTOCOL SPECIFICATION 1.0
    0x03              8       Timeslot assignment acknowledge
    0x04              0       Resume operation
    0x05              0       Disassociation
-   0x06,0x07      2+n,2      Configuration blob setting/query
+   0x06,0x07      2+n,2+n    Configuration blob setting/query
    0x08              0       Reboot (to bootloader)
+   0x09              2       Initiate calibration
 
    0x10,0x20         4       Light control
-   0x11,0x21        n*3      Servo control
+   0x11,0x21         4       Servo control
    0x12,0x22         1       Coupler control
    0x13,0x23         1       Pantograph control
-   0x14,0x24         2       Smoke generator control
-   0x15,0x25         2       Speed control
+   0x14,0x24         1       Smoke generator control
+   0x15,0x25         2       Speed control (immediate setting)
    0x16,0x26         6       Position (set & report)
    0x17,0x27         2       Target speed setting
-   0x18,0x28         3       Drive-to command
+   0x18,0x28         6       Drive-to command
 
    
    
@@ -159,3 +160,145 @@ LOCODOCO PROTOCOL SPECIFICATION 1.0
    accordingly.
 
 
+2.1.5 Resume operation
+   
+   This command is the inverse to the emergency stop command and instructs the devices
+   to resume operation.
+
+
+2.1.6 Disassociation
+   
+   Whenever a device leaves a cell, the client should send the disassociation command
+   to let the master know that it may re-use the assigned timeslot for another device.
+
+
+2.1.7 Configuration blob setting / query
+   
+   This command is used to set or query the device-specific configuration blob. The
+   first two bytes of the payload field denote the offset of the data in the following
+   bytes. The length of the response or request is implicitly given as:
+   	lenth - header_size - 2
+
+
+2.1.8 Reboot command
+   
+   This command instructs the device to reboot and execute the bootloader.
+
+
+2.1.9 Initiate calibration
+
+   This command starts the speed calibration process of the loco decoder. The loco will
+   drive forward until it reaches the first waypoint, start a timer and then measure the
+   time until it reaches the next waypoint. The distance between the two waypoints is set
+   in the two payload bytes of this command.
+
+
+2.1.10 Light control
+
+   The light control message contains 4 bytes - some of them have fixed functionality,
+   all others may be freely assigned.
+
+   The following table denotes the bits and their meaning. Bits are counted from right
+   to left.
+
+   BIT   FUNCTION
+   0,1   0x0 all lighting off
+         0x1 automatic front/rear lighting according to direction, front/rear cabin lights on
+         0x2 automatic front/read lighting according to direction, front/rear cabin lights off
+         0x3 manual front/rear lighting
+    2    passenger cabin / engine room / center light
+    3    front cabin light (cabin light for locos with one cabin)
+    4    back cabin light
+    5    front light white
+    6    front light red
+    7    additional front light (i.e. spotlight)
+    8    back light white
+    9    back light red
+   10    additional back light (i.e. spotlight)
+   11    gear lighting
+   13    siren light 1
+   14    siren light 2
+   14    oven fire
+
+   14,15 RFU
+   16-31 freely assignable
+   
+   Note: Locos with only one driver cabin should adhere to the front cabin light command
+
+2.1.11 Servo control
+   
+   The servo control command is used to assign a servo into a given position. The
+   unit is permille, instead of degrees, because the master has no way of knowing the
+   total values of servo positioning.
+
+   The payload bytes are interpreted as follows:
+   * Byte 0: Servo ID
+   * Byte 1: Transition time in 100ms steps
+   * Bytes 2,3: Position (permille)
+
+
+2.1.12 Coupler control
+  
+   The coupler control message is used to engage/release the couplers. A set bit denotes
+   the release of the coupler, a cleared bit denotes the "normal" position.
+
+   The distinct bits of the payload byte is interpreted as follows:
+   
+   * bit 0: coupler front
+   * bit 1: coupler back
+   * bits 2-7: unused / RFU
+
+
+2.1.13 Pantograph control
+   
+   The pantograph control message is used to lower or raise the pantographs. Locos
+   with only one pantograph should adhere to the front pantograph command.
+
+   * bit 0: pantograph front
+   * bit 1: pantograph rear
+   * bits 2-7: unused
+
+
+2.1.14 Smoke generator control
+   
+   The smoke generator message en- or disables the smoke generators. A set bit (1) enables
+   the function, a cleared bit (0) disables it.
+
+   * bit 0: front/main smoke generator
+   * bit 1: back smoke generator
+   * bit 2: additional smoke generator 1
+   * bit 3: additional smoke generator 2
+   ...
+   * bit 7: additional smoke generator 6
+
+
+2.1.15 Speed control / Target speed setting
+
+   There are two commands available for speed control: One is used to immediately set the speed,
+   the other is used to slowly in- or decrease the speed according to the loco's parameters.
+
+   The two payload bytes of both commands are interpreted as the speed value that is to be set.
+
+
+2.1.16 Position set & report
+
+   Clients may report their poistion (without a perceeding request from the master) by sending
+   a position report message (0x26). The first 4 bytes of the payload indicate the waypoint ID
+   of the last recognized waypoint, followed by 2 bytes denoting the distance in millimeters that
+   the loco has travelled since passing the waypoint.
+
+   A position value of -1 (0xFFFFFFFF) indicates that the loco is unaware of its current position.
+
+   Note that the position may also be set by the master through the position set command (0x16), for
+   example when the loco is powered on at a known position (train yard, shed, etc.).
+
+
+2.1.17 Drive-to command
+
+   The drive-to command instructs the loco to drive to a given waypoint and then either report
+   its position or stop at a given position behind the waypoint.
+
+   The first 4 bytes of the payload contain the target waypoint ID, the last 2 bytes denote the
+   distance (in mm) that the loco should pass until stopping. If the distance value is set to -1
+   (0xFFFF), the loco does not change its speed, but will report its position immediately after
+   having reached the waypoint.
