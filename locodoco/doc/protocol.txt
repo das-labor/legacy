@@ -1,27 +1,76 @@
 LOCODOCO PROTOCOL SPECIFICATION 1.0
 =========================================================================
 
-1) Packet format
+1  General description
+
+   The locodoco protocol is designed to establish a reliable way of communication
+   between locodoco devices and the master unit (base station). In order to
+   avoid collisions, the protocol utilizes timeslots.
+
+   In general a protocol run is divided into two periods: Master sending
+   phase and client sending phase. While the master phase may be of variable
+   length, the client sending phase is divided into fixed-length timeslots for
+   each client.
+
+   Here's an example protocol run:
+
+   +---------+------+----+---+   +- C0 -+ (C1) +- C2 -+ (C3) + (C4) +- C5 -+
+   | CMD0    | CMD1 |CMD2|END|   |RESP0 |      |RESP1 |             :RESP3 |
+   +---------+------+----+---+   +------+      +------+      +      +------+
+   End of master timeslot -'        |       |            |      |   |
+   |- Master timeslot  -----|       |     [Empty/Unused timeslots]  |
+                Grace period |---|  [Reponseses from Clients 0, 2 & 5]
    
-   |  8b  |  8b  |  8b  |    16b    |    16b    |len-2 Bytes|
+   Note: Due to varying data rates for implementations, timeslot lengths are
+   denoted in bytes, rather than absolute times.
+
+1.1 Timeslot assignment
+
+   Timeslots are requested by clients via a "timeslot assignment request" and
+   are assigned by the master via the "timeslot assignment acknowledge". For the
+   purpose of timeslot assignment, 4 additional timeslots with a fixed length of
+   12 bytes each are resrved for this type of request.
+   When subscribing to a network, the client must choose the timeslot for its
+   assignment request at random in order to prevent collisions the event that
+   multiple devices are powered on at the same time.
+
+
+1.1.1 Timeslot overlapping
+
+   Timeslots may be assigned in a manner that they overlap if the clients using
+   these timelots are able to perform channel occupancy detection. When detecting
+   that the channel is occupied, a client should refrain from sending and schedule
+   the packet for transmission in the next cycle.
+
+
+   
+1.2 Packet format
+   
+   |  8b  |  8b  |  8b  |    16b    |    16b    |len-3 Bytes|
    +------+------+------+-----+-----+-----+-----+--  ...  --+
    |      |      |      |           |           |           |
    | TYPE | LEN  |LTYPE | CHECKSUM  |  ADDRESS  | PAYLOAD   |
    |      |      |      |           |           |           |
    +------+------+------+-----+-----+-----+-----+--  ...  --+
 
-   The basic packet format contains only one addional field (LTYPE) that
-   denotes the locodoco command to follow. Some commands have an implicit
-   fixed length, while others may need the LEN field in order to determine
-   length of the command.
+   The basic packet format contains three addional bytes (LTYPE and ADDRESS)
+   that indicate the locodoco command to follow and the source/destination address.
+   Some commands have an implicit fixed length, while others may need the LEN field
+   in order to determine length of the command. Since the length field is (in most
+   cases) already set from the underlying device driver or protocol, the field is
+   never omitted.
 
 
 
-2) Commands
+2 Commands
+
+   The address field contains the source/destination address. All clients communicate
+   exclusively with the master and destination/source address is therefore implicitly
+   the master.
    
    Some commands require to be acknowledged by the target device. Unless
    otherwise noted, a reply from the target device is made by sending the
-   same command again with its own address as target address. Transmission
+   same command again with its own address set in the address field. Transmission
    of the payload data may be omitted in acknowledgement packets and should
    not be checked on the receipient side.
 
@@ -30,16 +79,22 @@ LOCODOCO PROTOCOL SPECIFICATION 1.0
    with the same LTYPE field. Queries are responded to by sending a package
    with the same LTYPE field and the response included in the payload field.
 
-   2.1)
-   The following list provides a list of cammands in protocol version 1.0:
+
+2.1 Table of commands
+
+   The following list provides a list of commands in protocol version 1.0:
 
    LTYPE BYTE   #Follow-up   Function
-   [SET],[QRY]               Bytes   
+   [SET],[QRY]     Bytes   
 
-   0x00              2       Emergency stop
-   0x01              2       End-of base timeslot countdown
-         0x02        4       Timeslot assignment request
-   0x03              2       Timeslot assignment acknowledge
+   0x00              0       Emergency stop
+   0x01              2       End of master timeslot countdown
+        0x02         5       Timeslot assignment request
+   0x03              8       Timeslot assignment acknowledge
+   0x04              0       Resume operation
+   0x05              0       Disassociation
+   0x06,0x07      2+n,2      Configuration blob setting/query
+   0x08              0       Reboot (to bootloader)
 
    0x10,0x20         4       Light control
    0x11,0x21        n*3      Servo control
@@ -50,5 +105,57 @@ LOCODOCO PROTOCOL SPECIFICATION 1.0
    0x16,0x26         6       Position (set & report)
    0x17,0x27         2       Target speed setting
    0x18,0x28         3       Drive-to command
-   0x19,0x29        0,var.   Loco info request
+
+   
+   
+2.1.1 Command "Emergency stop"
+   
+   All devies must stop their engines immediately when receiving this command.
+   Peripheral devices, such as lighting or smoke generators may be left in their
+   current state.
+
+
+2.1.2 Command "End of master timeslot countdown"
+
+   The countdown marks the end of the base/master timeslot and includes the maximum
+   amount of bytes that are to be sent within the timeslot (thereby, implicitly the
+   timeslot length).
+   The command may be sent multiple times (each with decremented countdown value)
+   by the master in order to improve reliability. When transmitting the command
+   mutliple times, the master must send the command with the appropriate delay in
+   between the messages.
+   
+   
+2.1.3 Timeslot assignment request
+   
+   Whenever a client node enters a cell, it requires a timeslot in order to respond
+   to master commands.
+
+   The address field for the request should be set to the desired/old address.
+
+   The payload field contains 5 additional bytes as follows:
+
+   * Byte 0:     Capability flags
+    ** bit 0: when set, this indicates that the device is able to perform channel
+              occupancy detection.
+    ** bits 1-7: unused/RFU
+
+   * Bytes 1-4:  UUID of device
+     This field includes the unique ID of the device
+
+
+2.1.4 Timeslot assignment acknowledge
+   
+   This message is used to assign a timeslot to a client node or change its current
+   timeslot. If the client requested a timeslot, the master sets the address field
+   to address 0x0000 - in this case, a client must temporarily accept & parse commands
+   sent to this address.
+   If the master needs to change the timeslot, the client address should be set to the
+   current address of the client, since the client already is in active mode at that
+   time.
+
+   In any case, the client must check if the UUID of the timeslot assignment command
+   matches its UUID and upon successful check, must set the timeslot and address
+   accordingly.
+
 
