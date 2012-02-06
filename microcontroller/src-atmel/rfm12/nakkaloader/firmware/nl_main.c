@@ -48,21 +48,6 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 	SREG = sreg;
 }
 
-#if 0
-static uint8_t nl_match_packet (uint8_t *in_packet)
-{
-	#if NL_ADDRESSSIZE == 1
-	if ((*(in_packet + 1) & NL_ADDRESSMASK) != (myaddress[0] & NL_ADDRESSMASK))
-		return 0;
-	#elif NL_ADDRESSSIZE == 2
-	if (*((uint16_t *) (in_packet + 1)) & (NL_ADDRESSMASK) !=
-		(*((uint16_t *) &myaddress) & (NL_ADDRESSMASK)))
-			return 0;
-	#endif
-	return 1;
-}
-#endif
-
 static void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 {
 	rf_tx_buffer.buffer[0] = in_type;
@@ -106,17 +91,13 @@ int main (void)
 	uint16_t crcsum = 0;
 	nl_flashcmd *mycmd;
 
-#if 0
 	/* read address */
-	/*for (i=0;i<NL_ADDRESSSIZE;i++)
+	for (i=0;i<NL_ADDRESSSIZE;i++)
 	{
 		myaddress[i] =
 			eeprom_read_byte (
 				(uint8_t *) (((uint8_t) i) + ((uint8_t) NL_ADDRESSPOS)));
-	}*/
-
-	myaddress[0] = 0xff;
-#endif
+	}
 
 	/* move interrupt vector table to bootloader section */
 
@@ -137,14 +118,24 @@ int main (void)
 				rfm12_rx_clear();
 				continue;
 			}
-
+			
+			#if NL_ADDRESSSIZE == 2
+			if (rxbuf[1] != myaddress[0] || rxbuf[2] != myaddress[1])
+			#else
+			if (rxbuf[1] != myaddress[0])
+			#endif
+			{
+				rfm12_rx_clear();
+				continue;
+			}
+			
 			mystate = rxbuf[0];
 			i=0; /* somebody cares about us. reset error counter */
 		}
 
 
 		/* (re)transmit our configuration if master hasn't responded yet. */
-		if ((i & 0x3fff) == 0)
+		if ((i & NL_RETRANSMIT_MASK) == 0)
 		{
 			switch (mystate)
 			{
@@ -210,7 +201,7 @@ int main (void)
 
 			rfm12_rx_clear();
 		}
-		else if (i == 0x1ffff)
+		else if (i == NL_MAXCOUNT)
 			nl_boot_app();
 
 		i++;

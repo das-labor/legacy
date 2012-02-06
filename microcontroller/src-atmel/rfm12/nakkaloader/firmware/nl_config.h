@@ -3,7 +3,7 @@
 /* Maximum size of packets transmitted and received by this
  * bootloader.
  */
-#define NL_PACKETSIZE 72
+#define NL_PACKETSIZE SPM_PAGESIZE+5
 
 /* the position in the eeprom where the device's network address is stored at */
 #define NL_ADDRESSPOS 0
@@ -13,19 +13,14 @@
  **/
 #define NL_ADDRESSSIZE 1
 
-/* address bitmask */
-#define NL_ADDRESSMASK 0xFF
+/* if the counter value masked by the NL_RETRANSMIT_MASK equals 0, the last command is repeated.
+ * this value should be significantly lower than NL_MAXCOUNT. (i.e. 1/16th)
+ */
+#define NL_RETRANSMIT_MASK 0x3fff
 
-/* maximum failure count - increase value in noisy environments.
- *
- * This value may also be set to 0, meaning the bootloader should hang forever
- * in a certain state in case of an error. (!)
- *
- * Note that this value also represents the bootdelay. Once the counter reaches its top,
- * the application is started.
- *
- * */
-#define NL_MAXFAILS 0x4ffff
+/* the maximum counter value before the nakkaloader starts booting the application.
+ */
+#define NL_MAXCOUNT 0x3ffff
 
 /* set verbosity for bootloader (0 to 2)
  *

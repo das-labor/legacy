@@ -4,8 +4,8 @@ TARGET = nl_main
 OBJECTS = rfm12.o nl_main.o
 
 # microcontroller and project specific settings (everything can be overridden using config.mk)
-F_CPU = 16000000UL
-MCU = atmega32
+F_CPU = 8000000UL
+MCU = atmega8
 #CFLAGS += -DBOOTLOADER_DDR=DDRC
 #CFLAGS += -DBOOTLOADER_PORT=PORTC
 #CFLAGS += -DBOOTLOADER_PIN=PINC
