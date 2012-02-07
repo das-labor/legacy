@@ -27,13 +27,14 @@
 
 #define NL_PACKETTYPE         0xE0
 
+#pragma pack(push)
+#pragma pack(1)
 typedef struct
 {
 	uint8_t pkttype;
 	uint8_t payload[RFM12_BUFFER_SIZE-1];
 } nl_packet;
 
-#pragma packed,1
 typedef const struct
 {
 	uint16_t pagesize;
@@ -47,7 +48,7 @@ typedef struct
 	uint16_t addr_start;
 	uint16_t addr_end;
 } nl_flashcmd;
-
+#pragma pack(pop)
 /* nakkaloader version */
 #define NL_VERSION 0x00
 
