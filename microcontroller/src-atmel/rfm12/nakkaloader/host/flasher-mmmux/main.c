@@ -26,6 +26,7 @@
 #include <muxd.h>
 
 #include "nl_flash.h"
+#include "nl_firmware.h"
 
 void print_help (char *in_name)
 {
@@ -60,14 +61,13 @@ int parse_args (nflash_ctx_t* in_c, int argc, char *argv[])
 
 	if (argc < 2)
 	{
-		print_help (argv[0]);
 		return -1;
 	}
 	
 	for (i=0;i<argc-2;i++)
 		offset++;
 	
-	rv = parse_address (argv[offset]);
+	rv = parse_address (argv[offset++]);
 	if (rv < 0)
 		return rv;
 	
@@ -77,6 +77,9 @@ int parse_args (nflash_ctx_t* in_c, int argc, char *argv[])
 		in_c->addr_size = 1;
 	else 
 		in_c->addr_size = 2;
+	
+	if (nflash_read_binary (in_c, argv[offset]) <= 0)
+		return - __LINE__;
 	
 	return 0;
 }
