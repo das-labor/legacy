@@ -1,3 +1,24 @@
+/*   NAKKALOADER - a bootloader for AVR microcontrollers & RFM12
+ *   transceivers. (firmware)
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *   Copyright (C) 2012
+ *       Soeren Heisrath (forename at surename dot org)
+ *       Hans-Gert Dahmen (hansinator at das-labor dot org)
+ */
 #include <inttypes.h>
 #include <avr/io.h>
 #include <avr/boot.h>
@@ -51,8 +72,7 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 static void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 {
 	rf_tx_buffer.buffer[0] = in_type;
-//	rf_tx_buffer.buffer[0] = myaddress[0];
-	rf_tx_buffer.buffer[1] = 0xff;
+	rf_tx_buffer.buffer[1] = myaddress[0];
 
 	#if NL_ADDRESSSIZE == 2
 		rf_tx_buffer.buffer[2] = myaddress[1];
@@ -145,12 +165,10 @@ int main (void)
 		{
 			switch (mystate)
 			{
+				/* do we really need the ehlo foo? we could just send our config right away.. */
+				case NLPROTO_MASTER_EHLO: 
 				case NLPROTO_SLAVE_CONFIG:
 					nl_tx_packet (NLPROTO_SLAVE_CONFIG, sizeof(myconfig), (uint8_t *) &myconfig);
-					break;
-
-				case NLPROTO_MASTER_EHLO:
-					nl_tx_packet (NLPROTO_MASTER_EHLO, 0, mypage);
 					break;
 
 				/* master is ready to flash */
@@ -179,8 +197,7 @@ int main (void)
 
 					for (k=mycmd->addr_start, crcsum = 0;k<mycmd->addr_end;k++)
 						crcsum = _crc16_update (crcsum, *(mypage + k));
-					//crcsum = mycmd->addr_start;
-
+					
 					mystate = NLPROTO_PAGE_CHKSUM;
 					/* no break for retransmission purposes */
 
