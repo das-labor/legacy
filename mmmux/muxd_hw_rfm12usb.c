@@ -24,7 +24,12 @@
  */
 int rfm12usb_match_usbid (int in_vid, int in_pid)
 {
+	/* old usb id (same as usbasp!) - will be removed */
 	if (in_vid == 0x16C0 && in_pid == 0x05DC)
+		return 1;
+	
+	/* officially assigned VID/PID pair for rfm12usb */
+	if (in_vid == 0x20a0 && in_pid == 0x4198)
 		return 1;
 	
 	return 0;
