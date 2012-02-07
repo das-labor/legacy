@@ -25,16 +25,18 @@
 #include <stdint.h>
 #include <muxd.h>
 #include <time.h>
+#include <math.h>
+#include <endian.h>
 
 #pragma once
 
-#ifndef RFM12_RX_BUFFER_SIZE
-	#define RFM12_RX_BUFFER_SIZE 1024
-#endif
+#include "crc.h"
 #include "../../common/nl_protocol.h"
 
 /* time (in seconds) before re-transmitting the last command */
 #define NL_RESEND_DELAY 1
+
+#define NFLASH_DONE 1337
 
 typedef enum
 {
@@ -52,6 +54,7 @@ typedef struct
 	size_t addr_size;
 	char* fw_name;
 	void* fw_buf;
+	size_t fw_size;
 	nflash_state_t state;
 	uint32_t pagenum;        /* current page number */
 	size_t bytes_sent;       /* bytes we sent for current page (= offset within page) */
@@ -76,7 +79,7 @@ typedef struct
 void nflash_init_state (nflash_ctx_t *in_s);
 
 /* returns 1 if given packet matches our context, 0 when not */
-int nflash_packet_match (nflash_ctx_t *in_c, uint8_t *in_b);
+int nflash_packet_match (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b);
 
 /* main packet handler routine / state machine
  */

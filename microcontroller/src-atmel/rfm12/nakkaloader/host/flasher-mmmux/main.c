@@ -54,7 +54,7 @@ int parse_address (char* in_arg)
 	}
 }
 
-int parse_args (nl_client_ctx_t* in_c, int argc, char *argv[])
+int parse_args (nflash_ctx_t* in_c, int argc, char *argv[])
 {
 	int i, offset = 0, rv;
 
@@ -71,7 +71,7 @@ int parse_args (nl_client_ctx_t* in_c, int argc, char *argv[])
 	if (rv < 0)
 		return rv;
 	
-	((uint16_t *) in_c->address) = (uint16_t) rv;
+	*((uint16_t *) in_c->address) = (uint16_t) rv;
 
 	if (rv <= 0xff)
 		in_c->addr_size = 1;
@@ -90,7 +90,7 @@ int main (int argc, char* argv[])
 	
 	if (parse_args(&my_ctx, argc, argv) < 0)
 	{
-		print_help();
+		print_help(argv[0]);
 		return -1;
 	}
 

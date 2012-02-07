@@ -1,8 +1,18 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "../firmware/rfm12_config.h"
-#define RFM12_BUFFER_SIZE RFM12_RX_BUFFER_SIZE
+#pragma once
+
+#ifdef MCU /* if we're compiling for the µC ... */
+	#define BUILD_MCU
+#endif
+
+#ifdef BUILD_MCU
+	#include "../firmware/rfm12_config.h"
+	#define RFM12_BUFFER_SIZE RFM12_RX_BUFFER_SIZE
+#else
+	#define RFM12_BUFFER_SIZE 1024
+#endif
 
 #ifndef NL_PROTOCOL_H
 #define NL_PROTOCOL_H
@@ -35,7 +45,11 @@ typedef struct
 	uint8_t payload[RFM12_BUFFER_SIZE-1];
 } nl_packet;
 
+#ifdef BUILD_MCU
 typedef const struct
+#else
+typedef struct
+#endif
 {
 	uint16_t pagesize;
 	uint8_t rxbufsize;

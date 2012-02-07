@@ -48,16 +48,24 @@ int nflash_packet_match (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b)
 	{
 		uint16_t m_addr = *((uint16_t*) &in_b[sizeof(nflash_header_t) -1]);
 
-		if (m_addr != in_c->address)
+		if (m_addr != *((uint16_t *) in_c->address))
 			return 0;
 	}
 
 	return 1;
 }
 
+/* calculate the offset of the current page in the firmware buffer
+ */
+void *page_offset (nflash_ctx_t *in_c)
+{
+	return (void*) ((size_t) in_c->fw_buf + in_c->cc.pagesize * in_c->pagenum);
+}
+
+/* assemble the header */
 void nflash_header_set (nflash_header_t *out_h, nflash_ctx_t *in_c, size_t in_len, uint8_t in_cmd)
 {
-	out_h->len = in_len + 2;
+	out_h->len = in_len + sizeof(nflash_header_t) + in_c->addr_size - 3; /* minus 1 addr byte, minus 2 header bytes for rfm12 driver */
 	out_h->cmd = in_cmd;
 	out_h->type = NL_PACKETTYPE;
 	memcpy (&out_h->addr, in_c->address, in_c->addr_size);
@@ -67,14 +75,39 @@ void nflash_header_set (nflash_header_t *out_h, nflash_ctx_t *in_c, size_t in_le
  */
 void nflash_page_fill (nflash_ctx_t *in_c)
 {
+	uint8_t txbuf[4096];
+	size_t txlen;
+	size_t end = in_c->bytes_confirmed + (in_c->cc.rxbufsize - sizeof(nflash_header_t) - sizeof(nl_flashcmd) + in_c->addr_size -1);
+	void *pp = &txbuf[sizeof(nflash_header_t)], *pfw;
+	nl_flashcmd cmd;
 
-	/* last chunk of page, set to await crc */
+	if (end > in_c->cc.pagesize)
+		end = in_c->cc.pagesize;
+	
+	if (in_c->addr_size == 2)
+		pp++;
+	
+	pfw = page_offset (in_c) + in_c->bytes_confirmed;
+
+	txlen = sizeof(nl_flashcmd) + end - in_c->bytes_confirmed;
+	cmd.pagenum = htole32 (in_c->pagenum);
+	cmd.addr_start = htole16 (in_c->bytes_confirmed);
+	cmd.addr_end = htole16 (end);
+	in_c->bytes_sent = end;
+	
+	nflash_header_set ((nflash_header_t*) txbuf, in_c, txlen, NLPROTO_PAGE_FILL);
+	memcpy (pp, pfw, end - in_c->bytes_confirmed);
+
+	txlen += sizeof(nflash_header_t) + in_c->addr_size -1; /* raw packet length */
+	mmmux_send (in_c->mc, txbuf, txlen);
+	in_c->last_tx = time(NULL);
+	in_c->state = AWAIT_CRC;
 }
 
 void nflash_page_commit (nflash_ctx_t *in_c)
 {
 	uint8_t txbuf[32];
-	uint32_t pagenum = htole (in_c->pagenum);
+	uint32_t pagenum = htole32 (in_c->pagenum);
 	uint8_t *p = &txbuf[sizeof(nflash_header_t)];
 	
 	memset (txbuf, 0x00, sizeof(txbuf));
@@ -86,7 +119,7 @@ void nflash_page_commit (nflash_ctx_t *in_c)
 
 	nflash_header_set ((nflash_header_t*) txbuf, in_c, sizeof(pagenum), NLPROTO_PAGE_COMMIT);
 	mmmux_send (in_c->mc, txbuf, sizeof(nflash_header_t) + sizeof(pagenum) + (in_c->addr_size -1));
-	in_c->last_tx = time();
+	in_c->last_tx = time(NULL);
 	in_c->state = AWAIT_COMMIT;
 }
 
@@ -96,7 +129,7 @@ void nflash_timeout_handler (nflash_ctx_t *in_c)
 	size_t txlen = 0;
 	uint8_t txbuf[64];
 
-	if (in_c->last_tx > time() - NL_RESEND_DELAY)
+	if (in_c->last_tx > time(NULL) - NL_RESEND_DELAY)
 		return;
 	
 	memset (txbuf, 0x00, sizeof(txbuf));
@@ -107,7 +140,7 @@ void nflash_timeout_handler (nflash_ctx_t *in_c)
 		case AWAIT_CFG:
 			/* eh dude, you still haven't told me your config (or i haven't received it). */
 			in_c->state = AWAIT_CFG;
-			cmd = NLPROTO_SLAVE_CFG;
+			cmd = NLPROTO_SLAVE_CONFIG;
 		break;
 
 		case FILL_PAGE:
@@ -131,17 +164,17 @@ void nflash_timeout_handler (nflash_ctx_t *in_c)
 
 	nflash_header_set ((nflash_header_t*) txbuf, in_c, txlen, cmd);
 	mmmux_send (in_c->mc, txbuf, sizeof(nflash_header_t) + txlen + (in_c->addr_size -1));
-	in_c->last_tx = time();
+	in_c->last_tx = time(NULL);
 }
 
-/* this function parses the given crc buffer and when successful updates the bytes_verified counter
+/* this function parses the given crc buffer and when successful updates the bytes_confirmed counter
  * and returns 1. if the crc sums didn't match, 0 is returned.
  */
 int nflash_crc_verify (nflash_ctx_t *in_c, size_t in_len, uint8_t* in_b)
 {
 	uint16_t crc_local, crc_remote;
 	
-	if (in_len < sizeof (nflash_header_t) + sizeof (crcsum) + in_c->addr_size - 1)
+	if (in_len < sizeof (nflash_header_t) + sizeof (crc_local) + in_c->addr_size - 1)
 		return 0;
 	
 	memcpy (&crc_remote, in_b + sizeof(nflash_header_t) + in_c->addr_size -1, sizeof (crc_local));
@@ -159,7 +192,7 @@ int nflash_crc_verify (nflash_ctx_t *in_c, size_t in_len, uint8_t* in_b)
 int nflash_handle_packet (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b)
 {
 	nflash_header_t *h = (nflash_header_t*) in_b;
-	uint8_t out_cmd = 0x00, txbuf[4096];
+	uint8_t cmd = 0x00, txbuf[4096];
 	size_t txlen = 0;
 	memset (txbuf, 0x00, sizeof(txbuf));
 
@@ -169,26 +202,26 @@ int nflash_handle_packet (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b)
 	switch (in_c->state)
 	{
 		case INIT:
-			cmd = NLPROTO_SLAVE_CFG;
+			cmd = NLPROTO_SLAVE_CONFIG;
 			in_c->state = AWAIT_CFG;
 		break;
 		case AWAIT_CFG:
 		{
 			nl_config *tc;
 
-			if (in_h->cmd != NLPROTO_SLAVE_CONFIG)
+			if (h->cmd != NLPROTO_SLAVE_CONFIG)
 			{
-				printf ("error: expected slave cfg, but got %02X\n", in_h->cmd);
+				printf ("error: expected slave cfg, but got %02X\n", h->cmd);
 				break;
 			}
 
 			if (in_len < sizeof (nl_config) + sizeof (nflash_header_t) + in_c->addr_size -1)
 				break;
 
-			tc = &in_b[sizeof(nflash_header_t) + in_c->addr_size-1];
-			in_c->cc.pagesize = letoh(tc->pagesize);
-			in_c->cc.rxbufsize = letoh(tc->rxbufsize);
-			in_c->cc.version = letoh(tc->version);
+			tc = (nl_config*) &in_b[sizeof(nflash_header_t) + in_c->addr_size-1];
+			in_c->cc.pagesize = le16toh(tc->pagesize);
+			in_c->cc.rxbufsize = tc->rxbufsize;
+			in_c->cc.version = tc->version;
 
 			printf ("got client config: PSZ = %u, RXSZ = %u, V = %u\n",
 				in_c->cc.pagesize, in_c->cc.rxbufsize, in_c->cc.version);
@@ -198,11 +231,11 @@ int nflash_handle_packet (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b)
 		}
 		case AWAIT_CRC:
 		case FILL_PAGE:
-			if (in_h->bytes_sent != 0 && in_h->cmd != NLPROTO_PAGE_CHKSUM)
+			if (in_c->bytes_sent != 0 && h->cmd != NLPROTO_PAGE_CHKSUM)
 			{
-				printf ("error: expected crcsum packet, but received %02X\n", in_h->cmd);
+				printf ("error: expected crcsum packet, but received %02X\n", h->cmd);
 				/* send fill command again */
-			} else if (in_h->cmd == NLPROTO_PAGE_CHKSUM)
+			} else if (h->cmd == NLPROTO_PAGE_CHKSUM)
 			{
 				nflash_crc_verify (in_c, in_len, in_b);
 			}
@@ -212,17 +245,38 @@ int nflash_handle_packet (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b)
 				nflash_page_fill (in_c);
 				break;
 			}
-
+			
+			/* all ok, send commit command */
 			nflash_page_commit (in_c);
 			in_c->state = AWAIT_COMMIT;
 		break;
 
 		case AWAIT_COMMIT:
-			if (in_h->cmd != NLPROTO_PAGE_COMITTED)
+			if (h->cmd != NLPROTO_PAGE_COMMITED)
 			{
-				printf ("error: expected PAGE_COMMITED but received %02X\n", in_h->cmd);
+				printf ("error: expected PAGE_COMMITED but received %02X\n", h->cmd);
+				/* send commit again */
+				nflash_page_commit (in_c);
+				return 0;
 			}
-			return;
+			
+			printf ("page %i successfully flashed\n", in_c->pagenum);
+
+			/* reset counters */
+			in_c->bytes_sent = 0;
+			in_c->bytes_confirmed = 0;
+			in_c->pagenum++;
+
+			if (in_c->pagenum == ceil(in_c->fw_size / in_c->cc.pagesize))
+			{
+				cmd = NLPROTO_BOOT;
+				break;
+			}
+			
+			/* push the next page */
+			in_c->state = FILL_PAGE;
+			nflash_page_fill (in_c);
+			return 0;
 	}
 
 	if (cmd == 0x00)
@@ -230,5 +284,10 @@ int nflash_handle_packet (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b)
 	
 	nflash_header_set ((nflash_header_t*) txbuf, in_c, txlen, cmd);
 	mmmux_send (in_c->mc, txbuf, sizeof(nflash_header_t) + txlen + (in_c->addr_size -1));
-	in_c->last_tx = time();
+	in_c->last_tx = time(NULL);
+
+	if (cmd == NLPROTO_BOOT)
+		return NFLASH_DONE; /* all done */
+	
+	return 0;
 }
