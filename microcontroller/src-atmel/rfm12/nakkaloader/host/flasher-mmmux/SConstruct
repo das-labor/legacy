@@ -3,6 +3,6 @@ envlib = Environment(parse_flags='-lusb')
 envstatic = Environment(parse_flags='-lusb')
 envprog = Environment(LIBPATH = ['./mmmux-lib'], CPPPATH = ['./mmmux-lib'], parse_flags='-lusb -lmmmuxd -lm')
 
-flashbuild = envprog.Program ('nakkaflash', ['crc.c', 'nl_flash.c', 'main.c'])
+flashbuild = envprog.Program ('nakkaflash', ['crc.c', 'nl_firmware.c', 'nl_flash.c', 'main.c'])
 
 #staticbuild = envstatic.Program ('mmmuxd_test_static', ['muxd.c', 'muxd_client.c', 'muxd_server.c','muxd_hw_rfm12usb.c', 'muxd_hw.c', 'muxd_test.c'])
