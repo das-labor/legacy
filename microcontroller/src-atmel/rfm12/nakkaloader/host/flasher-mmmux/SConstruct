@@ -1,7 +1,7 @@
 import sys,glob,os
 envlib = Environment(parse_flags='-lusb')
 envstatic = Environment(parse_flags='-lusb')
-envprog = Environment(LIBPATH = ['./mmmux-lib'], CPPPATH = ['./'], parse_flags='-lusb -lmmmuxd')
+envprog = Environment(LIBPATH = ['./mmmux-lib'], CPPPATH = ['./mmmux-lib'], parse_flags='-lusb -lmmmuxd -lm')
 
 flashbuild = envprog.Program ('nakkaflash', ['crc.c', 'nl_flash.c', 'main.c'])
 
