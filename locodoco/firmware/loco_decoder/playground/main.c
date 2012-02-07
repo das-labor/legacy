@@ -30,21 +30,20 @@
 #define LIGHTS_RW() PORTD &= ~(_BV(PD6)); PORTD |= (_BV(PD4))
 #define LIGHTS_FW() PORTD &= ~(_BV(PD4)); PORTD |= (_BV(PD6))
 
-static int16_t speed = 0;
+volatile static uint8_t speed = 150;
+volatile static uint8_t dir = 0;
 
 ISR (TIMER0_OVF_vect)
 {
-	static uint8_t counter = 0;
+	static uint8_t toggle = 0;
 	uint8_t direction;
 
-	cli();
-
-	if (speed > 0)
+	if (dir == 0)
 	{
 		direction = DIR_FW;
 		LIGHTS_FW();
 	}
-	else if (speed < 0)
+	else if (dir != 0)
 	{
 		direction = DIR_RW;
 		LIGHTS_RW();
@@ -69,18 +68,18 @@ ISR (TIMER0_OVF_vect)
 			MOTOR_OFF();
 		break;
 	}
+	
+	toggle ^= 0x01;
 
-	counter++;
-
-	if (abs(speed) >= counter && speed)
+	if (toggle)
 	{
 		MOTOR_ON();
+		TCNT0 = 0xff - speed;
 	} else
 	{
 		MOTOR_OFF();
+		TCNT0 = speed;
 	}
-	TCNT0 = 8;
-	sei();
 }
 
 
@@ -91,11 +90,13 @@ int main (void)
 	uint8_t *rxbuf;
 	unsigned char greeting[] = "LOK 2 ALIVE\n";
 	
-#if 1
-	TCCR0 |= (_BV(CS01)); /* clk/8 */
+#if 0
+	TCCR0 = _BV(CS01); /* clk/64 */
 	TIMSK |= _BV(TOIE0);
 	TCNT0 = 40;
 #endif
+
+
 	DDRB &= ~(_BV(PB2));
 	DDRB |= _BV(PD3) | _BV(PD4) | _BV(PD5) | _BV(PD6);
 	PORTB |= _BV(PB2);
@@ -105,6 +106,11 @@ int main (void)
 	DDR_EN |= PIN_EN;
 	DDR_M  |= (PIN_FW | PIN_RW);
 	PORT_EN &= ~(PIN_EN);
+
+	MOTOR_FW();
+	
+	TCCR2 = _BV(WGM20) | _BV(COM21) | _BV(CS20) ; /* p-corr. pwm, clear on up cnt, clk/64 */
+//	TCCR2 = _BV(WGM20) | _BV(COM21); /* p-corr. pwm, clear on up cnt, clk/8 */
 
 	for (i=0;i<4;i++)
 		_delay_ms(250);
@@ -133,17 +139,6 @@ int main (void)
 				rxbuf = rfm12_rx_buffer();
                                 ctrlstate = rxbuf[2];
 
-
-
-                                //PB0 Up
-                                //PB1 Down
-                                //PB2 Left
-                                //PB3 Right
-                                //
-                                //PB4 Fire1
-
-                                //-> F2 F1 RT LF DN UP                          
-                                
                                 switch (ctrlstate)
 				{
 					case '+': /* up */
@@ -157,7 +152,8 @@ int main (void)
 						speed = 0;
 					
 					default:
-						speed = 5;
+						//speed += 5;
+						OCR2 = speed;
 				}
 
 				laststate = ctrlstate;

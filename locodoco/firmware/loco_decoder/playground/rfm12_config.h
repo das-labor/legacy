@@ -65,6 +65,7 @@
 
 //frequency to use
 #define FREQ 433000000UL
+#define RFM12_BASEBAND RFM12_BAND_433
 
 //use this for datarates >= 2700 Baud
 //#define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(100200.0)
@@ -100,4 +101,6 @@
 //#define RFM12_INT_SETUP() (MCUCR |= (1<<ISC01))
 
 /* blindly transmit data without caring about channel occupance */
+#define RFM12_INT_FLAG GIFR
+#define RFM12_FLAG_BIT (INTF2)
 #define RFM12_BE_RUDE 0
