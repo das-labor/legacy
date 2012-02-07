@@ -8,7 +8,7 @@ void motor_init()
 	DDR_MOTOR_FW |= _BV(PIN_MOTOR_FW);
 	DDR_MOTOR_RW |= _BV(PIN_MOTOR_RW);
 	MOTOR_FW(); /* set a defined state */
-	M_TIMER_INIT();
+	//M_TIMER_INIT();
 	MOTOR_OFF();
 
 	// XXX read table from eeprom
