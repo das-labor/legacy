@@ -18,6 +18,7 @@
  */
 
 #include "muxd.h"
+#include <unistd.h>
 
 #pragma once
 void mmmux_sigh_cleanup (int in_s);
