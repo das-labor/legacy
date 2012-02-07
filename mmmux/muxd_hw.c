@@ -48,7 +48,7 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 		return 0;
 	}
 
-	p = setsid ();
+	//p = setsid ();
 	v = in_c->debugfd;
 
 	mmmux_server_drop_privs (in_c);
@@ -167,8 +167,9 @@ int mmmux_hw_init (mmmux_sctx_t *in_c)
 	}
 #endif
 
-#if MMMUX_USE_DUMMYHW == 1
+#if MMMUX_USE_DUMMYHW == 1 && 0
 	rv = dummyhw_find (in_c);
 #endif
+	dbg ("wtf");
 	return 0;
 }

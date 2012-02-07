@@ -69,6 +69,7 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 	FD_ZERO (&c->fds_write);
 
 	mmmux_hw_init (c);
+	v = c->debugfd;
 
 	/* remove socket file when killed */
 	signal (SIGKILL, mmmux_sigh_cleanup);
@@ -88,7 +89,6 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 		return - __LINE__;
 	}
 	mmmux_server_drop_privs (c);
-
 	dbg("sock task: socket created, starting main loop");
 
 	while (23)
