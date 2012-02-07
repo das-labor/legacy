@@ -35,4 +35,13 @@
  * */
 #define NL_VERBOSITY 0
 
+/* since the nakkaloader needs some time to actually boot the application (due to timeout counters),
+ * it may be desireable to define an additional condition. if the function "nl_bootloader_condition()"
+ * is defined and this function returns 0, the nakkaloader will boot right into the application without
+ * further delay.
+ */
+
+/* example: if PB0 is pulled to gnd (i.e. with a button) , the bootloader is started. */
+// inline uint8_t nl_bootloader_condition () { DDRB |= _BV(PB0); PORTB |= _BV(PB0); return ~(PINB & _BV(PB0)); }
+
 #endif

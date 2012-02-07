@@ -91,6 +91,12 @@ int main (void)
 	uint16_t crcsum = 0;
 	nl_flashcmd *mycmd;
 
+	#ifdef nl_bootloader_condition
+	/* boot right into the application */
+	if (!nl_bootloader_condition())
+		nl_boot_app();
+	#endif
+
 	/* read address */
 	for (i=0;i<NL_ADDRESSSIZE;i++)
 	{
