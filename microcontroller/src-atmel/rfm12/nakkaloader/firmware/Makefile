@@ -4,8 +4,8 @@ TARGET = nl_main
 OBJECTS = rfm12.o nl_main.o
 
 # microcontroller and project specific settings (everything can be overridden using config.mk)
-F_CPU = 8000000UL
-MCU = atmega8
+F_CPU = 20000000UL
+MCU = atmega328
 #CFLAGS += -DBOOTLOADER_DDR=DDRC
 #CFLAGS += -DBOOTLOADER_PORT=PORTC
 #CFLAGS += -DBOOTLOADER_PIN=PINC
@@ -93,6 +93,10 @@ else ifeq ($(MCU),atmega128)
 	#Fuses for Xtal/16MHz, bootloader at 0x1f800
 	HFUSE = 0xc4
 	LFUSE = 0xef
+else ifeq ($(MCU),atmega328)
+	HFUSE = 0xd2 # EEPROM save, boot size = 1024Words, reset to bootloader
+	LFUSE = 0xF7 # external crystal, slow rising power, divider off
+	BOOT_SECTION_START = 0x3c00
 endif
 
 LDFLAGS += -Wl,-Map=nakkaflash.map,--section-start=.text=$(BOOT_SECTION_START)

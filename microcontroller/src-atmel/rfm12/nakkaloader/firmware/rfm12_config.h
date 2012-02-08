@@ -104,19 +104,19 @@
 #define RFM12_INT_VECT (INT1_vect)
 
 //the interrupt mask register
-#define RFM12_INT_MSK GICR
+#define RFM12_INT_MSK EIMSK
 
 //the interrupt bit in the mask register
 #define RFM12_INT_BIT (INT1)
 
 //the interrupt flag register
-#define RFM12_INT_FLAG GIFR
+#define RFM12_INT_FLAG EIFR
 
 //the interrupt bit in the flag register
 #define RFM12_FLAG_BIT (INTF1)
 
 //setup the interrupt to trigger on negative edge
-#define RFM12_INT_SETUP() MCUCR &= ~(1<<ISC11)
+#define RFM12_INT_SETUP() EICRA |= (1<<ISC11)
 
 
 /************************
