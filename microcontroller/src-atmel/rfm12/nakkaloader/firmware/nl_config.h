@@ -16,11 +16,11 @@
 /* if the counter value masked by the NL_RETRANSMIT_MASK equals 0, the last command is repeated.
  * this value should be significantly lower than NL_MAXCOUNT. (i.e. 1/16th)
  */
-#define NL_RETRANSMIT_MASK 0x3fff
+#define NL_RETRANSMIT_MASK 0xffff
 
 /* the maximum counter value before the nakkaloader starts booting the application.
  */
-#define NL_MAXCOUNT 0x3ffff
+#define NL_MAXCOUNT 0x3fffff
 
 /* set verbosity for bootloader (0 to 2)
  *

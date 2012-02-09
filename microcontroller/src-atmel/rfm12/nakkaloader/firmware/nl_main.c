@@ -27,6 +27,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <util/crc16.h>
+#include <util/delay.h>
 
 #include "rfm12_config.h"
 #include "rfm12.h"
@@ -71,6 +72,8 @@ void boot_program_page (uint32_t page, uint8_t *buf)
 
 static void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 {
+	#if 0
+	/* this stuff doesn't seem to work, i can't see why; code looks allright... */
 	rf_tx_buffer.buffer[0] = in_type;
 	rf_tx_buffer.buffer[1] = myaddress[0];
 
@@ -80,8 +83,20 @@ static void nl_tx_packet (uint8_t in_type, uint8_t in_len, uint8_t *in_payload)
 
 	if (in_len)
 		memcpy(&rf_tx_buffer.buffer[NL_ADDRESSSIZE+1], in_payload, in_len);
+	
+	rfm12_start_tx (NL_ADDRESSSIZE + 2 + in_len, NL_PACKETTYPE);
 
-	rfm12_start_tx (NL_ADDRESSSIZE + 1 + in_len, NL_PACKETTYPE);
+	#else
+	uint8_t txbuf[32];
+	txbuf[0] = in_type;
+	txbuf[1] = myaddress[0];
+	#if NL_ADDRESSSIZE == 2
+	txbuf[2] = myaddress[1];
+	#endif
+	memcpy (&txbuf[NL_ADDRESSSIZE+1], in_payload, in_len);
+
+	rfm12_tx (NL_ADDRESSSIZE + 1 + in_len, NL_PACKETTYPE, txbuf);
+	#endif
 }
 
 static void nl_boot_app ( void )
@@ -94,7 +109,7 @@ static void nl_boot_app ( void )
 	cli();
 
 	//move interrupts back (also disables rfm12 int)
-	#if MCU == atmega328
+	#if MCU == atmega328p
 	MCUCR = _BV(IVCE);
 	MCUCR = 0x00;
 	#else
@@ -131,8 +146,9 @@ int main (void)
 	}
 
 	/* move interrupt vector table to bootloader section */
+	cli();
 
-	#if MCU == atmega328
+	#if MCU == atmega328p
 	MCUCR = (1<<IVCE);
 	MCUCR = (1<<IVSEL);
 	#else
@@ -142,7 +158,6 @@ int main (void)
 	rfm12_init();
 	sei();
 
-//	for (i=0;i < NL_MAXFAILS || NL_MAXFAILS == 0;i++)
 	while (2)
 	{
 		if (rfm12_rx_status() == STATUS_COMPLETE)

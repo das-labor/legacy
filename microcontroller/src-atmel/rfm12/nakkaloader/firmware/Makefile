@@ -5,7 +5,7 @@ OBJECTS = rfm12.o nl_main.o
 
 # microcontroller and project specific settings (everything can be overridden using config.mk)
 F_CPU = 20000000UL
-MCU = atmega328
+MCU = atmega328p
 #CFLAGS += -DBOOTLOADER_DDR=DDRC
 #CFLAGS += -DBOOTLOADER_PORT=PORTC
 #CFLAGS += -DBOOTLOADER_PIN=PINC
@@ -13,6 +13,7 @@ MCU = atmega328
 
 # include avr-generic makefile configuration
 include avr.mk
+ADUDEMCU = $(MCU)
 
 # bootloader section start
 # (see datasheet)
@@ -93,10 +94,13 @@ else ifeq ($(MCU),atmega128)
 	#Fuses for Xtal/16MHz, bootloader at 0x1f800
 	HFUSE = 0xc4
 	LFUSE = 0xef
-else ifeq ($(MCU),atmega328)
-	HFUSE = 0xd2 # EEPROM save, boot size = 1024Words, reset to bootloader
-	LFUSE = 0xF7 # external crystal, slow rising power, divider off
-	BOOT_SECTION_START = 0x3c00
+else ifeq ($(MCU),atmega328p)
+	# EEPROM save, boot size = 1024Words, reset to bootloader
+	HFUSE = 0xd2
+	# external crystal, slow rising power, divider off
+	LFUSE = 0xF7
+	BOOT_SECTION_START = 0x7800
+	ADUDEMCU = m328p
 endif
 
 LDFLAGS += -Wl,-Map=nakkaflash.map,--section-start=.text=$(BOOT_SECTION_START)
@@ -108,6 +112,8 @@ HEADERS += $(shell echo *.h)
 CFLAGS += -Werror -g -Os
 LDFLAGS += -L/usr/local/avr/avr/lib
 
+AVRDUDE_FLAGS = -p $(ADUDEMCU)
+ISP_PROG = usbasp
 
 .PHONY: all 
 
