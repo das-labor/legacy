@@ -53,16 +53,16 @@
 //Pin that the RFM12's slave select is connected to
 #define DDR_SS DDRB
 #define PORT_SS PORTB
-#define BIT_SS 4
+#define BIT_SS 1
 
 //SPI port
 #define DDR_SPI DDRB
 #define PORT_SPI PORTB
 #define PIN_SPI PINB
-#define BIT_MOSI 5
-#define BIT_MISO 6
-#define BIT_SCK  7
-#define BIT_SPI_SS 4
+#define BIT_MOSI 3
+#define BIT_MISO 4
+#define BIT_SCK  5
+#define BIT_SPI_SS 2
 //this is the hardware SS pin of the AVR - it
 //needs to be set to output for the spi-interface to work
 //correctly, independently of the CS pin used for the RFM12
@@ -92,7 +92,7 @@
  * there are going to be 2 Buffers of this size
  * (double_buffering)
  */
-#define RFM12_RX_BUFFER_SIZE 78
+#define RFM12_RX_BUFFER_SIZE 96
 
 
 /************************
@@ -116,7 +116,7 @@
 #define RFM12_FLAG_BIT (INTF1)
 
 //setup the interrupt to trigger on negative edge
-#define RFM12_INT_SETUP() EICRA |= (1<<ISC11)
+#define RFM12_INT_SETUP() EICRA = (1<<ISC11) 
 
 
 /************************
@@ -142,7 +142,7 @@ FIXME: noreturn stuff here
 #define RFM12_TRANSMIT_ASK	0
 #define RFM12_USE_WAKEUP_TIMER 0
 #define RFM12_LOW_POWER		0
-#define RFM12_SMALLAPI		1
+#define RFM12_SMALLAPI		0
 
 /*
  * UART DEBUGGING
