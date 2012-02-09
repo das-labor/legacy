@@ -38,21 +38,25 @@ ssize_t dummyhw_rx (void *in_ctx, size_t in_maxlen, void* out_data)
 }
 ssize_t dummyhw_tx (void *in_ctx, size_t in_len, void* in_data)
 {
+	dbg ("dummy hw received: %s", in_data);
 	return in_len;
 }
 
 int dummyhw_find (mmmux_sctx_t *in_c)
 {
-	mmmux_hw_t *hws;
-	hws = malloc (sizeof(mmmux_hw_t));
-	memset (hws, 0x00, sizeof(mmmux_hw_t));
+	static mmmux_hw_t hws[2];
+	memset (hws, 0x00, sizeof(mmmux_hw_t) * 2);
 	
-	sprintf (hws->name, "DUMMY HARDWARE DEVICE");
-	hws->sdelay = 1000000; /* once per second */
-	hws->init = NULL;
-	hws->close = NULL;
-	hws->rx = dummyhw_rx;
-	hws->tx = dummyhw_tx;
-	mmmux_hw_add (in_c, hws);
+	hws[0].sdelay = 1000000; /* once per second */
+	hws[0].init = NULL;
+	hws[0].close = NULL;
+	hws[0].rx = dummyhw_rx;
+	hws[0].tx = dummyhw_tx;
+
+	memcpy (&hws[1], &hws[0], sizeof(mmmux_hw_t));
+	sprintf (hws[1].name, "DUMMY HARDWARE DEVICE 1");
+	sprintf (hws[0].name, "DUMMY HARDWARE DEVICE 0");
+	mmmux_hw_add (in_c, &hws[0]);
+	mmmux_hw_add (in_c, &hws[1]);
 }
 #endif
