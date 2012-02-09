@@ -61,7 +61,7 @@ int mmmux_send (mmmux_sctx_t *in_c, void* in_buf, size_t in_len)
 
 	while (sent < in_len)
 	{
-		rv = send (in_c->listenfd, (void*) ((size_t) in_buf + in_len), in_len - sent, 0);
+		rv = send (in_c->listenfd, (void*) ((size_t) in_buf + sent), in_len - sent, 0);
 		e = errno;
 
 		if (rv < 0)

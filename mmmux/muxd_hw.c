@@ -29,17 +29,19 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 	uint8_t buf[1024];
 	int pfds[2];
 
-	fd_set my_set;
+	fd_set m_set, r_set;
 	struct timeval tv;
 	
 	/* each hw task has its own pipe */
 	pipe (pfds);
 
 	for (i=0;in_c->fds_hw[i] >= 0;i++);
+	dbg ("adding pipe #%i at pos %i", pfds[1], i);
 	in_c->fds_hw[i] = pfds[1];
-#if 0
+#if 1
 	p = fork();
 	e = errno;
+	v = in_c->debugfd;
 
 	if (p < 0)
 	{
@@ -53,6 +55,7 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 			in_h->name, p);
 		return 0;
 	}
+	printf ("teh fugg?\n");
 #else
 	daemon (0,1);
 #endif
@@ -66,9 +69,8 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 		in_h->init ((void*) in_h);
 	
 	//fcntl (pfds[0], F_SETFL, O_NONBLOCK);
-	FD_ZERO (&my_set);
-	FD_SET (pfds[0], &my_set);
-	tv.tv_usec = 1000; /* 1ms */
+	FD_ZERO (&m_set);
+	FD_SET (pfds[0], &m_set);
 	
 	while (23)
 	{
@@ -84,34 +86,41 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 			
 			if (rv > 0)
 			{
-				dbg ("hw task: received %i bytes", rv);
+				dbg ("received %i bytes", rv);
 				write (in_c->pfds_sock[1], buf, rv);
 			}
 		}
-		
-		rv = select (pfds[0] + 1, &my_set, NULL, NULL, &tv);
+
+		tv.tv_usec = 1000;
+		tv.tv_sec = 0;
+		r_set = m_set;	
+		rv = select (pfds[0] + 1, &r_set, NULL, NULL, &tv);
 		e = errno;
+
+		if (rv != 0)
+			dbg ("post select() -> %i", rv);
 		if (rv == -1 && e == EINTR)
 			continue;
-
-		if (!FD_ISSET (pfds[0], &my_set))
+		
+		if (in_h->tx == NULL)
 			continue;
 
-		if (in_h->tx != NULL)
+		if (!FD_ISSET (pfds[0], &r_set))
+			continue;
+		
+		dbg ("###########################");
+		rv = read(pfds[0], buf, sizeof(buf));
+		e = errno;
+		
+		if (rv <= 0 && !(e == EAGAIN || e == EWOULDBLOCK))
 		{
-			rv = read(pfds[0], buf, sizeof(buf));
-			e = errno;
-			
-			if (rv <= 0 && !(e == EAGAIN || e == EWOULDBLOCK))
-			{
-				err ("read() returned error: %s", strerror(e));
-				return - __LINE__;
-			}
-			
-			dbg ("hw task (%s): got %i bytes via pipe", in_h->name, rv);
-			in_h->tx (in_h, rv, buf);
+			err ("read() returned error: %s", strerror(e));
+			return - __LINE__;
 		}
-
+		
+		dbg ("hw task (%s): got %i bytes via pipe %02X%02X%02X%02X<---------------------------", in_h->name, rv,
+			buf[0], buf[1], buf[2], buf[3]);
+		in_h->tx (in_h, rv, buf);
 	}
 	return 0;
 }

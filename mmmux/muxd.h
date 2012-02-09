@@ -43,6 +43,7 @@
 	#define MIN(a,b) ((a>b)?b:a)
 #endif
 
+extern int v;
 #define dbg(f, a...) dprintf (v, "% 20s:% 22s:% 5i:\t" f "\n", __FILE__, __func__, __LINE__, ##a)
 #define err(f, a...) fprintf (stderr, "% 20s:% 22s:% 5i:\t" f "\n", __FILE__, __func__, __LINE__, ##a)
 #ifndef MAX
@@ -54,7 +55,6 @@
 #define MDBG_STDERR -2
 #define MDBG_FILE   -3
 
-volatile static int v;
 
 typedef enum
 {
