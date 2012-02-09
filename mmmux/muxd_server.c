@@ -43,8 +43,8 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 
 	pid_t my_pid;
 
-	#if 0
-	mmmux_hw_init (c);
+	#if 1
+	/* fork away from process that called mmmuxd_init() */
 	my_pid = fork();
 	e = errno;
 	if (my_pid < 0)
@@ -240,7 +240,7 @@ int mmmux_server_handle_data (mmmux_sctx_t *in_c)
 		} else
 		/* data from client */
 		{
-			
+			/* XXX ZARRO??! */
 			rv = recv (i, buf, sizeof(buf), 0);
 
 			if (rv <= 0)
@@ -249,9 +249,12 @@ int mmmux_server_handle_data (mmmux_sctx_t *in_c)
 				continue;
 			}
 
-			dbg ("%i bytes from client: %08X", rv, buf);
-			for (k=0;in_c->fds_hw[k] >= 0;k++)
+			dbg ("%i bytes from client: %02X%02X%02X%02X", rv, buf[0], buf[1], buf[2], buf[3]);
+			for (k=0; in_c->fds_hw[k] >= 0; k++)
+			{
+				dbg ("sent to pipe #%i, index %i\n", in_c->fds_hw[k], k);
 				write (in_c->fds_hw[k], buf, rv);
+			}
 		}
 	}
 }

@@ -74,7 +74,7 @@ ssize_t rfm12usb_rx (void *in_ctx, size_t in_maxlen, void* out_data)
 	rv = usb_control_msg (rs->uhandle,
 		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
 		RFMUSB_RQ_RFM12_GET, 0, 0, (char *) out_data, in_maxlen,
-		DEFAULT_USB_TIMEOUT);
+		100);
 
 	if (rv > 0)
 		((mmmux_hw_t*) in_ctx)->rxcount += rv;

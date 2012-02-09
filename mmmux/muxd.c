@@ -19,6 +19,8 @@
 
 #include "muxd.h"
 
+int v = 0;
+
 /* @description check if the given file is actually a socket and working.
  * 	returns 1 on success, 0 if the file doesn't exist and/or the socket
  *	appears to be dead.
