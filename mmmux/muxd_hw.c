@@ -27,11 +27,14 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 	int e, rv;
 	pid_t p;
 	uint8_t buf[1024];
+	int pfds[2];
 	
 	/* each hw task has its own pipe */
-	pipe (in_c->pfds_hw);
-	in_c->nfds = MAX(in_c->pfds_hw[1], in_c->nfds);
+	pipe (pfds);
 
+	FD_SET (pfds[1], &in_c->fds_master);
+	in_c->nfds_hw = MAX(pfds[1], in_c->nfds_hw);
+#if 1
 	p = fork();
 	e = errno;
 
@@ -47,7 +50,9 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 			in_h->name, p);
 		return 0;
 	}
-
+#else
+	daemon (0,1);
+#endif
 	//p = setsid ();
 	v = in_c->debugfd;
 
@@ -117,11 +122,12 @@ int mmmux_hw_add (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 	if (hw_first == NULL)
 	{
 		hw_first = in_h;
+	} else
+	{
+		for (hw=hw_first; hw->next != NULL; hw = hw->next);
+
+		hw->next = in_h;
 	}
-
-	for (hw=hw_first; hw->next != NULL; hw = hw->next);
-
-	hw->next = in_h;
 	mmmux_hw_task (in_c, in_h);
 }
 
@@ -167,7 +173,7 @@ int mmmux_hw_init (mmmux_sctx_t *in_c)
 	}
 #endif
 
-#if MMMUX_USE_DUMMYHW == 1 && 0
+#if MMMUX_USE_DUMMYHW == 1 
 	rv = dummyhw_find (in_c);
 #endif
 	dbg ("wtf");

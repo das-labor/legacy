@@ -42,6 +42,9 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 	int e, rv, nfds;
 
 	pid_t my_pid;
+
+	#if 0
+	mmmux_hw_init (c);
 	my_pid = fork();
 	e = errno;
 	if (my_pid < 0)
@@ -58,6 +61,9 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 
 	my_pid = setsid ();
 	dbg ("new session id: %i", my_pid);
+	#else
+	daemon(0,1);
+	#endif
 
 	/* pipe hw -> socket server */
 	pipe(c->pfds_sock);
@@ -67,9 +73,11 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 	FD_ZERO (&c->fds_master);
 	FD_ZERO (&c->fds_read);
 	FD_ZERO (&c->fds_write);
-
+	FD_ZERO (&c->fds_hw);
+	
 	mmmux_hw_init (c);
 	v = c->debugfd;
+	
 
 	/* remove socket file when killed */
 	signal (SIGKILL, mmmux_sigh_cleanup);
@@ -200,7 +208,7 @@ void mmmux_server_disconnect (mmmux_sctx_t *in_c, int in_fd)
 
 int mmmux_server_handle_data (mmmux_sctx_t *in_c)
 {
-	int i;
+	int i,k;
 	char buf[1024];
 	int rv;
 
@@ -243,7 +251,8 @@ int mmmux_server_handle_data (mmmux_sctx_t *in_c)
 			}
 
 			dbg ("%i bytes from client: %08X", rv, buf);
-			write (in_c->pfds_hw[1], buf, rv);
+			for (k=0;k<=in_c->nfds_hw;k++)
+				write (k, buf, rv);
 		}
 	}
 }
