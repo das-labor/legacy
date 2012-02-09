@@ -45,13 +45,14 @@ int main (int argc, char* argv[])
 		rv = mmmux_receive (my_context, buf, sizeof(buf));
 		if (rv <= 0)
 			return rv;
-
+		
+		printf ("\t");
 		for (i=0;i<rv;i++)
 		{
 			printf ("%02X ", buf[i]);
 			if (i > 0 && !(i % 16))
-				printf ("\n");
+				printf ("\n\t");
 		}
-		printf ("\n\n");
+		printf ("\n");
 	}
 }

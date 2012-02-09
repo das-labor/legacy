@@ -73,7 +73,6 @@ int mmmux_server_sock_task (mmmux_sctx_t *c)
 	FD_ZERO (&c->fds_master);
 	FD_ZERO (&c->fds_read);
 	FD_ZERO (&c->fds_write);
-	FD_ZERO (&c->fds_hw);
 	
 	mmmux_hw_init (c);
 	v = c->debugfd;
@@ -251,8 +250,8 @@ int mmmux_server_handle_data (mmmux_sctx_t *in_c)
 			}
 
 			dbg ("%i bytes from client: %08X", rv, buf);
-			for (k=0;k<=in_c->nfds_hw;k++)
-				write (k, buf, rv);
+			for (k=0;in_c->fds_hw[k] >= 0;k++)
+				write (in_c->fds_hw[k], buf, rv);
 		}
 	}
 }

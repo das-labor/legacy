@@ -52,6 +52,7 @@
 #define MDBG_STDOUT -1
 #define MDBG_NONE    0
 #define MDBG_STDERR -2
+#define MDBG_FILE   -3
 
 volatile static int v;
 
@@ -100,8 +101,7 @@ typedef struct
 	char sockname[256];
 	char chdir[256];
 	int pfds_sock[2];
-	int nfds_hw;
-	fd_set fds_hw;
+	int fds_hw[256];
 } mmmux_sctx_t;
 
 mmmux_sctx_t* mmmuxd_init (int in_debug, char* in_sockname);

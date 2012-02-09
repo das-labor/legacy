@@ -91,6 +91,9 @@ mmmux_sctx_t* mmmuxd_init (int in_debug, char* in_sockname)
 	{
 		v = in_debug * -1;
 		v--;
+	} else if (in_debug == MDBG_FILE)
+	{
+		v = open ("/tmp/mux-debug-log", O_WRONLY | O_APPEND);
 	} else
 	{
 		v = in_debug;
