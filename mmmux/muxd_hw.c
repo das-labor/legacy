@@ -24,17 +24,20 @@ static mmmux_hw_t *hw_first = NULL;
  */
 int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 {
-	int e, rv;
+	int e, rv, i;
 	pid_t p;
 	uint8_t buf[1024];
 	int pfds[2];
+
+	fd_set my_set;
+	struct timeval tv;
 	
 	/* each hw task has its own pipe */
 	pipe (pfds);
 
-	FD_SET (pfds[1], &in_c->fds_master);
-	in_c->nfds_hw = MAX(pfds[1], in_c->nfds_hw);
-#if 1
+	for (i=0;in_c->fds_hw[i] >= 0;i++);
+	in_c->fds_hw[i] = pfds[1];
+#if 0
 	p = fork();
 	e = errno;
 
@@ -62,11 +65,13 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 	if (in_h->init != NULL)
 		in_h->init ((void*) in_h);
 	
-	fcntl (in_c->pfds_hw[0], F_SETFL, O_NONBLOCK);
+	//fcntl (pfds[0], F_SETFL, O_NONBLOCK);
+	FD_ZERO (&my_set);
+	FD_SET (pfds[0], &my_set);
+	tv.tv_usec = 1000; /* 1ms */
 	
 	while (23)
 	{
-		usleep (in_h->sdelay);
 		if (in_h->rx != NULL)
 		{
 			rv = in_h->rx(in_h, sizeof(buf), buf);
@@ -83,23 +88,28 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 				write (in_c->pfds_sock[1], buf, rv);
 			}
 		}
+		
+		rv = select (pfds[0] + 1, &my_set, NULL, NULL, &tv);
+		e = errno;
+		if (rv == -1 && e == EINTR)
+			continue;
+
+		if (!FD_ISSET (pfds[0], &my_set))
+			continue;
 
 		if (in_h->tx != NULL)
 		{
-			rv = read(in_c->pfds_hw[0], buf, sizeof(buf));
+			rv = read(pfds[0], buf, sizeof(buf));
 			e = errno;
 			
-			if (rv > 0 && (e == EAGAIN || e == EWOULDBLOCK))
-			{
-				dbg ("hw task: got %i bytes via pipe", rv);
-				in_h->tx (in_h, rv, buf);
-			}
-
 			if (rv <= 0 && !(e == EAGAIN || e == EWOULDBLOCK))
 			{
 				err ("read() returned error: %s", strerror(e));
 				return - __LINE__;
 			}
+			
+			dbg ("hw task (%s): got %i bytes via pipe", in_h->name, rv);
+			in_h->tx (in_h, rv, buf);
 		}
 
 	}
@@ -135,6 +145,8 @@ void mmmux_hw_remove (mmmux_hw_t *in_h)
 {
 	mmmux_hw_t *last, *current = hw_first;
 
+	/* TODO pipefd remove */
+
 	if (hw_first == NULL || in_h == NULL)
 		return;
 	
@@ -164,6 +176,10 @@ int mmmux_hw_init (mmmux_sctx_t *in_c)
 {
 	int rv;
 	
+	/* init hw pipes to -1 */
+	for (rv = 0; rv < sizeof(in_c->fds_hw) / sizeof(int); rv++)
+		in_c->fds_hw[rv] = -1;
+	
 #if MMMUX_USE_RFM12USB == 1
 	rv = rfm12usb_find (in_c);
 	if (rv != 0)
@@ -173,7 +189,7 @@ int mmmux_hw_init (mmmux_sctx_t *in_c)
 	}
 #endif
 
-#if MMMUX_USE_DUMMYHW == 1 
+#if MMMUX_USE_DUMMYHW == 1 && 0
 	rv = dummyhw_find (in_c);
 #endif
 	dbg ("wtf");
