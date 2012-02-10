@@ -158,10 +158,6 @@ int main (void)
 	rfm12_init();
 	sei();
 
-	DDRB |= _BV(PB2) | _BV(PB0);
-	DDRD |= _BV(PD7);
-	PORTB &= ~(_BV(PB0));
-	PORTD |= _BV(PD7);
 	while (2)
 	{
 		if (rfm12_rx_status() == STATUS_COMPLETE)
@@ -173,7 +169,6 @@ int main (void)
 				rfm12_rx_clear();
 				continue;
 			}
-			PORTD ^= _BV(PD7);
 			
 			#if NL_ADDRESSSIZE == 2
 			if (rxbuf[1] != myaddress[0] || rxbuf[2] != myaddress[1])
