@@ -119,6 +119,7 @@ int main (int argc, char* argv[])
 			printf ("%s done.\n", argv[0]);
 			return 0;
 		}
-
+		
+		nflash_timeout_handler (&my_ctx);
 	}
 }

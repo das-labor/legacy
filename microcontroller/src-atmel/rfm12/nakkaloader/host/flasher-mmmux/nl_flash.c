@@ -43,7 +43,10 @@ int nflash_packet_match (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b)
 	if (in_c->addr_size == 1)
 	{
 		if (h->addr != *((uint16_t*) in_c->address))
+		{
+			dbg ("addr mismatch: %04X, %04X", h->addr, *((uint16_t*) in_c->address));
 			return 0;
+		}
 	} else if (in_c->addr_size == 2)
 	{
 		uint16_t m_addr = *((uint16_t*) &in_b[sizeof(nflash_header_t) -1]);
@@ -62,13 +65,17 @@ void *page_offset (nflash_ctx_t *in_c)
 	return (void*) ((size_t) in_c->fw_buf + in_c->cc.pagesize * in_c->pagenum);
 }
 
-/* assemble the header */
+/* assemble the header and calculate the lenght argument accordingly. the length argument
+ * should be the size of the payload (without nflash header).
+ */
 void nflash_header_set (nflash_header_t *out_h, nflash_ctx_t *in_c, size_t in_len, uint8_t in_cmd)
 {
-	out_h->len = in_len + sizeof(nflash_header_t) + in_c->addr_size - 3; /* minus 1 addr byte, minus 2 header bytes for rfm12 driver */
-	out_h->cmd = in_cmd;
+	out_h->len = in_len + sizeof(nflash_header_t) + in_c->addr_size - 1; /* minus 1 addr byte, minus 2 header bytes for rfm12 driver */
 	out_h->type = NL_PACKETTYPE;
-	memcpy (&out_h->addr, in_c->address, in_c->addr_size);
+	out_h->cmd = in_cmd;
+	out_h->addr = in_c->address[0];
+	//printf ("sending %i bytes, header len = %i\n", in_len, out_h->len);
+	//memcpy (&out_h->addr, in_c->address, in_c->addr_size);
 }
 
 /* send a page fill command
@@ -77,8 +84,9 @@ void nflash_page_fill (nflash_ctx_t *in_c)
 {
 	uint8_t txbuf[4096];
 	size_t txlen;
+	//size_t end = in_c->bytes_confirmed + (in_c->cc.rxbufsize - sizeof(nflash_header_t) - sizeof(nl_flashcmd) + in_c->addr_size -1);
 	size_t end = in_c->bytes_confirmed + (in_c->cc.rxbufsize - sizeof(nflash_header_t) - sizeof(nl_flashcmd) + in_c->addr_size -1);
-	void *pp = &txbuf[sizeof(nflash_header_t)], *pfw;
+	void *pp = &txbuf[sizeof(nflash_header_t) + in_c->addr_size - 1], *pfw;
 	nl_flashcmd cmd;
 
 	if (end > in_c->cc.pagesize)
@@ -95,13 +103,32 @@ void nflash_page_fill (nflash_ctx_t *in_c)
 	cmd.addr_end = htole16 (end);
 	in_c->bytes_sent = end;
 	
+	/* assemble packet header */
 	nflash_header_set ((nflash_header_t*) txbuf, in_c, txlen, NLPROTO_PAGE_FILL);
+
+	/* copy flash cmd struct */
+	memcpy (pp, &cmd, sizeof(cmd));
+
+	/* copy fw bytes to payload area */
+	pp += sizeof (nl_flashcmd);
 	memcpy (pp, pfw, end - in_c->bytes_confirmed);
 
 	txlen += sizeof(nflash_header_t) + in_c->addr_size -1; /* raw packet length */
 	mmmux_send (in_c->mc, txbuf, txlen);
 	in_c->last_tx = time(NULL);
 	in_c->state = AWAIT_CRC;
+
+	printf ("page_fill: page #%05i, %03iB confirmed, %03iB sent, txbuf %02X%02X%02X%02X%02X%02X%02X%02X\n",
+		in_c->pagenum, in_c->bytes_confirmed, in_c->bytes_sent,
+		((uint8_t *) txbuf[0]),
+		((uint8_t *) txbuf[1]),
+		((uint8_t *) txbuf[2]),
+		((uint8_t *) txbuf[3]),
+		((uint8_t *) txbuf[4]),
+		((uint8_t *) txbuf[5]),
+		((uint8_t *) txbuf[6]),
+		((uint8_t *) txbuf[7])
+		);
 }
 
 void nflash_page_commit (nflash_ctx_t *in_c)
@@ -220,7 +247,7 @@ int nflash_handle_packet (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b)
 
 			tc = (nl_config*) &in_b[sizeof(nflash_header_t) + in_c->addr_size-1];
 			in_c->cc.pagesize = le16toh(tc->pagesize);
-			in_c->cc.rxbufsize = tc->rxbufsize;
+			in_c->cc.rxbufsize = MIN(28,tc->rxbufsize);
 			in_c->cc.version = tc->version;
 
 			printf ("got client config: PSZ = %u, RXSZ = %u, V = %u\n",
@@ -248,7 +275,6 @@ int nflash_handle_packet (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b)
 			
 			/* all ok, send commit command */
 			nflash_page_commit (in_c);
-			in_c->state = AWAIT_COMMIT;
 		break;
 
 		case AWAIT_COMMIT:
@@ -267,7 +293,7 @@ int nflash_handle_packet (nflash_ctx_t *in_c, size_t in_len, uint8_t *in_b)
 			in_c->bytes_confirmed = 0;
 			in_c->pagenum++;
 
-			if (in_c->pagenum == ceil(in_c->fw_size / in_c->cc.pagesize))
+			if (in_c->pagenum == 1 + ceil(in_c->fw_size / in_c->cc.pagesize))
 			{
 				cmd = NLPROTO_BOOT;
 				break;
