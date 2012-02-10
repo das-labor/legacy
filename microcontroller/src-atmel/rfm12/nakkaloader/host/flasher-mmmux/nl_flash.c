@@ -118,16 +118,16 @@ void nflash_page_fill (nflash_ctx_t *in_c)
 	in_c->last_tx = time(NULL);
 	in_c->state = AWAIT_CRC;
 
-	printf ("page_fill: page #%05i, %03iB confirmed, %03iB sent, txbuf %02X%02X%02X%02X%02X%02X%02X%02X\n",
+	dbg ("page_fill: page #%05i, %03iB confirmed, %03iB sent, txbuf %02X%02X%02X%02X%02X%02X%02X%02X\n",
 		in_c->pagenum, in_c->bytes_confirmed, in_c->bytes_sent,
-		((uint8_t *) txbuf[0]),
-		((uint8_t *) txbuf[1]),
-		((uint8_t *) txbuf[2]),
-		((uint8_t *) txbuf[3]),
-		((uint8_t *) txbuf[4]),
-		((uint8_t *) txbuf[5]),
-		((uint8_t *) txbuf[6]),
-		((uint8_t *) txbuf[7])
+		((uint8_t *) txbuf)[0],
+		((uint8_t *) txbuf)[1],
+		((uint8_t *) txbuf)[2],
+		((uint8_t *) txbuf)[3],
+		((uint8_t *) txbuf)[4],
+		((uint8_t *) txbuf)[5],
+		((uint8_t *) txbuf)[6],
+		((uint8_t *) txbuf)[7]
 		);
 }
 
