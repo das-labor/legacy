@@ -28,12 +28,16 @@
 #include "nl_flash.h"
 #include "nl_firmware.h"
 
+int v = 0;
+
 void print_help (char *in_name)
 {
 	printf (
 		"usage: %s <args> <address> <firmware-file>\n"
 		"\t<address> may be specified in either hex or decimal notation. (\"0xA7\" or \"182\")\n"
 		"\t<firmware-file> is the binary image to send to the target device\n"
+		"\targs:\n"
+		"\t\t -v\tprint debug info (to stderr)\n"
 		, in_name
 	);
 }
@@ -65,7 +69,12 @@ int parse_args (nflash_ctx_t* in_c, int argc, char *argv[])
 	}
 	
 	for (i=0;i<argc-2;i++)
+	{
+		if (!strncmp (argv[i], "-v", 2))
+			v = 1;
+
 		offset++;
+	}
 	
 	rv = parse_address (argv[offset++]);
 	if (rv < 0)
@@ -96,8 +105,11 @@ int main (int argc, char* argv[])
 		print_help(argv[0]);
 		return -1;
 	}
-
-	my_ctx.mc = mmmuxd_init (MDBG_STDERR, NULL);
+	
+	if (v)
+		my_ctx.mc = mmmuxd_init (MDBG_STDERR, NULL);
+	else
+		my_ctx.mc = mmmuxd_init (MDBG_NONE, NULL);
 
 	if (my_ctx.mc == NULL)
 	{
