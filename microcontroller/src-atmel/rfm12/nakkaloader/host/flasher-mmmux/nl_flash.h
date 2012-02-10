@@ -34,7 +34,7 @@
 #include "../../common/nl_protocol.h"
 
 /* time (in seconds) before re-transmitting the last command */
-#define NL_RESEND_DELAY 1
+#define NL_RESEND_DELAY 2
 
 #define NFLASH_DONE 1337
 

@@ -40,7 +40,7 @@ int nflash_read_binary (nflash_ctx_t *in_c, char* in_name)
 
 	rv = stat (in_name, &s);
 	in_c->fw_buf = malloc (s.st_size + 1024); /* + 1024 to fill the page to the last byte */
-	memset (in_c->fw_buf, 0x00, s.st_size + 1024);
+	memset (in_c->fw_buf, 0xFF, s.st_size + 1024);
 	brem = s.st_size;
 	
 	while (brem)
@@ -61,6 +61,12 @@ int nflash_read_binary (nflash_ctx_t *in_c, char* in_name)
 	}
 
 	in_c->fw_size = s.st_size;
+	dbg ("fw bytes: %02X%02X%02X%02X",
+		((uint8_t *) in_c->fw_buf)[0],
+		((uint8_t *) in_c->fw_buf)[1],
+		((uint8_t *) in_c->fw_buf)[2],
+		((uint8_t *) in_c->fw_buf)[3]
+		);
 
 	return in_c->fw_size;
 }
