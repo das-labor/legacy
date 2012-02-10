@@ -38,7 +38,6 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 	for (i=0;in_c->fds_hw[i] >= 0;i++);
 	dbg ("adding pipe #%i at pos %i", pfds[1], i);
 	in_c->fds_hw[i] = pfds[1];
-#if 1
 	p = fork();
 	e = errno;
 	v = in_c->debugfd;
@@ -55,10 +54,6 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 			in_h->name, p);
 		return 0;
 	}
-	printf ("teh fugg?\n");
-#else
-	daemon (0,1);
-#endif
 	//p = setsid ();
 	v = in_c->debugfd;
 
@@ -97,8 +92,6 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 		rv = select (pfds[0] + 1, &r_set, NULL, NULL, &tv);
 		e = errno;
 
-		if (rv != 0)
-			dbg ("post select() -> %i", rv);
 		if (rv == -1 && e == EINTR)
 			continue;
 		
@@ -108,7 +101,6 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 		if (!FD_ISSET (pfds[0], &r_set))
 			continue;
 		
-		dbg ("###########################");
 		rv = read(pfds[0], buf, sizeof(buf));
 		e = errno;
 		
@@ -118,7 +110,7 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 			return - __LINE__;
 		}
 		
-		dbg ("hw task (%s): got %i bytes via pipe %02X%02X%02X%02X<---------------------------", in_h->name, rv,
+		dbg ("hw task (%s): got %i bytes via pipe %02X%02X%02X%02X ...", in_h->name, rv,
 			buf[0], buf[1], buf[2], buf[3]);
 		in_h->tx (in_h, rv, buf);
 	}
