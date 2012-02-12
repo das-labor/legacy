@@ -33,7 +33,7 @@
 #define COLDDR2  DDR(COLPORT2)
 #define ROWDDR   DDR(ROWPORT)
 
-#ifdef __AVR_ATmega644P__
+#if defined (__AVR_ATmega644P__) || defined (__AVR_ATmega644__)
 /* more ifdef magic :-( */
 #define OCR0 OCR0A
 #define SIG_OUTPUT_COMPARE0 SIG_OUTPUT_COMPARE0A
@@ -122,7 +122,7 @@ static void rowshow(unsigned char row, unsigned char plane) {
 	COLPORT1 = tmp;
 	COLPORT2 = tmp1;
 #endif
-#endif	
+#endif
 
 }
 
@@ -155,7 +155,7 @@ void timer0_off() {
 	COLPORT2 = 0;
 	ROWPORT = 0;
 
-#ifdef __AVR_ATmega644P__
+#if defined (__AVR_ATmega644P__) || defined (__AVR_ATmega644__)
 	TCCR0A = 0x00;
 	TCCR0B = 0x00;
 #else
@@ -177,7 +177,7 @@ static void timer0_on() {
 	 1    0    1       clk/1024
 	 */
 
-#ifdef __AVR_ATmega644P__
+#if defined (__AVR_ATmega644P__) || defined (__AVR_ATmega644__)
 	TCCR0A = 0x02; // CTC Mode
 	TCCR0B = 0x04; // clk/256
 	TCNT0  = 0;    // reset timer
