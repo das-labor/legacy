@@ -26,15 +26,15 @@ void wait(int ms){
 		 1    0    0       clk/64
 		 1    0    1       clk/128
 		 1    1    0       clk/256
-		 1    1    1       clk/1024	
+		 1    1    1       clk/1024
 */
 	//TCCR2 = 0x0D;	//CTC Mode, clk/128
-	//OCR2 = (F_CPU/128000);	//1000Hz 
-	
+	//OCR2 = (F_CPU/128000);	//1000Hz
+
 	TCCR1B = (1<<WGM12) | 4;//CTC Mode, clk/256
-	OCR1A = (F_CPU/256000);	//1000Hz 
-	
-	
+	OCR1A = (F_CPU/256000);	//1000Hz
+
+
 	for(;ms>0;ms--){
 
 #ifdef CAN_SUPPORT
@@ -44,14 +44,14 @@ void wait(int ms){
 #ifdef JOYSTICK_SUPPORT
 		if (waitForFire) {
 			//PORTJOYGND &= ~(1<<BITJOY0);
-			//PORTJOYGND &= ~(1<<BITJOY1);		
+			//PORTJOYGND &= ~(1<<BITJOY1);
 			if (JOYISFIRE) {
 				longjmp(newmode_jmpbuf, 43);
 			}
 		}
 #endif
 
-#ifdef __AVR_ATmega644P__
+#if defined (__AVR_ATmega644P__) || defined (__AVR_ATmega644__)
 		while(!(TIFR1&(1<<OCF1A)));	//wait for compare match flag
 		TIFR1=(1<<OCF1A);		//reset flag
 #else
