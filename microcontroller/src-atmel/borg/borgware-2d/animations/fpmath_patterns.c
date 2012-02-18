@@ -1,5 +1,6 @@
 #include <math.h> // Floating point math is dog slow on AVR, but I don't care.
 #include <string.h>
+#include <assert.h>
 #include "../config.h"
 #include "../pixel.h"
 #include "../util.h"
@@ -58,31 +59,29 @@ static void fpmath_pattern(double const t_start,
 	// double buffering to reduce half painted pictures
 	unsigned char pixmap_buffer[NUMPLANE][NUM_ROWS][LINEBYTES];
 #endif
+
 	for (double t = t_start; t < t_stop; t += t_delta)
 	{
 		for (unsigned char y = 0; y < NUM_ROWS; ++y)
 		{
-			for (unsigned char x = 0; x < NUM_COLS; ++x)
+			unsigned char nChunk[NUMPLANE + 1][LINEBYTES] = {{0}};
+			for (unsigned char x = 0; x < (LINEBYTES * 8); ++x)
 			{
-				unsigned char const mask = shl_table[x % 8U];
-				unsigned char const x_8 = x / 8u;
-				unsigned char const color = fpPattern(x, y, t);
-				for (unsigned char p = 0; p < NUMPLANE; ++p)
+				nChunk[fpPattern(x, y, t) - 1][x / 8u] |= shl_table[x % 8u];
+			}
+			for (unsigned char p = NUMPLANE; p--;)
+			{
+				for (unsigned char col = LINEBYTES; col--;)
 				{
-					if (p <= (color - 1))
-					{
-						BUFFER[p][y][x_8] |= mask;
-					}
-					else
-					{
-						BUFFER[p][y][x_8] &= ~mask;
-					}
+					BUFFER[p][y][col] = nChunk[p][col] | nChunk[p + 1][col];
 				}
 			}
 		}
+
 #ifdef DOUBLE_BUFFERING
 		memcpy(pixmap, pixmap_buffer, sizeof(pixmap));
 #endif
+
 		wait(frame_delay);
 	}
 }
@@ -96,6 +95,9 @@ static void fpmath_pattern(double const t_start,
  */
 static unsigned char fpmath_plasma(unsigned char x, unsigned char y, double t)
 {
+	assert(x < NUM_COLS);
+	assert(y < NUM_ROWS);
+
 	static double fFunc1[NUM_COLS];
 	static double fFunc2CosArg;
 	static double fFunc2SinArg;
@@ -130,6 +132,9 @@ void plasma(void)
  */
 static unsigned char fpmath_psycho(unsigned char x, unsigned char y, double t)
 {
+	assert(x < NUM_COLS);
+	assert(y < NUM_ROWS);
+
 	static double fCosinus;
 	static double fSinus;
 	static double t10;
