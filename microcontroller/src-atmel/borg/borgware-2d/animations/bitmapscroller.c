@@ -72,7 +72,7 @@ static unsigned char bitmap_getAlignedChunk(bitmap_t const *const pBitmap,
 					>> (8 - nAlignment);
 		}
 
-		// convert the bit plane information into the borg plane format
+		// convert the bit plane information to the borg plane format
 		nChunk &= ((nBorgPlane + 1) & nMask) == 0 ? ~nPlaneChunk : nPlaneChunk;
 		nMask <<= 1;
 	}
@@ -106,7 +106,7 @@ static void bitmap_drawViewport(bitmap_t const *const pBitmap,
 
 			for (unsigned char p = NUMPLANE; p--;)
 			{
-				// retrieve a chunk which can be copied into the frame buffer
+				// retrieve a chunk which can be copied to the frame buffer
 				unsigned char nChunk;
 #if ((NUM_COLS % 8) == 0)
 				// borg widths which are a multiple of 8 allow for a straight
@@ -132,7 +132,7 @@ static void bitmap_drawViewport(bitmap_t const *const pBitmap,
 				{
 					nChunk |= pixmap[p + 1][y][nCol];
 				}
-				// copy chunk into corresponding frame buffer plane
+				// copy chunk to corresponding frame buffer plane
 				pixmap[p][y][nCol] = nChunk;
 			}
 		}
@@ -193,7 +193,7 @@ void bitmap_scroll(unsigned char const nWidth,
 {
 	assert((nBitPlanes > 0) && (nBitPlanes <= 8));
 	assert(nFrameTickDivider > 0);
-	assert(nFrameTickDivider > 0);
+	assert(nMovementTickDivider > 0);
 
 	bitmap_t bitmap;
 
