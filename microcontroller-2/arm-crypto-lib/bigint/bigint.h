@@ -50,6 +50,8 @@ typedef struct{
 void   bigint_adjust(bigint_t* a);
 uint32_t bigint_get_first_set_bit(bigint_t* a);
 uint32_t bigint_get_last_set_bit(bigint_t* a);
+uint16_t bigint_length_b(bigint_t* a);
+uint16_t bigint_length_B(bigint_t* a);
 void   bigint_copy(bigint_t* dest, const bigint_t* src);
 void   bigint_add_u(bigint_t* dest, const bigint_t* a, const bigint_t* b);
 void   bigint_add_scale_u(bigint_t* dest, const bigint_t* a, uint16_t scale);

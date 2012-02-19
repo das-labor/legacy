@@ -17,7 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /*
- * DSA test-suit
+ * RSA test-suit
  *
 */
 #include "main-test-common.h"
@@ -32,7 +32,7 @@
 
 #include "performance_test.h"
 
-const char* algo_name = "RSA";
+const char* algo_name = "RSA-PKCS1_v1.5";
 
 /*****************************************************************************
  *  additional validation-functions											 *
