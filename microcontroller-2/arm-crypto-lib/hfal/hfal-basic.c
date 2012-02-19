@@ -71,6 +71,10 @@ void hfal_hash_mem(const hfdesc_t* hash_descriptor, void* dest, const void* msg,
 	}
 }
 
+uint16_t hfal_hash_getCtxsize_B(const hfdesc_t* hash_descriptor){
+	return hash_descriptor->ctxsize_B;
+}
+
 uint16_t hfal_hash_getBlocksize(const hfdesc_t* hash_descriptor){
 	return hash_descriptor->blocksize_b;
 }

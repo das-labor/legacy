@@ -81,6 +81,21 @@ void bigint_adjust(bigint_t* a){
 
 /******************************************************************************/
 
+uint16_t bigint_length_b(bigint_t* a){
+	if(!a->length_B || a->length_B==0){
+		return 0;
+	}
+	return (a->length_B-1) * BIGINT_WORD_SIZE + GET_FBS(a);
+}
+
+/******************************************************************************/
+
+uint16_t bigint_length_B(bigint_t* a){
+	return (bigint_length_b(a)+7)/8;
+}
+
+/******************************************************************************/
+
 uint32_t bigint_get_first_set_bit(bigint_t* a){
 	if(a->length_B==0){
 		return (uint32_t)(-1);
@@ -671,6 +686,9 @@ void bigint_reduce(bigint_t* a, const bigint_t* r){
 	uint16_t shift;
 	while(a->length_B > r->length_B){
 		shift = (a->length_B - r->length_B) * 8 * sizeof(bigint_word_t) + GET_FBS(a) - rfbs - 1;
+		if(a->wordv[a->length_B-1] > r->wordv[r->length_B-1]){
+			shift += 1;
+		}
 //		cli_putstr("\r\nDBG: (p) shift = "); cli_hexdump_rev(&shift, 2);
 //		cli_putstr(" a_len = "); cli_hexdump_rev(&a->length_B, 2);
 //		cli_putstr(" r_len = "); cli_hexdump_rev(&r->length_B, 2);
