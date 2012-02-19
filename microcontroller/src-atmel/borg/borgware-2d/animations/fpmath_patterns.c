@@ -73,7 +73,8 @@ static void fpmath_pattern(double const t_start,
 			{
 				for (unsigned char col = LINEBYTES; col--;)
 				{
-					BUFFER[p][y][col] = nChunk[p][col] | nChunk[p + 1][col];
+					nChunk[p][col] |= nChunk[p + 1][col];
+					BUFFER[p][y][col] = nChunk[p][col];
 				}
 			}
 		}
