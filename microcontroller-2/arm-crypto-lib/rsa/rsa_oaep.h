@@ -46,5 +46,9 @@ uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 		              rsa_publickey_t* key, const rsa_oaep_parameter_t *p,
 		              const rsa_label_t* label, const void* seed);
 
+uint8_t rsa_decrypt_oaep(void* dest, uint16_t* out_length,
+		              const void* src, uint16_t length_B,
+		              rsa_privatekey_t* key, const rsa_oaep_parameter_t *p,
+		              const rsa_label_t* label, void* seed);
 
 #endif /* RSA_OAEP_H_ */
