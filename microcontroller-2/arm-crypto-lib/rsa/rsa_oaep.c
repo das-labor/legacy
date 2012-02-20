@@ -31,9 +31,6 @@
 
 #include "hfal/hfal_sha1.h"
 
-#include "cli.h"
-#include "uart_lowlevel.h"
-
 mgf1_parameter_t mgf1_default_parameter = {
 		&sha1_desc
 };
@@ -73,7 +70,6 @@ uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 	 * */
 	off = (sizeof(bigint_word_t) -(bigint_get_first_set_bit(key->modulus)/8+1)%(sizeof(bigint_word_t)*8))
 			% (sizeof(bigint_word_t));
-	uart_flush(0);
 	buffer += off;
     buffer_len -= off;
 	uint8_t* seed_buffer = buffer + 1;
@@ -88,7 +84,6 @@ uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 	hfal_hash_mem(p->hf, db, label->label, label->length_b);
 	db[db_len - length_B - 1] = 0x01;
 	memcpy(db+db_len - length_B, src, length_B);
-	uart_flush(0);
 	if(seed){
 		memcpy(seed_buffer, seed, hv_len);
 	}else{
@@ -102,23 +97,102 @@ uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 		}
 	}
 
-//void mgf1(void* dest, const void* seed, uint16_t seed_len_B, uint16_t out_length_B, const mgf1_parameter_t* p);
-	cli_hexdump_block(dest, buffer_len+off, 4, 8);
 	p->mgf(maskbuffer, seed_buffer, hv_len, db_len, p->mgf_parameter);
 	memxor(db, maskbuffer, db_len);
 	p->mgf(maskbuffer, db, db_len, hv_len, p->mgf_parameter);
 	memxor(seed_buffer, maskbuffer, hv_len);
-	cli_putstr("\r\ngot to 112\r\n");
-	uart_flush(0);
 
 	x.wordv = dest;
 	x.length_B = key->modulus->length_B;
 	bigint_adjust(&x);
-	cli_putstr("\r\ngot to 118\r\n");
-	uart_flush(0);
 
-	rsa_os2ip(&x, NULL, key->modulus->length_B * sizeof(bigint_word_t));
+	rsa_os2ip(&x, NULL, bigint_length_B(key->modulus));
 	rsa_enc(&x, key);
 	rsa_i2osp(NULL, &x, out_length);
 	return 0;
 }
+
+uint8_t rsa_decrypt_oaep(void* dest, uint16_t* out_length,
+		              const void* src, uint16_t length_B,
+		              rsa_privatekey_t* key, const rsa_oaep_parameter_t *p,
+		              const rsa_label_t* label, void* seed){
+
+	if(!label){
+		label = &rsa_oaep_default_label;
+	}
+	if(!p){
+		p = &rsa_oaep_default_parameter;
+	}
+	uint8_t *buffer =  dest;
+	uint16_t x_len, data_len;
+	bigint_t x;
+	uint16_t hv_len = hfal_hash_getHashsize(p->hf)/8;
+	uint8_t label_hv[hv_len];
+	uint16_t msg_len = (bigint_get_first_set_bit(key->modulus)+7)/8;
+	uint16_t db_len = msg_len - 1 - hv_len;
+	uint8_t maskbuffer[db_len>hv_len?db_len:hv_len];
+
+	uint8_t *seed_buffer = buffer + 1;
+	uint8_t *db_buffer = seed_buffer + hv_len;
+
+	x_len = bigint_length_B(key->modulus);
+	memset(dest, 0, x_len - length_B);
+	buffer = (uint8_t*)dest + x_len - length_B;
+	memcpy(buffer, src, length_B);
+
+	x.wordv = dest;
+	x.length_B = key->modulus->length_B;
+	bigint_adjust(&x);
+
+	rsa_os2ip(&x, NULL, bigint_length_B(key->modulus));
+	rsa_dec(&x, key);
+	rsa_i2osp(NULL, &x, &data_len);
+/*
+	if(data_len != x_len){
+		memmove(buffer + x_len - data_len, buffer, data_len);
+		memset(buffer, 0, x_len - data_len);
+	}
+*/
+	if(data_len > msg_len){
+		return 7;
+	}
+
+	memmove(buffer + msg_len - data_len, buffer, data_len);
+
+	hfal_hash_mem(p->hf, label_hv, label->label, label->length_b);
+/*
+	if(buffer[0] != 0){
+		return 1;
+	}
+*/
+	p->mgf(maskbuffer, db_buffer, db_len, hv_len, p->mgf_parameter);
+	memxor(seed_buffer, maskbuffer, hv_len);
+	p->mgf(maskbuffer, seed_buffer, hv_len, db_len, p->mgf_parameter);
+	memxor(db_buffer, maskbuffer, db_len);
+
+	if(memcmp(label_hv, db_buffer, hv_len)){
+		return 2;
+	}
+
+	uint16_t ps_len=0;
+	while(db_buffer[hv_len + ps_len++] == 0)
+		;
+
+	--ps_len;
+	if(db_buffer[hv_len + ps_len] != 1){
+		return 3;
+	}
+
+	if(seed){
+		memcpy(seed, seed_buffer, hv_len);
+	}
+
+	msg_len = db_len - hv_len - 1 - ps_len;
+	memmove(dest, db_buffer + hv_len + ps_len + 1, msg_len);
+
+	*out_length = msg_len;
+
+	return 0;
+}
+
+
