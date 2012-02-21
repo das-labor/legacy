@@ -39,7 +39,7 @@ typedef struct {
 } rsa_label_t;
 
 extern rsa_oaep_parameter_t rsa_oaep_default_parameter;
-
+extern rsa_label_t rsa_oaep_default_label;
 
 uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 		              const void* src, uint16_t length_B,
