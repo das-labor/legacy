@@ -31,6 +31,9 @@
 
 #include "hfal/hfal_sha1.h"
 
+#include "cli.h"
+#include "uart_lowlevel.h"
+
 mgf1_parameter_t mgf1_default_parameter = {
 		&sha1_desc
 };
@@ -62,6 +65,10 @@ uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 		return 1;
 	}
 	uint16_t buffer_len = bigint_length_B(key->modulus);
+	cli_putstr("\r\n buffer_len = ");
+	cli_hexdump_rev(&buffer_len, 2);
+	cli_putstr("\r\n modulus_len = ");
+	cli_hexdump_rev(&key->modulus->length_B, 2);
 	uint8_t* buffer = (uint8_t*)dest;
 	uint8_t off;
 	/* the following needs some explanation:
@@ -72,6 +79,8 @@ uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 			% (sizeof(bigint_word_t));
 	buffer += off;
     buffer_len -= off;
+    cli_putstr("\r\n  off = ");
+    cli_hexdump_byte(off);
 	uint8_t* seed_buffer = buffer + 1;
 	uint16_t db_len = buffer_len - hv_len - 1;
 	uint8_t* db = seed_buffer + hv_len;
@@ -79,7 +88,7 @@ uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 	uint8_t maskbuffer[maskbuffer_len];
 	bigint_t x;
 
-	memset(buffer, 0, seed_buffer - buffer);
+	memset(dest, 0, seed_buffer - buffer + off);
 	memset(db + hv_len, 0, db_len - hv_len - length_B -1);
 	hfal_hash_mem(p->hf, db, label->label, label->length_b);
 	db[db_len - length_B - 1] = 0x01;
@@ -96,11 +105,14 @@ uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 			seed_buffer[i] = prng_get_byte();
 		}
 	}
-
+	cli_putstr("\r\n  msg (raw, pre-feistel):\r\n");
+	cli_hexdump_block(dest, bigint_length_B(key->modulus), 4, 16);
 	p->mgf(maskbuffer, seed_buffer, hv_len, db_len, p->mgf_parameter);
 	memxor(db, maskbuffer, db_len);
 	p->mgf(maskbuffer, db, db_len, hv_len, p->mgf_parameter);
 	memxor(seed_buffer, maskbuffer, hv_len);
+	cli_putstr("\r\n  msg (raw, post-feistel):\r\n");
+	cli_hexdump_block(dest, bigint_length_B(key->modulus), 4, 16);
 
 	x.wordv = dest;
 	x.length_B = key->modulus->length_B;
@@ -117,47 +129,62 @@ uint8_t rsa_decrypt_oaep(void* dest, uint16_t* out_length,
 		              rsa_privatekey_t* key, const rsa_oaep_parameter_t *p,
 		              const rsa_label_t* label, void* seed){
 
+	cli_putstr("\r\n -->rsa_decrypt_oaep()"); uart_flush(0);
 	if(!label){
 		label = &rsa_oaep_default_label;
 	}
 	if(!p){
 		p = &rsa_oaep_default_parameter;
 	}
-	uint8_t *buffer =  dest;
 	uint16_t x_len, data_len;
 	bigint_t x;
 	uint16_t hv_len = hfal_hash_getHashsize(p->hf)/8;
 	uint8_t label_hv[hv_len];
-	uint16_t msg_len = (bigint_get_first_set_bit(key->modulus)+7)/8;
-	uint16_t db_len = msg_len - 1 - hv_len;
+	uint16_t msg_len = bigint_get_first_set_bit(key->modulus) / 8 + 1;
+	uint16_t db_len = msg_len - hv_len - 1;
 	uint8_t maskbuffer[db_len>hv_len?db_len:hv_len];
 
-	uint8_t *seed_buffer = buffer + 1;
+	uint8_t *seed_buffer = dest;
 	uint8_t *db_buffer = seed_buffer + hv_len;
 
-	x_len = bigint_length_B(key->modulus);
-	memset(dest, 0, x_len - length_B);
-	buffer = (uint8_t*)dest + x_len - length_B;
-	memcpy(buffer, src, length_B);
+	x_len = bigint_get_first_set_bit(key->modulus)/8;
+	memset(dest, 0, bigint_length_B(key->modulus) - length_B);
+	memcpy((uint8_t*)dest + bigint_length_B(key->modulus) - length_B, src, length_B);
+
+	cli_putc('a'); uart_flush(0);
 
 	x.wordv = dest;
 	x.length_B = key->modulus->length_B;
+	x.info = 0;
 	bigint_adjust(&x);
 
+
+	cli_putc('b'); uart_flush(0);
 	rsa_os2ip(&x, NULL, bigint_length_B(key->modulus));
+	cli_putc('c'); uart_flush(0);
 	rsa_dec(&x, key);
+	cli_putc('d'); uart_flush(0);
 	rsa_i2osp(NULL, &x, &data_len);
-/*
-	if(data_len != x_len){
-		memmove(buffer + x_len - data_len, buffer, data_len);
-		memset(buffer, 0, x_len - data_len);
-	}
-*/
-	if(data_len > msg_len){
+
+	cli_putstr("\r\n  msg (raw, pre-move):\r\n");
+	cli_hexdump_block(dest, bigint_length_B(key->modulus), 4, 16);
+
+	if(data_len > x_len){
 		return 7;
 	}
 
-	memmove(buffer + msg_len - data_len, buffer, data_len);
+	cli_putstr("\r\n moving some bytes; x_len = ");
+	cli_hexdump_rev(&x_len, 2);
+	cli_putstr("  data_len = ");
+	cli_hexdump_rev(&data_len, 2);
+	uart_flush(0);
+
+	if(x_len != data_len){
+		memmove((uint8_t*)dest + x_len - data_len, dest, data_len);
+		cli_putstr("  (oh, not dead yet?!)");
+		uart_flush(0);
+		memset(dest, 0, x_len - data_len);
+	}
 
 	hfal_hash_mem(p->hf, label_hv, label->label, label->length_b);
 /*
@@ -165,12 +192,19 @@ uint8_t rsa_decrypt_oaep(void* dest, uint16_t* out_length,
 		return 1;
 	}
 */
+	cli_putstr("\r\n  msg (raw, pre-feistel):\r\n");
+	cli_hexdump_block(seed_buffer, bigint_length_B(key->modulus), 4, 16);
+
+	uart_flush(0);
+
 	p->mgf(maskbuffer, db_buffer, db_len, hv_len, p->mgf_parameter);
 	memxor(seed_buffer, maskbuffer, hv_len);
 	p->mgf(maskbuffer, seed_buffer, hv_len, db_len, p->mgf_parameter);
 	memxor(db_buffer, maskbuffer, db_len);
 
 	if(memcmp(label_hv, db_buffer, hv_len)){
+		cli_putstr("\r\nDBG: DB:\r\n");
+		cli_hexdump_block(db_buffer, db_len, 4, 16);
 		return 2;
 	}
 

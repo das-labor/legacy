@@ -91,7 +91,7 @@ uint16_t bigint_length_b(bigint_t* a){
 /******************************************************************************/
 
 uint16_t bigint_length_B(bigint_t* a){
-	return (bigint_length_b(a)+7)/8;
+	return a->length_B * sizeof(bigint_word_t);
 }
 
 /******************************************************************************/
@@ -650,12 +650,18 @@ void bigint_sub_u_bitscale(bigint_t* a, const bigint_t* b, uint16_t bitscale){
 	}
 	while(borrow){
 		if(i+1 > a->length_B){
-			cli_putstr("\r\nDBG: *boom*\r\n");
+			// char str[16];
+			cli_putstr("\r\nDBG: *boom* a->length_B = ");
+			cli_hexdump_rev(&a->length_B, 2);
+			cli_putstr("  b->length_B = ");
+			cli_hexdump_rev(&b->length_B, 2);
+			cli_putstr("  bitscale = ");
+			cli_hexdump_rev(&bitscale, 2);
 			bigint_set_zero(a);
 			return;
 		}
 		a->wordv[i] -= borrow;
-		if(a->wordv[i]!=0xff){
+		if(a->wordv[i] != (1LL<<BIGINT_WORD_SIZE) - 1){
 			borrow=0;
 		}
 		++i;
@@ -686,9 +692,16 @@ void bigint_reduce(bigint_t* a, const bigint_t* r){
 	uint16_t shift;
 	while(a->length_B > r->length_B){
 		shift = (a->length_B - r->length_B) * 8 * sizeof(bigint_word_t) + GET_FBS(a) - rfbs - 1;
-		if(a->wordv[a->length_B-1] > r->wordv[r->length_B-1]){
+		/*
+		if((a->wordv[a->length_B-1] & ((1LL<<GET_FBS(a)) - 1)) > r->wordv[r->length_B-1]){
+			// cli_putc('~');
+			cli_putstr("\r\n ~ [a] = ");
+			cli_hexdump_rev(&a->wordv[a->length_B-1], 4);
+			cli_putstr("  [r] = ");
+			cli_hexdump_rev(&r->wordv[r->length_B-1], 4);
 			shift += 1;
 		}
+		*/
 //		cli_putstr("\r\nDBG: (p) shift = "); cli_hexdump_rev(&shift, 2);
 //		cli_putstr(" a_len = "); cli_hexdump_rev(&a->length_B, 2);
 //		cli_putstr(" r_len = "); cli_hexdump_rev(&r->length_B, 2);
