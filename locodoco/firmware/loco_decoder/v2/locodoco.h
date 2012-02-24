@@ -1,12 +1,11 @@
 #include <avr/eeprom.h>
 #include <avr/wdt.h>
+#pragma once
 
-#include "../../common/locodoco.h"
 #include "config.h"
 #include "motor.h"
 #include "rfm12.h"
 
-#pragma once
 
 
 void locodoco_init (void);

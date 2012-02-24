@@ -1,14 +1,25 @@
-/* hardware-dependent configuration
+/* hardware-dependent & common configuration
  * currently this file only contains configuration data for
  * the 2nd revision hardware.
+ * In case you want to adjust things to your reversion, you've
+ * just found the right file to do so ;-)
+ * Don't forget to edit rfm12_config.h as well.
  */
 
 #include <avr/io.h>
 #pragma once
+#include "../../common/locodoco.h"
 
-/*** DECODER VERSION 2
- ***
- ***/
+/* set the number of possible entries in the motor
+ * stepping table. note that each table entry will consume
+ * 2 bytes of system ram & eeprom
+ */
+#define MOTOR_ADC_STEPS 16
+
+#define MOTOR_STEP_SIZE (8192/MOTOR_ADC_STEPS)
+#define MOTOR_STEP_SHIFT (13-4)
+
+/*** DECODER VERSION 2 ***/
 #if HWREF == 2
 	#define PIN_MOTOR_EN 2
 	#define PORT_MOTOR_EN PORTB
@@ -24,7 +35,9 @@
 	
 	/* eeprom address of our locodoco addr
 	 */
-	#define EEP_MYADDRESS 0x00
+	#define EEP_MYADDRESS ((const void *) 0x00)
+	/* position of speed table */
+	#define EEP_STEP_TABLE ((const void *) (EEP_MYADDRESS + sizeof(locodoco_addr_t)))
 
 	/* timer to use for motor pwm (currently only tcnt1 supported,
 	 * -> see motor.h

@@ -39,5 +39,6 @@ int main (void)
 		}
 		c++;
 		rfm12_tick();
+		locodoco_tick();
 	}
 }
