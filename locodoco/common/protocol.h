@@ -1,4 +1,5 @@
-/* common definitions for the locodoco protocol. see doc/protocol.txt for description
+/* common definitions for the locodoco protocol. see doc/protocol.txt for description.
+ * this file is included by both, hostware and firmware.
  */
 
 #include <stdint.h>
@@ -7,6 +8,9 @@
 
 #pragma pack(push)
 #pragma pack(1)
+
+/* rfm12 header type - ASCII 'L' */
+#define LDC_TYPE 0x4C
 
 /* header from rfm12 driver
  */
@@ -45,7 +49,16 @@ typedef struct
 	ldc_dist_t;
 } ldc_position_t;
 
-/**** offset calculation helper macros */
+
+ /************************************\
+<  packet processing helper macros     >
+ \************************************/
+
+/* match a given buffer/packet */
+#define LDC_MATCH(a) ((((rfm12_header_t*) a)->len >= sizeof(ldc_header_t) && \
+		((rfm12_header_t*) a)->type == LDC_TYPE) ? 1 : 0)
+
+//#define LDC_HEADER_SET
 
 /* payload offset */
 #define LDC_PAYLOAD(a) ((uint8_t *) ((size_t) a + sizeof(ldc_header_t)))
