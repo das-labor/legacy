@@ -86,6 +86,12 @@ typedef struct
 #define LDC_CMD_REBOOT            0x08
 #define LDC_CMD_CALIBRATE         0x09
 
+#define LDC_DEBUG                 0x0D
+#define LDC_ERROR                 0x0E
+#define LDC_ERROR_NOT_IMPL        0x00
+#define LDC_ERROR_ARGUMENT        0x01
+#define LDC_ERROR_CRC             0x02
+
 /* loco control */
 #define LDC_CMD_LIGHT_SET         0x10
 #define LDC_CMD_LIGHT_GET         0x20
