@@ -1,6 +1,7 @@
 #include <avr/io.h>
-#include "config.h"
+#include <avr/eeprom.h>
 #pragma once
+#include "config.h"
 
 #define MOTOR_FW() \
 	PORT_MOTOR_RW &= ~(1<<PIN_MOTOR_RW); \
@@ -20,7 +21,8 @@
 	/* clear on comp. match, fast pwm 10 bit */
 	#define M_TIMER_INIT() \
 		TCCR1A = (_BV(COM1B1) | _BV(WGM10) | _BV(WGM11)); \
-		TCCR1B = (_BV(WGM12) | _BV(CS11))
+		TCCR1B = (_BV(WGM12) | _BV(CS11)); \
+		TCCR1C = 0x00
 	#define M_TIMER_MAX 0x3ff
 	#define M_SET_PWM(a) (OCR1B = a)
 #else
@@ -28,6 +30,13 @@
 #endif
 
 typedef uint16_t motor_speed_t;
+typedef struct
+{
+	uint8_t steps_l; /* # steps in the lower area  */
+	uint8_t stepw_l; /* step width in the lower area */
+	uint8_t stepw_h; /* step width in the higher area */
+	uint8_t delta[MOTOR_ADC_STEPS+2];
+} motor_step_table_t;
 
 /* initialize
  */

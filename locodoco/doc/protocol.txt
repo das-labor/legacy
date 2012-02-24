@@ -49,7 +49,7 @@ LOCODOCO PROTOCOL SPECIFICATION 1.0
    |  8b  |  8b  |  8b  |    16b    |    16b    |len-3 Bytes|
    +------+------+------+-----+-----+-----+-----+--  ...  --+
    |      |      |      |           |           |           |
-   | TYPE | LEN  |LTYPE | CHECKSUM  |  ADDRESS  | PAYLOAD   |
+   | LEN  | TYPE |LTYPE | CHECKSUM  |  ADDRESS  | PAYLOAD   |
    |      |      |      |           |           |           |
    +------+------+------+-----+-----+-----+-----+--  ...  --+
 
@@ -283,11 +283,11 @@ LOCODOCO PROTOCOL SPECIFICATION 1.0
 2.1.16 Position set & report
 
    Clients may report their poistion (without a perceeding request from the master) by sending
-   a position report message (0x26). The first 4 bytes of the payload indicate the waypoint ID
+   a position report message (0x26). The first 2 bytes of the payload indicate the waypoint ID
    of the last recognized waypoint, followed by 2 bytes denoting the distance in millimeters that
    the loco has travelled since passing the waypoint.
 
-   A position value of -1 (0xFFFFFFFF) indicates that the loco is unaware of its current position.
+   A position value of -1 (0xFFFF) indicates that the loco is unaware of its current position.
 
    Note that the position may also be set by the master through the position set command (0x16), for
    example when the loco is powered on at a known position (train yard, shed, etc.).
