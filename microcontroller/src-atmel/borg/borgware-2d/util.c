@@ -5,6 +5,11 @@
 
 #ifdef JOYSTICK_SUPPORT
 #  include "joystick/joystick.h"
+	unsigned char waitForFire;
+#endif
+
+#ifdef RFM12_SUPPORT
+	#include "rfm12/borg_rfm12.h"
 #endif
 
 //this buffer is declared in main
@@ -39,6 +44,10 @@ void wait(int ms){
 
 #ifdef CAN_SUPPORT
 		bcan_process_messages();
+#endif
+
+#ifdef RFM12_SUPPORT
+		borg_rfm12_tick();
 #endif
 
 #ifdef JOYSTICK_SUPPORT

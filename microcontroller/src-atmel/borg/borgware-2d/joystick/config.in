@@ -1,7 +1,6 @@
 dep_bool_menu "joystick support" JOYSTICK_SUPPORT y
 
 if [ "$JOYSTICK_SUPPORT" = "y" ]; then
-PARALLEL_JOYSTICK_SUPPORT=y
 ###################### Parallel joystick menu #################################
    dep_bool_menu "parallel joystick support" PARALLEL_JOYSTICK_SUPPORT y
 
@@ -162,6 +161,12 @@ PARALLEL_JOYSTICK_SUPPORT=y
 
    endmenu
 ###############################################################################
+
+###################### RFM12 joystick menu ####################################
+   dep_bool_menu "RFM12 Joystick support" RFM12_JOYSTICK_SUPPORT y
+
+   endmenu
+
 
 fi
 

@@ -1,0 +1,4 @@
+
+void joy_init(){
+
+}

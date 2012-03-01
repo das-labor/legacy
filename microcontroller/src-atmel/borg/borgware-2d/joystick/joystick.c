@@ -4,9 +4,6 @@
 #include "joystick.h"
 #include <avr/io.h>
 
-unsigned char waitForFire;
-
-
 inline void joy_init(){
 
 	PORT_FROM_PIN(JOYSTICK_PIN_UP   ) |= (1<<JOYSTICK_BIT_UP   );

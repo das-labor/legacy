@@ -19,6 +19,10 @@
 	#include "can/borg_can.h"
 #endif
 
+#ifdef RFM12_SUPPORT
+	#include "rfm12/borg_rfm12.h"
+#endif
+
 int main (void){
 	clear_screen(0);
 
@@ -31,6 +35,10 @@ int main (void){
 
 #ifdef CAN_SUPPORT
 	bcan_init();
+#endif
+
+#ifdef RFM12_SUPPORT
+	borg_rfm12_init();
 #endif
 
 #ifdef JOYSTICK_SUPPORT
