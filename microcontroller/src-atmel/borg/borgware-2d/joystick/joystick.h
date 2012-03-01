@@ -20,6 +20,15 @@ void joy_init();
 #		define JOYISRIGHT (!! ((1<<7) & fakeport))
 #		define JOYISFIRE  (!! ((1<<0) & fakeport))
 
+#	elif defined(RFM12_JOYSTICK_SUPPORT)
+
+		extern volatile uint8_t rfm12_joystick_val;
+
+#		define JOYISUP    (!! ((1<<0) & rfm12_joystick_val))
+#		define JOYISDOWN  (!! ((1<<1) & rfm12_joystick_val))
+#		define JOYISLEFT  (!! ((1<<2) & rfm12_joystick_val))
+#		define JOYISRIGHT (!! ((1<<3) & rfm12_joystick_val))
+#		define JOYISFIRE  (!! ((1<<4) & rfm12_joystick_val))
 
 #	else
 

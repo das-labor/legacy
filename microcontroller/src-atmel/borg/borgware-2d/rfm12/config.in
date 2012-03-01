@@ -1,0 +1,80 @@
+
+dep_bool_menu "RFM12 Support" RFM12_SUPPORT y
+
+if [ "$RFM12_SUPPORT" = "y" ]; then
+
+	choice 'SPI Port'			\
+	 "PORTA  PORTA \
+	  PORTB  PORTB \
+	  PORTC  PORTC \
+	  PORTD  PORTD" \
+	 'PORTB' PORT_SPI
+  
+	choice 'SPI SS Bit'			\
+	 "Bit0 0 \
+	  Bit1 1 \
+	  Bit2 2 \
+	  Bit3 3 \
+	  Bit4 4 \
+	  Bit5 5 \
+	  Bit6 6 \
+	  Bit7 7" \
+	 'Bit4' BIT_SPI_SS
+
+	choice 'MOSI Bit'			\
+	 "Bit0 0 \
+	  Bit1 1 \
+	  Bit2 2 \
+	  Bit3 3 \
+	  Bit4 4 \
+	  Bit5 5 \
+	  Bit6 6 \
+	  Bit7 7" \
+	 'Bit5' BIT_MOSI
+
+	choice 'MISO Bit'			\
+	 "Bit0 0 \
+	  Bit1 1 \
+	  Bit2 2 \
+	  Bit3 3 \
+	  Bit4 4 \
+	  Bit5 5 \
+	  Bit6 6 \
+	  Bit7 7" \
+	 'Bit6' BIT_MISO
+
+	choice 'SCK Bit'			\
+	 "Bit0 0 \
+	  Bit1 1 \
+	  Bit2 2 \
+	  Bit3 3 \
+	  Bit4 4 \
+	  Bit5 5 \
+	  Bit6 6 \
+	  Bit7 7" \
+	 'Bit7' BIT_SCK
+
+	choice 'RFM12 SS Port'			\
+	 "PORTA  PORTA \
+	  PORTB  PORTB \
+	  PORTC  PORTC \
+	  PORTD  PORTD" \
+	 'PORTB' PORT_SS
+
+	choice 'RFM12 SS Bit'			\
+	 "Bit0 0 \
+	  Bit1 1 \
+	  Bit2 2 \
+	  Bit3 3 \
+	  Bit4 4 \
+	  Bit5 5 \
+	  Bit6 6 \
+	  Bit7 7" \
+	 'Bit4' BIT_SS
+
+
+
+
+fi
+
+endmenu
