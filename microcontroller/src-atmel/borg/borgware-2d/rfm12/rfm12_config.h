@@ -80,7 +80,7 @@
 #define RFM12_BASEBAND RFM12_BAND_433
 
 //center frequency to use (+- FSK frequency shift)
-#define RFM12_FREQ 433000000UL
+#define RFM12_FREQUENCY 433000000UL
 
 //FSK frequency shift in kHz
 #define FSK_SHIFT 45000
