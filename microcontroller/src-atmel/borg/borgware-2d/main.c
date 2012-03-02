@@ -31,14 +31,14 @@ int main (void){
 	percnt_inc();
 #endif
 
+#ifdef RFM12_SUPPORT
+	borg_rfm12_init();
+#endif
+
 	borg_hw_init();
 
 #ifdef CAN_SUPPORT
 	bcan_init();
-#endif
-
-#ifdef RFM12_SUPPORT
-	borg_rfm12_init();
 #endif
 
 #ifdef JOYSTICK_SUPPORT

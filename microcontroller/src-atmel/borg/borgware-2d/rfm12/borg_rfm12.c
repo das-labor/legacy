@@ -1,5 +1,6 @@
 
 #include <avr/io.h>
+#include <util/delay.h>
 
 #include "rfm12.h"
 
@@ -30,5 +31,6 @@ void borg_rfm12_tick(){
 }
 
 void borg_rfm12_init(){
+	_delay_ms(200);//the rfm12 seems to need this
 	rfm12_init();
 }
