@@ -505,7 +505,10 @@ void syscontrol(uint8_t ctrl_reg_new)
 	uint8_t changes = ctrl_reg_new ^ ctrl_reg;
 
 	if(ctrl_reg_new & _BV(FLAG_RESET))
-		while(23) wdt_enable(WDTO_15MS);
+	{
+		wdt_enable(WDTO_15MS);
+		while(23);
+	}
 
 	if(changes & _BV(FLAG_BUSPOWER))
 		buspower(ctrl_reg_new & _BV(FLAG_BUSPOWER));
@@ -591,4 +594,12 @@ int main(void) {
 	}
 
 	return 0;
+}
+
+//early watchdog disable function
+void wdt_init(void) __attribute__((naked)) __attribute__((section(".init3")));
+void wdt_init(void)
+{
+    wdt_disable();
+    return;
 }
