@@ -28,12 +28,14 @@
 #include "uart_lowlevel.h"
 
 void rsa_enc(bigint_t* data, rsa_publickey_t* key){
+/*
 	cli_putstr("\r\n -->rsa_enc()\r\n m = ");
 	bigint_print_hex(data);
 	cli_putstr("\r\n e = ");
 	bigint_print_hex(key->exponent);
 	cli_putstr("\r\n n = ");
 	bigint_print_hex(key->modulus);
+*/
 	bigint_expmod_u(data, data, key->exponent, key->modulus);
 }
 
@@ -47,8 +49,6 @@ m = m2 + q * h
 
 uint8_t rsa_dec_crt_mono(bigint_t* data, rsa_privatekey_t* key){
 	bigint_t m1, m2;
-	cli_putstr("\r\n --> rsa_dec_crt_mono()");
-	uart_flush(0);
 	m1.wordv = malloc(key->components[0]->length_B * sizeof(bigint_word_t));
 	m2.wordv = malloc(key->components[1]->length_B * sizeof(bigint_word_t));
 	if(!m1.wordv || !m2.wordv){
@@ -57,24 +57,18 @@ uint8_t rsa_dec_crt_mono(bigint_t* data, rsa_privatekey_t* key){
 		free(m2.wordv);
 		return 1;
 	}
-	cli_putc('a'); uart_flush(0);
 	bigint_expmod_u(&m1, data, key->components[2], key->components[0]);
-	cli_putc('f'); uart_flush(0);
 	bigint_expmod_u(&m2, data, key->components[3], key->components[1]);
-	cli_putc('b'); uart_flush(0);
 	bigint_sub_s(&m1, &m1, &m2);
 	while(BIGINT_NEG_MASK & m1.info){
 		bigint_add_s(&m1, &m1, key->components[0]);
 	}
 
-	cli_putc('c'); uart_flush(0);
 	bigint_reduce(&m1, key->components[0]);
 	bigint_mul_u(data, &m1, key->components[4]);
-	cli_putc('d'); uart_flush(0);
 	bigint_reduce(data, key->components[0]);
 	bigint_mul_u(data, data, key->components[1]);
 	bigint_add_u(data, data, &m2);
-	cli_putc('e'); uart_flush(0);
 	free(m1.wordv);
 	free(m2.wordv);
 	return 0;

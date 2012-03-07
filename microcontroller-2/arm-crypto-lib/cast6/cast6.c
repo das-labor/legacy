@@ -254,10 +254,10 @@ void cast6_init(const void* key, uint16_t keysize_b, cast6_ctx_t* ctx){
 			ctx->km[j][1]=F;
 			ctx->km[j][2]=D;
 			ctx->km[j][3]=B;
-			set_kr((uint8_t)A,j*4+0,ctx);
-			set_kr((uint8_t)C,j*4+1,ctx);
-			set_kr((uint8_t)E,j*4+2,ctx);
-			set_kr((uint8_t)G,j*4+3,ctx);
+			set_kr(buffer[0 * 4],j*4+0,ctx);
+			set_kr(buffer[2 * 4],j*4+1,ctx);
+			set_kr(buffer[4 * 4],j*4+2,ctx);
+			set_kr(buffer[6 * 4],j*4+3,ctx);
 		}
 	}
 }

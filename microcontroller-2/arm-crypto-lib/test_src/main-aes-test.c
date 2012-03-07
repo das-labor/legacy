@@ -196,6 +196,18 @@ void testrun_testkey_aes256(void){
 	}
 }
 
+void crypto_test(void){
+	uint8_t test_data[16], test_key[32];
+	aes256_ctx_t ctx;
+	memset(test_key, 0xA5, 32);
+	memset(test_data, 0, 16);
+	aes256_init(test_key, &ctx);
+	aes256_enc(test_data, &ctx);
+	cli_putstr("\r\ncrypto test data:\r\n");
+	cli_hexdump_block(test_data, 16, 4, 8);
+}
+
+
 void testrun_testkey_aes(void){
 	testrun_testkey_aes128();
 	testrun_testkey_aes192();
@@ -698,6 +710,7 @@ const cmdlist_entry_t cmdlist[] = {
 	{ "testcmac72",      NULL, testrun_aes128_cmac72           },
 	{ "testcmac0",       NULL, testrun_aes192_cmac0            },
 	{ "testeax",         NULL, testrun_aes128_eax              },
+	{ "quick-test",      NULL, crypto_test                     },
 	{ "cmacvs_list",     NULL, cmacvs_listalgos                },
 	{ "cmacvs_set",  (void*)1, (void_fpt)cmacvs_setalgo        },
 	{ "cmacvs_test1",    NULL, cmacvs_test1                    },
