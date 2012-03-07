@@ -93,12 +93,15 @@ static void dump_state(void* s){
 
 static void echo_compress(uint8_t* s, uint8_t iterations, uint64_t* c, void* salt){
 	uint8_t i, j;
-	uint8_t k[16];
+	union {
+		uint8_t v8[16];
+		uint64_t v64[2];
+	} k;
 #if DEBUG
 	uint8_t round=0;
 #endif
-	memcpy(k, c, 8);
-	memset(k+8, 0, 8);
+	memcpy(k.v8, c, 8);
+	memset(k.v8+8, 0, 8);
 	do{
 		/* BIG.SubWords */
 #if DEBUG
@@ -110,9 +113,9 @@ static void echo_compress(uint8_t* s, uint8_t iterations, uint64_t* c, void* sal
 	}
 #endif
 		for(i=0; i<16; ++i){
-			aes_enc_round((aes_cipher_state_t*)(s+16*i), (aes_roundkey_t*)k);
+			aes_enc_round((aes_cipher_state_t*)(s+16*i), (aes_roundkey_t*)k.v8);
 			aes_enc_round((aes_cipher_state_t*)(s+16*i), (aes_roundkey_t*)salt);
-			*((uint64_t*)(k)) += 1;
+			k.v64[0] += 1;
 		}
 #if DEBUG
 		if(round<DEBUG_DEPTH){

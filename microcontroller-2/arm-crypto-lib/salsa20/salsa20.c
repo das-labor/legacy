@@ -96,14 +96,14 @@ void salsa_k16(uint32_t* dest, const uint32_t* k, const uint32_t* n){
 void salsa20_genBlock256(void* dest, const void* k, const void* iv, uint64_t i){
 	uint32_t n[4];
 	memcpy(n, iv, 8);
-	memcpy(n+8, &i, 8);
+//?	memcpy(n+8, &i, 8);
 	salsa_k32((uint32_t*)dest, (uint32_t*)k, n);
 }
 
 void salsa20_genBlock128(void* dest, const void* k, const void* iv, uint64_t i){
 	uint32_t n[4];
 	memcpy(n, iv, 8);
-	memcpy(n+8, &i, 8);
+//?	memcpy(n+8, &i, 8);
 	salsa_k16((uint32_t*)dest, (uint32_t*)k, n);
 }
 

@@ -117,9 +117,7 @@ uint8_t buffer_add(char c){
 		hfal_hash_nextBlock(&(shavs_ctx.ctx), shavs_ctx.buffer);
 		++shavs_ctx.blocks;
 		shavs_ctx.buffer_idx=0;
-		shavs_ctx.in_byte=0;
 		cli_putc('.');
-		memset(shavs_ctx.buffer, 0, shavs_ctx.buffersize_B);
 	}
 	if(c>='0' && c<='9'){
 		v=c-'0';
@@ -134,12 +132,12 @@ uint8_t buffer_add(char c){
 	t=shavs_ctx.buffer[shavs_ctx.buffer_idx];
 	if(shavs_ctx.in_byte){
 		t |= v;
-		shavs_ctx.buffer[shavs_ctx.buffer_idx]=t;
+		shavs_ctx.buffer[shavs_ctx.buffer_idx] = t;
 		shavs_ctx.buffer_idx++;
 		shavs_ctx.in_byte = 0;
 	}else{
-		t |= v<<4;
-		shavs_ctx.buffer[shavs_ctx.buffer_idx]=t;
+		t = v<<4;
+		shavs_ctx.buffer[shavs_ctx.buffer_idx] = t;
 		shavs_ctx.in_byte = 1;
 	}
 	return 0;
@@ -226,7 +224,7 @@ void shavs_test1(void){ /* KAT tests */
 		if(length==0){
 			expect_input=2;
 		}else{
-			expect_input=((length+7)>>2)&(~1L);
+			expect_input=((length + 7) >> 2) & (~1L);
 		}
 #if DEBUG
 		cli_putstr("\r\nexpected_input == ");
@@ -309,7 +307,7 @@ void shavs_test1(void){ /* KAT tests */
 		cli_putstr("\r\nBuffer-A:");
 		cli_hexdump_block(buffer, shavs_ctx.buffersize_B, 5, 8);
 
-		cli_putstr("\r\n starting finalisation");
+		cli_putstr("\r\n starting finalization");
 		cli_putstr("\r\n\tblocks     == ");
 		cli_hexdump_rev(&(shavs_ctx.blocks),4);
 		cli_putstr("\r\n\tbuffer_idx == ");
@@ -325,14 +323,10 @@ void shavs_test1(void){ /* KAT tests */
 		uint16_t temp=length-(shavs_ctx.blocks)*((shavs_ctx.buffersize_B)*8);
 		cli_putstr("\r\n\t (temp)      == ");
 		cli_hexdump_rev(&temp,2);
-		temp=length-(shavs_ctx.blocks)*((shavs_ctx.buffersize_B)*8);
 #else
 		uint16_t temp=length-(shavs_ctx.blocks)*((shavs_ctx.buffersize_B)*8);
 #endif
-		/*		cli_putstr("\r\n\t (temp)      == ");
-		cli_hexdump_rev(&temp,2); */
 		hfal_hash_lastBlock( &(shavs_ctx.ctx), buffer, /* be aware of freaking compilers!!! */
-//							length-(shavs_ctx.blocks)*((shavs_ctx.buffersize_B)*8));
 		                    temp );
 #if DEBUG
 		cli_putstr("\r\n starting ctx2hash");

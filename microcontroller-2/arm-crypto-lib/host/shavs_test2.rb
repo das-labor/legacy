@@ -48,7 +48,7 @@ def readconfigfile(fname, conf)
 	  conf[m[1]] = Hash.new
 	  next
 	end
-	next if not /=/.match(line)
+	next if ! /=/.match(line)
 	m=/[\s]*([^\s]*)[\s]*=[\s]*([^\s]*)/.match(line)
 	if m[1]=="include"
 	  Dir.glob(m[2]){ |fn| conf = readconfigfile(fn, conf) }
@@ -104,6 +104,7 @@ def init_system(algo_select)
     line=$sp.gets()
   end while not m=/buffer_size[\s]*=[\s]*0x([0-9A-Fa-f]*)/.match(line)
   $buffer_size = m[1].to_i(16)
+  printf("buffer_size = %d\n", $buffer_size)
 end
 
 ################################################################################
@@ -113,8 +114,9 @@ end
 def get_md
   begin
     line = $sp.gets()
+        puts("DBG got: " + line.inspect) if $debug
 	line = "" if line==nil
-	puts("DBG got: "+line) if $debug
+   #	puts("DBG got: "+line) if $debug
   end while not /[\s]*MD[\s]*=.*/.match(line)
   return line
 end
@@ -137,19 +139,29 @@ end
 =end
 def send_md(md_string)
 #  puts 'DBG: send_md; md_string.length = '+md_string.length.to_s+'; buffer_size = '+$buffer_size.to_s
-  bs = $buffer_size
+  bs = $buffer_size*2
   $sp.print("Msg = ")
-  for i in 0..((md_string.length-1)/bs)
+  $sp.print(md_string[0])
+  md_string = md_string[1..-1]
+  for i in 0..((md_string.length)/bs)
 #    puts 'DBG bulk send'
     if(md_string.length-i*bs<=bs)
  #     puts "DBG: i="+i.to_s()
-      $sp.print(md_string[(i*bs)..-1]) 
+      t = md_string[(i*bs)..-1]
+      printf("sending final %d chars: %s\n", t.length, t[-10..-1]) if $debug
+      $sp.print(t) 
       return
     end
-    $sp.print(md_string[(i*bs)..((i+1)*bs-1)])
-  #  begin
-  #    line=$sp.gets()
-  #  end while not /\./.match(line) 
+    t = md_string[(i*bs)..((i+1)*bs-1)]
+    printf("sending %d chars: %s\n", t.length, t[-10..-1]) if $debug
+    $sp.print(t)
+    sleep(0.1)
+    print("going to wait ... : ") if $debug
+    begin
+     line=$sp.gets()
+     puts(line.inspect) if $debug
+     line='' if !line
+    end while ! /\./.match(line) 
   end
 end
 
@@ -295,7 +307,7 @@ algo_tasks.each do |algoa|
     next
   else
 	i=0
-	i = opts["j"] if opts["j"]
+	i = opts["j"].to_i if opts["j"]
 	logfile=File.open(conf["PORT"]["testlogbase"]+algo+".txt", "a")
 	while conf[algo]["file_#{i}"] != nil
 	  puts("Testing #{algo} with #{conf[algo]["file_#{i}"]}")

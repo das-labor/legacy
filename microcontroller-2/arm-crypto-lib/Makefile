@@ -38,7 +38,8 @@ GLOBAL_INCDIR := ./ $(TESTSRC_DIR)
 
 #-------------------------------------------------------------------------------
 # inclusion of make stubs
-include mkfiles/*.mk
+
+include $(sort $(wildcard mkfiles/*.mk))
 
 define Assert_Template
 $(1) = $(2)
@@ -158,7 +159,7 @@ define MainTestElf_Template
 $(1): $(2) $(3)
 	@echo "[ld]: $(1)"
 	@mkdir -p $(dir $(1))
-	$(CC) $(CFLAGS_A) $(LDFLAGS)$(patsubst %.elf,%.map,$(1)) -o \
+	@$(CC) $(CFLAGS_A) $(LDFLAGS)$(patsubst %.elf,%.map,$(1)) -o \
 	$(1) \
 	$(2) $(3) \
 	$(addprefix -l, $(LIBS))

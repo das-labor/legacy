@@ -49,17 +49,32 @@
 
 
 typedef struct{
-	uint8_t tweak[16];
+	union {
+		uint8_t v8[16];
+		uint16_t v16[8];
+		uint32_t v32[4];
+		uint64_t v64[2];
+	} tweak;
 	uint8_t g[32];
 }ubi256_ctx_t;
 
 typedef struct{
-	uint8_t tweak[16];
+	union {
+		uint8_t v8[16];
+		uint16_t v16[8];
+		uint32_t v32[4];
+		uint64_t v64[2];
+	} tweak;
 	uint8_t g[64];
 }ubi512_ctx_t;
 
 typedef struct{
-	uint8_t tweak[16];
+	union {
+		uint8_t v8[16];
+		uint16_t v16[8];
+		uint32_t v32[4];
+		uint64_t v64[2];
+	} tweak;
 	uint8_t g[128];
 }ubi1024_ctx_t;
 
