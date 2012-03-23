@@ -8,7 +8,7 @@
 /**
  * indexes for different tetris variants
  */
-enum tetris_highscore_index
+enum tetris_highscore_index_e
 {
 	TETRIS_HISCORE_TETRIS, /**< high score index for the standard variant */
 	TETRIS_HISCORE_BASTET, /**< high score index for the bastet variant */
@@ -23,10 +23,21 @@ enum tetris_highscore_index
 #endif
 
 
-// global array for the high score
-extern uint16_t tetris_highscore[TETRIS_HISCORE_END] EEMEM;
-// global array for the champion's initials
-extern uint16_t tetris_highscore_name[TETRIS_HISCORE_END] EEMEM;
+/**
+ * type for global high score table
+ */
+typedef struct tetris_highscore_table_s
+{
+	uint16_t nHighScoreName[TETRIS_HISCORE_END]; /**< champions' initials */
+	uint16_t nHighScore[TETRIS_HISCORE_END];     /**< actual high scores */
+}
+tetris_highscore_table_t;
+
+
+/**
+ * the actual high score table
+ */
+extern tetris_highscore_table_t g_highScoreTable EEMEM;
 
 
 /**
@@ -41,7 +52,7 @@ uint16_t tetris_highscore_inputName(void);
  * @param nIndex the variant dependent index of the high score
  * @return the high score
  */
-uint16_t tetris_highscore_retrieveHighscore(tetris_highscore_index_t nIndex);
+uint16_t tetris_highscore_retrieveHighScore(tetris_highscore_index_t nIndex);
 
 
 /**
@@ -50,12 +61,12 @@ uint16_t tetris_highscore_retrieveHighscore(tetris_highscore_index_t nIndex);
  * @param nHighscoreName the high score
  */
 inline static
-void tetris_highscore_saveHighscore(tetris_highscore_index_t nIndex,
-                                    uint16_t nHighscore)
+void tetris_highscore_saveHighScore(tetris_highscore_index_t nIndex,
+                                    uint16_t nHighScore)
 {
-	if (nHighscore > tetris_highscore_retrieveHighscore(nIndex))
+	if (nHighScore > tetris_highscore_retrieveHighScore(nIndex))
 	{
-		eeprom_write_word(&tetris_highscore[nIndex], nHighscore);
+		eeprom_write_word(&g_highScoreTable.nHighScore[nIndex], nHighScore);
 	}
 }
 
@@ -66,12 +77,12 @@ void tetris_highscore_saveHighscore(tetris_highscore_index_t nIndex,
  * @return the initials of the champion packed into a uint16_t
  */
 inline static
-uint16_t tetris_highscore_retrieveHighscoreName(tetris_highscore_index_t nIdx)
+uint16_t tetris_highscore_retrieveHighScoreName(tetris_highscore_index_t nIdx)
 {
-	uint16_t nHighscoreName =
-			eeprom_read_word(&tetris_highscore_name[nIdx]);
+	uint16_t nHighScoreName =
+			eeprom_read_word(&g_highScoreTable.nHighScoreName[nIdx]);
 
-	return nHighscoreName;
+	return nHighScoreName;
 }
 
 
@@ -81,10 +92,10 @@ uint16_t tetris_highscore_retrieveHighscoreName(tetris_highscore_index_t nIdx)
  * @param nHighscoreName the initials of the champion packed into a uint16_t
  */
 inline static
-void tetris_highscore_saveHighscoreName(tetris_highscore_index_t nIndex,
+void tetris_highscore_saveHighScoreName(tetris_highscore_index_t nIndex,
                                         uint16_t nHighscoreName)
 {
-	eeprom_write_word(&tetris_highscore_name[nIndex], nHighscoreName);
+	eeprom_write_word(&g_highScoreTable.nHighScoreName[nIndex], nHighscoreName);
 }
 
 

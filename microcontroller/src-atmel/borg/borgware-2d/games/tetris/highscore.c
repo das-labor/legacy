@@ -8,11 +8,8 @@
 #include "../../compat/eeprom.h"
 #include "highscore.h"
 
-// global array for the high score
-uint16_t tetris_highscore[TETRIS_HISCORE_END] EEMEM;
 
-// global array for the champion's initials
-uint16_t tetris_highscore_name[TETRIS_HISCORE_END] EEMEM;
+tetris_highscore_table_t g_highScoreTable EEMEM;
 
 
 uint16_t tetris_highscore_inputName(void)
@@ -95,11 +92,11 @@ uint16_t tetris_highscore_inputName(void)
 }
 
 
-uint16_t tetris_highscore_retrieveHighscore(tetris_highscore_index_t nIndex)
+uint16_t tetris_highscore_retrieveHighScore(tetris_highscore_index_t nIndex)
 {
-	uint16_t nHighscore =
-			eeprom_read_word(&tetris_highscore[nIndex]);
+	uint16_t nHighScore =
+			eeprom_read_word(&g_highScoreTable.nHighScore[nIndex]);
 
 	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
-	return nHighscore == UINT16_MAX ? 0 : nHighscore;
+	return nHighScore == UINT16_MAX ? 0 : nHighScore;
 }
