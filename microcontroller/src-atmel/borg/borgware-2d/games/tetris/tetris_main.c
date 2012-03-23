@@ -31,9 +31,9 @@ void tetris_main(tetris_variant_t const *const pVariantMethods)
 	tetris_highscore_index_t nHighscoreIndex =
 			pVariantMethods->getHighscoreIndex(pVariantData);
 	uint16_t nHighscore =
-			tetris_highscore_retrieveHighscore(nHighscoreIndex);
+			tetris_highscore_retrieveHighScore(nHighscoreIndex);
 	uint16_t nHighscoreName =
-			tetris_highscore_retrieveHighscoreName(nHighscoreIndex);
+			tetris_highscore_retrieveHighScoreName(nHighscoreIndex);
 
 	// the view only monitors the variant data and the bucket object for the
 	// game status so we must put information like the next piece or the current
@@ -195,8 +195,8 @@ void tetris_main(tetris_variant_t const *const pVariantMethods)
 	{
 		nHighscore = nScore;
 		nHighscoreName = tetris_highscore_inputName();
-		tetris_highscore_saveHighscore(nHighscoreIndex, nHighscore);
-		tetris_highscore_saveHighscoreName(nHighscoreIndex, nHighscoreName);
+		tetris_highscore_saveHighScore(nHighscoreIndex, nHighscore);
+		tetris_highscore_saveHighScoreName(nHighscoreIndex, nHighscoreName);
 	}
 
 	// cleanup
