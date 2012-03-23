@@ -146,7 +146,7 @@ inline void checkkeys(uint8_t row){
 
 // depending on the plane this interrupt gets triggered at 50 kHz, 31.25 kHz or
 // 12.5 kHz
-SIGNAL(SIG_OUTPUT_COMPARE0)
+ISR(TIMER0_COMP_vect)
 {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;

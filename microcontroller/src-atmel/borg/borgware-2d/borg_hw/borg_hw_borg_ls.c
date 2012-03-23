@@ -55,7 +55,7 @@ inline void rowshow(unsigned char row, unsigned char plane) {
 }
 
 
-SIGNAL(SIG_OUTPUT_COMPARE0) {
+ISR(TIMER0_COMP_vect) {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
 

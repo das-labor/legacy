@@ -41,7 +41,7 @@ uint32_t akku;
 unsigned char row = 0;
 
 
-ISR(SIG_OUTPUT_COMPARE0)
+ISR(TIMER0_COMP_vect)
 {
 	// reset watchdog
 	wdt_reset();

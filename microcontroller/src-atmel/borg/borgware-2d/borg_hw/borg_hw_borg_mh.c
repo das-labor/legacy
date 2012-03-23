@@ -59,7 +59,7 @@ inline void rowshow(unsigned char row, unsigned char plane) {
 	// for(n=0;n<250;n++) asm ("nop");
 }
 
-SIGNAL( SIG_OUTPUT_COMPARE0) {
+ISR(TIMER0_COMP_vect) {
 	static unsigned char plane = 0;
 	unsigned char row = 0;
 

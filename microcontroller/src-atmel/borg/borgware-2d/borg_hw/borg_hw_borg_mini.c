@@ -113,7 +113,7 @@ inline void rowshow(unsigned char row, unsigned char plane){
 
 extern uint8_t schmuh;
 
-ISR(SIG_OVERFLOW0)
+ISR(TIMER0_OVF_vect)
 {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;

@@ -36,7 +36,7 @@
 #if defined (__AVR_ATmega644P__) || defined (__AVR_ATmega644__)
 /* more ifdef magic :-( */
 #define OCR0 OCR0A
-#define SIG_OUTPUT_COMPARE0 SIG_OUTPUT_COMPARE0A
+#define TIMER0_COMP_vect TIMER0_COMPA_vect
 #endif
 
 
@@ -46,7 +46,7 @@ unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 // depending on the plane this interrupt gets triggered at 50 kHz, 31.25 kHz or
 // 12.5 kHz
-SIGNAL( SIG_OUTPUT_COMPARE0) {
+ISR(TIMER0_COMP_vect) {
 	// reset watchdog
 	wdt_reset();
 

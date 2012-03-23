@@ -27,7 +27,7 @@
 unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 
 
-SIGNAL(SIG_OUTPUT_COMPARE0)
+ISR(TIMER0_COMP_vect)
 {
 	static unsigned char plane = 0;
 	static unsigned char row = 0;
