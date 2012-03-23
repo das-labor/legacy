@@ -205,7 +205,7 @@ unsigned char RX_HEAD=0;volatile unsigned char RX_TAIL=0;
 unsigned char TX_HEAD= 0;volatile unsigned char TX_TAIL=0;
 static volatile unsigned char TX_INT;
 
-SIGNAL(SIG_INTERRUPT0) {
+ISR(INT0_vect) {
 	unsigned char status = mcp_status();
 		
 	if ( status & 0x01 ) {	// Message in RX0

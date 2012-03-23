@@ -142,7 +142,7 @@ inline void rowshow(unsigned char row, unsigned char plane) {
 
 // depending on the plane this interrupt gets triggered at 50 kHz, 31.25 kHz or
 // 12.5 kHz
-SIGNAL(SIG_OUTPUT_COMPARE0) {
+ISR(TIMER0_COMP_vect) {
 	static unsigned char plane = 0;
 	unsigned char row = 0;
 

@@ -28,7 +28,7 @@ volatile static char *volatile rxhead, *volatile rxtail;
 volatile static char *volatile txhead, *volatile txtail;
 
 
-SIGNAL(SIG_UART_DATA) {
+ISR(USART_UDRE_vect) {
 #ifdef UART_LEDS	
 	PORTC ^= 0x01;
 #endif
@@ -41,7 +41,7 @@ SIGNAL(SIG_UART_DATA) {
 	}
 }
 
-SIGNAL(SIG_UART_RECV) {
+ISR(USART_RXC_vect) {
 	int diff; 
 
 #ifdef UART_LEDS

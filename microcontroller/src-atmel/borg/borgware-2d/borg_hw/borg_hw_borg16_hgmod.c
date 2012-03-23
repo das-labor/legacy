@@ -35,7 +35,7 @@
 /* more ifdef magic :-( */
 #if defined (__AVR_ATmega644P__) || defined (__AVR_ATmega644__)
 	#define OCR0 OCR0A
-	#define SIG_OUTPUT_COMPARE0 SIG_OUTPUT_COMPARE0A
+	#define TIMER0_COMP_vect TIMER0_COMPA_vect
 #endif
 
 // buffer which holds the currently shown frame
