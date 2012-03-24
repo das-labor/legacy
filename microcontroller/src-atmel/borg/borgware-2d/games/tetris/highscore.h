@@ -28,8 +28,8 @@ enum tetris_highscore_index_e
  */
 typedef struct tetris_highscore_table_s
 {
-	uint16_t nHighScoreName[TETRIS_HISCORE_END]; /**< champions' initials */
 	uint16_t nHighScore[TETRIS_HISCORE_END];     /**< actual high scores */
+	uint16_t nHighScoreName[TETRIS_HISCORE_END]; /**< champions' initials */
 }
 tetris_highscore_table_t;
 
