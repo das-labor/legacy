@@ -3,7 +3,7 @@
 
 extern void can_handler();
 
-void can_send(uint8_t port, uint8_t *p);
+void send_status();
 
 void read_can_addr();
 

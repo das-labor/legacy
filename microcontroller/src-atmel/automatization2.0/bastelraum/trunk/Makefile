@@ -1,4 +1,4 @@
-OBJ = main.o can/can.o can/spi.o can_handler.o twi_master/twi_master.o io.o i2c_funktionen.o motion.o
+OBJ = main.o can/can.o can/spi.o can_handler.o io.o motion.o
 
 # Default values
 OUT           ?= main
