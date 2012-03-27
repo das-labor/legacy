@@ -20,7 +20,7 @@ typedef struct {
 	can_port port_src;
 	can_port port_dst;
 	unsigned char dlc;
-	unsigned char cmd; 
+	unsigned char cmd;
 	uint16_t index;
 	uint16_t size;
 	uint16_t address;
@@ -33,8 +33,8 @@ typedef struct{
 	can_port port_src;
 	can_port port_dst;
 	unsigned char dlc;
-	unsigned char cmd; 
-	unsigned char data[7];	
+	unsigned char cmd;
+	unsigned char data[7];
 } pdo_message;
 
 /****************************************************************************
