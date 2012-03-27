@@ -48,7 +48,7 @@ void init_io() {
 
 	DDRA &= ~(_BV(PA4) | _BV(PA7)); // Eingänge Taster / Türkontakt
 	PORTA |= _BV(PA4);	// PULLUP Türkontakt
-
+	send_status();
 }
 
 /*
@@ -75,6 +75,7 @@ void change_shift_reg(uint8_t sreg) {
 	PORTA &= ~SREG_STROBE;
 	_delay_us(10);
 	PORTA |= SREG_STROBE;
+	send_status();
 }
 
 void switch_handler() {
@@ -90,7 +91,6 @@ void switch_handler() {
 		last_tickscounter = tc;
 
 
-		// **** Vortrag Licht schalter ****
 
 		static uint8_t counter_0;
 		uint8_t clicked_0 = 0;
@@ -150,10 +150,11 @@ void switch_handler() {
 
 void pwm_set(volatile uint8_t *port, uint8_t value) {
 	(*port) = value;
+	send_status();
 }
 
 
-void pwm_get(volatile uint8_t *port, uint8_t *result) {
-	(*result) = (*port);
+uint8_t pwm_get(volatile uint8_t *port) {
+	return (*port);
 }
 

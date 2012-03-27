@@ -13,7 +13,6 @@
 #include "can/spi.h"
 #include "can/lap.h"
 #include "io.h"
-#include "i2c_funktionen.h"
 #include "motion.h"
 
 void init(void)

@@ -6,11 +6,11 @@
 #include "can_handler.h"
 #include "can/lap.h"
 #include "twi_master/twi_master.h"
-#include "i2c_funktionen.h"
 #include "io.h"
 
 #include "Bastelcmd.h"
 #include "config.h"
+#include "io.h"
 
 
 uint8_t myaddr;
@@ -69,14 +69,13 @@ extern void can_handler()
 	}
 }
 
-void can_send(uint8_t port, uint8_t *p)
-{
-	static can_message msg = {0xa9, 0x00, 0x00, 0x01, 1, {0}};
-	uint8_t i;
-	for (i = 0; i < 2; i++)
-		msg.data[i] = p[i];
+void send_status() {
+	static can_message msg = {0x00, 0x00, 0x03, 0x03, 4, {0}};
+	msg.data[0] = sreg;
+	msg.data[1] = pwm_get(F_PWM_FENSTER);
+	msg.data[2] = pwm_get(F_PWM_BANNER);
+	msg.data[3] = pwm_get(F_PWM_ORGATISCH);
 	msg.addr_src = myaddr;
-	msg.port_dst = port;
 	can_transmit(&msg);
 }
 

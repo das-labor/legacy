@@ -31,6 +31,7 @@ void switch_handler();
 void state_to_output();
 void change_shift_reg(uint8_t sreg);
 void pwm_set(volatile uint8_t *port, uint8_t value);
+uint8_t pwm_get(volatile uint8_t *port);
 
 void init_io();
 
