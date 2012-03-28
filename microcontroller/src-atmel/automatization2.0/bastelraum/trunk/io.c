@@ -4,8 +4,9 @@
 #include <avr/interrupt.h>
 
 #include "motion.h"
+#include "Bastelcmd.h"
 
-volatile uint8_t sreg;
+uint8_t sreg;
 
 void change_shift_reg(uint8_t sreg);
 
@@ -113,25 +114,25 @@ void switch_handler() {
 				{
 					clicked_0 = 1;
 				}
-			} 
+			}
 			counter_0 = 0;
 		}
-		
+
 		if (clicked_0)
 		{
-		        if (stat_licht) {
-			        sreg = 0;
-			        change_shift_reg(sreg);
-			        stat_licht = 0;
-		        }
-		        else {
-			        sreg = 212;
-			        change_shift_reg(sreg);
-			        pwm_set(pwm_matrix[0].port, 200);
-			        pwm_set(pwm_matrix[1].port, 200);
-			        pwm_set(pwm_matrix[3].port, 200);
-       			        stat_licht = 1;
-		        }
+			if (stat_licht) {
+				sreg = 0;
+				change_shift_reg(sreg);
+				stat_licht = 0;
+			}
+			else {
+				sreg = 212;
+				change_shift_reg(sreg);
+				pwm_set(pwm_matrix[F_PWM_FENSTER].port, 200);
+				pwm_set(pwm_matrix[F_PWM_BANNER].port, 200);
+				pwm_set(pwm_matrix[F_PWM_ORGATISCH].port, 200);
+				stat_licht = 1;
+			}
 		}
 		
 		if (held_0)
@@ -140,7 +141,7 @@ void switch_handler() {
 		}
 		else if (last_held_0)
 		{
-				
+
 		}
 		
 		last_held_0 = held_0;

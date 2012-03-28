@@ -17,7 +17,7 @@ uint8_t myaddr;
 void twi_get(uint8_t *p);
 uint8_t status[10][10];
 
-extern void can_handler()
+void can_handler()
 {
 	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 	can_message *rx_msg;
@@ -69,12 +69,13 @@ extern void can_handler()
 	}
 }
 
-void send_status() {
+void send_status()
+{
 	static can_message msg = {0x00, 0x00, 0x03, 0x03, 4, {0}};
 	msg.data[0] = sreg;
-	msg.data[1] = pwm_get(F_PWM_FENSTER);
-	msg.data[2] = pwm_get(F_PWM_BANNER);
-	msg.data[3] = pwm_get(F_PWM_ORGATISCH);
+	msg.data[1] = pwm_get(pwm_matrix[F_PWM_FENSTER].port);
+	msg.data[2] = pwm_get(pwm_matrix[F_PWM_BANNER].port);
+	msg.data[3] = pwm_get(pwm_matrix[F_PWM_ORGATISCH].port);
 	msg.addr_src = myaddr;
 	can_transmit(&msg);
 }

@@ -14,7 +14,7 @@
 #define O_PWM03_PORT (&(OCR1BL))
 
 
-extern volatile uint8_t sreg;
+extern uint8_t sreg;
 
 // das gleiche fuer die PWMs
 static struct t_pwm_parameter {
@@ -27,13 +27,13 @@ static struct t_pwm_parameter {
 };
 
 
-void switch_handler();
-void state_to_output();
-void change_shift_reg(uint8_t sreg);
-void pwm_set(volatile uint8_t *port, uint8_t value);
-uint8_t pwm_get(volatile uint8_t *port);
+extern void switch_handler();
+extern void state_to_output();
+extern void change_shift_reg(uint8_t sreg);
+extern void pwm_set(volatile uint8_t *port, uint8_t value);
+extern uint8_t pwm_get(volatile uint8_t *port);
 
-void init_io();
+extern void init_io();
 
 #endif // _IO
 
