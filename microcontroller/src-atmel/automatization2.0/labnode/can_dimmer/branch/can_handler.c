@@ -43,11 +43,11 @@ const uint8_t exptab[256] PROGMEM =
 
 void virt_pwm_set_all(uint8_t val) {
 	//do gammacorrection
-	
+
 	set_dimmer(0, val);
 	set_dimmer(1, val);
 	set_dimmer(2, val);
-	set_dimmer(3, (255-pgm_read_byte(exptab+255-val)));
+	set_dimmer(3, (255 - pgm_read_byte(exptab + 255 - val)));
 }
 
 
@@ -65,38 +65,33 @@ extern void can_handler()
 				switch (rx_msg->data[0])
 				{
 					case FKT_MGT_RESET:
-//						TCCR2 = 0
 						wdt_enable(0);
 						while (1);
-			
 					case FKT_MGT_PING:
-
 						msg.addr_src = myaddr;
 						msg.addr_dst = rx_msg->addr_src;
 						can_transmit(&msg);
 						break;
 				}
 			}
-/*		}
-		if ((rx_msg->addr_dst == 2)) {*/
 			if (rx_msg->port_dst == 1)
 			{
 				switch (rx_msg->data[0]) {
 					case 0: //C_SW: ALL ON/ ALL OFF
 						//check if the button was pressed in the last $seconds
 						//if yes continue, if not just toggle the lights
-						if(!get_counter_status()){	//button wasn't pressed in the last $seconds
+						if (!get_counter_status()) {	//button wasn't pressed in the last $seconds
 							//if virt_stat == 1 lights are on
 							//if virt_stat == 2 lights are on
 							//if virt_stat == 3 lights are on
 							//if virt_stat == 0 lights are off
-							if(virt_stat)	//turn all lamps off
+							if (virt_stat)	//turn all lamps off
 							{
 								enable_channel(0,0);
 								enable_channel(1,0);
 								enable_channel(2,0);
 								enable_channel(3,0);
-								virt_stat=0;
+								virt_stat = 0;
 							}
 							else	//turn all lamps on
 							{
@@ -104,11 +99,10 @@ extern void can_handler()
 								enable_channel(1,1);
 								enable_channel(2,1);
 								enable_channel(3,1);
-								virt_stat=3;
+								virt_stat = 3;
 							}
-							
-						}else{
-							switch (virt_stat++){
+						} else {
+							switch (virt_stat++) {
 							case 0:
 								
 								enable_channel(0,1);
@@ -148,7 +142,7 @@ extern void can_handler()
 						{
 							if (rx_msg->data[1] == 3)	//channel 3
 								set_dimmer(3, 255-rx_msg->data[2]);	//invert neon tube
-							else	
+							else
 								set_dimmer(rx_msg->data[1], rx_msg->data[2]);
 						}
 						break;
@@ -185,12 +179,12 @@ extern void can_handler()
 					case 4: //C_TOGGLE
 						if (rx_msg->data[1] < NUM_CHANNELS)
 						{
-								if(rx_msg->data[2])	//lamp on
+								if (rx_msg->data[2])	//lamp on
 									enable_channel((rx_msg->data[1]),1);
 								else
 									enable_channel((rx_msg->data[1]),0);
 						}
-						break;					
+						break;
 					
 				}
 			}
@@ -198,14 +192,15 @@ extern void can_handler()
 	}
 }
 
-void can_send(uint8_t port, uint8_t *p)
+void send_status()
 {
-	static can_message msg = {0xa9, 0x00, 0x00, 0x01, 1, {0}};
-	uint8_t i;
-	for (i = 0; i < 2; i++)
-		msg.data[i] = p[i];
+	static can_message msg = {0x00, 0x00, 0x03, 0x03, 5, {0}};
+	msg.data[0] = get_channel_status();
+	msg.data[1] = get_channel_val(0);
+	msg.data[2] = get_channel_val(1);
+	msg.data[3] = get_channel_val(2);
+	msg.data[4] = get_channel_val(3);
 	msg.addr_src = myaddr;
-	msg.port_dst = port;
 	can_transmit(&msg);
 }
 
