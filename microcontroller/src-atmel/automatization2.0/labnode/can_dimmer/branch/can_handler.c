@@ -26,7 +26,7 @@ extern uint8_t get_counter_status(void);
 
 extern void enable_channel(uint8_t channel, uint8_t enable);
 
-//lookuptable for gamma corretiob
+//lookuptable for gamma corretion
 const uint8_t exptab[256] PROGMEM =
 {
 0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
@@ -87,49 +87,49 @@ extern void can_handler()
 							//if virt_stat == 0 lights are off
 							if (virt_stat)	//turn all lamps off
 							{
-								enable_channel(0,0);
-								enable_channel(1,0);
-								enable_channel(2,0);
-								enable_channel(3,0);
+								enable_channel(0, 0);
+								enable_channel(1, 0);
+								enable_channel(2, 0);
+								enable_channel(3, 0);
 								virt_stat = 0;
 							}
 							else	//turn all lamps on
 							{
-								enable_channel(0,1);
-								enable_channel(1,1);
-								enable_channel(2,1);
-								enable_channel(3,1);
+								enable_channel(0, 1);
+								enable_channel(1, 1);
+								enable_channel(2, 1);
+								enable_channel(3, 1);
 								virt_stat = 3;
 							}
 						} else {
 							switch (virt_stat++) {
 							case 0:
 								
-								enable_channel(0,1);
-								enable_channel(1,1);
-								enable_channel(2,1);
-								enable_channel(3,0);
+								enable_channel(0, 1);
+								enable_channel(1, 1);
+								enable_channel(2, 1);
+								enable_channel(3, 0);
 								break;
 							case 1:
 							
-								enable_channel(0,0);
-								enable_channel(1,0);
-								enable_channel(2,0);
-								enable_channel(3,1);
+								enable_channel(0, 0);
+								enable_channel(1, 0);
+								enable_channel(2, 0);
+								enable_channel(3, 1);
 								break;
 							case 2:
 								
-								enable_channel(0,1);
-								enable_channel(1,1);
-								enable_channel(2,1);
-								enable_channel(3,1);
+								enable_channel(0, 1);
+								enable_channel(1, 1);
+								enable_channel(2, 1);
+								enable_channel(3, 1);
 								break;
 							case 3:
 								
-								enable_channel(0,0);
-								enable_channel(1,0);
-								enable_channel(2,0);
-								enable_channel(3,0);
+								enable_channel(0, 0);
+								enable_channel(1, 0);
+								enable_channel(2, 0);
+								enable_channel(3, 0);
 								virt_stat = 0;
 								break;
 							}
@@ -159,7 +159,6 @@ extern void can_handler()
 							}
 						} else
 						{
-
 							if (virt_pwm_val == 0)
 							{
 								virt_pwm_dir = 1;
@@ -175,17 +174,16 @@ extern void can_handler()
 						else
 							virt_pwm_dir = 1;
 						break;
-					
+
 					case 4: //C_TOGGLE
 						if (rx_msg->data[1] < NUM_CHANNELS)
 						{
 								if (rx_msg->data[2])	//lamp on
-									enable_channel((rx_msg->data[1]),1);
+									enable_channel((rx_msg->data[1]), 1);
 								else
-									enable_channel((rx_msg->data[1]),0);
+									enable_channel((rx_msg->data[1]), 0);
 						}
 						break;
-					
 				}
 			}
 		}
@@ -196,10 +194,10 @@ void send_status()
 {
 	static can_message msg = {0x00, 0x00, 0x03, 0x03, 5, {0}};
 	msg.data[0] = get_channel_status();
-	msg.data[1] = get_channel_val(0);
-	msg.data[2] = get_channel_val(1);
-	msg.data[3] = get_channel_val(2);
-	msg.data[4] = get_channel_val(3);
+	msg.data[1] = dim_vals_8bit[0];
+	msg.data[2] = dim_vals_8bit[1];
+	msg.data[3] = dim_vals_8bit[2];
+	msg.data[4] = 255 - dim_vals_8bit[3];
 	msg.addr_src = myaddr;
 	can_transmit(&msg);
 }

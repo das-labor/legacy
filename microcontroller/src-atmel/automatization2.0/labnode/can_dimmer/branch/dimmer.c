@@ -11,6 +11,7 @@ uint8_t dim_max[NUM_CHANNELS];
 
 uint16_t dim_vals_sorted[NUM_CHANNELS];
 uint8_t channels_sorted[NUM_CHANNELS];
+uint8_t dim_vals_8bit[NUM_CHANNELS];
 
 volatile uint8_t channels_active[NUM_CHANNELS];
 
@@ -85,6 +86,7 @@ void dimmer_init() {
 		channels_sorted[x] = x;
 		dim_vals_sorted[x] = MAX_VAL;
 		channels_active[x] = 0;
+		dim_vals_8bit[x] = 255;
 	}
 
 	//set soft-PWM ports to output
@@ -111,10 +113,9 @@ void dimmer_init() {
 
 
 void set_dimmer(uint8_t channel, uint8_t bright) {
-
 	if (channel > (NUM_CHANNELS -1))
 		return;
-
+	dim_vals_8bit[channel] = bright;
 	uint16_t dimval = 512 - bright * 2;
 
 	if (!bright)
@@ -166,6 +167,7 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 		}
 	}
 	update_in_progress = 0;
+	send_status();
 }
 
 void enable_channel(uint8_t channel, uint8_t enable)
@@ -193,19 +195,11 @@ void enable_channel(uint8_t channel, uint8_t enable)
 				case 2: PORTC &= ~_BV(PC4); break;
 				case 3: PORTC &= ~_BV(PC5); break; //disable triac (EVG)
 			}
+		send_status();
 	}
 }
 
 uint8_t get_channel_status() {
 	return channels_active[0] + (channels_active[1] << 1) + (channels_active[2] << 2) + (channels_active[3] << 3);
 }
-
-uint8_t get_channel_val(uint8_t chan) {
-	uint8_t i;
-	for (i = 0; i < NUM_CHANNELS; i++)
-		if (channels_sorted[i] == chan)
-			return dim_vals_sorted[i];
-	return 0;
-}
-
 
