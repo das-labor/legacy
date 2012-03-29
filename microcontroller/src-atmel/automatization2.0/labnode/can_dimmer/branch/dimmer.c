@@ -17,9 +17,9 @@ volatile uint8_t channels_active[NUM_CHANNELS];
 
 //synchronize to zero cross
 ISR(TIMER1_CAPT_vect) {
-	if(channels_active[3])
+	if (channels_active[3])
 		PORTC |= _BV(PC5);	//activate triac on zero-cross(EVG)
-	
+
 	TCNT1 = 620;
 }
 
@@ -65,7 +65,7 @@ ISR(TIMER1_COMPB_vect) {
 		next++;
 		if ((next != NUM_CHANNELS) && (dim_vals[next] != MAX_VAL)) {
 			OCR1B = dim_vals[next];
-			if (TCNT1 >= OCR1B){   //if allready time for next
+			if (TCNT1 >= OCR1B) {   //if allready time for next
 				TIFR = _BV(OCF1B); //reset flag in case it was set allready
 				goto handle_next;   //and handle now
 			}
@@ -100,7 +100,7 @@ void dimmer_init() {
 	PORTC &= ~_BV(PC5);
 
 	PORTD |= _BV(PD6);	//pull up an Zero-Cross-Detection-Input-Pin
-	
+
 	TCCR1B |= _BV(ICNC1) | _BV(WGM12) | _BV(CS12); //CTC (TOP = OCR1A), clk/256
 	OCR1A = 625;
 
@@ -111,20 +111,20 @@ void dimmer_init() {
 
 
 void set_dimmer(uint8_t channel, uint8_t bright) {
-	
-	if(channel > (NUM_CHANNELS -1))
+
+	if (channel > (NUM_CHANNELS -1))
 		return;
-	
+
 	uint16_t dimval = 512 - bright * 2;
-	
+
 	if (!bright)
 		dimval = MAX_VAL;
-	
-	if (bright == 255) 
+
+	if (bright == 255)
 	{
 		dim_max[channel] = 1;
 		//enable port if max_brightness == always on
-		
+
 		switch (channel) {
 			case 0: if(channels_active[0])PORTA |= _BV(PA4); break;
 			case 1: if(channels_active[1])PORTA |= _BV(PA5); break;
@@ -133,9 +133,9 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 		}
 		dimval = MAX_VAL;	//no need for soft-PWM, ports are always on
 	}
- 	else dim_max[channel] = 0;
+	else
+		dim_max[channel] = 0;
 
-	
 	update_in_progress = 1;
 
 	uint8_t x;
@@ -144,7 +144,7 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 		if (channels_sorted[x] == channel) {
 			for (; x<NUM_CHANNELS - 1; x++) {
 				channels_sorted[x] = channels_sorted[x+1];
-				dim_vals_sorted[x] = dim_vals_sorted[x+1];				
+				dim_vals_sorted[x] = dim_vals_sorted[x+1];
 			}
 			break;
 		}
@@ -169,12 +169,12 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 }
 
 void enable_channel(uint8_t channel, uint8_t enable)
-{	
-	if(channel < NUM_CHANNELS)
+{
+	if (channel < NUM_CHANNELS)
 	{
-		channels_active[channel]=enable;
-		if(enable){
-			if(dim_max[channel])
+		channels_active[channel] = enable;
+		if (enable) {
+			if (dim_max[channel])
 			{
 				switch (channel) {
 					case 0: PORTA |= _BV(PA4); break;
@@ -187,12 +187,25 @@ void enable_channel(uint8_t channel, uint8_t enable)
 		//		PORTC |= _BV(PC5);	//activate triac (EVG)
 		}
 		else
-		switch (channel) {
-			case 0: PORTA &= ~_BV(PA4); break;
-			case 1: PORTA &= ~_BV(PA5); break;
-			case 2: PORTC &= ~_BV(PC4); break;
-			case 3: PORTC &= ~_BV(PC5);	break; //disable triac (EVG)
-		}
-			
+			switch (channel) {
+				case 0: PORTA &= ~_BV(PA4); break;
+				case 1: PORTA &= ~_BV(PA5); break;
+				case 2: PORTC &= ~_BV(PC4); break;
+				case 3: PORTC &= ~_BV(PC5); break; //disable triac (EVG)
+			}
 	}
-}	
+}
+
+uint8_t get_channel_status() {
+	return channels_active[0] + (channels_active[1] << 1) + (channels_active[2] << 2) + (channels_active[3] << 3);
+}
+
+uint8_t get_channel_val(uint8_t chan) {
+	uint8_t i;
+	for (i = 0; i < NUM_CHANNELS; i++)
+		if (channels_sorted[i] == chan)
+			return dim_vals_sorted[i];
+	return 0;
+}
+
+

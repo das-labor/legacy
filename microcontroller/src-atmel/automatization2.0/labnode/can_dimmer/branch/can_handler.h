@@ -3,9 +3,9 @@
 
 extern void can_handler();
 
-void can_send(uint8_t port, uint8_t *p);
+extern void send_status();
 
-void read_can_addr();
+extern void read_can_addr();
 
 extern uint8_t myaddr;
 
