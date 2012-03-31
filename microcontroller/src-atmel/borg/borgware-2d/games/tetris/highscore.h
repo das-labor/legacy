@@ -19,7 +19,7 @@ enum tetris_highscore_index_e
 #ifdef NDEBUG
 	typedef uint8_t tetris_highscore_index_t;
 #else
-	typedef enum tetris_highscore_index tetris_highscore_index_t;
+	typedef enum tetris_highscore_index_e tetris_highscore_index_t;
 #endif
 
 
