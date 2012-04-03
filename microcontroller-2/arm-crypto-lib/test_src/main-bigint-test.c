@@ -124,15 +124,15 @@ void test_add_scale_bigint(void){
 		cli_hexdump_rev(&scale, 2);
 		cli_putstr(" = ");
 		bigint_word_t *c_b;
-		c_b = malloc(((a.length_B>(b.length_B+scale))?a.length_B:(b.length_B+scale))*sizeof(bigint_word_t)+8);
+		c_b = malloc((((a.length_B>(b.length_B+scale))?a.length_B:(b.length_B+scale))+1)*sizeof(bigint_word_t));
 		if(c_b==NULL){
 			cli_putstr("\n\rERROR: Out of memory!");
 			free(a.wordv);
 			free(b.wordv);
 			continue;
 		}
-		bigint_copy(&c, &a);
 		c.wordv = c_b;
+		bigint_copy(&c, &a);
 		bigint_add_scale_u(&c, &b, scale);
 		bigint_print_hex(&c);
 		cli_putstr("\r\n");

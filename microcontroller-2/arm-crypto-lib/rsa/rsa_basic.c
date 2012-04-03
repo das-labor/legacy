@@ -24,8 +24,12 @@
 #include "bigint_io.h"
 #include "rsa_basic.h"
 
+#define DEBUG 0
+
+#if DEBUG
 #include "cli.h"
 #include "uart_lowlevel.h"
+#endif
 
 void rsa_enc(bigint_t* data, rsa_publickey_t* key){
 /*
@@ -52,18 +56,29 @@ uint8_t rsa_dec_crt_mono(bigint_t* data, rsa_privatekey_t* key){
 	m1.wordv = malloc(key->components[0]->length_B * sizeof(bigint_word_t));
 	m2.wordv = malloc(key->components[1]->length_B * sizeof(bigint_word_t));
 	if(!m1.wordv || !m2.wordv){
+#if DEBUG
 		cli_putstr("\r\nERROR: OOM!");
+#endif
 		free(m1.wordv);
 		free(m2.wordv);
 		return 1;
 	}
+#if DEBUG
+	cli_putstr("\r\nDBG: expmod m1 ...");
+#endif
 	bigint_expmod_u(&m1, data, key->components[2], key->components[0]);
+#if DEBUG
+	cli_putstr("expmod m2 ...");
+#endif
 	bigint_expmod_u(&m2, data, key->components[3], key->components[1]);
 	bigint_sub_s(&m1, &m1, &m2);
 	while(BIGINT_NEG_MASK & m1.info){
 		bigint_add_s(&m1, &m1, key->components[0]);
 	}
 
+#if DEBUG
+	cli_putstr("\r\nDBG: reduce-mul ...");
+#endif
 	bigint_reduce(&m1, key->components[0]);
 	bigint_mul_u(data, &m1, key->components[4]);
 	bigint_reduce(data, key->components[0]);

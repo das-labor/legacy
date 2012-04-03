@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-# rsa_oaep_check.rb
+# rsa_pkcs15_check.rb
 =begin
     This file is part of the AVR-Crypto-Lib.
     Copyright (C) 2008  Daniel Otte (daniel.otte@rub.de)
@@ -101,112 +101,122 @@ def read_block(f)
   return d
 end
 
-def goto_next_header(f)
-  while l = f.gets()
-    m = /^#\ (=|-)*[=-]{5}/.match(l)
-    t = :subblock  if m && m[1] == '-'
-    t = :mainblock if m && m[1] == '='
-    if !m && n = /^#\ (.*)$/.match(l)
-      id = n[1]
-      id.sub!(/[\r\n]/,'')
-      return t,id
-    end
-    if !m && !id
-      t = nil
-    end
-  end
-  return nil,nil if !l
+=begin
+# Modulus: 
+# Exponent: 
+# Modulus: 
+# Public exponent: 
+# Exponent: 
+# Prime 1: 
+# Prime 2: 
+# Prime exponent 1: 
+# Prime exponent 2: 
+# Coefficient: 
+# Message:
+# Seed:
+# Encryption:
+
+=end
+
+def get_next_block(f)
+  ret = Hash.new
+  data = Array.new
+  begin
+    l = f.gets
+  end while l && ! m= l.match(/^#[\s](.*):[\s]*$/)
+  return nil if ! l
+  ret['tag'] = m[1]
+  ret['line'] = f.lineno
+  data = read_block(f)
+  ret['data'] = data
+  return ret
 end
 
-def skip_file_header(f)
-  while l = f.gets()
-    return if m = /^#\ [=]{40}/.match(l)
-  end
+$key_sequence = [
+  'Modulus',             # 0
+  'Exponent',            # 1
+  'Modulus',             # 2
+  'Public exponent',     # 3
+  'Exponent',            # 4
+  'Prime 1',             # 5
+  'Prime 2',             # 6
+  'Prime exponent 1',    # 7
+  'Prime exponent 2',    # 8
+  'Coefficient',         # 9
+]
+
+def key_consitency_check(k)
+  return true
 end
 
-def test_parse(f)
-  skip_file_header(f)
-  loop do
-    a,b = goto_next_header(f)
-    if !b
-      puts(">>EOF<<")
+def process_file(f, skip_key=1, skip_vec=1)
+  a = get_next_block(f)
+  key_no = 0
+  ok_counter = 0
+  fail_counter = 0
+  begin
+    if !a || ! a['tag'] == 'Modulus'
+      printf("ERROR: a = %s %d\n", a.inspect, __LINE__)
       return
     end
-    if a
-      printf(">>%sblock: %s\n", a==:mainblock ? "main":"sub", b)
-      next
+    k_seq = Array.new
+    k_seq[0] = a
+    (1..($key_sequence.length-1)).each do |i|
+      a = get_next_block(f)
+      if ! a || a['tag'] != $key_sequence[i]
+        printf("ERROR: (expecting: %s) a = %s %d\n", $key_sequence[i], a.inspect, __LINE__)
+      end
+      k_seq[i] = a
     end
-    printf(">item: %s\n", b)
-    d = read_block(f)
-    printf(">length: %d (0x%x)\n>data:", d.length, d.length)
-    i = 0
-    d.each do |e|
-      printf("\n>") if i % 16 == 0
-      printf(" %02x", e)
-      i += 1
-    end
-    puts('')
-  end
+    key = convert_key(k_seq)
+    printf("ERROR: %d\n", __LINE__) if ! key
+    key_no += 1
+    vec_no = 0
+    printf("\n run %3d: ", key_no)
+    skip_key_flag = (key_no < skip_key)
+    load_key(key) if ! skip_key_flag
+    test_seq = Array.new
+    a = get_next_block(f)
+    printf("ERROR: %d\n", __LINE__) if ! a 
+    begin
+      vec_no += 1
+      b = get_next_block(f)
+      c = get_next_block(f)
+      tv = Hash.new
+      tv['msg'] = a['data']
+      tv['seed'] = b['data']
+      tv['enc'] = c['data'] 
+      skip_vec_flag = (skip_key_flag || (key_no == skip_key && vec_no < skip_vec))
+      if skip_vec_flag
+        printf('o')
+      else
+        v = check_tv(tv)
+        if(v == true)
+          printf('*')
+          $logfile.printf("[[Test %2d.%02d = OK]]\n", key_no, vec_no)
+          ok_counter += 1
+        else
+          printf('%c', v ? '*' : '!')
+          $logfile.printf("[[Test %2d.%02d = FAIL]]\n", key_no, vec_no)
+          fail_counter += 1
+        end
+      end
+      a = get_next_block(f)
+    end while a && a['tag'] == 'Message'
+  end while a && a['tag'] = 'Modulus'
+#  printf("\nResult: %d OK / %d FAIL ==> %s \nFinished\n", ok_counter, fail_counter, fail_counter==0 ? ':-)' : ':-(')
+  return ok_counter,fail_counter
 end
-=begin
->item: RSA modulus n:
->item: RSA public exponent e: 
->item: RSA private exponent d: 
->item: Prime p: 
->item: Prime q: 
->item: p's CRT exponent dP: 
->item: q's CRT exponent dQ: 
->item: CRT coefficient qInv: 
-=end
 
-def read_key(f)
-  h = Hash.new
-  8.times do
-    q,id = goto_next_header(f)
-    d = read_block(f)    
-    m = /[\ \t]([^\ \t]*):[\ \t]*$/.match(id)
-    if m
-      id = m[1]
-    end
-    h[id] = d
+def convert_key(k_seq)
+  l = ['n', 'e', 'd', 'p', 'q', 'dP', 'dQ', 'qInv']
+  r = Hash.new
+  return nil if k_seq[0]['data'] != k_seq[2]['data']
+  return nil if k_seq[1]['data'] != k_seq[3]['data']
+  8.times do |i|
+    r[l[i]] = k_seq[2 + i]['data'] 
   end
-  req_items = ['n', 'e', 'd', 'p', 'q', 'dP', 'dQ', 'qInv']
-  req_items.each do |e|
-    printf("ERROR: key component %s is missing!\n", e) if !h[e]
-  end
-  h.each_key do |e|     
-    printf("ERROR: unknown item '%s'!\n", e) if !req_items.index(e)
-  end
-  return h
-end
-
-=begin
->item: Message to be encrypted:
->item: Seed:
->item: Encryption:
-=end
-
-def read_tv(f)
-  subst_hash = {
-    'Message to be encrypted:' => 'msg',
-    'Seed:' => 'seed',
-    'Encryption:' => 'enc'}
-  h = Hash.new
-  3.times do
-    q,id = goto_next_header(f)
-    d = read_block(f)
-    n = subst_hash[id]
-    printf("ERROR: unknown item '%s'!\n", id) if !n
-    h[n] = d
-  end  
-  req_items = ['msg', 'seed', 'enc']
-  req_items.each do |e|
-    printf("ERROR: testvector component %s is missing!\n", e) if !h[e]
-  end
-  while h['enc'][0] == 0
-    h['enc'].delete_at(0)
-  end 
-  return h
+  return r
 end
 
 def wait_for_dot
@@ -268,6 +278,14 @@ def load_key(k)
   end
 end
 
+def strip_leading_zeros(a)
+  loop do
+    return [] if a.length == 0
+    return a if a[0] != 0
+    a.delete_at(0)
+  end
+end
+
 def check_tv(tv)
   sleep 0.1
   $sp.print("seed-test\r")
@@ -292,6 +310,8 @@ def check_tv(tv)
     test_enc_a << v if v.length == 2
   end
   test_enc_a.collect!{ |e| e.to_i(16) }
+  strip_leading_zeros(test_enc_a)
+  strip_leading_zeros(tv['enc'])
   enc_ok = (test_enc_a == tv['enc'])
   if !enc_ok
     $logfile.printf("DBG: ref = %s test = %s\n", str_hexdump(tv['enc']) , str_hexdump(test_enc_a))
@@ -306,54 +326,12 @@ def check_tv(tv)
   return false
 end
 
-def run_test(f,skip_key=1,skip_vec=1)
-  ok = 0
-  fail = 0
-  key_idx = 0
-  vec_idx = 0
-  skip_file_header(f)
-  loop do
-    a,b = goto_next_header(f)
-    $logfile.printf("DBG: a=%s b=%s\n", a.inspect, b.inspect) if $debug
-    return ok,fail if !b
-    if a == :mainblock
-# Example 1: A 1024-bit RSA Key Pair
-      b.sub!(/[\d]+:/) { |s| sprintf("%3d,", s.to_i)} 
-      printf("\n>> %s: ", b)
-    #  (35-b.length).times { putc(' ')}
-    end
-    if a == :subblock
-      if b == 'Components of the RSA Key Pair'
-        k = read_key(f)
-        key_idx += 1
-        vec_idx = 0
-        load_key(k) if skip_key <= key_idx
-      else
-        tv = read_tv(f)
-        vec_idx += 1
-        if (key_idx > skip_key) || (key_idx == skip_key && vec_idx >= skip_vec)
-          r = check_tv(tv)
-          if r
-            ok += 1
-            putc('*')
-          else
-            fail += 1
-            putc('!')
-          end 
-        else
-          putc('o')
-        end     
-      end
-    end
-  end
-end
-
 ########################################
 # MAIN
 ########################################
 
 
-opts = Getopt::Std.getopts("dc:f:il:s:")
+opts = Getopt::Std.getopts('dc:f:il:s:')
 
 conf = Hash.new
 conf = readconfigfile("/etc/testport.conf", conf)
@@ -389,6 +367,13 @@ $sp.flow_control = SerialPort::SOFT
 
 $debug = true if opts['d']
 
+if opts['l']
+  $logfile = File.open(opts['l'], 'w')
+end
+
+$logfile = STDOUT if ! $logfile
+reset_system()
+
 if opts['s'] && m = opts['s'].match(/([\d]+\.([\d]+))/)
   sk = m[1].to_i
   sv = m[2].to_i
@@ -397,17 +382,9 @@ else
   sv = 1
 end
 
-if opts['l']
-  $logfile = File.open(opts['l'], 'w')
-end
-
-$logfile = STDOUT if ! $logfile
-$logfile.sync = true
-reset_system()
-
 f = File.open(opts['f'], "r")
 exit if !f
-ok,fail = run_test(f,sk,sv)
+ok,fail = process_file(f,sk,sv)
 printf("\nOK: %d FAIL: %d :-%s\n",ok,fail, fail==0 ? ')':'(')
 
 
