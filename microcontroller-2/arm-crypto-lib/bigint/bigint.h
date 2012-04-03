@@ -43,7 +43,7 @@ typedef struct{
 	bigint_word_t *wordv; /* word vector, pointing to the LSB */
 }bigint_t;
 
-
+typedef uint32_t bigint_ptr_int_t;
 
 /******************************************************************************/
 

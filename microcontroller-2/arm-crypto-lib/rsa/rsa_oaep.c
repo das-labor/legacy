@@ -117,7 +117,6 @@ uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 //	cli_hexdump_block(dest, bigint_length_B(key->modulus), 4, 16);
 
 	x.wordv = dest;
-	x.length_B = key->modulus->length_B;
 	bigint_adjust(&x);
 
 	rsa_os2ip(&x, NULL, bigint_length_B(key->modulus));

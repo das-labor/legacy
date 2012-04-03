@@ -40,7 +40,7 @@ const char* algo_name = "RSA-OAEP";
 /*****************************************************************************
  *  additional validation-functions											 *
  *****************************************************************************/
-
+#if 0
 /* ==================================
  * Example 1: A 1024-bit RSA Key Pair
  * ================================== */
@@ -199,7 +199,7 @@ const uint8_t encrypted3[] = {
 0xef, 0xcc, 0x05, 0x4e, 0x70, 0x96, 0x8e, 0xa5, 0x40, 0xc8, 0x1b, 0x04, 0xbc, 0xae, 0xfe, 0x72,
 0x0e
 };
-
+#endif
 /**********************************************************************************************/
 
 /* ---------------------------------
@@ -207,7 +207,7 @@ const uint8_t encrypted3[] = {
  * --------------------------------- */
 
 /* Message to be encrypted: */
-const uint8_t message4[] = {
+const uint8_t message4[]  = {
 0xa7, 0xeb, 0x2a, 0x50, 0x36, 0x93, 0x1d, 0x27, 0xd4, 0xe8, 0x91, 0x32, 0x6d, 0x99, 0x69, 0x2f,
 0xfa, 0xdd, 0xa9, 0xbf, 0x7e, 0xfd, 0x3e, 0x34, 0xe6, 0x22, 0xc4, 0xad, 0xc0, 0x85, 0xf7, 0x21,
 0xdf, 0xe8, 0x85, 0x07, 0x2c, 0x78, 0xa2, 0x03, 0xb1, 0x51, 0x73, 0x9b, 0xe5, 0x40, 0xfa, 0x8c,
@@ -215,14 +215,14 @@ const uint8_t message4[] = {
 };
 
 /* Seed: */
-const uint8_t seed4[] = {
+const uint8_t seed4[]  = {
 0x9a, 0x7b, 0x3b, 0x0e, 0x70, 0x8b, 0xd9, 0x6f, 0x81, 0x90, 0xec, 0xab, 0x4f, 0xb9, 0xb2, 0xb3,
 0x80, 0x5a, 0x81, 0x56
 };
 
 /* Encryption: */
-const uint8_t encrypted4[] = {
-0x00, 0xa4, 0x57, 0x8c, 0xbc, 0x17, 0x63, 0x18, 0xa6, 0x38, 0xfb, 0xa7, 0xd0, 0x1d, 0xf1, 0x57,
+const uint8_t encrypted4[]  = {
+/* 0x00,*/ 0xa4, 0x57, 0x8c, 0xbc, 0x17, 0x63, 0x18, 0xa6, 0x38, 0xfb, 0xa7, 0xd0, 0x1d, 0xf1, 0x57,
 0x46, 0xaf, 0x44, 0xd4, 0xf6, 0xcd, 0x96, 0xd7, 0xe7, 0xc4, 0x95, 0xcb, 0xf4, 0x25, 0xb0, 0x9c,
 0x64, 0x9d, 0x32, 0xbf, 0x88, 0x6d, 0xa4, 0x8f, 0xba, 0xf9, 0x89, 0xa2, 0x11, 0x71, 0x87, 0xca,
 0xfb, 0x1f, 0xb5, 0x80, 0x31, 0x76, 0x90, 0xe3, 0xcc, 0xd4, 0x46, 0x92, 0x0b, 0x7a, 0xf8, 0x2b,
@@ -234,9 +234,9 @@ const uint8_t encrypted4[] = {
 };
 
 /**********************************************************************************************/
-
+#if 1
 /* RSA modulus n: */
-const uint8_t modulus2[] = {
+const uint8_t modulus2[]  = {
 0x01, 0x94, 0x7c, 0x7f, 0xce, 0x90, 0x42, 0x5f, 0x47, 0x27, 0x9e, 0x70, 0x85, 0x1f, 0x25, 0xd5,
 0xe6, 0x23, 0x16, 0xfe, 0x8a, 0x1d, 0xf1, 0x93, 0x71, 0xe3, 0xe6, 0x28, 0xe2, 0x60, 0x54, 0x3e,
 0x49, 0x01, 0xef, 0x60, 0x81, 0xf6, 0x8c, 0x0b, 0x81, 0x41, 0x19, 0x0d, 0x2a, 0xe8, 0xda, 0xba,
@@ -249,12 +249,12 @@ const uint8_t modulus2[] = {
 };
 
 /* RSA public exponent e: */
-const uint8_t public_exponent2[] = {
+const uint8_t public_exponent2[]  = {
 0x01, 0x00, 0x01
 };
 
 /* RSA private exponent d: */
-const uint8_t private_exponent2[] = {
+const uint8_t private_exponent2[]  = {
 0x08, 0x23, 0xf2, 0x0f, 0xad, 0xb5, 0xda, 0x89, 0x08, 0x8a, 0x9d, 0x00, 0x89, 0x3e, 0x21, 0xfa,
 0x4a, 0x1b, 0x11, 0xfb, 0xc9, 0x3c, 0x64, 0xa3, 0xbe, 0x0b, 0xaa, 0xea, 0x97, 0xfb, 0x3b, 0x93,
 0xc3, 0xff, 0x71, 0x37, 0x04, 0xc1, 0x9c, 0x96, 0x3c, 0x1d, 0x10, 0x7a, 0xae, 0x99, 0x05, 0x47,
@@ -266,7 +266,7 @@ const uint8_t private_exponent2[] = {
 };
 
 /* Prime p: */
-const uint8_t p2[] = {
+const uint8_t p2[]  = {
 0x01, 0x59, 0xdb, 0xde, 0x04, 0xa3, 0x3e, 0xf0, 0x6f, 0xb6, 0x08, 0xb8, 0x0b, 0x19, 0x0f, 0x4d,
 0x3e, 0x22, 0xbc, 0xc1, 0x3a, 0xc8, 0xe4, 0xa0, 0x81, 0x03, 0x3a, 0xbf, 0xa4, 0x16, 0xed, 0xb0,
 0xb3, 0x38, 0xaa, 0x08, 0xb5, 0x73, 0x09, 0xea, 0x5a, 0x52, 0x40, 0xe7, 0xdc, 0x6e, 0x54, 0x37,
@@ -275,7 +275,7 @@ const uint8_t p2[] = {
 };
 
 /* Prime q: */
-const uint8_t q2[] = {
+const uint8_t q2[]  = {
 0x01, 0x2b, 0x65, 0x2f, 0x30, 0x40, 0x3b, 0x38, 0xb4, 0x09, 0x95, 0xfd, 0x6f, 0xf4, 0x1a, 0x1a,
 0xcc, 0x8a, 0xda, 0x70, 0x37, 0x32, 0x36, 0xb7, 0x20, 0x2d, 0x39, 0xb2, 0xee, 0x30, 0xcf, 0xb4,
 0x6d, 0xb0, 0x95, 0x11, 0xf6, 0xf3, 0x07, 0xcc, 0x61, 0xcc, 0x21, 0x60, 0x6c, 0x18, 0xa7, 0x5b,
@@ -284,7 +284,7 @@ const uint8_t q2[] = {
 };
 
 /* p's CRT exponent dP: */
-const uint8_t dp2[] = {
+const uint8_t dp2[]  = {
 0x43, 0x6e, 0xf5, 0x08, 0xde, 0x73, 0x65, 0x19, 0xc2, 0xda, 0x4c, 0x58, 0x0d, 0x98, 0xc8, 0x2c,
 0xb7, 0x45, 0x2a, 0x3f, 0xb5, 0xef, 0xad, 0xc3, 0xb9, 0xc7, 0x78, 0x9a, 0x1b, 0xc6, 0x58, 0x4f,
 0x79, 0x5a, 0xdd, 0xbb, 0xd3, 0x24, 0x39, 0xc7, 0x46, 0x86, 0x55, 0x2e, 0xcb, 0x6c, 0x2c, 0x30,
@@ -292,7 +292,7 @@ const uint8_t dp2[] = {
 };
 
 /* q's CRT exponent dQ: */
-const uint8_t dq2[] = {
+const uint8_t dq2[]  = {
 0x01, 0x2b, 0x15, 0xa8, 0x9f, 0x3d, 0xfb, 0x2b, 0x39, 0x07, 0x3e, 0x73, 0xf0, 0x2b, 0xdd, 0x0c,
 0x1a, 0x7b, 0x37, 0x9d, 0xd4, 0x35, 0xf0, 0x5c, 0xdd, 0xe2, 0xef, 0xf9, 0xe4, 0x62, 0x94, 0x8b,
 0x7c, 0xec, 0x62, 0xee, 0x90, 0x50, 0xd5, 0xe0, 0x81, 0x6e, 0x07, 0x85, 0xa8, 0x56, 0xb4, 0x91,
@@ -301,13 +301,14 @@ const uint8_t dq2[] = {
 };
 
 /* CRT coefficient qInv: */
-const uint8_t qinv2[] = {
+const uint8_t qinv2[]  = {
 0x02, 0x70, 0xdb, 0x17, 0xd5, 0x91, 0x4b, 0x01, 0x8d, 0x76, 0x11, 0x8b, 0x24, 0x38, 0x9a, 0x73,
 0x50, 0xec, 0x83, 0x6b, 0x00, 0x63, 0xa2, 0x17, 0x21, 0x23, 0x6f, 0xd8, 0xed, 0xb6, 0xd8, 0x9b,
 0x51, 0xe7, 0xee, 0xb8, 0x7b, 0x61, 0x1b, 0x71, 0x32, 0xcb, 0x7e, 0xa7, 0x35, 0x6c, 0x23, 0x15,
 0x1c, 0x1e, 0x77, 0x51, 0x50, 0x7c, 0x78, 0x6d, 0x9e, 0xe1, 0x79, 0x41, 0x70, 0xa8, 0xc8, 0xe8
 };
 
+#endif
 /**********************************************************************************************/
 
 
@@ -354,7 +355,7 @@ uint8_t convert_nibble(uint8_t c){
 }
 
 const char *block_ignore_string=" \t\r\n,;";
-
+#define BUFFER_LIMIT 120
 uint16_t read_os(void* dst, uint16_t length, const char* ignore_string){
 	uint16_t counter = 0;
 	uint16_t c;
@@ -377,6 +378,9 @@ uint16_t read_os(void* dst, uint16_t length, const char* ignore_string){
 		if(idx){
 			((uint8_t*)dst)[counter++] = (tmp << 4) | v;
 			idx = 0;
+			if(counter % (BUFFER_LIMIT/2) == 0){
+				cli_putc('.');
+			}
 		}else{
 			tmp = v;
 			idx = 1;
@@ -392,6 +396,36 @@ uint16_t own_atou(const char* str){
 		r += *str++ - '0';
 	}
 	return r;
+}
+
+char* own_utoa(unsigned value, char* str, uint8_t radix){
+	char *p = str, *b = str;
+	char t;
+	div_t d;
+	if(radix>36){
+		return NULL;
+	}
+	if(value == 0){
+		*p++ = '0';
+		*p = '\0';
+		return str;
+	}
+	while(value){
+		d = div(value, radix);
+		value = d.quot;
+		if(d.rem < 10){
+			*p++ = '0' + d.rem;
+ 		}else{
+ 			*p++ = 'a' + d.rem - 10;
+ 		}
+	}
+	*p = '\0';
+	while(str<p){
+		t = *str;
+		*str++ = *--p;
+		*p = t;
+	}
+	return b;
 }
 
 uint8_t read_bigint(bigint_t* a, char* prompt){
@@ -530,13 +564,13 @@ void load_priv_conventional(void){
 		cli_putstr("\r\nERROR: OOM!");
 		return;
 	}
-	epriv->length_B = (sizeof(private_exponent) + sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t);
+	epriv->length_B = (sizeof(PRIV_EXPONENT) + sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t);
 	epriv->wordv =  malloc(epriv->length_B * sizeof(bigint_word_t));
 	if(!epriv->wordv){
 		cli_putstr("\r\nERROR: OOM!");
 		return;
 	}
-	memcpy(epriv->wordv, private_exponent, sizeof(private_exponent));
+	memcpy(epriv->wordv, PRIV_EXPONENT, sizeof(PRIV_EXPONENT));
 	priv_key.components = malloc(sizeof(bigint_t*));
 	priv_key.components[0] = epriv;
 	priv_key.n = 1;
@@ -547,8 +581,8 @@ void load_priv_conventional(void){
 
 void load_priv_crt_mono(void){
 	bigint_t **v;
-	const uint8_t *bv[5] = {p,q,dp,dq,qinv};
-	uint16_t sv[5] = {sizeof(p), sizeof(q), sizeof(dp), sizeof(dq), sizeof(qinv)};
+	const uint8_t *bv[5] = {P,Q,DP,DQ,QINV};
+	uint16_t sv[5] = {sizeof(P), sizeof(Q), sizeof(DP), sizeof(DQ), sizeof(QINV)};
 	uint8_t i;
 	v = malloc(5 * sizeof(bigint_t));
 	if(!v){
@@ -618,30 +652,36 @@ void load_fix_rsa(void){
 
 void quick_test(void){
 	uint8_t *ciphertext, *plaintext, rc;
+	uint8_t seed[sizeof(SEED)];
 	uint16_t clen, plen;
 	ciphertext = malloc(clen = pub_key.modulus->length_B * sizeof(bigint_word_t));
 	plaintext = malloc(pub_key.modulus->length_B * sizeof(bigint_word_t));
-//	memcpy(ciphertext, message1, sizeof(message1));
+	memcpy(plaintext, MSG, sizeof(MSG));
+	memcpy(seed, SEED, sizeof(SEED));
 	cli_putstr("\r\nplaintext:");
-	cli_hexdump_block(MSG, sizeof(MSG), 4, 8);
-	uart_flush(0);
-	rc = rsa_encrypt_oaep(ciphertext, &clen, MSG, sizeof(MSG), &pub_key, NULL, NULL, SEED);
+	cli_hexdump_block(plaintext, sizeof(MSG), 4, 8);
+	cli_putstr("\r\nencrypting: ...");
+	rc = rsa_encrypt_oaep(ciphertext, &clen, plaintext, sizeof(MSG), &pub_key, NULL, NULL, seed);
 	if(rc){
 		cli_putstr("\r\nERROR: rsa_encrypt_oaep returned: ");
 		cli_hexdump_byte(rc);
 		return;
 
 	}
+
 	cli_putstr("\r\n\r\nciphertext:");
 	cli_hexdump_block(ciphertext, clen, 4, 8);
-	if(clen!=sizeof(ENCRYPTED) || memcmp(ENCRYPTED, ciphertext, clen)){
-		cli_putstr("\r\n>>FAIL<<");
+	if(clen!=sizeof(ENCRYPTED)){
+			cli_putstr("\r\n>>FAIL (no size match)<<");
 	}else{
-		cli_putstr("\r\n>>OK<<");
+		if(memcmp(ciphertext, ENCRYPTED, clen)){
+			cli_putstr("\r\n>>FAIL (no content match)<<");
+		}else{
+			cli_putstr("\r\n>>OK<<");
+		}
 	}
-	uart_flush(0);
 
-
+	cli_putstr("\r\ndecrypting: ...");
 	rc = rsa_decrypt_oaep(plaintext, &plen, ciphertext, clen, &priv_key, NULL, NULL, NULL);
 	if(rc){
 		cli_putstr("\r\nERROR: rsa_decrypt_oaep returned: ");
@@ -689,23 +729,41 @@ void run_seed_test(void){
 	rsa_encrypt_oaep(ciph, &ciph_len, msg, msg_len, &pub_key, NULL, NULL, seed);
 	cli_putstr("\r\n  ciphertext:");
 	cli_hexdump_block(ciph, ciph_len, 4, 16);
-	cli_putstr("\r\n  decrypting ...");
-	uart_flush(0);
+	cli_putstr("\r\n  decrypting ... ");
 	rsa_decrypt_oaep(msg_, &msg_len_, ciph, ciph_len, &priv_key, NULL, NULL, seed_out);
+	cli_putstr("[done]");
 	if(msg_len != msg_len_){
-		cli_putstr("\r\nERROR: wrong decryted message length");
-		return;
+		char tstr[16];
+		cli_putstr("\r\nERROR: wrong decrypted message length (");
+
+		own_utoa(msg_len_, tstr, 10);
+		cli_putstr(tstr);
+		cli_putstr(" instead of ");
+		own_utoa(msg_len, tstr, 10);
+		cli_putstr(tstr);
+		cli_putc(')');
+		goto end;
 	}
 	if(memcmp(msg, msg_, msg_len)){
-		cli_putstr("\r\nERROR: wrong decryted message");
-		return;
+		cli_putstr("\r\nERROR: wrong decrypted message:");
+		cli_hexdump_block(msg_, msg_len_, 4, 16);
+		cli_putstr("\r\nreference:");
+		cli_hexdump_block(msg, msg_len, 4, 16);
+		goto end;
 	}
 
 	if(memcmp(seed, seed_out, 20)){
-		cli_putstr("\r\nERROR: wrong decryted seed");
-		return;
+		cli_putstr("\r\nERROR: wrong decrypted seed:");
+		cli_hexdump_block(seed_out, 20, 4, 16);
+		cli_putstr("\r\nreference:");
+		cli_hexdump_block(seed, 20, 4, 16);
+		goto end;
 	}
 	cli_putstr("\r\n  >>OK<<");
+end:
+	free(msg);
+	free(msg_);
+	free(ciph);
 }
 
 void reset_prng(void){
@@ -727,6 +785,18 @@ void load_key(void){
 	read_key_crt();
 }
 
+void test_dump(void){
+	char lstr[16];
+	int len;
+	cli_putstr("\r\nenter dump length: ");
+	cli_getsn(lstr, 15);
+	len = own_atou(lstr);
+	cli_putstr("\r\ndumping 0x");
+	cli_hexdump_rev(&len, 2);
+	cli_putstr(" byte:");
+	cli_hexdump_block(pub_key.modulus->wordv, len, 4, 8);
+}
+
 /*****************************************************************************
  *  main																	 *
  *****************************************************************************/
@@ -737,15 +807,17 @@ const char load_key_str[]      = "load-key";
 const char load_fix_key_str[]  = "load-fix-key";
 const char quick_test_str[]    = "quick-test";
 const char seed_test_str[]     = "seed-test";
+const char dump_test_str[]     = "dump-test";
 const char performance_str[]   = "performance";
 const char echo_str[]          = "echo";
 
-cmdlist_entry_t cmdlist[] = {
+const cmdlist_entry_t cmdlist[]  = {
 	{ reset_prng_str,       NULL, reset_prng                    },
 	{ load_key_str,         NULL, load_key                      },
 	{ load_fix_key_str,     NULL, load_fix_rsa                  },
 	{ quick_test_str,       NULL, quick_test                    },
 	{ seed_test_str,        NULL, run_seed_test                 },
+	{ dump_test_str,        NULL, test_dump                     },
 //	{ performance_str,      NULL, testrun_performance_bigint    },
 	{ echo_str,         (void*)1, (void_fpt)echo_ctrl           },
 	{ NULL,                 NULL, NULL                          }

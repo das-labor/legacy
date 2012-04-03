@@ -43,7 +43,7 @@ void bigint_print_hex(const bigint_t* a){
 	uint8_t print_zero=0;
 	uint8_t *p,x,y;
 	p = (uint8_t*)&(a->wordv[a->length_B-1])+sizeof(bigint_word_t)-1;
-	for(idx=a->length_B*sizeof(bigint_word_t); idx>0; --idx){
+	for(idx = a->length_B * sizeof(bigint_word_t); idx > 0; --idx){
 		x = *p >> 4;
 		y = *p & 0xf;
 		if(x!=0 || print_zero!=0){
@@ -97,24 +97,24 @@ static uint16_t read_byte(void){
 uint8_t bigint_read_hex_echo(bigint_t* a){
 	uint16_t allocated=0;
 	uint8_t  shift4=0;
-	uint16_t  t;
+	uint16_t  t, idx = 0;
 	a->length_B = 0;
 	a->wordv = NULL;
 	a->info = 0;
 	for(;;){
-		if(allocated-a->length_B < 1){
+		if(allocated - idx < 1){
 			bigint_word_t *p;
-			p = realloc(a->wordv, allocated+=BLOCKSIZE);
+			p = realloc(a->wordv, allocated += BLOCKSIZE);
 			if(p==NULL){
 				cli_putstr("\r\nERROR: Out of memory!");
 				free(a->wordv);
 				return 0xff;
 			}
-			memset((uint8_t*)p+allocated-BLOCKSIZE, 0, BLOCKSIZE);
+			memset((uint8_t*)p + allocated - BLOCKSIZE, 0, BLOCKSIZE);
 			a->wordv=p;
 		}
 		t = read_byte();
-		if(a->length_B==0){
+		if(idx==0){
 			if(t&0x0400){
 				/* got minus */
 				a->info |= BIGINT_NEG_MASK;
@@ -128,11 +128,11 @@ uint8_t bigint_read_hex_echo(bigint_t* a){
 			}
 		}
 		if(t<=0x00ff){
-			((uint8_t*)(a->wordv))[a->length_B++] = (uint8_t)t;
+			((uint8_t*)(a->wordv))[idx++] = (uint8_t)t;
 		}else{
 			if(t&0x0200){
 				shift4 = 1;
-				((uint8_t*)(a->wordv))[a->length_B++] = (uint8_t)((t&0x0f)<<4);
+				((uint8_t*)(a->wordv))[idx++] = (uint8_t)((t&0x0f)<<4);
 			}
 			break;
 		}
@@ -140,20 +140,18 @@ uint8_t bigint_read_hex_echo(bigint_t* a){
 	/* we have to reverse the byte array */
 	uint8_t tmp;
 	uint8_t *p, *q;
+	a->length_B = (idx + sizeof(bigint_word_t)-1)/sizeof(bigint_word_t);
 	p = (uint8_t*)(a->wordv);
-	q = (uint8_t*)a->wordv+a->length_B-1;
+	q = (uint8_t*)a->wordv + idx - 1;
 	while(q>p){
 		tmp = *p;
 		*p = *q;
 		*q = tmp;
 		p++; q--;
 	}
-	a->length_B = (a->length_B+sizeof(bigint_word_t)-1)/sizeof(bigint_word_t);
+	bigint_adjust(a);
 	if(shift4){
-		bigint_adjust(a);
 		bigint_shiftright(a, 4);
-	}else{
-		bigint_adjust(a);
 	}
 	return 0;
 }

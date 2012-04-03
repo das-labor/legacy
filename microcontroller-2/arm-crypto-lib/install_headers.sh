@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #PREFIX="/usr/local/arm-none-eabi/include/"
-PREFIX="/home/bg/arm-none-eabi/arm-none-eabi/include/"
+PREFIX="/usr/arm-elf/include/"
 TARGET_DIR="crypto/"
 SRC_FILE="main_headers"
 
-OWNER="bg"
-GROUP="bg"
+OWNER="root"
+GROUP="root"
 MODE="644"
 
 for i in `cat $SRC_FILE`; do
