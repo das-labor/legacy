@@ -1,5 +1,5 @@
 # Makefile for RSA
-ALGO_NAME := RSA
+ALGO_NAME := RSA_PKCS15
 
 # comment out the following line for removement of RSA from the build process
 SIGNATURE += $(ALGO_NAME)

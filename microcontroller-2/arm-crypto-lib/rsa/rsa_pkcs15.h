@@ -21,6 +21,10 @@
 #define RSA_PKCS15_H_
 
 #include <stdint.h>
+#include "bigint.h"
+
+uint16_t rsa_pkcs15_compute_padlength_B(bigint_t* modulus, uint16_t msg_length_B);
+
 
 uint8_t rsa_encrypt_pkcs15(void* dest, uint16_t* out_length, const void* src,
 		uint16_t length_B, rsa_publickey_t* key, const void* pad);

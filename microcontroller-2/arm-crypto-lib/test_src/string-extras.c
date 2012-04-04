@@ -40,6 +40,7 @@ uint32_t stridentcnt(const char* a, const char* b){
 		a++;
 		b++;
 	}
+	return 0;
 }
 
 uint16_t firstword_length(const char* s){
@@ -155,3 +156,12 @@ void strlwr(char* s){
 	}
 }
 */
+
+char* itoa(int a, char* buffer, uint8_t radix){
+	if(a<0){
+		*buffer = '-';
+		a = -a;
+	}
+	ultoa(a, buffer + 1, radix);
+	return buffer;
+}
