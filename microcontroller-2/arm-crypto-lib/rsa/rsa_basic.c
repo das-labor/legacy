@@ -29,6 +29,7 @@
 #if DEBUG
 #include "cli.h"
 #include "uart_lowlevel.h"
+#include "string-extras.h"
 #endif
 
 void rsa_enc(bigint_t* data, rsa_publickey_t* key){
@@ -108,8 +109,18 @@ uint8_t rsa_dec(bigint_t* data, rsa_privatekey_t* key){
 }
 
 void rsa_os2ip(bigint_t* dest, const void* data, uint32_t length_B){
+#if BIGINT_WORD_SIZE == 8
+	if(data){
+		memcpy(dest->wordv, data, length_B)
+	}
+	dest->length_B = length_B;
+#else
 	uint8_t off;
-	off = length_B % sizeof(bigint_word_t);
+	off = (sizeof(bigint_word_t) - length_B % sizeof(bigint_word_t)) % sizeof(bigint_word_t);
+#if DEBUG
+	cli_putstr("\r\nDBG: off = 0x");
+	cli_hexdump_byte(off);
+#endif
 	if(!data){
 		if(off){
 			dest->wordv = realloc(dest->wordv, length_B + sizeof(bigint_word_t) - off);
@@ -117,19 +128,36 @@ void rsa_os2ip(bigint_t* dest, const void* data, uint32_t length_B){
 			memset(dest->wordv, 0, off);
 		}
 	}else{
+		memcpy((uint8_t*)dest->wordv + off, data, length_B);
 		if(off){
-			memcpy((uint8_t*)dest->wordv + off, data, length_B);
-			memset(dest, 0, off);
-		}else{
-			memcpy(dest->wordv, data, length_B);
+			memset(dest->wordv, 0, off);
 		}
 	}
-	dest->length_B = (length_B + sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t);
+	dest->length_B = (length_B + off) / sizeof(bigint_word_t);
+#if DEBUG
+	cli_putstr("\r\nDBG: dest->length_B = 0x");
+	cli_hexdump_rev(&(dest->length_B), 2);
+#endif
+#endif
 	bigint_changeendianess(dest);
 	bigint_adjust(dest);
 }
 
 void rsa_i2osp(void* dest, bigint_t* src, uint16_t* out_length_B){
+#if BIGINT_WORD_SIZE == 8
+	if(dest){
+		uint8_t *e = src->wordv + src->length_B;
+		uint16_t i;
+		for(i=src->length_B; i>0; --i){
+			*((uint8_t*)dest) = *--e;
+			dest = (uint8_t*)dest + 1;
+		}
+	}else{
+		bigint_changeendianess(src);
+	}
+
+	*out_length_B = src->length_B;
+#else
 	*out_length_B = bigint_get_first_set_bit(src) / 8 + 1;
 	if(dest){
 		uint16_t i;
@@ -147,5 +175,6 @@ void rsa_i2osp(void* dest, bigint_t* src, uint16_t* out_length_B){
 			memmove(src->wordv, (uint8_t*)src->wordv+off, *out_length_B);
 		}
 	}
+#endif
 }
 

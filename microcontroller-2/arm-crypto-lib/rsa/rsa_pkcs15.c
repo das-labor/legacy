@@ -32,11 +32,15 @@
 
 #include "random_dummy.h"
 
+uint16_t rsa_pkcs15_compute_padlength_B(bigint_t* modulus, uint16_t msg_length_B){
+	return bigint_get_first_set_bit(modulus) / 8 + 1 - msg_length_B - 3;
+}
+
 uint8_t rsa_encrypt_pkcs15(void* dest, uint16_t* out_length, const void* src,
 	uint16_t length_B, rsa_publickey_t* key, const void* pad){
 	int16_t pad_length;
 	bigint_t x;
-	pad_length = (bigint_get_first_set_bit(key->modulus) + 7) / 8 - length_B - 3;
+	pad_length = rsa_pkcs15_compute_padlength_B(key->modulus, length_B);
 	if(pad_length<8){
 #if DEBUG
 		cli_putstr("\r\nERROR: pad_length<8; pad_length: ");
@@ -45,6 +49,9 @@ uint8_t rsa_encrypt_pkcs15(void* dest, uint16_t* out_length, const void* src,
 		return 2; /* message to long */
 	}
 	if(!pad){
+#if DEBUG
+		cli_putstr("\r\nauto-generating pad ...");
+#endif
 		uint16_t i;
 		uint8_t c;
 		for(i=0; i<pad_length; ++i){
@@ -54,6 +61,10 @@ uint8_t rsa_encrypt_pkcs15(void* dest, uint16_t* out_length, const void* src,
 			((uint8_t*)dest)[i+2] = c;
 		}
 	}else{
+#if DEBUG
+		cli_putstr("\r\nsupplied pad: ");
+		cli_hexdump_block(pad, pad_length, 4, 16);
+#endif
 		memcpy((uint8_t*)dest + 2, pad, pad_length);
 	}
 	((uint8_t*)dest)[0] = 0x00;
@@ -62,6 +73,10 @@ uint8_t rsa_encrypt_pkcs15(void* dest, uint16_t* out_length, const void* src,
 	memcpy((uint8_t*)dest+3+pad_length, src, length_B);
 	x.wordv = dest;
 	x.length_B = (length_B+pad_length+3+sizeof(bigint_word_t)-1)/sizeof(bigint_word_t);
+#if DEBUG
+	cli_putstr("\r\nx-data: ");
+	cli_hexdump_block(x.wordv, x.length_B * sizeof(bigint_word_t), 4, 16);
+#endif
 	bigint_adjust(&x);
 	rsa_os2ip(&x, NULL, length_B+pad_length+3);
 	rsa_enc(&x, key);
@@ -77,18 +92,30 @@ uint8_t rsa_decrypt_pkcs15(void* dest, uint16_t* out_length, const void* src,
 	rsa_os2ip(&x, src, length_B);
 #if DEBUG
 	cli_putstr("\r\ncalling rsa_dec() ...");
+	cli_putstr("\r\nencoded block (src.len = 0x");
+	cli_hexdump_rev(&length_B, 2);
+	cli_putstr("):");
+	cli_hexdump_block(x.wordv, x.length_B * sizeof(bigint_word_t), 4, 16);
 #endif
 	rsa_dec(&x, key);
 #if DEBUG
 	cli_putstr("\r\nfinished rsa_dec() ...");
 #endif
 	rsa_i2osp(NULL, &x, &m_length);
+#if DEBUG
+	cli_putstr("\r\ndecoded block:");
+	cli_hexdump_block(x.wordv, m_length, 4, 16);
+#endif
 	while(((uint8_t*)x.wordv)[idx]==0 && idx<m_length){
 		++idx;
 	}
-	if(((uint8_t*)x.wordv)[idx]!=2 || idx>=m_length){
+	if(idx>=m_length){
 		return 1;
 	}
+	if(((uint8_t*)x.wordv)[idx]!=2){
+		return 3;
+	}
+
 	++idx;
 	while(((uint8_t*)x.wordv)[idx+pad_length]!=0  && (idx+pad_length)<m_length){
 		++pad_length;
@@ -98,9 +125,18 @@ uint8_t rsa_decrypt_pkcs15(void* dest, uint16_t* out_length, const void* src,
 	}
 	*out_length = m_length - idx - pad_length - 1;
 	if(pad){
+#if DEBUG
+		cli_putstr("\r\npadding block:");
+		cli_hexdump_block(((uint8_t*)x.wordv)+idx, pad_length, 4, 16);
+		cli_putstr("\r\npad @ 0x");
+		cli_hexdump_rev(&pad, 2);
+		cli_putstr("\r\ndst @ 0x");
+		cli_hexdump_rev(&dest, 2);
+#endif
 		memcpy(pad, ((uint8_t*)x.wordv)+idx, pad_length);
 	}
-	memcpy(dest, ((uint8_t*)x.wordv) + idx + pad_length + 1, m_length - idx - pad_length - 1);
+	memmove(dest, ((uint8_t*)x.wordv) + idx + pad_length + 1, m_length - idx - pad_length - 1);
+
 	return 0;
 }
 

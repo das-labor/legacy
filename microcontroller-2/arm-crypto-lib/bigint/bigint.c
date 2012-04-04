@@ -956,7 +956,7 @@ void bigint_inverse(bigint_t* dest, const bigint_t* a, const bigint_t* m){
 void bigint_changeendianess(bigint_t* a){
 	uint8_t t, *p, *q;
 	p = (uint8_t*)(a->wordv);
-	q = ((uint8_t*)p)+a->length_B*sizeof(bigint_word_t)-1;
+	q = p + a->length_B * sizeof(bigint_word_t) - 1;
 	while(p<q){
 		t = *p;
 		*p = *q;
