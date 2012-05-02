@@ -36,7 +36,7 @@ RfmUsbBasePacket *RfmUsbDevice::FetchRfmPacket()
 	//request raw packet
 	packetLen = usb_control_msg (udhandle,
 			USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-			RFMUSB_RQ_RFM12_GET, 0, 0, (char *)&packetBuffer, sizeof(packetBuffer),
+			RFMUSB_RQ_RADIO_GET, 0, 0, (char *)&packetBuffer, sizeof(packetBuffer),
 			DEFAULT_USB_TIMEOUT);
 
 	RfmUsbBasePacket *packet = new RfmUsbBasePacket();
@@ -82,7 +82,7 @@ int RfmUsbDevice::PutRfmPacket(RfmUsbBasePacket packet&)
     //request to send packet and return result
     return usb_control_msg (udhandle,
         USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-        RFMUSB_RQ_RFM12_PUT, USB_TXPACKET, 0, (char *)&buf, packetLen,
+        RFMUSB_RQ_RADIO_PUT, USB_TXPACKET, 0, (char *)&buf, packetLen,
         DEFAULT_USB_TIMEOUT);
 }
 

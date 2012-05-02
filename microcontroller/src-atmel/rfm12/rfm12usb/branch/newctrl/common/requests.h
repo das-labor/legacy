@@ -16,22 +16,17 @@
 #ifndef __REQUESTS_H_INCLUDED__
 #define __REQUESTS_H_INCLUDED__
 
-#define RFMUSB_RQ_ECHO          0x00
-/* Request that the device sends back wValue and wIndex. This is used with
- * random data to test the reliability of the communication.
- */
-
-//put data into the rfm12 transmit buffer
-#define RFMUSB_RQ_RFM12_PUT		0x01
-
-//poll for rfm12 received data
-#define RFMUSB_RQ_RFM12_GET		0x02
-
-//poll for notifications
-#define RFMUSB_RQ_GETNOTIFICATION	0x03
-
-//configure the rfm12 module
-#define RFMUSB_RQ_RFM12_CONFIGURE	0x04
+typedef enum
+{
+	//put data into the rfm12 transmit buffer
+	RFMUSB_RQ_RADIO_PUT	= 0x00,
+	//poll radio packets
+	RFMUSB_RQ_RADIO_GET,
+	//poll notifications
+	RFMUSB_RQ_NOTIFY_GET,
+	//configure radio interface
+	RFMUSB_RQ_RADIO_CFG
+} rfmusb_requests;
 
 ///////////////// here come the config commands
 #define RFMUSB_CONF_TX_POWER	0x01

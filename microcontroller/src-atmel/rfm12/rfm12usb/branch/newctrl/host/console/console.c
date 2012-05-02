@@ -184,7 +184,7 @@ int main (int argc, char* argv[])
 	{
 		tmp = usb_control_msg (udhandle,
 				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-				RFMUSB_RQ_RFM12_GET, 0, 0, buf, sizeof (buf),
+				RFMUSB_RQ_RADIO_GET, 0, 0, buf, sizeof (buf),
 				5000);
 
 		if (tmp > 0) /* data received from usb bus */
@@ -211,7 +211,8 @@ int main (int argc, char* argv[])
 
 			tmp = usb_control_msg (udhandle,
 					USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-					RFMUSB_RQ_RFM12_PUT, USB_TXPACKET, 0, buf, 2,
+					RFMUSB_RQ_RADIO_PUT, USB_TXPACKET, 0, buf, 2,
+					5000);
 					5000);
 		}
 		termflush (mytty);

@@ -62,7 +62,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 	switch(rq->bRequest)
 	{
 		//host wants to write a raw packet to the rfm12
-		case RFMUSB_RQ_RFM12_PUT:
+		case RFMUSB_RQ_RADIO_PUT:
 			// initialize position index
 			rfmusb_usbRxCnt = 0;
 
@@ -95,7 +95,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 			break;			
 
 		//host wants to read rfm12 packet data
-		case RFMUSB_RQ_RFM12_GET:
+		case RFMUSB_RQ_RADIO_GET:
 			//if there is data to transmit
 			if(rfmusb_usbTxLen)
 			{
@@ -121,7 +121,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 			}
 
 		//host polls for notifications
-		case RFMUSB_RQ_GETNOTIFICATION:
+		case RFMUSB_RQ_NOTIFY_GET:
 			//if there is any
 			if(rfmusb_notifyBuf.len)
 			{
@@ -138,7 +138,8 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 				return tmp;
 			}
 
-		case RFMUSB_RQ_RFM12_CONFIGURE:
+		//host wants to configure radio
+		case RFMUSB_RQ_RADIO_CFG:
 			//use the first byte as configure command index
 			usbrfm_configureRfm12(rq->wIndex.bytes[0], rq->wValue.word);
 
