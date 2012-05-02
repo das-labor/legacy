@@ -81,7 +81,7 @@ int rfmusb_TxPacket(rfmusb_dev_handle *handle, unsigned char type, unsigned char
     //request to send packet and return result
     return usb_control_msg (handle,
         USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-        RFMUSB_RQ_RFM12_PUT, 0, 0, (char *)&buf, packetLen,
+        RFMUSB_RQ_RADIO_PUT, 0, 0, (char *)&buf, packetLen,
         DEFAULT_USB_TIMEOUT);
 }
 
@@ -94,6 +94,6 @@ int rfmusb_RxPacket(rfmusb_dev_handle *handle, rfmusb_packetbuffer * packetBuffe
     //request raw packet and return length
     return usb_control_msg (handle,
             USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-            RFMUSB_RQ_RFM12_GET, 0, 0, (char *)packetBuffer, sizeof(rfmusb_packetbuffer),
+            RFMUSB_RQ_RADIO_GET, 0, 0, (char *)packetBuffer, sizeof(rfmusb_packetbuffer),
             DEFAULT_USB_TIMEOUT);
 }
