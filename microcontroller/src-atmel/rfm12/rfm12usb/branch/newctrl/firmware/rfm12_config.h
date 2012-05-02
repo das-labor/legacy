@@ -94,13 +94,30 @@
 #define RFM12_BASEBAND RFM12_BAND_433
 
 //center frequency to use (+-125kHz FSK frequency shift)
-#define FREQ 433175000UL
+#define RFM12_FREQUENCY 433175000UL
+
+//Transmit FSK frequency shift in kHz
+#define FSK_SHIFT             125000
 
 //use this for datarates >= 2700 Baud
 #define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(9600.0)
 
-//use this for 340 Baud < datarate < 2700 Baud
-//#define DATARATE_VALUE RFM12_DATARATE_CALC_LOW(1200.0)
+//Receive RSSI Threshold
+#define RFM12_RSSI_THRESHOLD  RFM12_RXCTRL_RSSI_79
+
+//Receive Filter Bandwidth
+#define RFM12_FILTER_BW       RFM12_RXCTRL_BW_400
+
+//Output power relative to maximum (0dB is maximum)
+#define RFM12_POWER           RFM12_TXCONF_POWER_0
+
+//Receive LNA gain
+#define RFM12_LNA_GAIN        RFM12_RXCTRL_LNA_6
+
+//crystal load capacitance - the frequency can be verified by measuring the
+//clock output of RFM12 and comparing to 1MHz.
+//11.5pF seems to be o.k. for RFM12, and 10.5pF for RFM12BP, but this may vary.
+#define RFM12_XTAL_LOAD       RFM12_XTAL_11_5PF
 
 //TX BUFFER SIZE
 #define RFM12_TX_BUFFER_SIZE 64
@@ -146,7 +163,9 @@
 #define RFM12_RECEIVE_ASK 0
 #define RFM12_TRANSMIT_ASK 0
 #define RFM12_USE_WAKEUP_TIMER 0
+#define RFM12_USE_POWER_CONTROL 0
 #define RFM12_LOW_POWER 0
+#define RFM12_USE_CLOCK_OUTPUT 0
 
 
 /************************
