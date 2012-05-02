@@ -27,11 +27,13 @@
 #include "rfmusb.h"
 #include "rfmusb_hw.h"
 
-//FIXME: rework packet transmission system (full packet, short/fast (1byte packet))
-#define USB_SENDCHAR 0x23
+////////
+// forward decls
+////////
 
 //put somewhere else (or not?)
-void usbrfm_configureRfm12(uint8_t config_cmd, uint16_t value);
+uint8_t usbrfm_configureRfm12(uint8_t cmd, uint16_t value);
+
 
 ////////
 // global variables
@@ -77,22 +79,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 			LED_STATUS_TOGGLE;
 
 			// tell driver to use usbFunctionWrite()
-			return USB_NO_MSG;
-			
-		//send a single character
-		//FIXME: please cleanup define name and location
-		case USB_SENDCHAR:
-			//copy data
-			rfmusb_usbRxBuf[0] = rq->wIndex.bytes[0];
-
-			//send
-			rfm12_tx (1, 0, rfmusb_usbRxBuf);
-
-			//toggle led
-			LED_STATUS_TOGGLE;
-
-			//use default return value
-			break;			
+			return USB_NO_MSG;		
 
 		//host wants to read rfm12 packet data
 		case RFMUSB_RQ_RADIO_GET:
@@ -249,27 +236,15 @@ uint8_t usbrfm_usbTxRfmBuf(uint8_t packetType, uchar *data, uint8_t len)
 	return USBRFM_ERR_OK;
 }
 
-void usbrfm_configureRfm12(uint8_t config_cmd, uint16_t value)
+uint8_t usbrfm_configureRfm12(uint8_t cmd, uint16_t value)
 {
-	switch(config_cmd)
+	if(cmd < NUM_LIVECTRL_CMDS)
 	{
-		case RFMUSB_CONF_TX_POWER:
-			//this should be changed to a more sane implementation
-			//using indices into a table to select proper values
-			//(because now the host needs to nor rfm12_hw.h....)
-			rfm12_set_rate(value);
-
-		case RFMUSB_CONF_FREQUENCY:
-			//nothing yet here
-			return;
-
-		case RFMUSB_CONF_BAUDRATE:
-			//nothing yet here
-			return;
-
-		default:
-			break;
+		rfm12_livectrl(cmd, value);
+		return USBRFM_ERR_OK;
 	}
+	
+	return USBRFM_ERR_RANGE;
 }
 
 /* ------------------------------------------------------------------------- */
