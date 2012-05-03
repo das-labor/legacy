@@ -10,7 +10,7 @@ EEPROM_FLASHCMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c $(PROGRAMMER) -U e
 
 #uisp -dprog=bsd -dlpt=/dev/parport1 --erase
 
-DEFS           = -DF_CPU=16000000 
+DEFS           = -DF_CPU=20000000 
 
 LIBS           =
 

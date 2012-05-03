@@ -18,7 +18,9 @@
 */
 
 #include "uart_i.h"
+#include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <stdlib.h>
 
 void printstr_P(PGM_P s){
 	unsigned char c;
@@ -52,7 +54,10 @@ int main (void){
 	uart0_init();
 	printstr_P(PSTR("\r\nuart 0 initialized\r\n"));
 	unsigned char c;
+	uart0_putc(0x11);
+	DDRD |= _BV(5) | _BV(6);
 	for(;;){
+	//	for(;;);
 		c = uart0_getc();
 		printhex(c);
 		uart0_putc(' ');

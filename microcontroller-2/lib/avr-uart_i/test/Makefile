@@ -1,17 +1,17 @@
 PRG            = main-uart_i-test
 OBJ            = main-uart_i-test.o uart_i-asm.o circularbytebuffer-asm.o
                  
-MCU_TARGET     = atmega32
+MCU_TARGET     = atmega644
 OPTIMIZE       = 
 PROGRAMMER     = avr911
-FLASHCMD       = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c $(PROGRAMMER) -U flash:w:$(PRG).hex  
+FLASHCMD       = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB1 -c $(PROGRAMMER) -U flash:w:$(PRG).hex  
 ERASECMD       = 
-EEPROM_FLASHCMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB0 -c $(PROGRAMMER) -U eeprom:w:$(PRG)_eeprom.hex
+EEPROM_FLASHCMD = avrdude -p $(MCU_TARGET) -P /dev/ttyUSB1 -c $(PROGRAMMER) -U eeprom:w:$(PRG)_eeprom.hex
 
 #uisp -dprog=bsd -dlpt=/dev/parport1 --erase
 
-DEFS           = -DF_CPU=16000000 
-
+DEFS           = -DF_CPU=20000000 
+LIST_OPTS      = -Wa,-adhln -g
 LIBS           =
 
 # You should not have to change anything below here.
@@ -26,7 +26,7 @@ AS             = avr-as
 override CFLAGS        = -g -pedantic -std=c99 -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -morder1
 # -fnew-ra
 override LDFLAGS       = -Wl,-Map,$(PRG).map
-override ASFLAGS       = -mmcu=$(MCU_TARGET)
+override ASFLAGS       = $(DEFS) -mmcu=$(MCU_TARGET)
 
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
