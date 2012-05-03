@@ -20,16 +20,22 @@
 #define CONFIG_H_
 #include "uart_defs.h"
 
-#define F_CPU 16000000
+/*
+#ifndef F_CPU
+#define F_CPU 14745600
+#endif
+*/
 
 #define UART0_I 1 /* set this to '1' if you want to use the first uart, otherwise set to '0' */
-#define UART0_BAUD_RATE 38400 /* baudrate for uart0 */
+#ifndef UART0_BAUD_RATE
+#define UART0_BAUD_RATE 115200 /* baudrate for uart0 */
+#endif
 #define UART0_STOPBITS  UART_STOPBITS_1 /* stopbit configuration for uart0 */
 #define UART0_DATABITS  UART_DATABITS_8 /* databit configuration for uart0 */
 #define UART0_PARATY    UART_PARATY_NONE /* paraty configuration for uart0 */
 
-#define UART0_RXBUFFER_SIZE 32
-#define UART0_TXBUFFER_SIZE 32
+#define UART0_RXBUFFER_SIZE 128
+#define UART0_TXBUFFER_SIZE 128
 
 #define UART0_SWFLOWCTRL 1
 #define UART0_THRESH_HIGH 20
