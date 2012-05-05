@@ -211,23 +211,42 @@ inline static fixp_t fixDiv(fixp_interim_t const a, fixp_interim_t const b)
  * @param angle fixed point radian value
  * @return Result of the sine function normalized to a range from -FIX to FIX.
  */
-static fixp_t fixSin(fixp_t const fAngle)
+static fixp_t fixSin(fixp_t fAngle)
 {
-	// convert given angle to its corresponding lookup table quantization step
-	ordinary_int_t nNormAng = fAngle / FIX_SIN_DIVIDER;
-	// trim that value so that it fits into a range between [0, FIX_SIN_COUNT]
-	nNormAng = (nNormAng - (nNormAng / FIX_SIN_COUNT *	FIX_SIN_COUNT) +
-			FIX_SIN_COUNT) % FIX_SIN_COUNT;
-
-	uint8_t nIndex = nNormAng % (FIX_SIN_COUNT / 2);
-	if (nIndex >= (FIX_SIN_COUNT / 4))
+	// convert given fixed-point angle to its corresponding quantization step
+	int8_t nSign = 1;
+	if (fAngle < 0)
 	{
-		nIndex = (FIX_SIN_COUNT / 2 - 1) - nIndex;
+		// take advantage of sin(-x) == -sin(x) to avoid neg. operands for "%"
+		fAngle = -fAngle;
+		nSign = -1;
+	}
+	uint8_t nIndex = (fAngle / FIX_SIN_DIVIDER) % FIX_SIN_COUNT;
+
+	// now convert that quantization step to an index of our quartered array
+	if ((nIndex >= (FIX_SIN_COUNT / 4)))
+	{
+		if (nIndex < (FIX_SIN_COUNT / 2))
+		{
+			nIndex = (FIX_SIN_COUNT / 2 - 1) - nIndex;
+		}
+		else
+		{
+			// an angle > PI means that we have to toggle the sign of the result
+			nSign *= -1;
+			if (nIndex < (FIX_SIN_COUNT - (FIX_SIN_COUNT / 4)))
+			{
+				nIndex = nIndex - (FIX_SIN_COUNT / 2);
+			}
+			else
+			{
+				nIndex = (FIX_SIN_COUNT - 1) - nIndex;
+			}
+		}
 	}
 	assert(nIndex < (FIX_SIN_COUNT / 4));
 
-	return ((fixp_t)fix_sine_lut[nIndex]) *
-			(nNormAng < (FIX_SIN_COUNT / 2) ? 1 : -1);
+	return ((fixp_t)fix_sine_lut[nIndex]) * nSign;
 }
 
 
