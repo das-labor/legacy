@@ -157,6 +157,10 @@ void strlwr(char* s){
 }
 */
 
+char* utoa(unsigned a, char* buffer, uint8_t radix){
+	return ultoa((unsigned)a, buffer, radix);
+}
+
 char* itoa(int a, char* buffer, uint8_t radix){
 	if(a<0){
 		*buffer = '-';

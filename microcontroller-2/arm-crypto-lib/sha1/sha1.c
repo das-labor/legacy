@@ -183,7 +183,7 @@ void sha1_lastBlock(sha1_ctx_t *state, const void* block, uint16_t length){
 
 /********************************************************************************************************/
 
-void sha1_ctx2hash (sha1_hash_t *dest, sha1_ctx_t *state){
+void sha1_ctx2hash (void *dest, sha1_ctx_t *state){
 #if defined LITTLE_ENDIAN
 	uint8_t i;
 	for(i=0; i<5; ++i){
@@ -202,7 +202,7 @@ void sha1_ctx2hash (sha1_hash_t *dest, sha1_ctx_t *state){
  *
  *
  */
-void sha1 (sha1_hash_t *dest, const void* msg, uint32_t length){
+void sha1 (void *dest, const void* msg, uint32_t length){
 	sha1_ctx_t s;
 	sha1_init(&s);
 	while(length & (~0x0001ff)){ /* length>=512 */

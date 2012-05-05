@@ -20,11 +20,7 @@
  * md5 test suit
  * 
 */
-
-#include "config.h"
-
-#include "uart_i.h"
-#include "debug.h"
+#include "main-test-common.h"
 
 #include "md5.h"
 #include "nessie_hash_test.h"
@@ -32,14 +28,9 @@
 #include "hfal_md5.h"
 #include "hfal-performance.h"
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include "cli.h"
-
 char* algo_name = "MD5";
 
-const hfdesc_t* algolist[] PROGMEM = {
+const hfdesc_t* algolist[] = {
 	(hfdesc_t*)&md5_desc,
 	NULL
 };
@@ -126,12 +117,12 @@ void testrun_performance_md5(void){
  * main																	 *
  *****************************************************************************/
 
-const char nessie_str[]      PROGMEM = "nessie";
-const char test_str[]        PROGMEM = "test";
-const char performance_str[] PROGMEM = "performance";
-const char echo_str[]        PROGMEM = "echo";
+const char nessie_str[]      = "nessie";
+const char test_str[]        = "test";
+const char performance_str[] = "performance";
+const char echo_str[]        = "echo";
 
-cmdlist_entry_t cmdlist[] PROGMEM = {
+cmdlist_entry_t cmdlist[] = {
 	{ nessie_str,      NULL, testrun_nessie_md5},
 	{ test_str,        NULL, testrun_md5},
 	{ performance_str, NULL, testrun_performance_md5},
@@ -140,15 +131,10 @@ cmdlist_entry_t cmdlist[] PROGMEM = {
 };
 
 int main (void){
-	DEBUG_INIT();
+	main_setup();
 	
-	cli_rx = (cli_rx_fpt)uart0_getc;
-	cli_tx = (cli_tx_fpt)uart0_putc;	 	
-	testrun_md5();
 	for(;;){
-		cli_putstr("\r\n\r\nCrypto-VS (");
-		cli_putstr(algo_name);
-		cli_putstr(")\r\nloaded and running\r\n");
+		welcome_msg(algo_name);
 		cmd_interface(cmdlist);
 	}
 }

@@ -50,6 +50,6 @@ uint8_t dbz_strcount(const char* str);
  * \param dbzstr pointer to the double-zero-terminated string
  * \param strings pointer to the array of strings (char pointers)
  */
-void dbz_splitup(char* dbzstr, char** strings);
+void dbz_splitup(const char* dbzstr, const char** strings);
 
 #endif /*DBZ_STRINGS_H_*/

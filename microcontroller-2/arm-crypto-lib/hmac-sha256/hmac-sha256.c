@@ -82,9 +82,9 @@ void hmac_sha256_lastBlock(hmac_sha256_ctx_t *s, const void* block, uint16_t len
 }
 
 void hmac_sha256_final(void* dest, hmac_sha256_ctx_t *s){
-	sha256_ctx2hash((sha256_hash_t*)dest, &(s->a));
+	sha256_ctx2hash(dest, &(s->a));
 	sha256_lastBlock(&(s->b), dest, SHA256_HASH_BITS);
-	sha256_ctx2hash((sha256_hash_t*)dest, &(s->b));			
+	sha256_ctx2hash(dest, &(s->b));
 }
 
 #endif

@@ -43,15 +43,13 @@ typedef struct{
 	bigint_word_t *wordv; /* word vector, pointing to the LSB */
 }bigint_t;
 
-typedef uint32_t bigint_ptr_int_t;
-
 /******************************************************************************/
 
 void   bigint_adjust(bigint_t* a);
-uint32_t bigint_get_first_set_bit(bigint_t* a);
-uint32_t bigint_get_last_set_bit(bigint_t* a);
-uint16_t bigint_length_b(bigint_t* a);
-uint16_t bigint_length_B(bigint_t* a);
+uint32_t bigint_get_first_set_bit(const bigint_t* a);
+uint32_t bigint_get_last_set_bit(const bigint_t* a);
+uint16_t bigint_length_b(const bigint_t* a);
+uint16_t bigint_length_B(const bigint_t* a);
 void   bigint_copy(bigint_t* dest, const bigint_t* src);
 void   bigint_add_u(bigint_t* dest, const bigint_t* a, const bigint_t* b);
 void   bigint_add_scale_u(bigint_t* dest, const bigint_t* a, uint16_t scale);

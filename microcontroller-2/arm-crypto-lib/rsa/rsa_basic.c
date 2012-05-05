@@ -32,7 +32,7 @@
 #include "string-extras.h"
 #endif
 
-void rsa_enc(bigint_t* data, rsa_publickey_t* key){
+void rsa_enc(bigint_t* data, const rsa_publickey_t* key){
 /*
 	cli_putstr("\r\n -->rsa_enc()\r\n m = ");
 	bigint_print_hex(data);
@@ -41,7 +41,7 @@ void rsa_enc(bigint_t* data, rsa_publickey_t* key){
 	cli_putstr("\r\n n = ");
 	bigint_print_hex(key->modulus);
 */
-	bigint_expmod_u(data, data, key->exponent, key->modulus);
+	bigint_expmod_u(data, data, &key->exponent, &key->modulus);
 }
 
 /*
@@ -52,47 +52,47 @@ h = (m1 - m2) * qinv % p
 m = m2 + q * h
 */
 
-uint8_t rsa_dec_crt_mono(bigint_t* data, rsa_privatekey_t* key){
+uint8_t rsa_dec_crt_mono(bigint_t* data, const rsa_privatekey_t* key){
 	bigint_t m1, m2;
-	m1.wordv = malloc(key->components[0]->length_B * sizeof(bigint_word_t));
-	m2.wordv = malloc(key->components[1]->length_B * sizeof(bigint_word_t));
+	m1.wordv = malloc(key->components[0].length_B * sizeof(bigint_word_t));
+	m2.wordv = malloc(key->components[1].length_B * sizeof(bigint_word_t));
 	if(!m1.wordv || !m2.wordv){
 #if DEBUG
 		cli_putstr("\r\nERROR: OOM!");
 #endif
-		free(m1.wordv);
 		free(m2.wordv);
+		free(m1.wordv);
 		return 1;
 	}
 #if DEBUG
 	cli_putstr("\r\nDBG: expmod m1 ...");
 #endif
-	bigint_expmod_u(&m1, data, key->components[2], key->components[0]);
+	bigint_expmod_u(&m1, data, &key->components[2], &key->components[0]);
 #if DEBUG
 	cli_putstr("expmod m2 ...");
 #endif
-	bigint_expmod_u(&m2, data, key->components[3], key->components[1]);
+	bigint_expmod_u(&m2, data, &key->components[3], &key->components[1]);
 	bigint_sub_s(&m1, &m1, &m2);
 	while(BIGINT_NEG_MASK & m1.info){
-		bigint_add_s(&m1, &m1, key->components[0]);
+		bigint_add_s(&m1, &m1, &key->components[0]);
 	}
 
 #if DEBUG
 	cli_putstr("\r\nDBG: reduce-mul ...");
 #endif
-	bigint_reduce(&m1, key->components[0]);
-	bigint_mul_u(data, &m1, key->components[4]);
-	bigint_reduce(data, key->components[0]);
-	bigint_mul_u(data, data, key->components[1]);
+	bigint_reduce(&m1, &key->components[0]);
+	bigint_mul_u(data, &m1, &key->components[4]);
+	bigint_reduce(data, &key->components[0]);
+	bigint_mul_u(data, data, &key->components[1]);
 	bigint_add_u(data, data, &m2);
-	free(m1.wordv);
 	free(m2.wordv);
+	free(m1.wordv);
 	return 0;
 }
 
-uint8_t rsa_dec(bigint_t* data, rsa_privatekey_t* key){
+uint8_t rsa_dec(bigint_t* data, const rsa_privatekey_t* key){
 	if(key->n == 1){
-		bigint_expmod_u(data, data, key->components[0], key->modulus);
+		bigint_expmod_u(data, data, &key->components[0], &key->modulus);
 		return 0;
 	}
 	if(key->n == 5){
@@ -139,6 +139,7 @@ void rsa_os2ip(bigint_t* dest, const void* data, uint32_t length_B){
 	cli_hexdump_rev(&(dest->length_B), 2);
 #endif
 #endif
+	dest->info = 0;
 	bigint_changeendianess(dest);
 	bigint_adjust(dest);
 }

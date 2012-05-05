@@ -23,14 +23,14 @@
 #include "bigint.h"
 
 typedef struct {
-	bigint_t* exponent;
-	bigint_t* modulus;
+	bigint_t exponent;
+	bigint_t modulus;
 } rsa_publickey_t;
 
 typedef struct {
 	uint8_t n;
-	bigint_t* modulus;
-	bigint_t** components;
+	bigint_t modulus;
+	bigint_t* components;
 } rsa_privatekey_t;
 
 
@@ -40,8 +40,8 @@ typedef struct {
 } rsa_fullkey_t;
 
 
-void rsa_enc(bigint_t* data, rsa_publickey_t* key);
-uint8_t rsa_dec(bigint_t* data, rsa_privatekey_t* key);
+void rsa_enc(bigint_t* data, const rsa_publickey_t* key);
+uint8_t rsa_dec(bigint_t* data, const rsa_privatekey_t* key);
 void rsa_os2ip(bigint_t* dest, const void* data, uint32_t length_B);
 void rsa_i2osp(void* dest, bigint_t* src, uint16_t* out_length_B);
 
