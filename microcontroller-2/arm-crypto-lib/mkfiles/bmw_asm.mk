@@ -2,7 +2,7 @@
 ALGO_NAME := BMW
 
 # comment out the following line for removement of BlueMidnightWish from the build process
-HASHES += $(ALGO_NAME)
+#HASHES += $(ALGO_NAME) # currently buggy
 
 $(ALGO_NAME)_DIR      := bmw/
 $(ALGO_NAME)_INCDIR   := memxor/ hfal/

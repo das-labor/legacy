@@ -81,7 +81,7 @@ void md5_core(uint32_t* a, void* block, uint8_t as, uint8_t s, uint8_t i, uint8_
 	cli_hexdump(&i, 1); cli_putc(']');
 #endif	
 	t = a[as] + funcs[fi](a[(as+1)&3], a[(as+2)&3], a[(as+3)&3]) 
-	    + *((uint32_t*)block) + pgm_read_dword(md5_T+i) ;
+	    + *((uint32_t*)block) + md5_T[i] ;
 	a[as]=a[(as+1)&3] + ROTL32(t, s);
 }
 
@@ -139,32 +139,35 @@ void md5_nextBlock(md5_ctx_t *state, const void* block){
 
 void md5_lastBlock(md5_ctx_t *state, const void* block, uint16_t length_b){
 	uint16_t l;
-	uint8_t b[64];
+	union {
+		uint8_t   v8[64];
+		uint64_t v64[ 8];
+	} buffer;
 	while (length_b >= 512){
 		md5_nextBlock(state, block);
 		length_b -= 512;
 		block = ((uint8_t*)block) + 512/8;
 	}
-	memset(b, 0, 64);
-	memcpy(b, block, length_b/8);
+	memset(buffer.v8, 0, 64);
+	memcpy(buffer.v8, block, length_b/8);
 	/* insert padding one */
 	l=length_b/8;
 	if(length_b%8){
 		uint8_t t;
 		t = ((uint8_t*)block)[l];
 		t |= (0x80>>(length_b%8));
-		b[l]=t;
+		buffer.v8[l]=t;
 	}else{
-		b[l]=0x80;
+		buffer.v8[l]=0x80;
 	}
 	/* insert length value */
 	if(l+sizeof(uint64_t) >= 512/8){
-		md5_nextBlock(state, b);
+		md5_nextBlock(state, buffer.v8);
 		state->counter--;
-		memset(b, 0, 64-8);
+		memset(buffer.v8, 0, 64-8);
 	}
-	*((uint64_t*)&b[64-sizeof(uint64_t)]) = (state->counter * 512) + length_b;
-	md5_nextBlock(state, b);
+	buffer.v64[7] = (state->counter * 512) + length_b;
+	md5_nextBlock(state, buffer.v8);
 }
 
 void md5_ctx2hash(md5_hash_t* dest, const md5_ctx_t* state){

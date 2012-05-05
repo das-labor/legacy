@@ -47,7 +47,7 @@ uint8_t dbz_strcount(const char* str){
 
 /******************************************************************************/
 
-void dbz_splitup(char* dbzstr, char** strings){
+void dbz_splitup(const char* dbzstr, const char** strings){
 	if(*dbzstr=='\0' && *(dbzstr+1)=='\0')
 		return;
 	*strings++ = dbzstr;

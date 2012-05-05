@@ -33,15 +33,15 @@
 static
 void jh_round(uint8_t* a, uint8_t roundno){
 	uint8_t b[128];
-	uint8_t i,r,u,v,x,y;
+	uint8_t i,r=0,u,v,x,y;
 	const uint8_t *pr;
 	pr = jh_round_const + 32*roundno;
 	for(i=0; i<128; ++i){
 		if(i%4==0){
 			r = *pr++;
 		}
-		b[i]=jh_lutbox[((r&0xC0)<<2)|a[i]];
-		r<<=2;
+		b[i] = jh_lutbox[((r&0xC0)<<2)|a[i]];
+		r <<= 2;
 	}
 	for(i=0;i<128;++i){
 		u = jh_permutation_table[2*i];

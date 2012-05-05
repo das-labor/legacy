@@ -42,10 +42,10 @@ void nessie_first(void){
 	cli_hexdump(key, 16);
 	salsa20_init(key, 128, NULL, &ctx);
 	cli_putstr("\r\n internal state: ");
-	cli_hexdump_block(ctx.a, 64, 4, 16);
+	cli_hexdump_block(ctx.a.v8, 64, 4, 16);
 	salsa20_gen(&ctx);
 	cli_putstr("\r\n internal state: ");
-	cli_hexdump_block(ctx.a, 64, 4, 16);
+	cli_hexdump_block(ctx.a.v8, 64, 4, 16);
 	cli_putstr("\r\n data: ");
 	cli_hexdump_block(ctx.buffer, 64, 4, 16);
 
@@ -54,13 +54,13 @@ void nessie_first(void){
 	key[15] = 0x01;
 	cli_putstr("\r\n testing with key: ");
 	cli_hexdump(key, 16);
-	cli_hexdump_block(ctx.a, 64, 4, 16);
+	cli_hexdump_block(ctx.a.v8, 64, 4, 16);
 	salsa20_init(key, 128, NULL, &ctx);
 	cli_putstr("\r\n internal state: ");
-	cli_hexdump_block(ctx.a, 64, 4, 16);
+	cli_hexdump_block(ctx.a.v8, 64, 4, 16);
 	salsa20_gen(&ctx);
 	cli_putstr("\r\n internal state: ");
-	cli_hexdump_block(ctx.a, 64, 4, 16);
+	cli_hexdump_block(ctx.a.v8, 64, 4, 16);
 	cli_putstr("\r\n data: ");
 	cli_hexdump_block(ctx.buffer, 64, 4, 16);
 }

@@ -25,18 +25,17 @@
  * 
  */
 
-#include <avr/pgmspace.h>
 #include <stdlib.h>
 #include "blockcipher_descriptor.h"
 #include "camellia.h"
 #include "keysize_descriptor.h"
 
-const char camellia128_str[]   PROGMEM = "Camellia-128";
+const char camellia128_str[] = "Camellia-128";
 
-const uint8_t camellia128_keysize_desc[] PROGMEM = { KS_TYPE_LIST, 1, KS_INT(128), 
+const uint8_t camellia128_keysize_desc[] = { KS_TYPE_LIST, 1, KS_INT(128), 
                                                 KS_TYPE_TERMINATOR    };
 
-const bcdesc_t camellia128_desc PROGMEM = {
+const bcdesc_t camellia128_desc = {
 	BCDESC_TYPE_BLOCKCIPHER,
 	BC_INIT_TYPE_2,
 	camellia128_str,

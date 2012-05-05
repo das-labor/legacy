@@ -235,7 +235,7 @@ void nessie_hash_run(void){
 		 "1234567890123456789012345678901234567890" 
 		 "1234567890123456789012345678901234567890\0"
 		 "8 times \"1234567890\"\0" ;
-	char* challange[16];
+	const char* challange[16];
 	set=1;
 	nessie_print_setheader(set);
 	dbz_splitup(challange_dbz, challange);

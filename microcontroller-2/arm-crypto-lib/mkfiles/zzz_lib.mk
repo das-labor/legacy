@@ -17,6 +17,7 @@ LIB_ALGOS:= \
     JH_SIMPLE_SMALL_C \
     KECCAK_C \
     KHAZAD_SMALL_C \
+    MD5_C \
     MICKEY128 \
     NOEKEON_C \
     PRESENT \
@@ -24,6 +25,8 @@ LIB_ALGOS:= \
     RABBIT_C \
     RC5 \
     RC6 \
+    RSAES_OAEP \
+    RSAES_PKCS1V15 \
     SALSA20_C \
     SEED_C \
     SERPENT_BITSLICE \

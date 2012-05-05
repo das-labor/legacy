@@ -1,4 +1,4 @@
-/* rsa_oaep.h */
+/* rsaes_oaep.h */
 /*
     This file is part of the AVR-Crypto-Lib.
     Copyright (C) 2012 Daniel Otte (daniel.otte@rub.de)
@@ -17,10 +17,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef RSA_OAEP_H_
-#define RSA_OAEP_H_
+#ifndef RSAES_OAEP_H_
+#define RSAES_OAEP_H_
 
 #include <stdint.h>
+#include "rsa_basic.h"
 #include "mgf1.h"
 
 
@@ -43,12 +44,12 @@ extern rsa_label_t rsa_oaep_default_label;
 
 uint8_t rsa_encrypt_oaep(void* dest, uint16_t* out_length,
 		              const void* src, uint16_t length_B,
-		              rsa_publickey_t* key, const rsa_oaep_parameter_t *p,
+		              const rsa_publickey_t* key, const rsa_oaep_parameter_t *p,
 		              const rsa_label_t* label, const void* seed);
 
 uint8_t rsa_decrypt_oaep(void* dest, uint16_t* out_length,
 		              const void* src, uint16_t length_B,
-		              rsa_privatekey_t* key, const rsa_oaep_parameter_t *p,
+		              const rsa_privatekey_t* key, const rsa_oaep_parameter_t *p,
 		              const rsa_label_t* label, void* seed);
 
-#endif /* RSA_OAEP_H_ */
+#endif /* RSAES_OAEP_H_ */

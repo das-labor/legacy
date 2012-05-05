@@ -30,18 +30,18 @@
 #include "present.h"
 
 static uint8_t sbox(uint8_t b){
-	uint8_t sb[]={0xC, 0x5, 0x6, 0xB, 
-		 		  0x9, 0x0, 0xA, 0xD, 
-				  0x3, 0xE, 0xF, 0x8, 
-				  0x4, 0x7, 0x1, 0x2 };
+	const uint8_t sb[]={ 0xC, 0x5, 0x6, 0xB, 
+	                     0x9, 0x0, 0xA, 0xD, 
+	                     0x3, 0xE, 0xF, 0x8, 
+	                     0x4, 0x7, 0x1, 0x2 };
 	return (((sb[b>>4])<<4)|(sb[b&0xf]));
 }
 
 static uint8_t sbox_inv(uint8_t b){
-	uint8_t sb[]={0x5, 0xE, 0xF, 0x8, 
-				  0xC, 0x1, 0x2, 0xD, 
-				  0xB, 0x4, 0x6, 0x3, 
-				  0x0, 0x7, 0x9, 0xA };
+	const uint8_t sb[]={ 0x5, 0xE, 0xF, 0x8, 
+	                     0xC, 0x1, 0x2, 0xD, 
+	                     0xB, 0x4, 0x6, 0x3, 
+	                     0x0, 0x7, 0x9, 0xA };
 	return (((sb[b>>4])<<4)|(sb[b&0xf]));
 }
 
@@ -73,10 +73,14 @@ static void p_inv(uint8_t* o, uint8_t* i){
 
 void present_init(const uint8_t* key, uint8_t keysize_b, present_ctx_t* ctx){
 	uint8_t tmp[2];
-	union {
-		uint8_t v8[10];
+	union __attribute__((packed)) {
+		uint8_t   v8[10];
 		uint64_t v64;
 		uint16_t v16[5];
+		struct __attribute__((packed)) {
+			uint8_t   v8[1];
+			uint16_t v16[4];
+		} off1;
 	} b;
 	uint8_t i;
 	memcpy(b.v8, key, 10);
@@ -95,7 +99,7 @@ void present_init(const uint8_t* key, uint8_t keysize_b, present_ctx_t* ctx){
 		/* rotating done now substitution */
 		b.v8[9] = (sbox(b.v8[9])&0xF0) | ((b.v8[9])&0x0F);
 		/* xor with round counter */
-		*((uint16_t*)(b.v8+1)) ^= (uint16_t)i<<7;
+		b.off1.v16[0] ^= (uint16_t)i<<7;
 		memcpy(&(ctx->k[i]), b.v8+2, 8);
 	}
 }

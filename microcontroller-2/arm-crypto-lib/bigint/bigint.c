@@ -53,9 +53,9 @@
 #define SET_NEG(a)   (a)->info |= BIGINT_NEG_MASK
 #define SET_POS(a)   (a)->info &= ~BIGINT_NEG_MASK
 #define XCHG(a,b)    do{(a)^=(b); (b)^=(a); (a)^=(b);}while(0)
-#define XCHG_PTR(a,b)    do{ a = (void*)(((bigint_ptr_int_t)(a)) ^ ((bigint_ptr_int_t)(b))); \
-	                         b = (void*)(((bigint_ptr_int_t)(a)) ^ ((bigint_ptr_int_t)(b))); \
-	                         a = (void*)(((bigint_ptr_int_t)(a)) ^ ((bigint_ptr_int_t)(b)));}while(0)
+#define XCHG_PTR(a,b)    do{ a = (void*)(((intptr_t)(a)) ^ ((intptr_t)(b))); \
+	                         b = (void*)(((intptr_t)(a)) ^ ((intptr_t)(b))); \
+	                         a = (void*)(((intptr_t)(a)) ^ ((intptr_t)(b)));}while(0)
 
 #define GET_SIGN(a) ((a)->info&BIGINT_NEG_MASK)
 
@@ -80,7 +80,7 @@ void bigint_adjust(bigint_t* a){
 
 /******************************************************************************/
 
-uint16_t bigint_length_b(bigint_t* a){
+uint16_t bigint_length_b(const bigint_t* a){
 	if(!a->length_B || a->length_B==0){
 		return 0;
 	}
@@ -89,13 +89,13 @@ uint16_t bigint_length_b(bigint_t* a){
 
 /******************************************************************************/
 
-uint16_t bigint_length_B(bigint_t* a){
+uint16_t bigint_length_B(const bigint_t* a){
 	return a->length_B * sizeof(bigint_word_t);
 }
 
 /******************************************************************************/
 
-uint32_t bigint_get_first_set_bit(bigint_t* a){
+uint32_t bigint_get_first_set_bit(const bigint_t* a){
 	if(a->length_B==0){
 		return (uint32_t)(-1);
 	}
@@ -105,7 +105,7 @@ uint32_t bigint_get_first_set_bit(bigint_t* a){
 
 /******************************************************************************/
 
-uint32_t bigint_get_last_set_bit(bigint_t* a){
+uint32_t bigint_get_last_set_bit(const bigint_t* a){
 	uint32_t r=0;
 	uint8_t b=0;
 	bigint_word_t x=1;
@@ -403,7 +403,7 @@ int8_t bigint_cmp_s(const bigint_t* a, const bigint_t* b){
 /******************************************************************************/
 
 void bigint_shiftleft(bigint_t* a, uint16_t shift){
-	uint16_t byteshift, word_alloc;
+	uint16_t byteshift, word_alloc, words_to_shift;
 	int16_t i;
 	uint8_t bitshift;
 	bigint_word_t *p;
@@ -417,14 +417,15 @@ void bigint_shiftleft(bigint_t* a, uint16_t shift){
 		a->wordv[a->length_B+i] = 0;
 	}
 	if(byteshift){
-		memmove(((uint8_t*)a->wordv)+byteshift, a->wordv, a->length_B*sizeof(bigint_word_t));
+		memmove(((uint8_t*)a->wordv) + byteshift, a->wordv, a->length_B * sizeof(bigint_word_t));
 		memset(a->wordv, 0, byteshift);
 	}
-	p = (bigint_word_t*)(((uint8_t*)a->wordv)+byteshift);
-	word_alloc = a->length_B+(byteshift+sizeof(bigint_word_t)-1)/sizeof(bigint_word_t)+1;
+	p = a->wordv + byteshift / sizeof(bigint_word_t);
+	words_to_shift = a->length_B + (byteshift % sizeof(bigint_word_t)?1:0);
+	word_alloc = a->length_B + (byteshift + sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t) + 1;
 	a->wordv[word_alloc-1]=0;
 	if(bitshift!=0){
-		for(i=0; i<a->length_B; ++i){
+		for(i=0; i < words_to_shift; ++i){
 			t |= ((bigint_wordplus_t)p[i])<<bitshift;
 			p[i] = (bigint_word_t)t;
 			t >>= BIGINT_WORD_SIZE;
@@ -444,30 +445,29 @@ void bigint_shiftright(bigint_t* a, uint16_t shift){
 	bigint_wordplus_t t=0;
 	byteshift = shift/8;
 	bitshift = shift&7;
-	if(byteshift >= a->length_B*sizeof(bigint_word_t)){ /* we would shift out more than we have */
+	if(byteshift >= a->length_B * sizeof(bigint_word_t)){ /* we would shift out more than we have */
 		bigint_set_zero(a);
 		return;
 	}
-	if(byteshift == a->length_B*sizeof(bigint_word_t)-1 && bitshift>GET_FBS(a)){
+	if(byteshift == a->length_B * sizeof(bigint_word_t) - 1 && bitshift > GET_FBS(a)){
 		bigint_set_zero(a);
 		return;
 	}
 	if(byteshift){
-		memmove(a->wordv, (uint8_t*)a->wordv+byteshift, a->length_B-byteshift);
-		memset((uint8_t*)a->wordv+a->length_B-byteshift, 0,  byteshift);
+		memmove(a->wordv, (uint8_t*)a->wordv + byteshift, a->length_B * sizeof(bigint_word_t) - byteshift);
+		memset((uint8_t*)a->wordv + a->length_B * sizeof(bigint_word_t) - byteshift, 0,  byteshift);
 	}
 	byteshift /= sizeof(bigint_word_t);
-	if(bitshift!=0){
+    a->length_B -= (byteshift  + sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t);
+	if(bitshift != 0 && a->length_B){
 	 /* shift to the right */
-		for(i=a->length_B-byteshift-1; i>0; --i){
-			t |= ((bigint_wordplus_t)(a->wordv[i]))<<(BIGINT_WORD_SIZE-bitshift);
-			a->wordv[i] = (bigint_word_t)(t>>BIGINT_WORD_SIZE);
+		i = a->length_B - 1;
+		do{
+			t |= ((bigint_wordplus_t)(a->wordv[i])) << (BIGINT_WORD_SIZE - bitshift);
+			a->wordv[i] = (bigint_word_t)(t >> BIGINT_WORD_SIZE);
 			t <<= BIGINT_WORD_SIZE;
-		}
-		t |= ((bigint_wordplus_t)(a->wordv[0]))<<(BIGINT_WORD_SIZE-bitshift);
-		a->wordv[0] = (bigint_word_t)(t>>BIGINT_WORD_SIZE);
+		}while(i--);
 	}
-    a->length_B -= ((shift/8)+sizeof(bigint_word_t)-1)/sizeof(bigint_word_t);
 	bigint_adjust(a);
 }
 
@@ -792,12 +792,12 @@ void bigint_expmod_u(bigint_t* dest, const bigint_t* a, const bigint_t* exp, con
 			if(flag){
 				bigint_square(&res, &res);
 				bigint_reduce(&res, r);
-				if(t & (1<<(BIGINT_WORD_SIZE-1))){
+				if(t & (1 << (BIGINT_WORD_SIZE - 1))){
 					bigint_mul_u(&res, &res, &base);
 					bigint_reduce(&res, r);
 				}
 			}
-			t<<=1;
+			t <<= 1;
 		}
 	}
 

@@ -241,12 +241,13 @@ end
 #  -f <file>        also read config from <file>
 #  -i <n>           skip until test nr. <n>
 #  -j <n>           start with testfile <n>
+#  -o               use just one testfile
 #  -h ???
 #  -d               enable debug mode
 #  -c ???
 #  -a ???
 
-opts = Getopt::Std.getopts("s:f:i:j:hdca")
+opts = Getopt::Std.getopts("s:f:i:j:hdcao")
 
 conf = Hash.new
 conf = readconfigfile("/etc/testport.conf", conf)
@@ -306,16 +307,16 @@ algo_tasks.each do |algoa|
     puts("No test-set defined for #{algo} \r\n")
     next
   else
-	i=0
-	i = opts["j"].to_i if opts["j"]
-	logfile=File.open(conf["PORT"]["testlogbase"]+algo+".txt", "a")
-	while conf[algo]["file_#{i}"] != nil
-	  puts("Testing #{algo} with #{conf[algo]["file_#{i}"]}")
-	  reset_system()
-	  init_system(algoa[1])
-	  skip=0
-	  skip=opts["i"].to_i if opts["i"]
-	  nerrors=run_test(conf[algo]["file_#{i}"], skip)
+    i=0
+    i = opts["j"].to_i if opts["j"]
+    logfile=File.open(conf["PORT"]["testlogbase"]+algo+".txt", "a")
+    while conf[algo]["file_#{i}"] != nil
+      puts("Testing #{algo} with #{conf[algo]["file_#{i}"]}")
+      reset_system()
+      init_system(algoa[1])
+      skip=0
+      skip=opts["i"].to_i if opts["i"]
+      nerrors=run_test(conf[algo]["file_#{i}"], skip)
       if nerrors == 0
         puts("\n[ok]")
         logfile.puts("[ok] "+conf[algo]["file_#{i}"]+ " ("+Time.now.to_s()+")")
@@ -324,6 +325,7 @@ algo_tasks.each do |algoa|
         logfile.puts("[error] "+nerrors.to_s+" "+conf[algo]["file_#{i}"]+ " ("+Time.now.to_s()+")")
       end
       i = i+1
+      break if opts["o"]
     end
     logfile.close()
   end

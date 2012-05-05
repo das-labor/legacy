@@ -28,11 +28,12 @@
 #include "bigint_io.h"
 #include "random_dummy.h"
 #include "rsa_basic.h"
-#include "rsa_pkcs15.h"
+#include "rsassa_pkcs1v15.h"
+#include "sha1.h"
 
 #include "performance_test.h"
 
-const char* algo_name = "RSA-PKCS15";
+const char* algo_name = "RSASA-PKCS15";
 
 #define BIGINT_CEIL(x) ((((x) + sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t)) *  sizeof(bigint_word_t))
 #define BIGINT_OFF(x) ((sizeof(bigint_word_t) - (x) % sizeof(bigint_word_t)) % sizeof(bigint_word_t))
@@ -181,86 +182,54 @@ const uint8_t qinv2[] = {
 };
 
 
-/* PKCS#1 v1.5 encryption of 0x20, random messages with random s0xee,ds
+/* PKCS#1 v1.5 signatures
  *  ---------------------------------------------------------------------------
  */
+/* Message to be signed */
+const uint8_t message_1_1[] = {
+0xcd, 0xc8, 0x7d, 0xa2, 0x23, 0xd7, 0x86, 0xdf, 0x3b, 0x45, 0xe0, 0xbb, 0xbc, 0x72, 0x13, 0x26,
+0xd1, 0xee, 0x2a, 0xf8, 0x06, 0xcc, 0x31, 0x54, 0x75, 0xcc, 0x6f, 0x0d, 0x9c, 0x66, 0xe1, 0xb6,
+0x23, 0x71, 0xd4, 0x5c, 0xe2, 0x39, 0x2e, 0x1a, 0xc9, 0x28, 0x44, 0xc3, 0x10, 0x10, 0x2f, 0x15,
+0x6a, 0x0d, 0x8d, 0x52, 0xc1, 0xf4, 0xc4, 0x0b, 0xa3, 0xaa, 0x65, 0x09, 0x57, 0x86, 0xcb, 0x76,
+0x97, 0x57, 0xa6, 0x56, 0x3b, 0xa9, 0x58, 0xfe, 0xd0, 0xbc, 0xc9, 0x84, 0xe8, 0xb5, 0x17, 0xa3,
+0xd5, 0xf5, 0x15, 0xb2, 0x3b, 0x8a, 0x41, 0xe7, 0x4a, 0xa8, 0x67, 0x69, 0x3f, 0x90, 0xdf, 0xb0,
+0x61, 0xa6, 0xe8, 0x6d, 0xfa, 0xae, 0xe6, 0x44, 0x72, 0xc0, 0x0e, 0x5f, 0x20, 0x94, 0x57, 0x29,
+0xcb, 0xeb, 0xe7, 0x7f, 0x06, 0xce, 0x78, 0xe0, 0x8f, 0x40, 0x98, 0xfb, 0xa4, 0x1f, 0x9d, 0x61,
+0x93, 0xc0, 0x31, 0x7e, 0x8b, 0x60, 0xd4, 0xb6, 0x08, 0x4a, 0xcb, 0x42, 0xd2, 0x9e, 0x38, 0x08,
+0xa3, 0xbc, 0x37, 0x2d, 0x85, 0xe3, 0x31, 0x17, 0x0f, 0xcb, 0xf7, 0xcc, 0x72, 0xd0, 0xb7, 0x1c,
+0x29, 0x66, 0x48, 0xb3, 0xa4, 0xd1, 0x0f, 0x41, 0x62, 0x95, 0xd0, 0x80, 0x7a, 0xa6, 0x25, 0xca,
+0xb2, 0x74, 0x4f, 0xd9, 0xea, 0x8f, 0xd2, 0x23, 0xc4, 0x25, 0x37, 0x02, 0x98, 0x28, 0xbd, 0x16,
+0xbe, 0x02, 0x54, 0x6f, 0x13, 0x0f, 0xd2, 0xe3, 0x3b, 0x93, 0x6d, 0x26, 0x76, 0xe0, 0x8a, 0xed,
+0x1b, 0x73, 0x31, 0x8b, 0x75, 0x0a, 0x01, 0x67, 0xd0 };
 
-/* Message: */
-const uint8_t message_x[]  = {
-0x66, 0x28, 0x19, 0x4e, 0x12, 0x07, 0x3d, 0xb0, 0x3b, 0xa9, 0x4c, 0xda, 0x9e, 0xf9, 0x53, 0x23,
-0x97, 0xd5, 0x0d, 0xba, 0x79, 0xb9, 0x87, 0x00, 0x4a, 0xfe, 0xfe, 0x34
+/* Signature: */
+const uint8_t sign_1_1[] = {
+0x6b, 0xc3, 0xa0, 0x66, 0x56, 0x84, 0x29, 0x30, 0xa2, 0x47, 0xe3, 0x0d, 0x58, 0x64, 0xb4, 0xd8,
+0x19, 0x23, 0x6b, 0xa7, 0xc6, 0x89, 0x65, 0x86, 0x2a, 0xd7, 0xdb, 0xc4, 0xe2, 0x4a, 0xf2, 0x8e,
+0x86, 0xbb, 0x53, 0x1f, 0x03, 0x35, 0x8b, 0xe5, 0xfb, 0x74, 0x77, 0x7c, 0x60, 0x86, 0xf8, 0x50,
+0xca, 0xef, 0x89, 0x3f, 0x0d, 0x6f, 0xcc, 0x2d, 0x0c, 0x91, 0xec, 0x01, 0x36, 0x93, 0xb4, 0xea,
+0x00, 0xb8, 0x0c, 0xd4, 0x9a, 0xac, 0x4e, 0xcb, 0x5f, 0x89, 0x11, 0xaf, 0xe5, 0x39, 0xad, 0xa4,
+0xa8, 0xf3, 0x82, 0x3d, 0x1d, 0x13, 0xe4, 0x72, 0xd1, 0x49, 0x05, 0x47, 0xc6, 0x59, 0xc7, 0x61,
+0x7f, 0x3d, 0x24, 0x08, 0x7d, 0xdb, 0x6f, 0x2b, 0x72, 0x09, 0x61, 0x67, 0xfc, 0x09, 0x7c, 0xab,
+0x18, 0xe9, 0xa4, 0x58, 0xfc, 0xb6, 0x34, 0xcd, 0xce, 0x8e, 0xe3, 0x58, 0x94, 0xc4, 0x84, 0xd7
 };
 
-/* Seed: */
-const uint8_t seed_x[]  = {
-0x01, 0x73, 0x41, 0xae, 0x38, 0x75, 0xd5, 0xf8, 0x71, 0x01, 0xf8, 0xcc, 0x4f, 0xa9, 0xb9, 0xbc,
-0x15, 0x6b, 0xb0, 0x46, 0x28, 0xfc, 0xcd, 0xb2, 0xf4, 0xf1, 0x1e, 0x90, 0x5b, 0xd3, 0xa1, 0x55,
-0xd3, 0x76, 0xf5, 0x93, 0xbd, 0x73, 0x04, 0x21, 0x08, 0x74, 0xeb, 0xa0, 0x8a, 0x5e, 0x22, 0xbc,
-0xcc, 0xb4, 0xc9, 0xd3, 0x88, 0x2a, 0x93, 0xa5, 0x4d, 0xb0, 0x22, 0xf5, 0x03, 0xd1, 0x63, 0x38,
-0xb6, 0xb7, 0xce, 0x16, 0xdc, 0x7f, 0x4b, 0xbf, 0x9a, 0x96, 0xb5, 0x97, 0x72, 0xd6, 0x60, 0x6e,
-0x97, 0x47, 0xc7, 0x64, 0x9b, 0xf9, 0xe0, 0x83, 0xdb, 0x98, 0x18, 0x84, 0xa9, 0x54, 0xab, 0x3c,
-0x6f };
-
-/* Encryption: */
-const uint8_t encrypted_x[]  = {
-0x50, 0xb4, 0xc1, 0x41, 0x36, 0xbd, 0x19, 0x8c, 0x2f, 0x3c, 0x3e, 0xd2, 0x43, 0xfc, 0xe0, 0x36,
-0xe1, 0x68, 0xd5, 0x65, 0x17, 0x98, 0x4a, 0x26, 0x3c, 0xd6, 0x64, 0x92, 0xb8, 0x08, 0x04, 0xf1,
-0x69, 0xd2, 0x10, 0xf2, 0xb9, 0xbd, 0xfb, 0x48, 0xb1, 0x2f, 0x9e, 0xa0, 0x50, 0x09, 0xc7, 0x7d,
-0xa2, 0x57, 0xcc, 0x60, 0x0c, 0xce, 0xfe, 0x3a, 0x62, 0x83, 0x78, 0x9d, 0x8e, 0xa0, 0xe6, 0x07,
-0xac, 0x58, 0xe2, 0x69, 0x0e, 0xc4, 0xeb, 0xc1, 0x01, 0x46, 0xe8, 0xcb, 0xaa, 0x5e, 0xd4, 0xd5,
-0xcc, 0xe6, 0xfe, 0x7b, 0x0f, 0xf9, 0xef, 0xc1, 0xea, 0xbb, 0x56, 0x4d, 0xbf, 0x49, 0x82, 0x85,
-0xf4, 0x49, 0xee, 0x61, 0xdd, 0x7b, 0x42, 0xee, 0x5b, 0x58, 0x92, 0xcb, 0x90, 0x60, 0x1f, 0x30,
-0xcd, 0xa0, 0x7b, 0xf2, 0x64, 0x89, 0x31, 0x0b, 0xcd, 0x23, 0xb5, 0x28, 0xce, 0xab, 0x3c, 0x31
-};
-
-/*
- * PKCS#1 v1.5 Encryption Example 2.15
- * ----------------------------------
- */
-/* Message: */
-const uint8_t message_2_15[] = {
-0xa6,  0xd0,  0xe8,  0xc1,  0xea,  0x4a,  0xb4,  0xec,  0xc8,  0x95,  0x7d,  0x62,  0x28,  0x15,  0x79,  0x67,
-0x5a,  0x64,  0x8d,  0x62,  0xb7,  0xf2,  0x2b,  0x2b,  0x08,  0xd1,  0x31,  0x3f,  0x40,  0x6f,  0x13,  0x7e,
-0x99,  0x42,  0x67,  0x35,  0xcd,  0xb9,  0x37,  0x2f,  0xec,  0xa1,  0xee,  0x78,  0x46,  0x3f,  0xa5,  0xde,
-0x9c,  0xdd,  0x84,  0x75,  0x6c,  0x68,  0xbd,  0x1d,  0x92,  0xba,  0x96,  0x5f,  0x50,  0x64,  0x10,  0xb1
-};
-
-/* Seed: */
-const uint8_t seed_2_15[] = {
-0x1c,  0x25,  0xc9,  0xb8,  0x32,  0x16,  0x9a,  0x1f,  0xdb,  0x6c,  0x14,  0x8e,  0x47,  0xe6,  0x6c,  0x3c,
-0xc8,  0x21,  0x41,  0xe6,  0x11,  0xa6,  0xf3,  0x0c,  0xc9,  0x0c,  0x50,  0x49,  0xe8,  0xc5,  0x02,  0xb3,
-0x1c,  0xad,  0xc7,  0x62,  0x39,  0xb7,  0xbd,  0xaf,  0x93,  0xfa,  0x97,  0x34,  0x3e,  0x7e,  0xe5,  0x51,
-0xbc,  0x52,  0xfd,  0xb5,  0xec,  0x9e,  0x40,  0x0a,  0xf0,  0x5d,  0xbe,  0xac,  0xda
-};
-
-/* Encryption: */
-const uint8_t encrypted_2_15[] = {
-0xe8,  0xb2,  0xfc,  0x76,  0xdf,  0xb4,  0xa6,  0xcc,  0x43,  0x64,  0xde,  0x8f,  0x68,  0x3c,  0x3f,
-0xcd,  0x0a,  0x9e,  0xcf,  0xbd,  0x4a,  0x5a,  0x72,  0x24,  0xf4,  0x9a,  0xe9,  0xb4,  0xf3,  0xb5,  0xcd,
-0xc7,  0x1c,  0xbb,  0x8c,  0x66,  0xfd,  0x35,  0xf3,  0xd1,  0x8e,  0xca,  0x98,  0x96,  0x7b,  0xd4,  0x00,
-0x5d,  0xf7,  0x91,  0x52,  0x41,  0x6f,  0xd4,  0x7e,  0x56,  0x2c,  0x55,  0xed,  0xc6,  0xd6,  0x12,  0x12,
-0x28,  0x6e,  0xf9,  0x75,  0xbc,  0xc8,  0x02,  0x69,  0x25,  0x92,  0x65,  0x39,  0x00,  0x97,  0x3c,  0x72,
-0xe0,  0x1a,  0x69,  0x3b,  0x05,  0xfc,  0x2d,  0x58,  0x56,  0xea,  0xef,  0x7a,  0xc0,  0x8f,  0xf5,  0xec,
-0xd5,  0x31,  0xe2,  0xc2,  0xce,  0x92,  0x77,  0x45,  0xa1,  0x16,  0x5a,  0x51,  0xaa,  0x66,  0x98,  0xa1,
-0xff,  0xcb,  0x87,  0xf8,  0x1e,  0xf6,  0x51,  0x0b,  0xca,  0xf9,  0xcb,  0x76,  0x1e,  0x9e,  0x1f,  0x0f
-};
 
 uint8_t keys_allocated = 0;
 rsa_publickey_t pub_key;
 rsa_privatekey_t priv_key;
 
 #if 1
-  #define MSG       message_2_15
-  #define SEED      seed_2_15
-  #define ENCRYPTED encrypted_2_15
-  #define MODULUS modulus2
-  #define PUB_EXPONENT pub_exponent2
+  #define MSG           message_1_1
+  #define SIGN          sign_1_1
+  #define MODULUS       modulus2
+  #define PUB_EXPONENT  pub_exponent2
   #define PRIV_EXPONENT priv_exponent2
-  #define P p2
-  #define Q q2
-  #define DP dp2
-  #define DQ dq2
-  #define QINV qinv2
+  #define P             p2
+  #define Q             q2
+  #define DP            dp2
+  #define DQ            dq2
+  #define QINV          qinv2
 #endif
 
 
@@ -344,54 +313,31 @@ uint8_t read_bigint(bigint_t* a, char* prompt){
 	}
 	a->wordv = (bigint_word_t*)buffer;
 	a->length_B = (read_length + sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t);
+	a->info = 0;
 	bigint_changeendianess(a);
 	bigint_adjust(a);
 	return 0;
 }
 
 uint8_t pre_alloc_key_crt(void){
-	uint8_t c;
-	pub_key.modulus = malloc(sizeof(bigint_t));
-	if(!pub_key.modulus){
-		cli_putstr("\r\nERROR: OOM!");
-		return 2;
-	}
-	priv_key.modulus = pub_key.modulus;
 	priv_key.n = 5;
-	priv_key.components = malloc(5 * sizeof(bigint_t*));
+	priv_key.components = malloc(5 * sizeof(bigint_t));
 	if(!priv_key.components){
 		cli_putstr("\r\nERROR: OOM!");
 		return 2;
-	}
-	pub_key.exponent = malloc(sizeof(bigint_t));
-	if(!pub_key.exponent){
-		cli_putstr("\r\nERROR: OOM!");
-		return 2;
-	}
-	for(c=0; c<5; ++c){
-		priv_key.components[c] = malloc(sizeof(bigint_t));
-		if(!priv_key.components[c]){
-			cli_putstr("\r\nERROR: OOM!");
-			return 2;
-		}
 	}
 	return 0;
 }
 
 void free_key(void){
 	uint8_t c;
-	free(pub_key.modulus->wordv);
-	free(pub_key.exponent->wordv);
-	free(pub_key.modulus);
-	pub_key.modulus = priv_key.modulus = NULL;
-	free(pub_key.exponent);
-	pub_key.exponent = NULL;
+	free(pub_key.modulus.wordv);
+	free(pub_key.exponent.wordv);
+	pub_key.modulus.wordv = priv_key.modulus.wordv = NULL;
 	for(c = 0; c < priv_key.n; ++c){
-		free(priv_key.components[c]->wordv);
-		free(priv_key.components[c]);
+		free(priv_key.components[c].wordv);
 	}
 	free(priv_key.components);
-	priv_key.components = NULL;
 }
 
 uint8_t read_key_crt(void){
@@ -399,95 +345,60 @@ uint8_t read_key_crt(void){
 	cli_putstr("\r\n== reading key (crt) ==");
 	r = pre_alloc_key_crt();
 	if(r) return r;
-	r = read_bigint(pub_key.modulus,"\r\n = module =");
+	r = read_bigint(&pub_key.modulus, "\r\n = module =");
+	memcpy(&priv_key.modulus, &pub_key.modulus, sizeof(bigint_t));
 	if(r) return r;
-	r = read_bigint(pub_key.exponent,"\r\n = public exponent =");
+	r = read_bigint(&pub_key.exponent, "\r\n = public exponent =");
 	if(r) return r;
-	r = read_bigint(priv_key.components[0],"\r\n = p (first prime) =");
+	r = read_bigint(&priv_key.components[0], "\r\n = p (first prime) =");
 	if(r) return r;
-	r = read_bigint(priv_key.components[1],"\r\n = q (second prime) =");
+	r = read_bigint(&priv_key.components[1], "\r\n = q (second prime) =");
 	if(r) return r;
-	r = read_bigint(priv_key.components[2],"\r\n = dp (p's exponent) =");
+	r = read_bigint(&priv_key.components[2], "\r\n = dp (p's exponent) =");
 	if(r) return r;
-	r = read_bigint(priv_key.components[3],"\r\n = dq (q's exponent) =");
+	r = read_bigint(&priv_key.components[3], "\r\n = dq (q's exponent) =");
 	if(r) return r;
-	r = read_bigint(priv_key.components[4],"\r\n = qInv (q' coefficient) =");
-/*
-	cli_putstr("\r\nmodulus:");
-	bigint_print_hex(pub_key.modulus);
-	cli_putstr("\r\npublic exponent:");
-	bigint_print_hex(pub_key.exponent);
-	cli_putstr("\r\np:");
-	bigint_print_hex(priv_key.components[0]);
-	cli_putstr("\r\nq:");
-	bigint_print_hex(priv_key.components[1]);
-	cli_putstr("\r\ndP:");
-	bigint_print_hex(priv_key.components[2]);
-	cli_putstr("\r\ndQ:");
-	bigint_print_hex(priv_key.components[3]);
-	cli_putstr("\r\nqInv:");
-	bigint_print_hex(priv_key.components[4]);
-*/
+	r = read_bigint(&priv_key.components[4], "\r\n = qInv (q' coefficient) =");
 	return r;
 }
 
 uint8_t read_key_conv(void){
 	uint8_t r;
 	cli_putstr("\r\n== reading key (crt) ==");
-	pub_key.modulus = malloc(sizeof(bigint_t));
-	if(!pub_key.modulus){
-		cli_putstr("\r\nERROR: OOM!");
-		return 2;
-	}
-	r = read_bigint(pub_key.modulus,"\r\n = module =");
+	r = read_bigint(&pub_key.modulus,"\r\n = module =");
 	if(r) return r;
-	priv_key.modulus = pub_key.modulus;
+	memcpy(&priv_key.modulus, &pub_key.modulus, sizeof(bigint_t));
 	priv_key.n = 1;
-	pub_key.exponent = malloc(sizeof(bigint_t));
-	if(!pub_key.exponent){
-		cli_putstr("\r\nERROR: OOM!");
-		return 2;
-	}
-	priv_key.components = malloc(sizeof(bigint_t*));
+	priv_key.components = malloc(sizeof(bigint_t));
 	if(!priv_key.components){
 		cli_putstr("\r\nERROR: OOM!");
 		return 2;
 	}
-	priv_key.components[0] = malloc(sizeof(bigint_t));
-	if(!priv_key.components[0]){
-		cli_putstr("\r\nERROR: OOM!");
-		return 2;
-	}
-	r = read_bigint(pub_key.exponent,"\r\n = public exponent =");
+	r = read_bigint(&pub_key.exponent, "\r\n = public exponent =");
 	if(r) return r;
-	r = read_bigint(priv_key.components[0],"\r\n = private exponent =");
+	r = read_bigint(&priv_key.components[0], "\r\n = private exponent =");
 	return r;
 }
 
 void load_priv_conventional(void){
-	bigint_t *epriv;
-	epriv = malloc(sizeof(bigint_t));
-	if(!epriv){
+	priv_key.components = malloc(sizeof(bigint_t));
+	priv_key.components[0].length_B = (sizeof(PRIV_EXPONENT) +
+			sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t);
+	priv_key.components[0].wordv =  malloc(priv_key.components[0].length_B *
+			sizeof(bigint_word_t));
+	if(!priv_key.components[0].wordv){
 		cli_putstr("\r\nERROR: OOM!");
 		return;
 	}
-	epriv->length_B = (sizeof(PRIV_EXPONENT) + sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t);
-	epriv->wordv =  malloc(epriv->length_B * sizeof(bigint_word_t));
-	if(!epriv->wordv){
-		cli_putstr("\r\nERROR: OOM!");
-		return;
-	}
-	memcpy(epriv->wordv, PRIV_EXPONENT, sizeof(PRIV_EXPONENT));
-	priv_key.components = malloc(sizeof(bigint_t*));
-	priv_key.components[0] = epriv;
+	memcpy(priv_key.components[0].wordv, PRIV_EXPONENT, sizeof(PRIV_EXPONENT));
 	priv_key.n = 1;
-	bigint_changeendianess(epriv);
-	bigint_adjust(epriv);
+	bigint_changeendianess(&priv_key.components[0]);
+	bigint_adjust(&priv_key.components[0]);
 }
 
 
 void load_priv_crt_mono(void){
-	bigint_t **v;
+	bigint_t *v;
 	const uint8_t *bv[5] = {P,Q,DP,DQ,QINV};
 	uint16_t sv[5] = {sizeof(P), sizeof(Q), sizeof(DP), sizeof(DQ), sizeof(QINV)};
 	uint8_t i;
@@ -496,25 +407,19 @@ void load_priv_crt_mono(void){
 		cli_putstr("\r\nERROR: OOM!");
 		return;
 	}
-	priv_key.components = malloc(5*sizeof(bigint_t*));
-	if(!priv_key.components){
-		cli_putstr("\r\nERROR: OOM!");
-		return;
-	}
+	priv_key.components = v;
 	priv_key.n = 5;
 	for(i=0; i<5; ++i){
-		v[i] = malloc(sizeof(bigint_t));
-		v[i]->info = 0;
-		v[i]->length_B = (sv[i] + sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t);
-		v[i]->wordv = calloc(v[i]->length_B , sizeof(bigint_word_t));
-		if(!v[i]->wordv){
+		v[i].info = 0;
+		v[i].length_B = (sv[i] + sizeof(bigint_word_t) - 1) / sizeof(bigint_word_t);
+		v[i].wordv = calloc(v[i].length_B , sizeof(bigint_word_t));
+		if(!v[i].wordv){
 			cli_putstr("\r\nERROR: OOM!");
 			return;
 		}
-		memcpy(v[i]->wordv, bv[i], sv[i]);
-		bigint_changeendianess(v[i]);
-		bigint_adjust(v[i]);
-		priv_key.components[i] = v[i];
+		memcpy(v[i].wordv, bv[i], sv[i]);
+		bigint_changeendianess(&v[i]);
+		bigint_adjust(&v[i]);
 	}
 }
 
@@ -544,162 +449,113 @@ void load_fix_rsa(void){
 		return;
 	}
 
-	load_bigint_from_os(pub_key.modulus, MODULUS, sizeof(MODULUS));
-	load_bigint_from_os(pub_key.exponent, PUB_EXPONENT, sizeof(PUB_EXPONENT));
+	load_bigint_from_os(&pub_key.modulus, MODULUS, sizeof(MODULUS));
+	load_bigint_from_os(&pub_key.exponent, PUB_EXPONENT, sizeof(PUB_EXPONENT));
 	priv_key.n = 5;
-	load_bigint_from_os(priv_key.components[0], P, sizeof(P));
-	load_bigint_from_os(priv_key.components[1], Q, sizeof(Q));
-	load_bigint_from_os(priv_key.components[2], DP, sizeof(DP));
-	load_bigint_from_os(priv_key.components[3], DQ, sizeof(DQ));
-	load_bigint_from_os(priv_key.components[4], QINV, sizeof(QINV));
+	memcpy(&priv_key.modulus, &pub_key.modulus, sizeof(bigint_t));
+	load_bigint_from_os(&priv_key.components[0], P, sizeof(P));
+	load_bigint_from_os(&priv_key.components[1], Q, sizeof(Q));
+	load_bigint_from_os(&priv_key.components[2], DP, sizeof(DP));
+	load_bigint_from_os(&priv_key.components[3], DQ, sizeof(DQ));
+	load_bigint_from_os(&priv_key.components[4], QINV, sizeof(QINV));
 
 //	load_priv_conventional();
 //	load_priv_crt_mono();
 }
 
 void quick_test(void){
-	uint8_t *ciphertext, *plaintext, rc;
-	uint8_t seed[sizeof(SEED)], seed_out[sizeof(SEED)];
-	uint16_t clen, plen;
+	uint8_t *msg, *sign, hash[20], rc;
+	uint16_t slen;
 	if(!keys_allocated){
 		load_fix_rsa();
 	}
-	ciphertext = malloc(clen = pub_key.modulus->length_B * sizeof(bigint_word_t));
-	plaintext = malloc(pub_key.modulus->length_B * sizeof(bigint_word_t));
-	memcpy(plaintext, MSG, sizeof(MSG));
-	memcpy(seed, SEED, sizeof(SEED));
-	cli_putstr("\r\nplaintext:");
-	cli_hexdump_block(plaintext, sizeof(MSG), 4, 16);
-	cli_putstr("\r\nseed:");
-	cli_hexdump_block(seed, sizeof(SEED), 4, 16);
-	cli_putstr("\r\nencrypting: ...");
+	msg = malloc(sizeof(MSG));
+	memcpy(msg, MSG, sizeof(MSG));
+	sign = malloc(pub_key.modulus.length_B * sizeof(bigint_word_t));
+	cli_putstr("\r\nhashing:...");
+	sha1(hash, msg, sizeof(MSG) * 8);
+	cli_putstr("\r\nsigning: ...");
 
-	rc = rsa_encrypt_pkcs15(ciphertext, &clen, plaintext, sizeof(MSG), &pub_key, seed);
+	rc = rsa_sign_pkcs1v15(sign, &slen, hash, 20, &priv_key, &pkcs1v15_sha1_prefix);
 	if(rc){
-		cli_putstr("\r\nERROR: rsa_encrypt_pkcs15 returned: ");
+		cli_putstr("\r\nERROR: rsa_sign_pkcs1v15() returned: ");
 		cli_hexdump_byte(rc);
 		return;
-
 	}
 
-	cli_putstr("\r\n\r\nciphertext:");
-	cli_hexdump_block(ciphertext, clen, 4, 16);
-	if(clen!=sizeof(ENCRYPTED)){
+	cli_putstr("\r\n\r\nsignature:");
+	cli_hexdump_block(sign, slen, 4, 16);
+	if(slen!=sizeof(SIGN)){
 			cli_putstr("\r\n>>FAIL (no size match)<<");
 	}else{
-		if(memcmp(ciphertext, ENCRYPTED, clen)){
+		if(memcmp(sign, SIGN, slen)){
 			cli_putstr("\r\n>>FAIL (no content match)<<");
 		}else{
 			cli_putstr("\r\n>>OK<<");
 		}
 	}
 
-	cli_putstr("\r\ndecrypting: ...");
-	rc = rsa_decrypt_pkcs15(plaintext, &plen, ciphertext, clen, &priv_key, seed_out);
+	cli_putstr("\r\nverifying: ...");
+	rc = rsa_verify_pkcs1v15(sign, slen, hash, 20, &pub_key, &pkcs1v15_sha1_prefix);
 	if(rc){
-		cli_putstr("\r\nERROR: rsa_decrypt_pkcs15 returned: ");
+		cli_putstr("\r\nERROR: rsa_verify_pkcs1v15() returned: ");
 		cli_hexdump_byte(rc);
 		return;
+	}else{
+		cli_putstr("\r\nsignature >>OK<<");
 	}
-	cli_putstr("\r\n\r\nplaintext:");
-	cli_hexdump_block(plaintext, plen, 4, 16);
-	cli_putstr("\r\n\r\nseed (out):");
-	cli_hexdump_block(seed_out, sizeof(SEED), 4, 16);
-
-	free(ciphertext);
-	free(plaintext);
+	free(sign);
+	free(msg);
 }
 
-void run_seed_test(void){
-	uint8_t *msg, *ciph, *msg_;
-	uint16_t msg_len, ciph_len, msg_len_;
-	uint16_t seed_len;
-	uint8_t *seed, *seed_out;
+void run_sha1_test(void){
+	uint8_t *msg, *sign, hash[20], rc;
+	uint16_t msg_len, sign_len;
 	char read_int_str[18];
 	cli_putstr("\r\n== test with given seed ==");
 	cli_putstr("\r\n = message =");
 	cli_putstr("\r\n  length: ");
 	cli_getsn(read_int_str, 16);
 	msg_len = own_atou(read_int_str);
-	seed_len = rsa_pkcs15_compute_padlength_B(pub_key.modulus, msg_len);
-	seed = malloc(seed_len);
-	if(!seed){
-		cli_putstr("\r\nERROR: OOM!");
-		return;
-	}
-	seed_out = malloc(seed_len);
-	if(!seed_out){
-		cli_putstr("\r\nERROR: OOM!");
-		return;
-	}
 	msg = malloc(msg_len);
 	if(!msg){
 		cli_putstr("\r\nERROR: OOM!");
 		return;
 	}
-	ciph = malloc(bigint_length_B(pub_key.modulus));
-	if(!ciph){
-		cli_putstr("\r\nERROR: OOM!");
-		return;
-	}
-	msg_ = malloc(bigint_length_B(pub_key.modulus));
-	if(!msg_){
+	sign = malloc(bigint_length_B(&pub_key.modulus));
+	if(!sign){
 		cli_putstr("\r\nERROR: OOM!");
 		return;
 	}
 	cli_putstr("\r\n  data: ");
 	read_os(msg, msg_len, NULL);
-	cli_putstr("\r\n  seed (0x");
-	cli_hexdump_rev(&seed_len, 2);
-	cli_putstr(" bytes): ");
-	read_os(seed, seed_len, NULL);
-
-	cli_putstr("\r\n  encrypting ...");
+	cli_putstr("\r\n  hashing ...");
+	sha1(hash, msg, msg_len * 8);
+	cli_putstr("\r\n  signing ...");
 /*
 	cli_putstr("\r\n plaintext:");
 	cli_hexdump_block(msg, msg_len, 4, 16);
 	cli_putstr("\r\n seed:");
 	cli_hexdump_block(seed, seed_len, 4, 16);
 */
-	rsa_encrypt_pkcs15(ciph, &ciph_len, msg, msg_len, &pub_key, seed);
-	cli_putstr("\r\n  ciphertext:");
-	cli_hexdump_block(ciph, ciph_len, 4, 16);
-	cli_putstr("\r\n  decrypting ... ");
-	rsa_decrypt_pkcs15(msg_, &msg_len_, ciph, ciph_len, &priv_key, seed_out);
+	rc = rsa_sign_pkcs1v15(sign, &sign_len, hash, 20, &priv_key, &pkcs1v15_sha1_prefix);
+	if(rc){
+		cli_putstr("\r\n  ERROR: computing signature failed with code: ");
+		cli_hexdump_byte(rc);
+	}
+	cli_putstr("\r\n  signature:");
+	cli_hexdump_block(sign, sign_len, 4, 16);
+	cli_putstr("\r\n  verifying ... ");
+	rc = rsa_verify_pkcs1v15(sign, sign_len, hash, 20, &pub_key, &pkcs1v15_sha1_prefix);
 	cli_putstr("[done]");
-	if(msg_len != msg_len_){
-		char tstr[16];
-		cli_putstr("\r\nERROR: wrong decrypted message length (");
-		ultoa(msg_len_, tstr, 10);
-		cli_putstr(tstr);
-		cli_putstr(" instead of ");
-		ultoa(msg_len, tstr, 10);
-		cli_putstr(tstr);
-		cli_putc(')');
-		goto end;
+	if(rc){
+		cli_putstr("\r\n  ERROR: verifying signature failed with code: ");
+		cli_hexdump_byte(rc);
+	}else{
+		cli_putstr("\r\n  >>OK<<");
 	}
-	if(memcmp(msg, msg_, msg_len)){
-		cli_putstr("\r\nERROR: wrong decrypted message:");
-		cli_hexdump_block(msg_, msg_len_, 4, 16);
-		cli_putstr("\r\nreference:");
-		cli_hexdump_block(msg, msg_len, 4, 16);
-		goto end;
-	}
-
-	if(memcmp(seed, seed_out, seed_len)){
-		cli_putstr("\r\nERROR: wrong decrypted seed:");
-		cli_hexdump_block(seed_out, seed_len, 4, 16);
-		cli_putstr("\r\nreference:");
-		cli_hexdump_block(seed, seed_len, 4, 16);
-		goto end;
-	}
-	cli_putstr("\r\n  >>OK<<");
-end:
-	free(ciph);
-	free(msg_);
+	free(sign);
 	free(msg);
-	free(seed_out);
-	free(seed);
 }
 
 void reset_prng(void){
@@ -730,7 +586,7 @@ void test_dump(void){
 	cli_putstr("\r\ndumping 0x");
 	cli_hexdump_rev(&len, 2);
 	cli_putstr(" byte:");
-	cli_hexdump_block(pub_key.modulus->wordv, len, 4, 8);
+	cli_hexdump_block(pub_key.modulus.wordv, len, 4, 8);
 }
 
 /*****************************************************************************
@@ -742,7 +598,7 @@ const char reset_prng_str[]    = "reset-prng";
 const char load_key_str[]      = "load-key";
 const char load_fix_key_str[]  = "load-fix-key";
 const char quick_test_str[]    = "quick-test";
-const char seed_test_str[]     = "seed-test";
+const char sha1_test_str[]     = "sha1-test";
 const char dump_test_str[]     = "dump-test";
 const char performance_str[]   = "performance";
 const char echo_str[]          = "echo";
@@ -752,7 +608,7 @@ const cmdlist_entry_t cmdlist[]  = {
 	{ load_key_str,         NULL, load_key                      },
 	{ load_fix_key_str,     NULL, load_fix_rsa                  },
 	{ quick_test_str,       NULL, quick_test                    },
-	{ seed_test_str,        NULL, run_seed_test                 },
+	{ sha1_test_str,        NULL, run_sha1_test                 },
 	{ dump_test_str,        NULL, test_dump                     },
 //	{ performance_str,      NULL, testrun_performance_bigint    },
 	{ echo_str,         (void*)1, (void_fpt)echo_ctrl           },
