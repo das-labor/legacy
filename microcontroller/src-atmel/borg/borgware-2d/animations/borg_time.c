@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <avr/pgmspace.h>
+#include "../compat/pgmspace.h"
 #include "../config.h"
 #include "../can/can.h"
 #include "../can/lap.h"
@@ -21,7 +21,7 @@
 #endif
 
 //hackhack
-extern can_addr myaddr;
+extern can_addr_t myaddr;
 
 //send a time request packet via can
 void time_request(void)
