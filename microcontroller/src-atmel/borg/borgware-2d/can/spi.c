@@ -1,6 +1,10 @@
+#ifdef __AVR__
 #include <avr/io.h>
+#endif
+
 #include "spi.h"
 
+#ifdef __AVR__
 
 void spi_init(){
 	//set output SPI pins to output
@@ -27,21 +31,21 @@ void spi_init(){
 }
 
 #ifndef SPI_HARDWARE
-unsigned char spi_data(unsigned char c){
+unsigned char spi_data(unsigned char c) {
 	unsigned char x, d=d;
-	for(x=0;x<8;x++){
-		if(c & 0x80){
-			SPI_PORT |= (1<<SPI_PIN_MOSI);
-		}else{
-			SPI_PORT &= ~(1<<SPI_PIN_MOSI);	
+	for(x = 0; x < 8; x++) {
+		if(c & 0x80) {
+			SPI_PORT |= (1 << SPI_PIN_MOSI);
+		} else {
+			SPI_PORT &= ~(1 << SPI_PIN_MOSI);
 		}
-		SPI_PORT |= (1<<SPI_PIN_SCK);
-		d<<=1;
-		if(SPI_PIN & (1<<SPI_PIN_MISO)){
-			d|=1;
+		SPI_PORT |= (1 << SPI_PIN_SCK);
+		d <<= 1;
+		if(SPI_PIN & (1 << SPI_PIN_MISO)) {
+			d |= 1;
 		}
-		SPI_PORT &= ~(1<<SPI_PIN_SCK);
-		c<<=1;
+		SPI_PORT &= ~(1 << SPI_PIN_SCK);
+		c <<= 1;
 	}
 	return d;
 }
@@ -52,4 +56,11 @@ unsigned char spi_data(unsigned char c) {
 	c = SPDR;
 	return (c);
 }
+#endif
+
+#else
+
+void spi_init(){}
+unsigned char spi_data(unsigned char c){return 0;}
+
 #endif

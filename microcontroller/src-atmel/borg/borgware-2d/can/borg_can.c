@@ -4,13 +4,19 @@
 #include "spi.h"
 #include "../borg_hw/borg_hw.h"
 
-#include <avr/pgmspace.h>
 #include <setjmp.h>
-#include <avr/interrupt.h>
-#include <avr/eeprom.h>
+
+#ifdef __AVR__
+#  include <avr/pgmspace.h>
+#  include <avr/interrupt.h>
+#  include <avr/eeprom.h>
+#else
+#  include "../compat/eeprom.h"
+#endif
+
 #include <string.h>
 
-can_addr myaddr;
+can_addr_t myaddr;
 extern jmp_buf newmode_jmpbuf;
 
 #ifdef LAP_TIME_EXTENSION
@@ -45,9 +51,11 @@ void process_mgt_msg(pdo_message *msg)
 
 	switch(msg->cmd) {
 	case FKT_MGT_RESET:
+#ifdef __AVR__
 		timer0_off();
 		cli();
 		while(1);
+#endif
 		break;
 	case FKT_MGT_PING:
 		rmsg = (pdo_message *)can_buffer_get();
@@ -75,26 +83,27 @@ void process_borg_msg(pdo_message *msg)
 {
 	unsigned char i, j;
 
-	switch(msg->cmd) {
+	switch (msg->cmd) {
 	case FKT_BORG_MODE:
 		longjmp(newmode_jmpbuf, msg->data[0]);
 		break;
+
 	case FKT_BORG_SCROLLTEXT_RESET:
-		for(i=0; i < msg->dlc-1; i++) {
+		for (i = 0; i < msg->dlc - 1; i++) {
 			scrolltext_text[i] = msg->data[i];
 		}
 		scrolltext_text[i] = 0;
-
 		break;
+
 	case FKT_BORG_SCROLLTEXT_APPEND:
-		j=0;
-		while(scrolltext_text[j]) j++;
+		j = 0;
+		while (scrolltext_text[j])
+			j++;
 
-		for(i=0; i < msg->dlc-1; i++) {
-			scrolltext_text[i+j] = msg->data[i];
+		for (i = 0; i < msg->dlc - 1; i++) {
+			scrolltext_text[i + j] = msg->data[i];
 		}
-		scrolltext_text[i+j] = 0;
-
+		scrolltext_text[i + j] = 0;
 		break;
 
 #ifdef Hansi_hat_gelernt_Werte_vorher_zu_definieren
@@ -129,21 +138,19 @@ void process_borg_msg(pdo_message *msg)
 	}
 }
 
-void bcan_process_messages()
-{
+void bcan_process_messages() {
 	pdo_message *msg = (pdo_message*) can_get_nb();
 
-	while(msg) {
+	while (msg) {
 		if (!msg)
 			return;
 
-		if(msg->addr_dst == myaddr && msg->port_dst == PORT_MGT)
+		if (msg->addr_dst == myaddr && msg->port_dst == PORT_MGT)
 			process_mgt_msg(msg);
 
-		if(msg->addr_dst == myaddr && msg->port_dst == PORT_BORG)
+		if (msg->addr_dst == myaddr && msg->port_dst == PORT_BORG)
 			process_borg_msg(msg);
 
 		msg = (pdo_message*) can_get_nb();
-	};
-
+	}
 }

@@ -9,45 +9,32 @@
  */
 
 // send ping to dst
-void lap_ping( can_addr dst )
-{
-	pdo_message *msg = (pdo_message *)can_buffer_get();
+void lap_ping(can_addr_t dst) {
+	pdo_message *msg = (pdo_message *) can_buffer_get();
 
 	msg->addr_src = 0;
 	msg->addr_dst = dst;
 	msg->port_src = PORT_MGT;
 	msg->port_dst = PORT_MGT;
-	msg->dlc      = 1;
-	msg->cmd      = FKT_MGT_PING;
+	msg->dlc = 1;
+	msg->cmd = FKT_MGT_PING;
 
-	can_transmit( (can_message *)msg );
+	can_transmit((can_message *) msg);
 }
 
 // send reset request to dst
-void lap_reset( can_addr dst )
-{
-	pdo_message *msg = (pdo_message *)can_buffer_get();
+void lap_reset(can_addr_t dst) {
+	pdo_message *msg = (pdo_message *) can_buffer_get();
 
 	msg->addr_src = 0;
 	msg->addr_dst = dst;
 	msg->port_src = PORT_MGT;
 	msg->port_dst = PORT_MGT;
-	msg->dlc      = 1;
-	msg->cmd      = FKT_MGT_RESET;
+	msg->dlc = 1;
+	msg->cmd = FKT_MGT_RESET;
 
-	can_transmit( (can_message *)msg );
+	can_transmit((can_message *) msg);
 }
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 char *sdo_readbuf(lap_message *first_msg, 
@@ -118,6 +105,5 @@ unsigned char sdo_sendbuf_nb(lap_message *fst_msg, unsigned char *buf, unsigned 
 		can_transmit();
 	}
 	// XXX wait for ACK
-
 }
 */
