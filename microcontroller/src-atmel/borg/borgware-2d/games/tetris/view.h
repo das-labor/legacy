@@ -1,3 +1,15 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file view.c
+ * @brief Public interface definitions of Tetris' graphical output routines.
+ * @author Christian Kroll
+ */
+
+
 #ifndef TETRIS_VIEW_H_
 #define TETRIS_VIEW_H_
 
@@ -7,17 +19,12 @@
 #include "variants.h"
 
 
-/**
- * \defgroup TetrisViewTypes View: Data types
- */
-/*@{*/
-
 /*********
  * types *
  *********/
 
 /** presentation modes */
-enum tetris_view_mode
+enum tetris_view_mode_e
 {
 	TETRIS_VIMO_PAUSED,
 	TETRIS_VIMO_RUNNING
@@ -25,12 +32,12 @@ enum tetris_view_mode
 #ifdef NDEBUG
 	typedef uint8_t tetris_view_mode_t;
 #else
-	typedef enum tetris_view_mode tetris_view_mode_t;
+	typedef enum tetris_view_mode_e tetris_view_mode_t;
 #endif
 
 
 /** data structure that drives the view module */
-typedef struct tetris_view
+typedef struct tetris_view_s
 {
 	tetris_variant_t const *pVariantMethods; /** variant function pointers */
 	void *pVariant;                          /** associated variant object */
@@ -42,13 +49,6 @@ typedef struct tetris_view
 }
 tetris_view_t;
 
-/*@}*/
-
-
-/**
- * \defgroup TetrisInterface View: Interface functions
- */
-/*@{*/
 
 /*****************************
  *  construction/destruction *

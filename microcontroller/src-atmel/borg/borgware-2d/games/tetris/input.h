@@ -1,3 +1,15 @@
+/**
+ * \addtogroup tetris
+ *@{
+ */
+
+/**
+ * @file input.h
+ * @brief Public interface definitions of the input module of Tetris.
+ * @author Christian Kroll
+ */
+
+
 #ifndef INPUT_H_
 #define INPUT_H_
 
@@ -6,10 +18,6 @@
 #include <assert.h>
 #include "bearing.h"
 
-/**
- * \defgroup TetrisInputDefinesPublic Input: Public constants
- */
-/*@{*/
 
 /***********
  * defines *
@@ -18,13 +26,6 @@
 /** number of levels */
 #define TETRIS_INPUT_LEVELS 30
 
-/*@}*/
-
-
-/**
- * \defgroup TetrisInputTypes Input: Data types
- */
-/*@{*/
 
 /*********
  * types *
@@ -33,7 +34,7 @@
 /**
  * allowed input values
  */
-enum tetris_input_command
+enum tetris_input_command_e
 {
 	TETRIS_INCMD_RIGHT,   /**< move piece right */
 	TETRIS_INCMD_DOWN,    /**< lower piece by one row */
@@ -48,14 +49,14 @@ enum tetris_input_command
 #ifdef NDEBUG
 	typedef uint8_t tetris_input_command_t;
 #else
-	typedef enum tetris_input_command tetris_input_command_t;
+	typedef enum tetris_input_command_e tetris_input_command_t;
 #endif
 
 
 /**
  * values which influence the gravity time limit for a piece
  */
-enum tetris_input_pace
+enum tetris_input_pace_e
 {
 	TETRIS_INPACE_HOVERING = 0, /**< normal falling pace */
 	TETRIS_INPACE_GLIDING  = 75 /**< guarantees a minimum docking time to avoid
@@ -64,17 +65,17 @@ enum tetris_input_pace
 #ifdef NDEBUG
 	typedef uint8_t tetris_input_pace_t;
 #else
-	typedef enum tetris_input_pace tetris_input_pace_t;
+	typedef enum tetris_input_pace_e tetris_input_pace_t;
 #endif
 
 
 /**
  * data structure for the input module
  */
-typedef struct tetris_input
+typedef struct tetris_input_s
 {
 	/**
-	 * Amount of loop cycles between forced piece movements. This value gets
+	 * Number of loop cycles between forced piece movements. This value gets
 	 * set via the tetris_input_setLevel() function.
 	 */
 	uint8_t nMaxCycles;
@@ -88,7 +89,7 @@ typedef struct tetris_input
 	uint8_t nLoopCycles;
 
 	/**
-	 * Amount of loop cycles in which the same command has been issued
+	 * Number of loop cycles in which the same command has been issued
 	 * consecutively. It gets reset if either the current command differs from
 	 * the last one or a well-defined value has been reached (thereby
 	 * regulating the pace of the key repeat as commands are only processed
@@ -131,13 +132,6 @@ typedef struct tetris_input
 }
 tetris_input_t;
 
-/*@}*/
-
-
-/**
- * \defgroup TetrisInputRelated Input: Interface functions
- */
-/*@{*/
 
 /****************************
  * construction/destruction *
@@ -200,6 +194,6 @@ void tetris_input_resetDownKeyRepeat(tetris_input_t *pIn);
 void tetris_input_setBearing(tetris_input_t *pIn,
                              tetris_bearing_t nBearing);
 
-/*@}*/
-
 #endif /*INPUT_H_*/
+
+/*@}*/

@@ -1,3 +1,15 @@
+/**
+ * \defgroup Snake Snake, a casual game including a demo mode.
+ *
+ * @{
+ */
+
+/**
+ * @file snake_game.c
+ * @brief Implementation of the snake game.
+ * @author Peter Fuhrmann, Martin Ongsiek, Daniel Otte, Christian Kroll
+ */
+
 #include <assert.h>
 #include <stdint.h>
 #include "../../config.h"
@@ -8,6 +20,7 @@
 #include "../../joystick/joystick.h"
 #include "../../menu/menu.h"
 #include "snake_game.h"
+
 
 #if defined MENU_SUPPORT && defined GAME_SNAKE
 // snake icon (MSB is leftmost pixel)
@@ -22,55 +35,62 @@ game_descriptor_t snake_game_descriptor __attribute__((section(".game_descriptor
 #endif
 
 
-// If defined, joystick controls are NOT as "seen" by the snake but absolute,
-// that is, if pressing up, snake goes up, etc.
+/**
+ * If defined, joystick controls are NOT as "seen" by the snake but absolute,
+ * that is, if pressing up, snake goes up, etc.
+ */
 #define SNAKE_NEWCONTROL
 
-// limits
-#ifndef USNAKE_MAX_LENGTH
+#if !defined USNAKE_MAX_LENGTH || defined DOXYGEN
+	/** The maximum length of the snake. */
 	#define USNAKE_MAX_LENGTH 64u
 #endif
 
-#ifndef SNAKE_MAX_APPLES
+#if !defined SNAKE_MAX_APPLES || defined DOXYGEN
+	/** The maximum number of apples lying on the playing field. */
 	#define SNAKE_MAX_APPLES 10
 #endif
 
-// delays (in milliseconds)
-#ifndef SNAKE_CYCLE_DELAY
+#if !defined SNAKE_CYCLE_DELAY || defined DOXYGEN
+	/** Delay (in ms) between every state change. */
 	#define SNAKE_CYCLE_DELAY 100
 #endif
-#ifndef SNAKE_TERMINATION_DELAY
+
+#if !defined SNAKE_TERMINATION_DELAY || defined DOXYGEN
+	/** Delay (in ms) between every disappearing pixel of a dying snake. */
 	#define SNAKE_TERMINATION_DELAY 60
 #endif
 
-// colors
+/** The color of the surrounding border. */
 #define SNAKE_COLOR_BORDER 3
+/** The color of the snake. */
 #define SNAKE_COLOR_PROTAGONIST 3
+/** The color of the apples. */
 #define SNAKE_COLOR_APPLE 3
 
 
 /**
  * Directions of the snake.
  */
-enum snake_dir
+enum snake_dir_e
 {
-	SNAKE_DIR_UP,   //!< SNAKE_DIR_UP    Snake is heading up.
-	SNAKE_DIR_RIGHT,//!< SNAKE_DIR_RIGHT Snake is heading right.
-	SNAKE_DIR_DOWN, //!< SNAKE_DIR_DOWN  Snake is heading down.
-	SNAKE_DIR_LEFT, //!< SNAKE_DIR_LEFT  Snake is heading left.
-	SNAKE_DIR_NONE  //!< SNAKE_DIR_NONE  Helper value for a "resting" joystick.
+	SNAKE_DIR_UP,   /**< Snake is heading up. */
+	SNAKE_DIR_RIGHT,/**< Snake is heading right. */
+	SNAKE_DIR_DOWN, /**< Snake is heading down. */
+	SNAKE_DIR_LEFT, /**< Snake is heading left. */
+	SNAKE_DIR_NONE  /**< Helper value for a "resting" joystick. */
 };
 #ifdef NDEBUG
 	typedef uint8_t snake_dir_t;
 #else
-	typedef enum snake_dir snake_dir_t;
+	typedef enum snake_dir_e snake_dir_t;
 #endif
 
 /**
  * This structure represents the snake character itself. It keeps track of the
  * snake's segments, its head and tail and the direction it is heading.
  */
-typedef struct snake_protagonist
+typedef struct snake_protagonist_s
 {
 	pixel aSegments[USNAKE_MAX_LENGTH]; /**< All segments of the snake. */
 	uint8_t nHeadIndex;                 /**< Index of the head segment. */
@@ -82,20 +102,22 @@ typedef struct snake_protagonist
 /**
  * This structure keeps track of all apples which are on the playing field.
  */
-typedef struct snake_apples
+typedef struct snake_apples_s
 {
-	pixel aApples[SNAKE_MAX_APPLES]; /**< All apple positions */
-	uint8_t nAppleCount;             /**< Counter of currently existing apples*/
+	pixel aApples[SNAKE_MAX_APPLES]; /**< Positions of all existing apples. */
+	uint8_t nAppleCount;             /**< Count of currently existing apples. */
 } snake_apples_t;
 
 
 /**
- * Moves a pixel to the given direction.
- * @param pxNext pixel to be moved
- * @param dir direction
+ * This function returns the next position which is calculated from a given
+ * (current) position and a direction.
+ * @param pxNext The position we're going to leave.
+ * @param dir The direction that we are heading.
+ * @return The next position according the given direction.
  */
-static pixel snake_applyDirection(pixel pxNext,
-                                  snake_dir_t dir)
+static pixel snake_nextDirection(pixel const pxNext,
+                                 snake_dir_t const dir)
 {
 	assert(dir < 4);
 	static int8_t const nDelta[] = {0, -1, 0, 1, 0};
@@ -104,7 +126,7 @@ static pixel snake_applyDirection(pixel pxNext,
 
 
 /**
- * This functions draws a border around the playing field.
+ * This function draws a border around the playing field.
  */
 static void snake_drawBorder(void)
 {
@@ -132,8 +154,9 @@ static void snake_drawBorder(void)
 
 #ifdef GAME_SNAKE
 /**
- * Translates port information into directions.
- * @return Current direction of the joystick
+ * This function translates hardware port information into joystick directions.
+ * @return The current direction of the joystick.
+ * @see snake_dir_e
  */
 static snake_dir_t snake_queryJoystick(void)
 {
@@ -164,8 +187,8 @@ static snake_dir_t snake_queryJoystick(void)
 #endif
 
 /**
- * Initializes the structure which represents the snake itself.
- * @param pprotSnake The protagonist structure to be initialized.
+ * This function initializes the structure which represents the snake itself.
+ * @param pprotSnake The pointer the protagonist structure to be initialized.
  */
 static void snake_initGameProtagonist(snake_protagonist_t *pprotSnake)
 {
@@ -176,15 +199,14 @@ static void snake_initGameProtagonist(snake_protagonist_t *pprotSnake)
 	pprotSnake->dir = SNAKE_DIR_UP;
 }
 
-
 #ifdef GAME_SNAKE
 /**
- * Determines the next direction of the snake depending on joystick input.
- * @param pprotSnake Protagonist structure to be controlled.
- * @param pdirLast The last joystick movement to avoid key repeat.
+ * Determines the next direction of the snake depending on the joystick's input.
+ * @param pprotSnake A pointer to the structure of the protagonist.
+ * @param pdirLast Last joystick direction to recognize prolonged key presses.
  */
 static void snake_userControl(snake_protagonist_t *pprotSnake,
-                                     snake_dir_t *pdirLast)
+                              snake_dir_t *pdirLast)
 {
 	snake_dir_t dirJoystick = snake_queryJoystick();
 #ifdef SNAKE_NEWCONTROL
@@ -198,7 +220,8 @@ static void snake_userControl(snake_protagonist_t *pprotSnake,
 	}
 #else
 	if ((dirJoystick ^ *pdirLast) && (dirJoystick != SNAKE_DIR_NONE))
-	{		// only left or right movements are valid
+	{
+		// only left or right movements are valid
 		if (dirJoystick & 0x01)
 		{
 			// rotate through directions (either clockwise or counterclockwise)
@@ -214,9 +237,10 @@ static void snake_userControl(snake_protagonist_t *pprotSnake,
 
 #ifdef ANIMATION_SNAKE
 /**
- * Approaches directions which may lead to an apple.
- * @param pprotSnake The hungry protagonist.
- * @param pApples A bunch of apples.
+ * This function approximates the next direction which may lead to an apple
+ * (with a particular probability).
+ * @param pprotSnake A pointer to the hungry protagonist.
+ * @param pApples A pointer to a bunch of apples.
  */
 static void snake_autoRoute(snake_protagonist_t *pprotSnake,
                             snake_apples_t *pApples)
@@ -271,7 +295,7 @@ static void snake_autoRoute(snake_protagonist_t *pprotSnake,
 
 	for (uint8_t i = 0; i < 4; ++i)
 	{
-		pixel pxTest = snake_applyDirection(pxHead, pprotSnake->dir);
+		pixel pxTest = snake_nextDirection(pxHead, pprotSnake->dir);
 		if (get_pixel(pxTest))
 		{
 			for (uint8_t j = 0; j < pApples->nAppleCount; ++j)
@@ -294,8 +318,8 @@ static void snake_autoRoute(snake_protagonist_t *pprotSnake,
 
 
 /**
- * Small animation that lets the dying snake disappear.
- * @param pprotSnake Pointer to the dying snake.
+ * Small animation that lets the dying snake disappear piece by piece.
+ * @param pprotSnake A pointer to the dying snake.
  */
 static void snake_eliminateProtagonist(snake_protagonist_t *pprotSnake)
 {
@@ -310,7 +334,7 @@ static void snake_eliminateProtagonist(snake_protagonist_t *pprotSnake)
 
 /**
  * Initializes the structure that keeps track of all currently existing apples.
- * @param pApples Pointer to the apples in question.
+ * @param pApples Pointer to the set of apples in question.
  */
 static void snake_initApples(snake_apples_t *pApples)
 {
@@ -320,7 +344,7 @@ static void snake_initApples(snake_apples_t *pApples)
 
 /**
  * Checks for an apple at a given position and removes it if there is one.
- * @param pApples The set of apples which are one the playing field
+ * @param pApples The set of apples which are lying on the playing field.
  * @param pxHead The position to be tested.
  * @return 0 if no apples were found, 1 otherwise
  */
@@ -345,7 +369,7 @@ static uint8_t snake_checkForApple(snake_apples_t *pApples, pixel pxHead)
 
 /**
  * Creates some new apples from time to time.
- * @param pApples Pointer to the apple structure.
+ * @param pApples Pointer to a set of apples.
  */
 static void snake_spawnApples(snake_apples_t *pApples)
 {
@@ -362,7 +386,9 @@ static void snake_spawnApples(snake_apples_t *pApples)
 
 
 /**
- * The snake game.
+ * The main loop (plus initialization) that both drives the game and the
+ * demo mode.
+ * @param bDemoMode 0 indicates game mode, 1 indicates demo mode
  */
 void snake_engine(uint8_t bDemoMode)
 {
@@ -399,7 +425,7 @@ void snake_engine(uint8_t bDemoMode)
 		pixel pxOldHead = protSnake.aSegments[protSnake.nHeadIndex];
 		protSnake.nHeadIndex = (protSnake.nHeadIndex + 1) % USNAKE_MAX_LENGTH;
 		protSnake.aSegments[protSnake.nHeadIndex] =
-				snake_applyDirection(pxOldHead, protSnake.dir);
+				snake_nextDirection(pxOldHead, protSnake.dir);
 
 		// look if we have found an apple
 		if (!snake_checkForApple(&apples,
@@ -440,3 +466,5 @@ void snake_game(void)
 {
 	snake_engine(0);
 }
+
+/*@}*/

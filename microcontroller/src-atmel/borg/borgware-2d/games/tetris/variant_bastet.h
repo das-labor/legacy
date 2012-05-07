@@ -1,3 +1,20 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file variant_bastet.h
+ * @brief Public interface of the "Bastard Tetris" module.
+ * @details Based on the game "Bastet" (version 0.41) by Frederico Poloni. His
+ *          code isn't used as the Borg's Tetris framework is too different from
+ *          that of "Petris" (on which Bastet is based), but the algorithms of
+ *          this implementation are closely modeled after his ideas.
+ * @author Christian Kroll
+ * @see Frederico Poloni's homepage: http://fph.altervista.org/prog/bastet.html
+ */
+
+
 #ifndef VARIANT_BASTET_H_
 #define VARIANT_BASTET_H_
 
@@ -8,6 +25,7 @@
 #include "bucket.h"
 #include "input.h"
 #include "variants.h"
+
 
 /***************
  * entry point *
@@ -23,7 +41,7 @@ void tetris_bastet(void);
  * types *
  *********/
 
-typedef struct tetris_bastet_scorepair
+typedef struct tetris_bastet_scorepair_s
 {
 	tetris_piece_shape_t shape;
 	int16_t nScore;
@@ -31,10 +49,10 @@ typedef struct tetris_bastet_scorepair
 tetris_bastet_scorepair_t;
 
 
-typedef struct tetris_bastet_variant
+typedef struct tetris_bastet_variant_s
 {
 	uint16_t nScore;                          /** score of the player */
-	uint16_t nHighscore;                      /** highscore */
+	uint16_t nHighscore;                      /** high score */
 	uint16_t nHighscoreName;                  /** champion's initials */
 	uint8_t nLevel;                           /** current level */
 	uint16_t nLines;                          /** number of completed lines */
@@ -210,3 +228,5 @@ void tetris_bastet_setLastInput(void *pVariantData,
 tetris_bearing_t tetris_bastet_getBearing(void *pVariantData);
 
 #endif /*VARIANT_BASTET_H_*/
+
+/*@}*/

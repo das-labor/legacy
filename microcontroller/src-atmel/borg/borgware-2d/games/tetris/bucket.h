@@ -1,3 +1,15 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file bucket.h
+ * @brief Public interface definitions of Tetris' game logic module.
+ * @author Christian Kroll
+ */
+
+
 #ifndef BUCKET_H_
 #define BUCKET_H_
 
@@ -23,7 +35,7 @@
  *********/
 
 // directions to which a piece can be moved
-enum tetris_bucket_direction
+enum tetris_bucket_direction_e
 {
 	TETRIS_BUD_LEFT  = -1,
 	TETRIS_BUD_RIGHT = 1
@@ -31,12 +43,12 @@ enum tetris_bucket_direction
 #ifdef NDEBUG
 	typedef int8_t tetris_bucket_direction_t;
 #else
-	typedef enum tetris_bucket_direction tetris_bucket_direction_t;
+	typedef enum tetris_bucket_direction_e tetris_bucket_direction_t;
 #endif
 
 
 // status of the bucket
-enum tetris_bucket_status
+enum tetris_bucket_status_e
 {
 	TETRIS_BUS_HOVERING = 0, /** piece is hovering */
 	TETRIS_BUS_GLIDING  = 1, /** piece is gliding on the dump */
@@ -47,12 +59,12 @@ enum tetris_bucket_status
 #ifdef NDEBUG
 	typedef uint8_t tetris_bucket_status_t;
 #else
-	typedef enum tetris_bucket_status tetris_bucket_status_t;
+	typedef enum tetris_bucket_status_e tetris_bucket_status_t;
 #endif
 
 
 // tetris_bucket_t
-typedef struct tetris_bucket
+typedef struct tetris_bucket_s
 {
 	int8_t nWidth;                  /** width of bucket */
 	int8_t nHeight;                 /** height of bucket */
@@ -69,7 +81,7 @@ tetris_bucket_t;
 
 
 // iterator for predicted dump rows
-typedef struct tetris_bucket_iterator
+typedef struct tetris_bucket_iterator_s
 {
 	tetris_bucket_t *pBucket; /** bucket to be examined */
 	uint16_t nPieceMap;       /** piece bitmap */
@@ -330,7 +342,7 @@ int8_t tetris_bucket_predictDeepestRow(tetris_bucket_t *pBucket,
  * @param pPiece the piece which should be tested
  * @param nRow the row where the given piece collides
  * @param nColumn the column where the piece should be dropped
- * @return amount of complete lines
+ * @return number of complete lines
  */
 int8_t tetris_bucket_predictCompleteLines(tetris_bucket_t *pBucket,
                                           tetris_piece_t *pPiece,
@@ -364,3 +376,5 @@ uint16_t *tetris_bucket_predictNextRow(tetris_bucket_iterator_t *pIt);
 #endif /* GAME_BASTET */
 
 #endif /*BUCKET_H_*/
+
+/*@}*/

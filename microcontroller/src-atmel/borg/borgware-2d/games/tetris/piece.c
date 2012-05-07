@@ -1,3 +1,15 @@
+/**
+ * \addtogroup tetris
+ *@{
+ */
+
+/**
+ * @file piece.c
+ * @brief Implementation of the piece module.
+ * @author Christian Kroll
+ */
+
+
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
@@ -55,3 +67,5 @@ uint8_t tetris_piece_getAngleCount(tetris_piece_t *pPc)
 
 	return pgm_read_byte(&angleCounts[pPc->shape]);
 }
+
+/*@}*/

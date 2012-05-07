@@ -1,3 +1,21 @@
+/**
+ * \defgroup mherweg Martin Herweg's animations.
+ * @{
+ */
+
+/**
+ * @file mherweg.c
+ * @brief Simple animations for getting started with developing for the Borg.
+ * @details The following animations were developed by Martin Herweg (hence the
+ *          name) as a personal aid for getting familiar with developing for the
+ *          Borg.
+ *
+ *          Although these animations are rarely used among Borg owners, we left
+ *          them in because of their simplicity in hopes that a novice Borg
+ *          developer may find them useful.
+ * @author Martin Herweg
+ */
+
 #include "../compat/pgmspace.h"
 #include "../random/prng.h"
 #include "../config.h"
@@ -5,24 +23,15 @@
 #include "../util.h"
 
 
-/*
- * The following animations were developed by Martin Herweg (hence the name)
- * as a personal aid for getting familiar with programming the Borg.
- *
- * Although these animations are rarely used among Borg owners, we left them in
- * because of their simplicity in hopes that a novice Borg developer may find
- * them useful.
- */
-
-
-// macro for simplifying flash memory access
+/** macro for simplifying flash memory access */
 #define PGM(x) pgm_read_byte(&(x))
 
 
-// use 8 bit operands where feasible
 #if NUM_ROWS < 64 && NUM_COLS < 64
+	/** use 8 bit operands where feasible */
 	typedef signed char operand_t;
 #else
+	/** use 16 bit operands if either width or height are >= 64 */
 	typedef int operand_t;
 #endif
 
@@ -283,3 +292,5 @@ void mherweg()
 	rectangle1();
 	rectangles();
 }
+
+/*@}*/

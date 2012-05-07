@@ -1,3 +1,21 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file variant_fp.c
+ * @brief Implementation of the "First Person Tetris" module.
+ * @details Originally implemented by Michael Holzt. However, his implementation
+ *          did not quite fit into this framework anymore as it was heavily
+ *          modified to improve modularization. Therefore, his code got replaced
+ *          completely. Sorry about that, but thanks for the original
+ *          implementation nonetheless!
+ * @author Christian Kroll
+ * @see variant_std.c
+ */
+
+
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
@@ -102,3 +120,5 @@ void tetris_fp_setLastInput(void *pVariantData,
 	}
 	pStdVariant->nBearing %= 4;
 }
+
+/*@}*/

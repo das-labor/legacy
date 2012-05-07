@@ -1,3 +1,15 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file highscore.c
+ * @brief Implementation of the high score table input module.
+ * @author Michael Holzt, Christian Kroll
+ */
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -9,6 +21,7 @@
 #include "highscore.h"
 
 
+/** The global high score table (located in the EEPROM), */
 tetris_highscore_table_t g_highScoreTable EEMEM;
 
 
@@ -100,3 +113,5 @@ uint16_t tetris_highscore_retrieveHighScore(tetris_highscore_index_t nIndex)
 	// a score of 65535 is most likely caused by uninitialized EEPROM addresses
 	return nHighScore == UINT16_MAX ? 0 : nHighScore;
 }
+
+/*@}*/
