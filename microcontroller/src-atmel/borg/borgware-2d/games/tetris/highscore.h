@@ -1,3 +1,15 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file highscore.h
+ * @brief Public interface definitions of the high score table input module.
+ * @author Michael Holzt, Christian Kroll
+ */
+
+
 #ifndef TETRIS_HIGHSCORE_H_
 #define TETRIS_HIGHSCORE_H_
 
@@ -100,3 +112,5 @@ void tetris_highscore_saveHighScoreName(tetris_highscore_index_t nIndex,
 
 
 #endif /*TETRIS_HIGHSCORE_H_*/
+
+/*@}*/

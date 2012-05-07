@@ -1,3 +1,14 @@
+/**
+ * \addtogroup bitmap
+ * @{
+ */
+
+/**
+ * @file bitmapscroller.h
+ * @brief Public interface for the Borg's bitmap scroller.
+ * @author Christian Kroll
+ */
+
 #ifndef BITMAP_SCROLLER_H_
 #define BITMAP_SCROLLER_H_
 
@@ -33,3 +44,5 @@ void bitmap_scroll(unsigned char const nWidth,
                    bitmap_getChunk_t fpGetChunk);
 
 #endif /* BITMAP_SCROLLER_H_ */
+
+/*@}*/

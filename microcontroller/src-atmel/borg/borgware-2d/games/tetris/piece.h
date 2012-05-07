@@ -1,3 +1,15 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file piece.h
+ * @brief Public interface definitions of the piece module.
+ * @author Christian Kroll
+ */
+
+
 #ifndef TETRIS_PIECE_H_
 #define TETRIS_PIECE_H_
 
@@ -5,17 +17,13 @@
 #include <stdlib.h>
 #include <assert.h>
 
-/**
- * \defgroup TetrisPieceTypes Piece: Data types
- */
-/*@{*/
 
 /*********
  * types *
  *********/
 
 /** shape attributes for a piece */
-enum tetris_piece_shape
+enum tetris_piece_shape_e
 {
 	TETRIS_PC_LINE,   /**< the I shaped brick */
 	TETRIS_PC_T,      /**< the T shaped brick */
@@ -28,12 +36,12 @@ enum tetris_piece_shape
 #ifdef NDEBUG
 	typedef uint8_t tetris_piece_shape_t;
 #else
-	typedef enum tetris_piece_shape tetris_piece_shape_t;
+	typedef enum tetris_piece_shape_e tetris_piece_shape_t;
 #endif
 
 
 /** possible angles for a brick */
-enum tetris_piece_angle
+enum tetris_piece_angle_e
 {
 	TETRIS_PC_ANGLE_0,   /**< standard angle */
 	TETRIS_PC_ANGLE_90,  /**< rotated by 90 degrees */
@@ -43,11 +51,11 @@ enum tetris_piece_angle
 #ifdef NDEBUG
 	typedef uint8_t tetris_piece_angle_t;
 #else
-	typedef enum tetris_piece_angle tetris_piece_angle_t;
+	typedef enum tetris_piece_angle_e tetris_piece_angle_t;
 #endif
 
 /** rotation attributes */
-enum tetris_piece_rotation
+enum tetris_piece_rotation_e
 {
 	TETRIS_PC_ROT_CW  = 1, /**< clockwise rotation */
 	TETRIS_PC_ROT_CCW = 3  /**< counter clockwise rotation */
@@ -55,7 +63,7 @@ enum tetris_piece_rotation
 #ifdef NDEBUG
 	typedef uint8_t tetris_piece_rotation_t;
 #else
-	typedef enum tetris_piece_rotation tetris_piece_rotation_t;
+	typedef enum tetris_piece_rotation_e tetris_piece_rotation_t;
 #endif
 
 /**
@@ -63,20 +71,13 @@ enum tetris_piece_rotation
  * @see tetris_piece_shape_t
  * @see tetris_piece_angle_t
  */
-typedef struct tetris_piece
+typedef struct tetris_piece_s
 {
 	tetris_piece_shape_t shape; /**< specifies the shape of the piece */
 	tetris_piece_angle_t angle; /**< specifies one of 4 angels */
 }
 tetris_piece_t;
 
-/*@}*/
-
-
-/**
- * \defgroup TetrisPieceRelated Piece: Interface functions
- */
-/*@{*/
 
 /*****************************
  *  construction/destruction *
@@ -215,6 +216,6 @@ inline static int8_t tetris_piece_getBottomOffset(uint16_t const nBitmap)
 	return 0;     // last three rows of the piece are empty
 }
 
-/*@}*/
-
 #endif /*TETRIS_PIECE_H_*/
+
+/*@}*/

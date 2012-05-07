@@ -1,3 +1,14 @@
+/**
+ * \defgroup bitmap Bitmap scroller for the Borg.
+ * @{
+ */
+
+/**
+ * @file bitmapscroller.c
+ * @brief Implementation of a bitmap scroller for the Borg.
+ * @author Christian Kroll
+ */
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
@@ -25,7 +36,7 @@ typedef struct bitmap_t
 	unsigned char nXDomain;        /**< Last valid x-coordinate for viewport. */
 	unsigned char nYDomain;        /**< Last valid y-coordinate for viewport. */
 	unsigned char nChunkDomain;    /**< Last valid chunk for viewport. */
-	unsigned char nChunkCount;     /**< Amount of horiz. chunks of the bitmap.*/
+	unsigned char nChunkCount;     /**< Number of horiz. chunks of the bitmap.*/
 }
 bitmap_t;
 
@@ -175,11 +186,11 @@ static void bitmap_recalculateVector(bitmap_t const *const pBitmap,
  * This function scrolls through a bitmap.
  * @param nWidth Width of the bitmap.
  * @param nHeight Height of bitmap.
- * @param nBitPlanes Amount of bit planes.
+ * @param nBitPlanes Number of bit planes.
  * @param nTickCount How many ticks the animation will last.
  * @param nTick Time quantum in milliseconds.
- * @param nFrameTickDivider Amount of ticks between frame changes.
- * @param nMovementTickDiver Amount of ticks between movement changes.
+ * @param nFrameTickDivider Number of ticks between frame changes.
+ * @param nMovementTickDiver Number of ticks between movement changes.
  * @param fpGetChunk Function that returns an eight-by-one chunk of a bitmap.
  */
 void bitmap_scroll(unsigned char const nWidth,
@@ -234,3 +245,5 @@ void bitmap_scroll(unsigned char const nWidth,
 		wait(nTick);
 	}
 }
+
+/*@}*/

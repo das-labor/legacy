@@ -1,3 +1,15 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file view.c
+ * @brief Implementation of Tetris' graphical output routines.
+ * @author Christian Kroll
+ */
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -12,11 +24,6 @@
 #include "variants.h"
 #include "view.h"
 
-
-/**
- * \defgroup TetrisViewDefinesPrivate View: Internal constants
- */
-/*@{*/
 
 /***********
  * defines *
@@ -103,13 +110,6 @@
 #endif
 
 
-/*@}*/
-
-
-/**
- * \defgroup TetrisViewNoInterface View: Internal non-interface functions
- */
-/*@{*/
 
 /***************************
  * non-interface functions *
@@ -568,7 +568,6 @@ static void tetris_view_formatHighscoreName(uint16_t nHighscoreName,
 	}
 	pszName[3] = '\0';
 }
-/*@}*/
 
 
 /****************************
@@ -674,3 +673,5 @@ void tetris_view_showResults(tetris_view_t *pV)
 	scrolltext(pszResults);
 #endif
 }
+
+/*@}*/

@@ -1,3 +1,19 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file variants.h
+ * @brief Public interface of a Tetris variant.
+ * @details This header file describes a struct containing function pointers
+ *          that every Tetris variant has to implement. It resembles an abstract
+ *          C++ class whose virtual methods need to be implemented.
+ * @author Christian Kroll
+ * @see Have a look at variant_std.c which not only implements a fairly standard
+ *      Tetris variant but also serves as an example for new variants to come!
+ */
+
 #ifndef VARIANTS_H_
 #define VARIANTS_H_
 
@@ -8,7 +24,8 @@
 #include "bucket.h"
 #include "input.h"
 
-typedef struct tetris_variant
+
+typedef struct tetris_variant_s
 {
 	/**
 	 * constructs a variant data object
@@ -147,5 +164,7 @@ typedef struct tetris_variant
 	tetris_bearing_t (*getBearing)(void *pVariantData);
 }
 tetris_variant_t;
+
+/*@}*/
 
 #endif /*VARIANTS_H_*/

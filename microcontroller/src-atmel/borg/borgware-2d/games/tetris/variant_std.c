@@ -1,3 +1,18 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file variant_std.c
+ * @brief Implementation of the standard Tetris module.
+ * @details The routines of this file provide selection of new pieces, line
+ *          counting, score calculation, high score management, adjustment of
+ *          the bucket's bearing and so on.
+ * @author Christian Kroll
+ */
+
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -255,3 +270,5 @@ tetris_bearing_t tetris_std_getBearing(void *pVariantData)
 
 	return pStdVariant->nBearing;
 }
+
+/*@}*/

@@ -1,3 +1,15 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file input.c
+ * @brief Implementation of the input routines of Tetris.
+ * @author Christian Kroll
+ */
+
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -8,30 +20,27 @@
 #include "bearing.h"
 #include "input.h"
 
-#define WAIT(ms) wait(ms)
-#define PM(value) pgm_read_byte(&value)
-
-/**
- * \defgroup TetrisInputDefinesPrivate Input: Internal constants
- */
-/*@{*/
 
 /***********
  * defines *
  ***********/
 
-/** amount of milliseconds that each loop cycle waits */
+#define WAIT(ms) wait(ms)
+#define PM(value) pgm_read_byte(&value)
+
+/** Number of milliseconds that each loop cycle waits. */
 #define TETRIS_INPUT_TICKS 5
 
 /**
- * amount of milliseconds the input is ignored after the pause combo has been
- * pressed, since it is difficult to release all buttons simultaneously
+ * Number of milliseconds the input is ignored after the pause key combination
+ * has been pressed, since it is difficult to release all buttons
+ * simultaneously.
  */
 #define TETRIS_INPUT_PAUSE_TICKS 100
 
 /**
- * amount of allowed loop cycles while in pause mode so that the game
- * automatically continues after five minutes
+ * Number of allowed loop cycles while in pause mode so that the game
+ * automatically continues after five minutes.
  */
 #define TETRIS_INPUT_PAUSE_CYCLES 60000
 
@@ -40,29 +49,23 @@
 /** delay (in loop cycles) for key repeat */
 #define TETRIS_INPUT_REPEAT_DELAY 5
 
-/** amount of loop cyles the left button is ignored */
+/** Number of loop cyles the left button is ignored */
 #define TETRIS_INPUT_CHATTER_TICKS_LEFT    12
-/** amount of loop cyles the right button is ignored */
+/** Number of loop cyles the right button is ignored */
 #define TETRIS_INPUT_CHATTER_TICKS_RIGHT   12
-/** amount of loop cyles the down button is ignored */
+/** Number of loop cyles the down button is ignored */
 #define TETRIS_INPUT_CHATTER_TICKS_DOWN    12
-/** amount of loop cyles the clockwise rotation button is ignored */
+/** Number of loop cyles the clockwise rotation button is ignored */
 #define TETRIS_INPUT_CHATTER_TICKS_ROT_CW  24
-/** amount of loop cyles the counter clockwise rotation button is ignored */
+/** Number of loop cyles the counter clockwise rotation button is ignored */
 #define TETRIS_INPUT_CHATTER_TICKS_ROT_CCW 24
-/** amount of loop cyles the drop button is ignored */
+/** Number of loop cyles the drop button is ignored */
 #define TETRIS_INPUT_CHATTER_TICKS_DROP    36
 
 /** wait cycles per level (array of uint8_t) */
 #define TETRIS_INPUT_LVL_CYCLES 200, 133, 100, 80, 66, 57, 50, 44, 40, 36, 33, \
 	30, 28, 26, 25, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9
 
-/*@}*/
-
-/**
- * \defgroup TetrisInputNoInterface Input: Internal non-interface functions
- */
-/*@{*/
 
 /***************************
  * non-interface functions *
@@ -79,7 +82,7 @@ static void tetris_input_chatterProtect(tetris_input_t *pIn,
 	// never exceed the index
 	assert(cmd < TETRIS_INCMD_NONE);
 
-	// amount of loop cycles a command is ignored after its button has been
+	// number of loop cycles a command is ignored after its button has been
 	// released (every command has its own counter)
 	static uint8_t const nInitialIgnoreValue[TETRIS_INCMD_NONE] PROGMEM =
 	{
@@ -213,8 +216,6 @@ static tetris_input_command_t tetris_input_queryJoystick(tetris_input_t *pIn)
 
 	return cmdReturn;
 }
-
-/*@}*/
 
 
 /****************************
@@ -384,3 +385,5 @@ void tetris_input_setBearing(tetris_input_t *pIn,
 	// changes its meaning as soon as the bearing changes
 	pIn->cmdLast = tetris_input_mapCommand(pIn->nBearing, pIn->cmdRawLast);
 }
+
+/*@}*/

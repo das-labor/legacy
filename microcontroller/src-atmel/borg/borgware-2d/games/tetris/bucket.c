@@ -1,3 +1,14 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file bucket.c
+ * @brief Implementation of Tetris' game logic.
+ * @author Christian Kroll
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -6,7 +17,6 @@
 #include "../../config.h"
 #include "bucket.h"
 #include "piece.h"
-
 
 /***************************
  * non-interface functions *
@@ -498,3 +508,4 @@ uint16_t* tetris_bucket_predictNextRow(tetris_bucket_iterator_t *pIt)
 }
 
 #endif /* GAME_BASTET */
+/*@}*/

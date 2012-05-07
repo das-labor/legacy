@@ -1,3 +1,20 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file variant_bastet.c
+ * @brief Implementation of the "Bastard Tetris" module.
+ * @details Based on the game "Bastet" (version 0.41) by Frederico Poloni. His
+ *          code isn't used as the Borg's Tetris framework is too different from
+ *          that of "Petris" (on which Bastet is based), but the algorithms of
+ *          this implementation are closely modeled after his ideas.
+ * @author Christian Kroll
+ * @see Frederico Poloni's homepage: http://fph.altervista.org/prog/bastet.html
+ */
+
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -514,3 +531,5 @@ tetris_bearing_t tetris_bastet_getBearing(void *pVariantData)
 {
 	return TETRIS_BEARING_0;
 }
+
+/*@}*/

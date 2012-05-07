@@ -1,7 +1,7 @@
 #ifndef BORG_HW_H
 #define BORG_HW_H
 
-// LINEBYTES holds the amount of bytes per line within the framebuffer (pixmap)
+// LINEBYTES holds the number of bytes per line within the frame buffer (pixmap)
 #define LINEBYTES (((NUM_COLS-1)/8)+1)
 
 

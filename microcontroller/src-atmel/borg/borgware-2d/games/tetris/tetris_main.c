@@ -1,3 +1,14 @@
+/**
+ * \defgroup tetris Tetris, the popular puzzle game.
+ * @{
+ */
+
+/**
+ * @file tetris_main.c
+ * @brief Main loop of the Tetris module.
+ * @author Christian Kroll
+ */
+
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
@@ -9,7 +20,6 @@
 #include "variants.h"
 #include "view.h"
 #include "tetris_main.h"
-
 
 void tetris_main(tetris_variant_t const *const pVariantMethods)
 {
@@ -206,3 +216,5 @@ void tetris_main(tetris_variant_t const *const pVariantMethods)
 	tetris_bucket_destruct(pBucket);
 	tetris_piece_destruct(pPiece);
 }
+
+/*@}*/

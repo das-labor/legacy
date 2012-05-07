@@ -1,3 +1,15 @@
+/**
+ * \addtogroup tetris
+ * @{
+ */
+
+/**
+ * @file variant_std.h
+ * @brief Public interface of the standard Tetris module.
+ * @author Christian Kroll
+ */
+
+
 #ifndef VARIANT_STD_H_
 #define VARIANT_STD_H_
 
@@ -25,7 +37,7 @@ void tetris(void);
  * types *
  *********/
 
-typedef struct tetris_standard_variant_t
+typedef struct tetris_standard_variant_s
 {
 	uint16_t nScore;               /** score of the player */
 	uint16_t nHighscore;           /** highscore */
@@ -193,3 +205,5 @@ void tetris_std_setLastInput(void *pVariantData,
 tetris_bearing_t tetris_std_getBearing(void *pVariantData);
 
 #endif /*VARIANT_STD_H_*/
+
+/*@}*/
