@@ -55,10 +55,19 @@ comment "Animations"
 		dep_bool "Out of Spec Logo" ANIMATION_LOGO_OOS  $ANIMATION_BMSCROLLER
 		dep_bool "Fairydust"        ANIMATION_FAIRYDUST $ANIMATION_BMSCROLLER
 	endmenu
+	
+	mainmenu_option next_comment
+	comment "Fixed-point math patterns"
+		bool     "Double Buffering" FP_DOUBLE_BUFFERING 1
 
-	bool "Plasma"            ANIMATION_PLASMA
-	bool "Psychedelic"       ANIMATION_PSYCHEDELIC
-	bool "Black Hole"        ANIMATION_BLACKHOLE
+		bool "Plasma"  ANIMATION_PLASMA  $ANIMATION_FIXEDPOINT
+		int  "Additional Frame Delay (in ms) For Plasma"  FP_PLASMA_DELAY 1
+
+		bool "Psychedelic"      ANIMATION_PSYCHEDELIC  $ANIMATION_FIXEDPOINT
+		int  "Additional Frame Delay (in ms) For Psychedelic" FP_PSYCHO_DELAY 15
+	endmenu
+
+	bool     "Black Hole"       ANIMATION_BLACKHOLE
 
 	comment  "Special Animations"
 	bool     "Test Animations"  ANIMATION_TESTS

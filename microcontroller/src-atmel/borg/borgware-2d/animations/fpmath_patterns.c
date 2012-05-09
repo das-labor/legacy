@@ -18,20 +18,22 @@
 #include "fpmath_patterns.h"
 
 
-/**
- * Double buffering helps in reducing the effect of visibly redrawing every
- * frame. With this option turned on, a frame is rendered into an off-screen
- * buffer first and then copied to the actual frame buffer in one piece.
- * However, given the borg's graphics architecture, half painted frames may
- * still occur, but they are barely noticeable with this option enabled.
- *
- * Turn this off (#undef DOUBLE_BUFFERING) if you prefer speed over beauty.
- */
-#define DOUBLE_BUFFERING
+#ifdef DOXYGEN
+	/**
+	 * Double buffering helps in reducing the effect of visibly redrawing every
+	 * frame. With this option turned on, a frame is rendered into an off-screen
+	 * buffer first and then copied to the actual frame buffer in one piece.
+	 * However, given the borg's graphics architecture, half painted frames may
+	 * still occur, but they are barely noticeable with this option enabled.
+	 *
+	 * Turn this off if you prefer speed over beauty.
+	 */
+	#define FP_DOUBLE_BUFFERING
+#endif DOXYGEN
 
 
-#ifdef LOW_PRECISION
-	#undef LOW_PRECISION
+#ifdef FP_LOW_PRECISION
+	#undef FP_LOW_PRECISION
 #endif
 
 #if NUM_COLS <= 16 && NUM_ROWS <= 16
@@ -49,10 +51,10 @@
 	 * ability to store every interim result as Q23.8. Most operations like
 	 * square root, sine, cosine, multiplication etc. utilize 32 bit types.
 	 */
-	#define LOW_PRECISION
+	#define FP_LOW_PRECISION
 #endif
 
-#ifdef LOW_PRECISION
+#ifdef FP_LOW_PRECISION
 	/** This is the type we expect ordinary integers to be. */
 	typedef int16_t  ordinary_int_t;
 	/** This is the type which we use for fixed-point values. */
@@ -328,7 +330,7 @@ typedef unsigned char (*fpmath_pattern_func_t)(unsigned char const x,
                                                fixp_t const t,
                                                void *const r);
 
-#ifdef DOUBLE_BUFFERING
+#ifdef FP_DOUBLE_BUFFERING
 #    define BUFFER pixmap_buffer
 #else
 #    define BUFFER pixmap
@@ -351,7 +353,7 @@ static void fixPattern(fixp_t const t_start,
                        fpmath_pattern_func_t fpPattern,
                        void *r)
 {
-#ifdef DOUBLE_BUFFERING
+#ifdef FP_DOUBLE_BUFFERING
 	// double buffering to reduce half painted pictures
 	unsigned char pixmap_buffer[NUMPLANE][NUM_ROWS][LINEBYTES];
 #endif
@@ -376,7 +378,7 @@ static void fixPattern(fixp_t const t_start,
 			}
 		}
 
-#ifdef DOUBLE_BUFFERING
+#ifdef FP_DOUBLE_BUFFERING
 		memcpy(pixmap, pixmap_buffer, sizeof(pixmap));
 #endif
 
@@ -471,7 +473,11 @@ void plasma(void)
 #ifndef __AVR__
 	fixPattern(0, fixScaleUp(75), 0.1 * FIX, 80, fixAnimPlasma, &r);
 #else
-	fixPattern(0, fixScaleUp(60), 0.1 * FIX, 1, fixAnimPlasma, &r);
+	#ifndef FP_PSYCHO_DELAY
+		#define FP_PSYCHO_DELAY 1
+	#endif
+	fixPattern(0, fixScaleUp(60), 0.1 * FIX,
+			FP_PSYCHO_DELAY, fixAnimPlasma, &r);
 #endif /* __AVR__ */
 }
 
@@ -535,7 +541,11 @@ void psychedelic(void)
 #ifndef __AVR__
 	fixPattern(0, fixScaleUp(75), 0.1 * FIX, 80, fixAnimPsychedelic, &r);
 #else
-	fixPattern(0, fixScaleUp(60), 0.1 * FIX, 15, fixAnimPsychedelic, &r);
+	#ifndef FP_PLASMA_DELAY
+		#define FP_PLASMA_DELAY 15
+	#endif
+	fixPattern(0, fixScaleUp(60), 0.1 * FIX, FP_PLASMA_DELAY,
+			fixAnimPsychedelic, &r);
 #endif /* __AVR__ */
 }
 
