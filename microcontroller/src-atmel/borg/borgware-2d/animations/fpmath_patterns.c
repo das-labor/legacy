@@ -473,11 +473,11 @@ void plasma(void)
 #ifndef __AVR__
 	fixPattern(0, fixScaleUp(75), 0.1 * FIX, 80, fixAnimPlasma, &r);
 #else
-	#ifndef FP_PSYCHO_DELAY
-		#define FP_PSYCHO_DELAY 1
+	#ifndef FP_PLASMA_DELAY
+		#define FP_PLASMA_DELAY 1
 	#endif
 	fixPattern(0, fixScaleUp(60), 0.1 * FIX,
-			FP_PSYCHO_DELAY, fixAnimPlasma, &r);
+			FP_PLASMA_DELAY, fixAnimPlasma, &r);
 #endif /* __AVR__ */
 }
 
@@ -541,10 +541,10 @@ void psychedelic(void)
 #ifndef __AVR__
 	fixPattern(0, fixScaleUp(75), 0.1 * FIX, 80, fixAnimPsychedelic, &r);
 #else
-	#ifndef FP_PLASMA_DELAY
-		#define FP_PLASMA_DELAY 15
+	#ifndef FP_PSYCHO_DELAY
+		#define FP_PSYCHO_DELAY 15
 	#endif
-	fixPattern(0, fixScaleUp(60), 0.1 * FIX, FP_PLASMA_DELAY,
+	fixPattern(0, fixScaleUp(60), 0.1 * FIX, FP_PSYCHO_DELAY,
 			fixAnimPsychedelic, &r);
 #endif /* __AVR__ */
 }
