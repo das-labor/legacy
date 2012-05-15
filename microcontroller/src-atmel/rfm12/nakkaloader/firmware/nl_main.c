@@ -109,7 +109,7 @@ static void nl_boot_app ( void )
 	cli();
 
 	//move interrupts back (also disables rfm12 int)
-	#if MCU == atmega328p
+	#if (MCU == atmega328p) || (MCU == atmega168)
 	MCUCR = _BV(IVCE);
 	MCUCR = 0x00;
 	#else
@@ -148,7 +148,7 @@ int main (void)
 	/* move interrupt vector table to bootloader section */
 	cli();
 
-	#if MCU == atmega328p
+	#if (MCU == atmega328p) || (MCU == atmega168)
 	MCUCR = (1<<IVCE);
 	MCUCR = (1<<IVSEL);
 	#else
