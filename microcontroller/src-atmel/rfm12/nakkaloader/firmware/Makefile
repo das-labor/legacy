@@ -4,8 +4,8 @@ TARGET = nl_main
 OBJECTS = rfm12.o nl_main.o
 
 # microcontroller and project specific settings (everything can be overridden using config.mk)
-F_CPU = 20000000UL
-MCU = atmega328p
+F_CPU = 16000000UL
+MCU = atmega168
 #CFLAGS += -DBOOTLOADER_DDR=DDRC
 #CFLAGS += -DBOOTLOADER_PORT=PORTC
 #CFLAGS += -DBOOTLOADER_PIN=PINC
@@ -43,6 +43,9 @@ else ifeq ($(MCU),atmega168)
 	# atmega168 with 1024 words bootloader:
 	# bootloader section starts at 0x1c00 (word-address) == 0x3800 (byte-address)
 	BOOT_SECTION_START = 0x3800
+	HFUSE = 0xd5
+	LFUSE = 0xe6
+	EFUSE = 0xf8
 	#
 	# atmega168 with 512 words bootloader:
 	# bootloader section starts at 0x1e00 (word-address) == 0x3c00 (byte-address)
