@@ -168,9 +168,11 @@ int main (int argc, char* argv[])
                         //printf("got slave config!\nPagesize: %i\nAir Packet Size: %i\nVersion: %i\n", ((nl_config *)(packetBuffer.buffer + 2))->pagesize, ((nl_config *)(packetBuffer.buffer + 2))->rxbufsize, ((nl_config *)(packetBuffer.buffer + 2))->version);
                         printf("Got slave config!\nPagesize: %i\nAir Packet Size: %i\nVersion: %i\nAddress: %i\n\n", slave_cfg.pagesize, slave_cfg.rxbufsize, slave_cfg.version, packetBuffer.buffer[1]);
 
-                        //reply now
-                        nl_tx_packet(udhandle, NLPROTO_MASTER_EHLO, myconfig->addr, 0, NULL);
-			printf("reply sent\n");
+                        //reply is not active in newest firmware, goto flash immediately
+                        //nl_tx_packet(udhandle, NLPROTO_MASTER_EHLO, myconfig->addr, 0, NULL);
+						//printf("reply sent\n");
+						
+						nl_flash(udhandle, myconfig->fname, myconfig->addr , slave_cfg.pagesize, 64, /*slave_cfg.rxbufsize*/ 20);
                     }
 				break;
 
@@ -181,7 +183,7 @@ int main (int argc, char* argv[])
                         printf("Slave is ready to be flashed now.\n");
 
                         //flash
-                        nl_flash(udhandle, myconfig->fname, myconfig->addr , slave_cfg.pagesize, 64);
+                        nl_flash(udhandle, myconfig->fname, myconfig->addr , slave_cfg.pagesize, 64, /*slave_cfg.rxbufsize*/ 30);
 
                         //ready again
                         istate = 2;

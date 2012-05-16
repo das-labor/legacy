@@ -19,6 +19,9 @@
 #include <signal.h>
 #endif
 
+#undef RFM12_BUFFER_SIZE
+#define  RFM12_BUFFER_SIZE 20
+
 //fixme - this shouldn't be a global, i suppose
 rfmusb_packetbuffer packetBuffer;
 
@@ -159,8 +162,7 @@ void nl_dump_page(uint8_t *mem, uint32_t pageStart, uint32_t pageEnd)
 
 /* THIS IS SO F****NG CRUDE, STAY AWAY !!! */
 
-#define CHUNK_TRANSFER_SIZE (sizeof(pktbuf) - (sizeof(nl_flashcmd) + 1))
-void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t size, uint32_t pagenum)
+void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t size, uint32_t pagenum, uint8_t rxbufsize)
 {
 	uint8_t *ptr = buf;
 	uint32_t off = 0;
@@ -169,7 +171,9 @@ void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t
 	//8 == pagenum, addr start, addr end == sizeof(nl_flashcmd)
 	uint8_t pktbuf[RFM12_BUFFER_SIZE-2];
 	uint16_t crc16 = 0;
+	uint16_t chunksize = (rxbufsize - 2 - (sizeof(nl_flashcmd) + 1));
 	nl_flashcmd txcmd;
+	int ret = 0;
 
 
 	//first tx
@@ -179,7 +183,7 @@ void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t
 	txcmd.addr_start = htole16(0);
 
 
-	if(size < CHUNK_TRANSFER_SIZE)
+	if(size < chunksize)
 	{
 		txcmd.addr_end = htole16(size);
 		memcpy(pktbuf + sizeof(nl_flashcmd), ptr, size);
@@ -188,12 +192,12 @@ void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t
 	}
 	else
 	{
-		txcmd.addr_end = htole16(CHUNK_TRANSFER_SIZE);
-		memcpy(pktbuf + sizeof(nl_flashcmd), ptr, CHUNK_TRANSFER_SIZE);
-		crc16 = calc_crc(pktbuf + sizeof(nl_flashcmd), CHUNK_TRANSFER_SIZE);
-		off += CHUNK_TRANSFER_SIZE;
+		txcmd.addr_end = htole16(chunksize);
+		memcpy(pktbuf + sizeof(nl_flashcmd), ptr, chunksize);
+		crc16 = calc_crc(pktbuf + sizeof(nl_flashcmd), chunksize);
+		off += chunksize;
 	}
-	printf("ae: %i, as: %i, p: %i\n", txcmd.addr_end, txcmd.addr_start, txcmd.pagenum);
+	printf("ae: %i, as: %i, p: %i, ts: %i\n", txcmd.addr_end, txcmd.addr_start, txcmd.pagenum, chunksize);
 	memcpy (pktbuf, (uint8_t *) &txcmd, sizeof(nl_flashcmd));
 
 
@@ -204,10 +208,12 @@ void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t
 	}
 	printf("\n");*/
 
-	nl_tx_packet(udhandle, NLPROTO_PAGE_FILL, dst, sizeof(pktbuf), (unsigned char*)&pktbuf);
-
+	ret = nl_tx_packet(udhandle, NLPROTO_PAGE_FILL, dst, sizeof(pktbuf), (unsigned char*)&pktbuf);
+	printf("braaabret: %i\n", ret);
+	
 	while(off < size)
 	{
+		printf("braaar\n");
 		while(1)
 		{
 			int8_t tmp = rfmusb_RxPacket (udhandle, &packetBuffer);
@@ -222,8 +228,12 @@ void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t
 						printf("WARNING: CRC mismatch! Client: %.4x, Host: %.4x\n",
 							*(uint16_t *)(packetBuffer.buffer + 2), crc16);
 					}
+					printf("crcok");
+					
 					break;
 				}
+				
+				nl_tx_packet(udhandle, NLPROTO_PAGE_CHKSUM, dst, sizeof(pktbuf), (unsigned char*)&pktbuf);
 
 				printf("WARNING: Unexpected response code from client: 0x%.2x\n",
 					packetBuffer.buffer[0]);
@@ -233,7 +243,7 @@ void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t
 
 		txcmd.addr_start = htole16(off);
 
-		if((size - off) < CHUNK_TRANSFER_SIZE)
+		if((size - off) < chunksize)
 		{
 			txcmd.addr_end = htole16(size);
 			memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, size - off);
@@ -241,10 +251,10 @@ void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t
 			off = size;
 		} else
 		{
-			txcmd.addr_end = htole16(off + CHUNK_TRANSFER_SIZE);
-			memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, CHUNK_TRANSFER_SIZE);
-			crc16 = calc_crc(pktbuf + sizeof(nl_flashcmd), CHUNK_TRANSFER_SIZE);
-			off += CHUNK_TRANSFER_SIZE;
+			txcmd.addr_end = htole16(off + chunksize);
+			memcpy(pktbuf + sizeof(nl_flashcmd), ptr + off, chunksize);
+			crc16 = calc_crc(pktbuf + sizeof(nl_flashcmd), chunksize);
+			off += chunksize;
 		}
 
 		memcpy (pktbuf, &txcmd, sizeof(nl_flashcmd));
@@ -278,7 +288,7 @@ void nl_push_page(rfmusb_dev_handle *udhandle, uint8_t dst, uint8_t *buf, size_t
 }
 
 
-void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16_t pageSize, uint8_t pageCount)
+void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16_t pageSize, uint8_t pageCount, uint8_t rxbufsize)
 {
 	//page transfer related variables
 	unsigned int j;
@@ -329,7 +339,6 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
 	//debug
 	//printf("%20s, %5i, %i, %i\n", __FILE__, __LINE__, pageCount, pageSize);
 
-
 	//for every page do
 	for(pageNum = 0; pageNum < pageCount; pageNum ++)
 	{
@@ -346,7 +355,7 @@ void nl_flash(rfmusb_dev_handle *udhandle, char * filename, uint8_t addr, uint16
 			{
 				// trasfer page stating at i
 				printf("Transmitting page #%04u [0x%04x .. %04x] ...", pageNum, pageStart, pageEnd);
-				nl_push_page(udhandle, addr, buf + (pageNum * pageSize), pageSize, pageNum);
+				nl_push_page(udhandle, addr, buf + (pageNum * pageSize), pageSize, pageNum, rxbufsize);
 				if (verbose)
 					nl_dump_page(buf, pageStart, pageEnd);
 				printf(" done.\n");
