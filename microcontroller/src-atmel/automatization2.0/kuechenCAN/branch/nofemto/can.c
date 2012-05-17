@@ -4,15 +4,7 @@
 #include <avr/eeprom.h>
 #include <avr/wdt.h>
 
-
-#ifdef USE_FEMTOOS
-#include "femtoos_code.h"
-#else
 #include "config.h"
-#endif
-
-
-
 #include "mcp2510regs.h"
 #include "can.h"
 #include "spi.h"
@@ -90,7 +82,7 @@ void message_fetch(can_message_x * msg)
 {
 	uint8_t tmp1, tmp2, tmp3;
 	uint8_t x;
-	taskEnterGlobalCritical();
+
 	MCP_CMD_PORT &= ~_BV(MCP_CS);
 	spi_send(READ);
 	spi_send(RXB0SIDH);
@@ -109,7 +101,6 @@ void message_fetch(can_message_x * msg)
 	MCP_CMD_PORT |= _BV(MCP_CS);
 	
 	mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
-	taskExitGlobalCritical();
 }
 
 

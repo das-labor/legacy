@@ -1,5 +1,3 @@
-#include "femtoos_code.h"
-#ifdef CAN_THREAD
 #include "can.h"
 #include "lap.h"
 #include <avr/wdt.h>
@@ -56,18 +54,3 @@ void can_handler()
 #endif
     }
 }
-
-#if (preTaskDefined(xcan))
-void appLoop_xcan(void)
-{
-  while(true)
-    {
-      can_handler(); 
-      taskDelayFromNow(100);
-    }
-}
-#endif // preTaskDefined
-
-
-
-#endif // CAN_THREAD

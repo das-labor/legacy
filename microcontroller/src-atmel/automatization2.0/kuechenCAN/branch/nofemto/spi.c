@@ -1,11 +1,5 @@
 #include <avr/io.h>
-
-#ifdef USE_FEMTOOS
-#include "femtoos_code.h"
-#else
 #include "config.h"
-#endif
-
 #include "spi.h"
 
 

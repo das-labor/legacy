@@ -1,38 +1,87 @@
-FEMTOOS_AVR_TOOLDIR=/home/alex/labor/femtoos-toolchain/
-
-FEMTOOS_SOURCE=./
-FEMTOOS_APPLICATION_CONFIG_DIR=./
-TARGET=atmega8
-
 ################ can address and port
 MY_CANADDR=0x23
 MY_CANPORT=0x0f
 
-all: main.hex
+OBJ            = koechenCAN.o spi.o can.o twi_master.o twi_mthread.o can_thread.o
 
-include Makefile.femtoos
+# Default values
+OUT           ?= main
+MCU_TARGET    ?= atmega8
+MCU_CC        ?= avr-gcc
+MCU_AS	      ?= avr-as
+OPTIMIZE      ?= -Os
+WARNINGS      ?= -Wall -Winline
+SVN_REVISION  ?= `svn --trust-server-cert --non-interactive info | grep "Revision:" | cut -d : -f 2 | tr -d '\n '`
+ID_STRING     ?=  \"`pwd | awk -F / '{print $$NF}' | cut -c 1-20 | tr -d '\n '`\"
+DEFS          ?= -DF_CPU=18432000 -DFW_SVNREVISION=$(SVN_REVISION) -DFW_IDSTRING=$(ID_STRING)
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
+ASFLAGS	      += -mmcu=avr5
+LDFLAGS        = -Wl,-Map,$(OUT).map
 
-main.elf: femtoos spi can_base application main.o twi_master
-	 $(GCC) $(LNKFLAGS) -o main.elf  \
-	main.o \
-	$(FEMTOOS_LIB_DIR)/femtoos_startup.o \
-	$(FEMTOOS_LIB_DIR)/femtoos.a \
-	$(FEMTOOS_LIB_DIR)/spi.a \
-	$(FEMTOOS_LIB_DIR)/can_base.a \
-	$(FEMTOOS_LIB_DIR)/twi_master.a \
-	$(FEMTOOS_LIB_DIR)/application.a
+# External Tools
+OBJCOPY       ?= avr-objcopy
+OBJDUMP       ?= avr-objdump
+FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:$(OUT).hex
+ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
 
-main.o: headers 
-	$(GCC) $(CFLAGS) -c kuechenCAN.c -o main.o
+#############################################################################
+# Rules
+all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -f main.o
-	rm -f main.i
-	rm -f main.s
-	rm -f main.elf
-	rm -f main.map
-	rm -f main.hex
-	make FEMTOOS_LIB_DIR=../$(FEMTOOS_LIB_DIR) FEMTOOS_AVR_TOOLDIR=$(FEMTOOS_AVR_TOOLDIR) FEMTOOS_SOURCE=$(FEMTOOS_SOURCE) TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C $(FEMTOOS_DIR) clean
-	make FEMTOOS_LIB_DIR=../$(FEMTOOS_LIB_DIR) FEMTOOS_AVR_TOOLDIR=$(FEMTOOS_AVR_TOOLDIR) FEMTOOS_SOURCE=$(FEMTOOS_SOURCE) TARGET=$(TARGET) CFLAGS='$(CFLAGS)' ASMFLAGS='$(ASMFLAGS)' -C $(FEMTOOS_APPLICATIONS_DIR) clean
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec canlib/*.o uart/*.o
+	rm -rf *.srec $(OUT).elf
 
+flash: $(OUT).hex
+	$(ERASECMD)
+	$(FLASHCMD)
+
+#############################################################################
+# Building Rules
+$(OUT).elf: $(OBJ)
+	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+%.o: %.c
+	$(MCU_CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.S
+	$(MCU_AS) $(ASFLAGS) -o $@ $<
+
+lst: $(OUT).lst
+
+%.lst: %.elf
+	$(OBJDUMP) -h -S $< > $@
+
+# Rules for building the .text rom images
+text: hex bin srec
+
+hex:  $(OUT).hex
+bin:  $(OUT).bin
+srec: $(OUT).srec
+
+%.hex: %.elf
+	$(OBJCOPY) -j .text -j .data -O ihex $< $@
+
+%.srec: %.elf
+	$(OBJCOPY) -j .text -j .data -O srec $< $@
+
+%.bin: %.elf
+	$(OBJCOPY) -j .text -j .data -O binary $< $@
+
+# Rules for building the .eeprom rom images
+
+eeprom: ehex ebin esrec
+
+ehex:  $(OUT)_eeprom.hex
+ebin:  $(OUT)_eeprom.bin
+esrec: $(OUT)_eeprom.srec
+
+%_eeprom.hex: %.elf
+	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O ihex $< $@
+
+%_eeprom.srec: %.elf
+	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O srec $< $@
+
+%_eeprom.bin: %.elf
+	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O binary $< $@
 

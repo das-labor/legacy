@@ -1,5 +1,3 @@
-#include "femtoos_code.h"
-#ifdef TWI_MTHREAD
 /*******************************************************
  Author:					Manfred Langemann
                                                 Alexander Kasper - ported to femtoos
@@ -44,4 +42,3 @@ typedef struct {
 
 #endif
 
-#endif

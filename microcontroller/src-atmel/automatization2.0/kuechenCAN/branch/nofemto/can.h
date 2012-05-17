@@ -13,13 +13,8 @@
 /*****************************************************************************
  * Types
  */
- 
-#ifdef USE_FEMTOOS
-#include "femtoos_code.h"
-#else
 #include <stdint.h>
 #include "config.h"
-#endif
 
 typedef uint8_t can_addr;
 typedef uint8_t can_port;
