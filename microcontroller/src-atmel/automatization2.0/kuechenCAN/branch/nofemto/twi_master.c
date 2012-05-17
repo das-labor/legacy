@@ -1,5 +1,4 @@
 #include "femtoos_code.h"
-#ifdef TWI_MTHREAD
 /*******************************************************
  Author:					Manfred Langemann
                                                 Alexander Kasper - ported to femtoos
@@ -261,5 +260,3 @@ Tuint08 TWIM_ReadNack(void)
 
 	return TWDR;
 }
-
-#endif

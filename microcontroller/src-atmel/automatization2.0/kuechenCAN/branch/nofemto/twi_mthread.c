@@ -1,5 +1,3 @@
-#include "femtoos_code.h"
-#ifdef TWI_MTHREAD
 #include "twi_master.h"
 
 
@@ -65,14 +63,3 @@ void twi_mhandler()
     }
 }
 
-#if (preTaskDefined(twim))
-void appLoop_twim(void)
-{
-  while(true)
-    {
-      twi_mhandler(); 
-      taskDelayFromNow(20);
-    }
-}
-#endif // preTaskDefined
-#endif
