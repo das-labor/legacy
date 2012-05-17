@@ -173,7 +173,13 @@ void can_user_cmd(can_message *rx_msg)
 
 
 void app_run(void)
-{ 
+{
+	static can_message dstpower = {0x23,0x02,LIGHTCANPORT,0x01,0x04, {0x00,0x00,0x00,0x00}};
+	static uint8_t counter_0;
+	static uint8_t clicked_0 = 0;
+	static uint8_t held_0    = 0;
+	static uint8_t last_held_0;
+	
 	// lampe
 	clicked_0=0;
 	held_0=0;
@@ -378,12 +384,6 @@ void init(void)
 
 void main()
 {
-	can_message dstpower = {0x23,0x02,LIGHTCANPORT,0x01,0x04, {0x00,0x00,0x00,0x00}};ß
-	uint8_t counter_0;
-	uint8_t clicked_0 = 0;
-	uint8_t held_0    = 0;
-	uint8_t last_held_0;
-	
 	init();
 	sei();
 	
