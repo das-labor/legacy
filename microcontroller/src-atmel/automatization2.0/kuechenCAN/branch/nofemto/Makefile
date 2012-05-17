@@ -2,7 +2,7 @@
 MY_CANADDR=0x23
 MY_CANPORT=0x0f
 
-OBJ            = koechenCAN.o spi.o can.o twi_master.o twi_mthread.o can_thread.o
+OBJ            = kuechenCAN.o spi.o can.o twi_master.o twi_mthread.o can_thread.o
 
 # Default values
 OUT           ?= main
