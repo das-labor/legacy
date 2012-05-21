@@ -5,7 +5,11 @@
 #define LINEBYTES (((NUM_COLS-1)/8)+1)
 
 
-extern unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
+#ifndef BORG_FRAMEBUF
+	extern unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
+#else /* BORG_FRAMEBUF */
+	unsigned char framebuf[NUM_ROWS][NUM_COLS];
+#endif /* BORG_FRAMEBUF */
 
 void watchdog_enable();
 void borg_hw_init();
