@@ -1,9 +1,6 @@
 mainmenu_option next_comment
 comment "Borg16 HGMod port setup"
 
-#define COLPORT  PORTC
-#define COLDDR   DDRC
-
 choice 'TLC5940 Control Port'			\
    "PORTA  PORTA \
     PORTB  PORTB \

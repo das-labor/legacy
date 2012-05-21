@@ -4,6 +4,7 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
+#include <util/delay.h>
 #include "borg_hw.h"
 
 /*
@@ -38,16 +39,18 @@
 	#define TIMER0_COMP_vect TIMER0_COMPA_vect
 #endif
 
+//lookup table
+uint16_t colormap[256] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,29,31,34,36,39,42,45,48,51,55,58,62,65,69,73,77,81,85,90,94,99,103,108,113,118,123,129,134,140,145,151,157,163,169,176,182,188,195,202,209,216,223,230,238,245,253,261,269,277,285,293,302,310,319,328,337,346,355,365,374,384,394,404,414,424,434,445,455,466,477,488,499,510,522,533,545,557,569,581,593,606,618,631,644,657,670,683,696,710,723,737,751,765,779,794,808,823,838,853,868,883,898,914,930,945,961,978,994,1010,1027,1043,1060,1077,1094,1112,1129,1147,1164,1182,1200,1218,1237,1255,1274,1293,1311,1331,1350,1369,1389,1408,1428,1448,1468,1488,1509,1529,1550,1571,1592,1613,1635,1656,1678,1700,1721,1744,1766,1788,1811,1834,1856,1879,1903,1926,1949,1973,1997,2021,2045,2069,2094,2118,2143,2168,2193,2218,2244,2269,2295,2321,2347,2373,2399,2426,2452,2479,2506,2533,2560,2588,2615,2643,2671,2699,2727,2756,2784,2813,2842,2871,2900,2929,2959,2989,3018,3048,3079,3109,3139,3170,3201,3232,3263,3294,3326,3357,3389,3421,3453,3485,3518,3550,3583,3616,3649,3682,3716,3749,3783,3817,3851,3886,3920,3955,3989,4024,4059,4094};
+
 // buffer which holds the currently shown frame
-unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
+unsigned char framebuf[NUM_ROWS][NUM_COLS];
 
-// switch to next row
-static void nextrow(uint8_t row) {
+//row counter
+static unsigned char row = 0;
+
+//switch to next row
+static void nextrow() {
 	unsigned char i;
-	static unsigned char row = 0;
-
-	//increment & wrap row counter
-	if (++row == NUM_ROWS) row = 0;
 
 	// short delay loop, to ensure proper deactivation of the drivers
 	for (i = 0; i < 10; i++) asm volatile("nop");
@@ -75,92 +78,114 @@ static void nextrow(uint8_t row) {
 		ROWPORT |= (1 << PIN_CLK);
 		ROWPORT &= ~(1 << PIN_CLK);
 	}
-
-	// another delay loop, to ensure that the drivers are ready
-	for (i = 0; i < 20; i++) asm volatile("nop");
 }
-
-// show a row
-/*
-static void rowshow(unsigned char row, unsigned char plane) {
-	// depending on the currently drawn plane, display the row for a specific
-	// amount of time
-	static unsigned char const ocr_table[] = {3, 4, 22};
-	OCR0 = ocr_table[plane];
-
-	// output data of the current row to the column drivers
-	uint8_t tmp, tmp1;
-	row = (row>>1) + ((row & 0x01)?8:0 );
-	tmp = pixmap[plane][row][0];
-	tmp1 = pixmap[plane][row][1];
-
-#ifdef REVERSE_COLS
-	tmp = (tmp >> 4) | (tmp << 4);
-	tmp = ((tmp & 0xcc) >> 2) | ((tmp & 0x33)<< 2); //0xcc = 11001100, 0x33 = 00110011
-	tmp = ((tmp & 0xaa) >> 1) | ((tmp & 0x55)<< 1); //0xaa = 10101010, 0x55 = 1010101
-	TLCPORT2 = tmp;
-	tmp = tmp1;
-	tmp = (tmp >> 4) | (tmp << 4);
-	tmp = ((tmp & 0xcc) >> 2) | ((tmp & 0x33) << 2); //0xcc = 11001100, 0x33 = 00110011
-	tmp = ((tmp & 0xaa) >> 1) | ((tmp & 0x55) << 1); //0xaa = 10101010, 0x55 = 1010101
-	TLCPORT1 = tmp;
-#else
-	TLCPORT1 = tmp;
-	TLCPORT2 = tmp1;
-#endif
-}
-*/
 
 
 //this int runs with multiples of half the frequency of timer 1,
 //meaning that new row data gets laoded every 2n pwm periods of the tlc
 ISR(TIMER0_COMP_vect ) {
-	uint8_t i, x;
+	uint8_t y, x, v;
 
 	// reset watchdog
 	wdt_reset();
+	
+	//increment & wrap row counter
+	if (++row == NUM_ROWS) row = 0;
 
-	//sync to timer 1
-	while(!(TIFR1 & _BV(OCF1A)));
-
+	//shift pixmap as 12 bit words into device
+	for(y = 0; y < 16; y++) //16 x 12bit
+	{	
+		//fetch msb
+		v = (colormap[framebuf[row][y]] >> 4) & 0xF0;
+		
+		//12
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//11
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//10
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//9
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//fetch lsb
+		v = (colormap[framebuf[row][y]]) & 0xFF;
+		
+		//8
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//7
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//6
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//5
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//4
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//3
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//2
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+		
+		//1
+		TLCPORT &= ~_BV(TLC_PIN_SIN);
+		TLCPORT |= (v & 0x80) >> (7-TLC_PIN_SIN);
+		SCLK();
+		v <<= 1;
+	}
+	
 	//blank outputs of low-side (column) driver
 	TLCPORT |= _BV(TLC_PIN_BLANK);
 
-	//disable timer 1
-	TCCR1B &= ~_BV(CS10);
-
-	// switch rows
-	nextrow(row);
-
-	// output current row according to current plane
-	//rowshow(row, plane);
-
-	//debug: load 100% duty cycle into column driver
-	for(i = 0; i < 16; i++) //16 x 12bit
-	{
-		//shift in 12 bit words
-		for(x = 0; x < 12; x++)
-		{
-			TLCPORT &= ~_BV(TLC_PIN_SIN);
-			TLCPORT |= ((uint8_t)((uint16_t)0xFFF >> x) & 1) << TLC_PIN_SIN;
-			SCLK();
-		}
-	}
+	//switch rows
+	nextrow();
 
 	//latch data, disable blanking, enable and reset timers
 	XLAT();
-	TCNT1    =   0;
-	TIFR1    =  _BV(OCF1A)
 	TLCPORT &= ~_BV(TLC_PIN_BLANK);
-	TCNT0 	 =   0; //be a little faster than timer 1
-	TCCR1B  |=  _BV(CS10); // clk/1
-}
-
-
-ISR(TIMER1_COMPA_vect)
-{
-	TLCPORT |= _BV(TLC_PIN_BLANK);
-	TLCPORT &= ~_BV(TLC_PIN_BLANK);
+	
+	//reset timer
+	TCNT0 = 0;
 }
 
 
@@ -200,20 +225,14 @@ static void timer0_on() {
 		TCCR0A = 0x02; // CTC Mode
 		TCCR0B = 0x04; // clk/256
 		TCNT0  = 0;    // reset timer
-		OCR0   = 0xFF; // compare with this value
+		OCR0   = 16;   // compare with this value
 		TIMSK0 = 0x02; // compare match Interrupt on
 	#else
 		TCCR0  = 0x0C; // CTC Mode, clk/256
 		TCNT0  = 0;    // reset timer
-		OCR0   = 0xFF; // compare with this value
+		OCR0   = 16;   // compare with this value
 		TIMSK  = 0x02; // compare match Interrupt on
 	#endif
-
-	//setup timer1 also (for blanking pulse)
-	TCCR1A = 0x00;
-	TCCR0B = _BV(WGM12); // CTC Mode
-	OCR1A  = 8192; // top value
-	TIMSK1 = _BV(OCIE1A); // compare match interrupt on
 }
 
 
@@ -251,6 +270,39 @@ void tlc5940_init()
 	SCLK();
 }
 
+void test_tlc()
+{
+	uint8_t i, x;
+
+	while(1)
+	{	
+		//debug: load 100% duty cycle into column driver
+		for(i = 0; i < 16; i++) //16 x 12bit
+		{
+			//shift in 12 bit words
+			for(x = 0; x < 12; x++)
+			{
+				TLCPORT &= ~_BV(TLC_PIN_SIN);
+				TLCPORT |= 1<< TLC_PIN_SIN;
+				SCLK();
+			}
+		}
+
+		//blank outputs of low-side (column) driver
+		TLCPORT |= _BV(TLC_PIN_BLANK);
+		
+		//rowswitch
+		nextrow();
+		
+		//latch data, disable blanking
+		XLAT();
+		TLCPORT &= ~_BV(TLC_PIN_BLANK);
+		
+		//delay 4096 gsclocks (256)
+		_delay_us(254);
+	}
+}
+
 
 void borg_hw_init() {
 	//init column driver
@@ -261,6 +313,9 @@ void borg_hw_init() {
 
 	// reset shift registers for the rows
 	ROWPORT = 0;
+	
+	//test tlc chip
+	//test_tlc();
 
 	//activate the activator
 	timer0_on();
