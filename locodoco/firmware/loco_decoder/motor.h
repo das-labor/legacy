@@ -1,7 +1,7 @@
+#pragma once
 #include <stdint.h>
 #include "adc.h"
-
-#pragma once
+#include "config.h"
 
 #define MOTOR_SAMPLE_READY     0x01
 
