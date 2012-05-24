@@ -1,6 +1,6 @@
 #include "adc.h"
 
-volatile uint8_t adcd_state = ADCD_IDLE;
+volatile static uint8_t adcd_state = ADCD_IDLE;
 
 void adcd_ctl (uint8_t in_state)
 {
@@ -12,12 +12,23 @@ void adcd_ctl (uint8_t in_state)
 	{
 		case ADCD_SAMPLE_MOTOR:
 			SENSE_SPEED_SETUP();
+			M_TIMER_OFF();
+			M_EN_PORT &= ~(M_EN_PIN);
+			M_CHOP();
+			M_TIMER_INIT();
 		break;
 	}
 }
 
 ISR(ADC_vect)
 {
+	uint16_t a = ADC;
+/*
+	//SENSE_SPEED_SETUP();
+	M_OCR++;
+	//ADCSRA |= (_BV(ADIF) | _BV(ADSC));
+	return;
+*/
 	switch (adcd_state)
 	{
 		case ADCD_IDLE:
@@ -28,21 +39,29 @@ ISR(ADC_vect)
 			static uint16_t res = 0;
 			static uint8_t c = 0;
 
-			if (!c)
-				c = 1;
-				return; /* first result -> discard */
-
-			res += ADC;
 			c++;
+			if (c == 1)
+			{
+				M_CHOP();
+				M_EN_PORT &= ~(M_EN_PIN);
+				M_TIMER_OFF();
+				SENSE_INC();
+				return; /* first result -> discard */
+			}
 
-			if (c < 5)
+			res += a;
+
+			if (c < 9)
 				return;
 
-			res /= 4;
+
+			ADCSRA &= ~(_BV(ADEN) | _BV(ADIE));
+			res /= 8;
 			c = 0;
 			adcd_state = ADCD_IDLE;
 			motor_set_sampleval (res);
-			ADCSRA &= ~(_BV(ADEN) | _BV(ADIE));
+			SENSE_DEC();
+			M_TIMER_INIT();
 		}
 	}
 }
