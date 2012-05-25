@@ -1,4 +1,4 @@
-# EESchema Netlist Version 1.1 created  Mon 21 May 2012 10:46:07 PM CEST
+# EESchema Netlist Version 1.1 created  Fri 25 May 2012 01:10:00 PM CEST
 (
  ( /4E804FE7 $noname  P4 CONN_1 {Lib=CONN_1}
   (    1 VCC )
@@ -44,13 +44,13 @@
   (    2 /gpo4a )
  )
  ( /4E661243 $noname  U2 ULN2003A {Lib=ULN2003A}
-  (    1 N-000025 )
-  (    2 N-000001 )
-  (    3 N-000005 )
-  (    4 N-000026 )
-  (    5 N-000026 )
-  (    6 N-000019 )
-  (    7 N-000003 )
+  (    1 N-000055 )
+  (    2 N-000002 )
+  (    3 N-000056 )
+  (    4 N-000061 )
+  (    5 N-000061 )
+  (    6 N-000007 )
+  (    7 N-000017 )
   (    8 GND )
   (    9 VCC )
   (   10 /gpo9 )
@@ -63,11 +63,11 @@
  )
  ( /4E79A8CC $noname  D15 DIODE {Lib=DIODE}
   (    1 VCC )
-  (    2 N-000056 )
+  (    2 N-000023 )
  )
  ( /4E79A668 $noname  D14 DIODE {Lib=DIODE}
-  (    1 N-000020 )
-  (    2 N-000056 )
+  (    1 N-000042 )
+  (    2 N-000023 )
  )
  ( /4E776207 $noname  IC1 IRF8313 {Lib=IRF83XX}
   (    1 /gnd_fet )
@@ -81,13 +81,13 @@
  )
  ( /4E669C81 MLF32  IC2 ATMega8/48/88/168/328 {Lib=ATMEGA8-MI}
   (    1 /rfm_int )
-  (    2 N-000025 )
+  (    2 N-000055 )
   (    3 GND )
   (    4 +5V )
   (    5 GND )
   (    6 +5V )
-  (    7 N-000007 )
-  (    8 N-000031 )
+  (    7 N-000032 )
+  (    8 N-000038 )
   (    9 /gpio2 )
   (   10 /gpio1 )
   (   11 /motor_dir2 )
@@ -104,14 +104,14 @@
   (   22 U_speed )
   (   23 /DCC )
   (   24 sense_dec )
-  (   25 N-000003 )
-  (   26 N-000019 )
-  (   27 N-000026 )
-  (   28 N-000005 )
+  (   25 N-000017 )
+  (   26 N-000007 )
+  (   27 N-000061 )
+  (   28 N-000056 )
   (   29 /reset )
-  (   30 N-000037 )
-  (   31 N-000038 )
-  (   32 N-000001 )
+  (   30 N-000053 )
+  (   31 N-000039 )
+  (   32 N-000002 )
  )
  ( /4E749063 $noname  C14 100n {Lib=C}
   (    1 +5V )
@@ -165,26 +165,26 @@
  )
  ( /4E73CBC8 $noname  R30 R {Lib=R}
   (    1 +5V )
-  (    2 N-000010 )
+  (    2 N-000012 )
  )
  ( /4E73CBBA $noname  R31 R {Lib=R}
-  (    1 N-000010 )
+  (    1 N-000012 )
   (    2 GND )
  )
  ( /4E73CB8D $noname  D16 DIODESCH {Lib=DIODESCH}
   (    1 GND )
-  (    2 N-000020 )
+  (    2 N-000042 )
  )
  ( /4E73CB72 $noname  C24 100n {Lib=C}
-  (    1 N-000020 )
+  (    1 N-000042 )
   (    2 GND )
  )
  ( /4E73CB24 $noname  C23 100n {Lib=C}
-  (    1 N-000056 )
+  (    1 N-000023 )
   (    2 GND )
  )
  ( /4E73CA97 $noname  L1 330µ {Lib=INDUCTOR}
-  (    1 N-000020 )
+  (    1 N-000042 )
   (    2 +5V )
  )
  ( /4E73C9EC $noname  C16 100n {Lib=C}
@@ -212,22 +212,18 @@
   (    2 RAIL_B )
  )
  ( /4E73BAE4 $noname  U6 LM257X {Lib=LM257X}
-  (    1 N-000056 )
-  (    2 N-000020 )
+  (    1 N-000023 )
+  (    2 N-000042 )
   (    3 GND )
-  (    4 N-000010 )
+  (    4 N-000012 )
   (    5 GND )
  )
- ( /4E6DCC46 $noname  R19 47K {Lib=R}
-  (    1 N-000039 )
-  (    2 U_speed )
- )
  ( /4E73119E $noname  R26 47k {Lib=R}
-  (    1 N-000034 )
+  (    1 N-000035 )
   (    2 RAIL_B )
  )
  ( /4E731198 $noname  R23 47k {Lib=R}
-  (    1 N-000034 )
+  (    1 N-000035 )
   (    2 RAIL_A )
  )
  ( /4E723978 $noname  C2 330n {Lib=C}
@@ -239,19 +235,19 @@
   (    4 MOTOR_B )
   (    5 VCC )
   (    6 MOTOR_A )
-  (    7 N-000045 )
+  (    7 N-000046 )
   (    8 /motor_dir1 )
   (   10 GND )
   (   11 GND )
   (   13 /motor_dir2 )
-  (   14 N-000046 )
-  (   15 N-000047 )
-  (   16 N-000042 )
+  (   14 N-000043 )
+  (   15 N-000048 )
+  (   16 N-000049 )
   (   17 /motor_en )
   (   20 GND )
  )
  ( /4E723907 $noname  C4 100n {Lib=C}
-  (    1 N-000047 )
+  (    1 N-000048 )
   (    2 GND )
  )
  ( /4E7238CE $noname  R2 47k {Lib=R}
@@ -259,56 +255,56 @@
   (    2 GND )
  )
  ( /4E7238C6 $noname  R1 2k2 {Lib=R}
-  (    1 N-000042 )
+  (    1 N-000049 )
   (    2 GND )
  )
  ( /4E7236DD $noname  C3 100n {Lib=C}
-  (    1 N-000046 )
+  (    1 N-000043 )
   (    2 GND )
  )
  ( /4E7236D1 $noname  C1 100n {Lib=C}
-  (    1 N-000045 )
+  (    1 N-000046 )
   (    2 GND )
  )
  ( /4E71D89A $noname  C18 2200µ {Lib=CAPAPOL}
   (    1 VCC )
   (    2 GND )
  )
- ( /4E71D51D $noname  R24 6k8 {Lib=R}
-  (    1 N-000050 )
+ ( /4E71D51D $noname  R24 620 {Lib=R}
+  (    1 N-000026 )
   (    2 sense_dec )
  )
  ( /4E6DEB59 $noname  C13 22p {Lib=C}
-  (    1 N-000007 )
+  (    1 N-000032 )
   (    2 GND )
  )
  ( /4E6DEB50 $noname  C10 22p {Lib=C}
-  (    1 N-000031 )
+  (    1 N-000038 )
   (    2 GND )
  )
  ( /4E6DEB39 $noname  X1 QUARTZCMS4 {Lib=QUARTZCMS4}
-  (    1 N-000031 )
-  (    3 N-000007 )
+  (    1 N-000038 )
+  (    3 N-000032 )
  )
- ( /4E6DCBDE $noname  R13 47k {Lib=R}
-  (    1 N-000050 )
+ ( /4E6DCBDE $noname  R13 4k7 {Lib=R}
+  (    1 N-000026 )
   (    2 MOTOR_A )
  )
- ( /4E6DCBDA $noname  R14 47k {Lib=R}
-  (    1 N-000050 )
+ ( /4E6DCBDA $noname  R14 4k7 {Lib=R}
+  (    1 N-000026 )
   (    2 MOTOR_B )
  )
  ( /4E669D05 $noname  C15 100n {Lib=C}
   (    1 +5V )
   (    2 GND )
  )
- ( /4E661357 $noname  R15 22k {Lib=R}
-  (    1 N-000039 )
+ ( /4E661357 $noname  R15 2k2 {Lib=R}
+  (    1 U_speed )
   (    2 GND )
  )
- ( /4E66134C $noname  R16 22k {Lib=R}
-  (    1 N-000050 )
-  (    2 N-000039 )
+ ( /4E66134C $noname  R16 2k2 {Lib=R}
+  (    1 N-000026 )
+  (    2 U_speed )
  )
  ( /4E65FC74 $noname  U5 RFM12 {Lib=RFM12}
   (    1 /miso )
@@ -347,11 +343,11 @@
   (    2 MOTOR_B )
  )
  ( /4E65F81B $noname  R12 2k2 {Lib=R}
-  (    1 N-000037 )
+  (    1 N-000053 )
   (    2 /ir_rx )
  )
  ( /4E65F817 $noname  R11 220 {Lib=R}
-  (    1 N-000038 )
+  (    1 N-000039 )
   (    2 /ir_tx )
  )
  ( /4E65F788 $noname  C12 100n {Lib=C}
@@ -363,7 +359,7 @@
   (    2 GND )
  )
  ( /4E65F631 $noname  R25 39k {Lib=R}
-  (    1 N-000034 )
+  (    1 N-000035 )
   (    2 /track_ref )
  )
  ( /4E65F55C $noname  D13 DIODE {Lib=DIODE}
@@ -479,13 +475,6 @@ $component C5
  SM*
 $endlist
 $component R22
- R?
- SM0603
- SM0805
- R?-*
- SM1206
-$endlist
-$component R19
  R?
  SM0603
  SM0805
@@ -674,283 +663,280 @@ $endlist
 $endfootprintlist
 }
 { Pin List by Nets
-Net 1 "" ""
+Net 1 "U_speed" "U_speed"
+ R15 1
+ R16 2
+ IC2 22
+Net 2 "" ""
  IC2 32
  U2 2
-Net 2 "/DCC" "DCC"
- R22 1
- IC2 23
-Net 3 "" ""
- IC2 25
- U2 7
-Net 4 "/miso" "miso"
- IC2 16
- U5 1
-Net 5 "" ""
- U2 3
- IC2 28
-Net 6 "/rfm_sel" "rfm_sel"
+Net 3 "/rfm_sel" "rfm_sel"
  U5 14
  IC2 13
+Net 4 "/DCC" "DCC"
+ IC2 23
+ R22 1
+Net 5 "/motor_en" "motor_en"
+ IC2 14
+ U1 17
+ R2 1
+Net 6 "/mosi" "mosi"
+ IC2 15
+ U5 12
 Net 7 "" ""
- IC2 7
- X1 3
- C13 1
-Net 8 "/motor_dir2" "motor_dir2"
- IC2 11
- U1 13
-Net 9 "/motor_dir1" "motor_dir1"
- IC2 12
- U1 8
-Net 10 "" ""
- R30 2
- R31 1
- U6 4
-Net 11 "MOTOR_A" "MOTOR_A"
- D1 1
- D2 2
- U1 6
- P_MOTOR1 1
- R13 2
-Net 12 "/reset" "reset"
- IC2 29
- P3 1
-Net 15 "/ir_rx" "ir_rx"
- GS2 2
- R12 2
-Net 16 "/gpio2" "gpio2"
- IC2 9
- P2 1
-Net 17 "/gpo3b" "gpo3b"
- IC1 4
- P25 2
- U2 16
- R4 2
-Net 18 "/gpo6" "gpo6"
- U2 13
- P1 2
-Net 19 "" ""
  IC2 26
  U2 6
-Net 20 "" ""
- D14 1
- D16 2
- C24 1
- L1 1
- U6 2
-Net 21 "/gnd_fet" "gnd_fet"
- C5 2
- R6 1
- P5 1
+Net 8 "/sck" "sck"
+ IC2 17
+ U5 13
+Net 9 "GND" "GND"
+ R1 2
+ C19 2
+ C20 2
+ C12 1
+ R27 2
+ C17 2
+ C16 2
+ D13 1
+ D12 1
+ C23 2
+ C24 2
+ U6 3
+ U6 5
+ C2 2
+ C4 2
+ U1 11
+ U1 20
+ U5 7
+ U1 1
+ R15 2
+ U5 10
+ U1 10
+ C10 2
+ C13 2
+ C18 2
+ R2 2
+ C1 2
+ C15 2
+ C3 2
+ IC2 21
+ P11 1
+ P20 1
+ P16 1
+ P12 1
+ R31 2
+ D16 1
+ C14 2
+ IC2 5
+ IC2 3
+ GS1 2
+ P8 1
+ D4 1
+ D2 1
+ U2 8
+Net 10 "+5V" "+5V"
+ L1 2
+ C19 1
+ C20 1
+ IC2 4
+ IC2 6
+ R7 1
+ P22 1
+ P23 1
+ C14 1
+ P13 1
+ R30 1
+ C15 1
+ U5 9
+ P17 1
+ IC2 18
+Net 11 "/rfm_int" "rfm_int"
+ U5 2
+ IC2 1
+Net 12 "" ""
+ R30 2
+ U6 4
+ R31 1
+Net 13 "/gnd_fet" "gnd_fet"
  GS1 1
- IC1 3
  IC1 1
+ IC1 3
+ R6 1
+ C5 2
+ P5 1
+Net 14 "MOTOR_B" "MOTOR_B"
+ R14 2
+ D4 2
+ D3 1
+ U1 4
+ P_MOTOR1 2
+Net 17 "" ""
+ U2 7
+ IC2 25
+Net 18 "/gpio1" "gpio1"
+ P2 2
+ IC2 10
+Net 19 "/gpo9" "gpo9"
+ P1 5
+ U2 10
+Net 20 "/gpo8" "gpo8"
+ P1 4
+ U2 11
+Net 21 "/gpo7" "gpo7"
+ U2 12
+ P1 3
 Net 22 "/gpo5" "gpo5"
- U2 14
  P1 1
-Net 23 "/gpo3a" "gpo3a"
- P24 1
- IC1 6
- IC1 5
-Net 24 "/gpo4a" "gpo4a"
- IC1 8
- IC1 7
- P24 2
-Net 25 "" ""
- IC2 2
- U2 1
+ U2 14
+Net 23 "" ""
+ D14 2
+ D15 2
+ U6 1
+ C23 1
+Net 24 "/gpo6" "gpo6"
+ U2 13
+ P1 2
+Net 25 "/reset" "reset"
+ IC2 29
+ P3 1
 Net 26 "" ""
- IC2 27
- U2 4
- U2 5
-Net 30 "/fsk" "fsk"
- U5 3
+ R16 1
+ R24 1
+ R13 1
+ R14 1
+Net 30 "/miso" "miso"
+ IC2 16
+ U5 1
+Net 31 "/fsk" "fsk"
  R7 2
-Net 31 "" ""
- IC2 8
- X1 1
- C10 1
-Net 32 "RAIL_B" "RAIL_B"
- P_RAIL1 1
- D10 1
- D12 2
- R22 2
- R26 2
+ U5 3
+Net 32 "" ""
+ X1 3
+ C13 1
+ IC2 7
 Net 33 "/aref" "aref"
  C12 2
  IC2 20
-Net 34 "" ""
- R26 1
+Net 34 "/track ref" "track ref"
+ R25 2
+ R27 1
+ IC2 19
+Net 35 "" ""
  R23 1
  R25 1
-Net 35 "RAIL_A" "RAIL_A"
+ R26 1
+Net 36 "RAIL_A" "RAIL_A"
  R23 2
  P_RAIL1 2
- D13 2
  D11 1
-Net 36 "/mosi" "mosi"
- U5 12
- IC2 15
-Net 37 "" ""
- R12 1
- IC2 30
+ D13 2
+Net 37 "RAIL_B" "RAIL_B"
+ R22 2
+ D12 2
+ P_RAIL1 1
+ R26 2
+ D10 1
 Net 38 "" ""
- IC2 31
- R11 1
+ IC2 8
+ X1 1
+ C10 1
 Net 39 "" ""
- R16 2
- R19 1
- R15 1
-Net 40 "GND" "GND"
- R31 2
- D16 1
- C4 2
- IC2 5
- P12 1
- P20 1
- P11 1
- C16 2
- P16 1
- IC2 21
- D12 1
- C12 1
- R27 2
- D13 1
- C10 2
- IC2 3
- C14 2
- C24 2
- R15 2
- U5 7
- U2 8
- C15 2
- U5 10
- C3 2
- C1 2
- P8 1
- C18 2
- C13 2
- GS1 2
- C2 2
- U1 1
- D2 1
- U1 10
- U1 20
- U1 11
- D4 1
- C23 2
- R1 2
- C17 2
- C20 2
- U6 5
- C19 2
- R2 2
- U6 3
+ R11 1
+ IC2 31
+Net 40 "/gpio2" "gpio2"
+ IC2 9
+ P2 1
 Net 41 "sense_dec" "sense_dec"
- R24 2
  IC2 24
+ R24 2
 Net 42 "" ""
- R1 1
- U1 16
-Net 43 "/track ref" "track ref"
- IC2 19
- R27 1
- R25 2
-Net 44 "U_speed" "U_speed"
- IC2 22
- R19 2
-Net 45 "" ""
- U1 7
- C1 1
-Net 46 "" ""
+ U6 2
+ D16 2
+ D14 1
+ L1 1
+ C24 1
+Net 43 "" ""
  C3 1
  U1 14
-Net 47 "" ""
+Net 44 "/ir_rx" "ir_rx"
+ R12 2
+ GS2 2
+Net 45 "/ir_tx" "ir_tx"
+ GS2 1
+ R11 2
+Net 46 "" ""
+ U1 7
+ C1 1
+Net 47 "/motor_dir2" "motor_dir2"
+ U1 13
+ IC2 11
+Net 48 "" ""
  U1 15
  C4 1
-Net 48 "MOTOR_B" "MOTOR_B"
- R14 2
- P_MOTOR1 2
- U1 4
- D4 2
- D3 1
-Net 49 "VCC" "VCC"
- C17 1
- C16 1
- D1 2
- R3 1
- D10 2
- D11 2
+Net 49 "" ""
+ U1 16
+ R1 1
+Net 50 "MOTOR_A" "MOTOR_A"
+ D1 1
+ R13 2
+ P_MOTOR1 1
+ D2 2
+ U1 6
+Net 51 "VCC" "VCC"
  D3 2
- D15 1
+ D1 2
  U2 9
- P4 1
- P7 1
- P6 1
+ C17 1
+ D15 1
  U1 5
  C2 1
  C18 1
-Net 50 "" ""
- R16 1
- R13 1
- R14 1
- R24 1
-Net 51 "/gpio1" "gpio1"
- P2 2
- IC2 10
-Net 52 "/gpo8" "gpo8"
- U2 11
- P1 4
-Net 53 "+5V" "+5V"
- IC2 18
- C19 1
- C14 1
- IC2 6
- C20 1
- R30 1
- IC2 4
- R7 1
- P13 1
- P17 1
- U5 9
- L1 2
- P22 1
- P23 1
- C15 1
-Net 54 "/sck" "sck"
- IC2 17
- U5 13
-Net 55 "/gpo4b" "gpo4b"
+ C16 1
+ D11 2
+ D10 2
+ R3 1
+ P4 1
+ P7 1
+ P6 1
+Net 52 "/gpo4b" "gpo4b"
  R5 2
- IC1 2
- U2 15
  P25 1
+ U2 15
+ IC1 2
+Net 53 "" ""
+ R12 1
+ IC2 30
+Net 54 "/motor_dir1" "motor_dir1"
+ U1 8
+ IC2 12
+Net 55 "" ""
+ U2 1
+ IC2 2
 Net 56 "" ""
- C23 1
- U6 1
- D14 2
- D15 2
-Net 57 "/ir_tx" "ir_tx"
- R11 2
- GS2 1
-Net 58 "/v_fet_gate" "v_fet_gate"
+ IC2 28
+ U2 3
+Net 57 "/gpo4a" "gpo4a"
+ P24 2
+ IC1 8
+ IC1 7
+Net 58 "/gpo3b" "gpo3b"
+ IC1 4
+ U2 16
+ R4 2
+ P25 2
+Net 59 "/v_fet_gate" "v_fet_gate"
  R4 1
- R6 2
- R5 1
  R3 2
  C5 1
-Net 59 "/gpo7" "gpo7"
- P1 3
- U2 12
-Net 60 "/rfm_int" "rfm_int"
- IC2 1
- U5 2
-Net 61 "/gpo9" "gpo9"
- U2 10
- P1 5
-Net 62 "/motor_en" "motor_en"
- IC2 14
- R2 1
- U1 17
+ R6 2
+ R5 1
+Net 60 "/gpo3a" "gpo3a"
+ IC1 5
+ IC1 6
+ P24 1
+Net 61 "" ""
+ IC2 27
+ U2 4
+ U2 5
 }
 #End
