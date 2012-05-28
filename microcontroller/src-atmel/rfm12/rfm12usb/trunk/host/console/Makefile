@@ -4,7 +4,7 @@ PROGNAME = rfmconsole
 LIBS = -lusb
 
 all:
-	$(CC) -o $(PROGNAME) $(LIBS) ../common/opendevice.c dump.c termio.c console.c
+	$(CC) -o $(PROGNAME) ../common/opendevice.c ../CDriver/RfmUsb.c dump.c termio.c console.c $(LIBS)
 
 clean:
 	rm -rf *.o
