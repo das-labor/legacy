@@ -49,4 +49,8 @@ int rfmusb_TxPacket (rfmusb_dev_handle *handle, unsigned char type, unsigned cha
 /* @description Receives a packet */
 int rfmusb_RxPacket (rfmusb_dev_handle *handle, rfmusb_packetbuffer * packetBuffer);
 
-
+//rfm12 live control
+int rfmusb_rfm12_config(rfmusb_dev_handle *handle, unsigned char cmd, unsigned short value);
+void rfmusb_rfm12_cmd_to_string(uint8_t cmd, char * s);
+void rfmusb_rfm12_get_parameter_string(uint8_t cmd, char * str);
+unsigned int rfmusb_rfm12_get_cmd_count();

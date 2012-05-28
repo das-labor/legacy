@@ -25,7 +25,7 @@ EXE_SUFFIX =
 
 NAME = rfmusbcmd
 
-OBJECTS = opendevice.o RfmUsb.o $(NAME).o
+OBJECTS = opendevice.o rfm12_livectrl.o RfmUsb.o $(NAME).o
 
 CC		= gcc
 CFLAGS	= $(CPPFLAGS) $(USBFLAGS) -O -g #-Wall

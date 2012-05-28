@@ -131,6 +131,51 @@ void UI_send_raw()
 	rfmusb_TxPacket (udhandle, type, length, buf);
 }
 
+
+void UI_config()
+{
+	const unsigned int num_cmd = rfmusb_rfm12_get_cmd_count();
+	char buf[256];
+    int i, tmp;
+    unsigned char cmd;
+    unsigned short val;
+    
+    //print cmd menu
+    printf("     setting    | current value\n");
+    printf("----------------+--------------\n");
+    for(i = 0; i < num_cmd; i++)
+    {
+		rfmusb_rfm12_cmd_to_string(i, buf);
+		printf("%i. %12s | ", i, buf);
+		rfmusb_rfm12_get_parameter_string(i, buf);
+		printf("%12s\n", buf);
+	}
+
+    printf("\nsetting num? ");
+    scanf("%u", &tmp);
+    fflush(stdin);
+    cmd = tmp & 0xff;
+
+    printf("Value (hex)? ");
+    scanf("%04x", &tmp);
+    fflush(stdin);
+    val =  tmp & 0xffff;
+
+    if(cmd > RFM12_BUFFER_SIZE)
+    {
+        printf("command not understoord\n");
+        return;
+    }
+
+	rfmusb_rfm12_config(udhandle, cmd, val);
+	
+	printf("new setting:\n");
+	rfmusb_rfm12_cmd_to_string(cmd, buf);
+	printf("%s : ", buf);
+	rfmusb_rfm12_get_parameter_string(cmd, buf);
+	printf("%12s\n", buf);
+}
+
 #define JOY_UP 0x01
 #define JOY_DOWN 0x02
 #define JOY_LEFT 0x04
@@ -196,7 +241,8 @@ void UI_menu_show(void)
      printf("Menu:\n");
      printf("1\tairdump\n");
      printf("2\tsend raw packet\n");
-//     printf("3\tjoystick mode\n");
+     printf("3\tconfigure\n");
+//     printf("4\tjoystick mode\n");
      printf("0\texit\n");
      printf("\n> ");
 }
@@ -227,7 +273,10 @@ void UI_main_menu(void)
                 UI_send_raw();
                 break;
 
-            case '3':
+			case '3':
+                UI_config();
+                break;
+            case '4':
                 UI_joystick();
                 break;
 

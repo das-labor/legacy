@@ -16,6 +16,9 @@
 #ifndef __REQUESTS_H_INCLUDED__
 #define __REQUESTS_H_INCLUDED__
 
+/*
+ * USB Request Types 
+ */
 typedef enum
 {
 	//put data into the rfm12 transmit buffer
@@ -27,10 +30,5 @@ typedef enum
 	//configure radio interface
 	RFMUSB_RQ_RADIO_CFG
 } rfmusb_requests;
-
-///////////////// here come the config commands
-#define RFMUSB_CONF_TX_POWER	0x01
-#define RFMUSB_CONF_FREQUENCY	0x02
-#define RFMUSB_CONF_BAUDRATE	0x03
 
 #endif /* __REQUESTS_H_INCLUDED__ */
