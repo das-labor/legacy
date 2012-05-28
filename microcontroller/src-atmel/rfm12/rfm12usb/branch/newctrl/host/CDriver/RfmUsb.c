@@ -18,6 +18,9 @@
 #include "../../common/requests.h"
 #include "../common/opendevice.h"
 
+//livectrl
+#include "rfm12_livectrl.h"
+
 
 //connect extended function
 //returns != 0 on error
@@ -96,4 +99,35 @@ int rfmusb_RxPacket(rfmusb_dev_handle *handle, rfmusb_packetbuffer * packetBuffe
             USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
             RFMUSB_RQ_RADIO_GET, 0, 0, (char *)packetBuffer, sizeof(rfmusb_packetbuffer),
             DEFAULT_USB_TIMEOUT);
+}
+
+
+int rfmusb_rfm12_config(rfmusb_dev_handle *handle, unsigned char cmd, unsigned short value)
+{
+	//update current value
+	rfm12_livectrl(cmd, value);
+		
+	//send radio configuration request and retuurn result
+    return usb_control_msg (handle,
+        USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
+        RFMUSB_RQ_RADIO_CFG, 0, cmd, (char *)&value, 2,
+        DEFAULT_USB_TIMEOUT);
+}
+
+
+void rfmusb_rfm12_cmd_to_string(uint8_t cmd, char * s)
+{
+	rfm12_cmd_to_string(cmd, s);
+}
+
+
+void rfmusb_rfm12_get_parameter_string(uint8_t cmd, char * str)
+{
+	rfm12_livectrl_get_parameter_string(cmd, str);
+}
+
+
+unsigned int rfmusb_rfm12_get_cmd_count()
+{
+	return NUM_LIVECTRL_CMDS;
 }
