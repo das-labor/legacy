@@ -23,12 +23,18 @@
 #include "termio.h"
 #include "../../common/console.h"
 #include "../../common/configvars.h"
-#include "../../common/requests.h"
 #include "dump.h"
+
+//for simple usbOpenDevice
 #include "../common/opendevice.h"
 
-#include "../../firmware/usbconfig.h"
-#include "../../firmware/requests.h"
+//use my usb driver
+#include "../CDriver/RfmUsb.h"
+
+//common includes
+#include "../../common/usb_id.h"
+#include "../../common/requests.h"
+#include "../../common/rfm12_buffer_size.h"
 
 usb_dev_handle *udhandle = NULL;
 int mytty;
@@ -100,6 +106,7 @@ int main (int argc, char* argv[])
 	int vid, pid, tmp;
 	uint_fast32_t packetcounter = 0;
 
+	/* usb setup */
 	const unsigned char rawVid[2] =
 	{
 		USB_CFG_VENDOR_ID
@@ -108,23 +115,13 @@ int main (int argc, char* argv[])
 	{
 		USB_CFG_DEVICE_ID
 	};
-
-	char vendor[] =
-	{ 
-		USB_CFG_VENDOR_NAME, 0
-	},
-		product[] =
-		{
-			USB_CFG_DEVICE_NAME, 0
-		};
 	
-	usb_init();
-	
-	/* usb setup */
 	vid = rawVid[1] * 256 + rawVid[0];
 	pid = rawPid[1] * 256 + rawPid[0];
+	
+	usb_init();
 
-	if (usbOpenDevice (&udhandle, vid, vendor, pid, product, NULL, NULL, NULL) != 0)
+	if (usbOpenDevice (&udhandle, vid, pid) != 0)
 	{
 		printf ("Can't find USB Device w/ uid %04X, pid %04X\r\n", vid, pid);
 		console_exit(__LINE__ * -1);
@@ -204,15 +201,12 @@ int main (int argc, char* argv[])
 		l = read(mytty, &tmpchar, 1);
 		if (l == 1) /* character from stdin */
 		{
-			buf[0] = USB_SENDCHAR;
-			buf[1] = tmpchar;
+			buf[0] = tmpchar;
 
 		//	printf("%c", tmpchar); /* local echo */
 
-			tmp = usb_control_msg (udhandle,
-					USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-					RFMUSB_RQ_RFM12_PUT, USB_TXPACKET, 0, buf, 2,
-					5000);
+			//directly tx packet
+			rfmusb_TxPacket (udhandle, /*type */0xAA, 1, buf);
 		}
 		termflush (mytty);
 		
