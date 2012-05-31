@@ -1,6 +1,8 @@
 #include "locodoco.h"
 
-void ldc_packet_handler ()
+
+
+void ldc_packet_handler2 ()
 {
 	uint8_t rxlen;
 	uint8_t *rxbuf;
@@ -44,6 +46,8 @@ void ldc_packet_handler ()
 
 		case LDC_CMD_REBOOT:
 			ldc_disassoc (rxbuf);
+			wdt_enable(WDTO_15MS);
+			while(23);
 		break;
 
 		case LDC_CMD_CALIBRATE:

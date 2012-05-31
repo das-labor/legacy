@@ -27,7 +27,7 @@ void motor_init ()
 
 void motor_adjust_speed ()
 {
-
+	
 	if (m_sampleval < m_targetval) /* increase speed */
 	{
 		if (M_OCR < M_OCR_MAX)
