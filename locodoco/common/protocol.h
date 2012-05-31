@@ -6,8 +6,10 @@
 
 #pragma once
 
-#pragma pack(push)
-#pragma pack(1)
+#ifndef F_CPU /* not really the best way ... */
+	#pragma pack(push)
+	#pragma pack(1)
+#endif
 
 /* rfm12 header type - ASCII 'L' */
 #define LDC_TYPE 0x4C
@@ -46,7 +48,7 @@ typedef uint16_t ldc_dist_t;
 typedef struct
 {
 	ldc_waypoint_t wp;
-	ldc_dist_t;
+	ldc_dist_t dist;
 } ldc_position_t;
 
 
@@ -86,12 +88,6 @@ typedef struct
 #define LDC_CMD_REBOOT            0x08
 #define LDC_CMD_CALIBRATE         0x09
 
-#define LDC_DEBUG                 0x0D
-#define LDC_ERROR                 0x0E
-#define LDC_ERROR_NOT_IMPL        0x00
-#define LDC_ERROR_ARGUMENT        0x01
-#define LDC_ERROR_CRC             0x02
-
 /* loco control */
 #define LDC_CMD_LIGHT_SET         0x10
 #define LDC_CMD_LIGHT_GET         0x20
@@ -120,4 +116,6 @@ typedef struct
 #define LDC_CMD_DRIVE_TO_SET      0x18
 #define LDC_CMD_DRIVE_TO_GET      0x28
 
-#pragma pack(pop)
+#ifndef F_CPU
+	#pragma pack(pop)
+#endif

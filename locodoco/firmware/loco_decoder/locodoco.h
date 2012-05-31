@@ -5,10 +5,11 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include "config.h"
+#include "../../common/protocol.h"
+#include "rfm12.h"
 #pragma once
-static struct ldc_state
-{
-	uint8_t txlen;
-}
 
-void ldc_packet_handler ();
+
+
+void ldc_packet_handler (void);
