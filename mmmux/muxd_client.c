@@ -22,6 +22,7 @@ int mmmux_client_connect (mmmux_sctx_t *in_c)
 {
 	struct sockaddr_un r;
 	int len, e, rv;
+	v = in_c->debugfd;
 
 	if (in_c->listenfd > 0)
 	{

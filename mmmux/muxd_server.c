@@ -164,7 +164,7 @@ void mmmux_server_drop_privs (mmmux_sctx_t *in_c)
 	chown (new_dir, u, u);
 	chmod (new_dir, S_IRUSR | S_IXUSR | S_IWUSR);
 	chdir (new_dir);
-	chroot (new_dir);
+	//chroot (new_dir);
 	setgid(u);
 	if (!setuid(u))
 	{
