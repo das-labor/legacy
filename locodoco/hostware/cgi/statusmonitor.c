@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <mmmuxd.h>
+#include <muxd.h>
 
 int main (int argc, char* argv[])
 {
@@ -28,20 +28,21 @@ int main (int argc, char* argv[])
 	int rv, i;
 	mmmux_sctx_t *my_context;	
 	
-	printf ("HTTP/1.0 200 OK\r\n"
-		"Cache-Control: no-cache\r\n"
-		"Content-type: text/html; charset=utf-8\r\n"
-		"Expires: -1\r\nPragma: no-cache\r\n\r\n");
-	fflush (0);
-	my_context = mmmuxd_init (MDBG_STDERR, NULL);
+	my_context = mmmuxd_init (MDBG_NONE, NULL);
 
 	if (my_context == NULL)
 	{
-		printf ("can't init mmmux stuff.\n");
+		printf ("HTTP/1.0 500 ERROR\r\n\r\ncan't init mmmux stuff.\n");
 		return - __LINE__;
 	}
 
-	printf ("context %p\n", my_context);
+	
+	printf ("HTTP/1.0 200 OK\r\n"
+		//"Cache-Control: no-cache\r\n"
+		//"Content-type: text/html; charset=utf-8\r\n"
+		"Content-type: text/html\r\n"
+		"Expires: -1\r\nPragma: no-cache\r\n\r\n");
+	fflush (0);
 	
 	while (42)
 	{
@@ -49,13 +50,13 @@ int main (int argc, char* argv[])
 		if (rv <= 0)
 			return rv;
 		
-		printf ("\t");
 		for (i=0;i<rv;i++)
 		{
 			printf ("%02X ", buf[i]);
 			if (i > 0 && !(i % 16))
-				printf ("\n\t");
+				printf ("\r\n\t");
 		}
-		printf ("\n");
+		printf ("\r\n");
+		fflush(0);
 	}
 }
