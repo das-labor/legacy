@@ -1,0 +1,58 @@
+div#statwin,div#dbgwin
+{
+	width:320px;
+	font-size:10px;
+	font-family:monospace;
+	right:0px;
+	position:absolute;
+}
+div#statwin
+{
+	height:32px;
+	background-color:#FFFFEE;
+}
+div#dbgwin
+{
+	height:400px;
+	background-color:#FFEEEE;
+	padding:0px;
+	top:32px;
+}
+
+div#cmdwin
+{
+	position:absolute;
+	bottom:0px;
+}
+
+div#cmdwin,iframe#ct
+{
+	width:200px;
+	height:200px;
+	padding:0px;
+	margin:0px;
+}
+
+div#bfield
+{
+	position:absolute;
+	top:32px;
+	left:0px;
+	width:300px;
+}
+div#bfield a
+{
+	display:block;
+	float:left;
+	width:75px;
+	height:55px;
+	padding:0px;
+	margin:2px;
+	padding-top:25px;
+	border-style:solid;
+	border-width:2px;
+	border-color:#333;
+	text-align:center;
+	text-decoration:none;
+	font-size:18px;
+}
