@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>LocoDoco test-webif</title>
+<link rel="stylesheet" type="text/css" href="screen.css" />
+<script type="text/javascript">
+var stat_rq = new XMLHttpRequest();
+var dbgdata = new Array();
+var rsplen = 0;
+
+function get_statinfo()
+{
+	stat_rq.open('GET', '/cgi-bin/statusmonitor?rand=' + Math.random(), true);
+	stat_rq.onreadystatechange = handle_response;
+	stat_rq.send(null);
+}
+
+function dbg_print(in_txt)
+{
+	var de = document.getElementById('dbgwin');
+	if (dbgdata.length > 32)
+	{
+		dbgdata.reverse();
+		dbgdata.pop();
+		dbgdata.reverse();
+	}
+	dbgdata.push(in_txt);
+	dbgdata.reverse();
+	de.innerHTML = dbgdata.join("<br />");
+	dbgdata.reverse();
+}
+ 
+function handle_response()
+{
+	var oldlen = rsplen;
+
+	tmp = stat_rq.responseText;
+	rsplen = tmp.length;
+
+	var new_msg = tmp.substr(oldlen, rsplen);
+	dbg_print (new_msg);
+	var ed = eval(new_msg);
+
+	//if (ed.cmd == 'speed_get'
+
+	/* update status */
+	document.getElementById('statwin').innerHTML = "rx bytes: " + tmp.length
+		+ "<br />state: " + stat_rq.readyState;
+	
+	if (stat_rq.readyState==4)
+	{
+		document.getElementById('statwin').innerHTML = "reset";
+		get_statinfo();
+	}
+}
+
+function bclick(in_cmd)
+{
+	var el = document.getElementById('ct');
+	var target = document.getElementById('inptarget').value;
+
+	el.src = '/cgi-bin/ldc?target=' + target + '&cmd=' + in_cmd +
+		'u16val=' + document.getElementById('speedval').value +
+		'&rand=' + Math.random();
+	return false;
+}
+
+</script>
+</head>
+<body onload="get_statinfo();">
+<div id="cmdwin"><iframe src="#" id="ct"></iframe></div>
+<div>
+</div>
+<div id="statwin">status info</div>
+<div id="dbgwin">debug info</div>
+<div id="bfield">
+<strong>Target:</strong><input type="text" id="inptarget" /><br />
+<a href="javascript:void(0)" onclick="bclick('reverse')">&laquo;</a>
+<a href="javascript:void(0)" onclick="bclick('stop')">||</a>
+<a href="javascript:void(0)" onclick="bclick('forward')">&raquo;</a>
+<br />
+<fieldset>
+	<legend>Speed setting</legend>
+	<input type="text" id="speedval" size="5" />&nbsp;Target<br />
+	<a href="javascript:void(0)" onclick="bclick('target_speed_set')">target</a>
+	<a href="javascript:void(0)" onclick="bclick('speed_set')">immed.</a>
+</fieldset>
+<fieldset>
+	<legend>status</legend>
+	Speed: <strong id="speedval">000</strong>
+</fieldset>
+</div>
+</body>
+</html>
