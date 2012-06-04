@@ -1,7 +1,7 @@
 #include "motor.h"
 
 volatile static uint16_t m_sampleval = 0x0000;
-volatile static uint16_t m_targetval = 0x0020;
+volatile static uint16_t m_targetval = 0x0002;
 volatile static uint8_t motor_state = 0x00;
 
 void motor_set_sampleval (uint16_t in_val)
@@ -45,7 +45,7 @@ void motor_adjust_speed ()
  */
 void motor_tick ()
 {
-	static uint16_t c = 0;
+	static uint16_t c = 0, c2 = 0;
 
 	if (motor_state & MOTOR_SAMPLE_READY)
 	{
@@ -60,4 +60,22 @@ void motor_tick ()
 	
 	c = 0;
 	adcd_ctl (ADCD_SAMPLE_MOTOR);
+
+	c2++;
+
+	if (c2 == 100)
+	{
+		uint8_t txbuf[sizeof(ldc_header_t) + 2];
+		ldc_header_t *h = (ldc_header_t*) txbuf;
+		
+		*((uint16_t *) (txbuf + sizeof(ldc_header_t))) = m_targetval;
+		rfm12_tx (sizeof(ldc_header_t) + sizeof(uint16_t), LDC_TYPE, txbuf);
+		c2 = 0;
+	}
+}
+
+
+void motor_set_target_speed (uint16_t in_val)
+{
+	m_targetval = in_val;
 }

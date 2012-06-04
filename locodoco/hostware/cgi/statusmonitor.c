@@ -20,7 +20,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
 #include <muxd.h>
+
+#include "../../common/protocol.h"
+
+const char* cmd_to_str (ldc_header_t *in_hdr)
+{
+	switch (in_hdr->ltype)
+	{
+		case LDC_CMD_LIGHT_GET:
+			return (const char*) "light_get";
+
+		case LDC_CMD_SPEED_GET:
+			return (const char*) "speed_get";
+		
+		case LDC_CMD_TARGET_SPEED_GET:
+			return (const char*) "target_speed_get";
+
+		default:
+			return (const char*) "unknown_command";
+	}
+}
 
 int main (int argc, char* argv[])
 {
@@ -29,6 +50,7 @@ int main (int argc, char* argv[])
 	mmmux_sctx_t *my_context;	
 	
 	my_context = mmmuxd_init (MDBG_NONE, NULL);
+	memset (buf, 0x00, sizeof(buf));
 
 	if (my_context == NULL)
 	{
@@ -38,25 +60,39 @@ int main (int argc, char* argv[])
 
 	
 	printf ("HTTP/1.0 200 OK\r\n"
-		//"Cache-Control: no-cache\r\n"
-		//"Content-type: text/html; charset=utf-8\r\n"
 		"Content-type: text/html\r\n"
 		"Expires: -1\r\nPragma: no-cache\r\n\r\n");
-	fflush (0);
 	
+	fflush (0);
+
 	while (42)
 	{
+		ldc_header_t *lh;
+		rfm12_header_t *rh;
 		rv = mmmux_receive (my_context, buf, sizeof(buf));
 		if (rv <= 0)
 			return rv;
 		
+		rh = (rfm12_header_t *) buf;
+		lh = (ldc_header_t *) (buf + sizeof(rfm12_header_t));
+
+		if (rh->type != LDC_TYPE)
+		{
+			/* not a locodoco packet */
+			printf ("\"non-ldc\":\"1\",");
+		} else
+		{
+			/* ldc command */
+			printf ("{\"cmd\":\"%s\",", cmd_to_str(lh));
+			printf ("\"addr\":\"%u\",", lh->addr);
+		}
+
+		printf ("\"debuginfo\":{\"rawdata\":\"");
 		for (i=0;i<rv;i++)
 		{
 			printf ("%02X ", buf[i]);
-			if (i > 0 && !(i % 16))
-				printf ("\r\n\t");
 		}
-		printf ("\r\n");
+		printf ("\"} };\r\n");
 		fflush(0);
 	}
 }

@@ -95,7 +95,7 @@
 /* rfm12 config */
 #define DDR_SS DDRB
 #define PORT_SS PORTB
-#define BIT_SS 2
+#define BIT_SS 1
 
 //SPI port
 #define DDR_SPI DDRB
@@ -109,7 +109,7 @@
 #define RFM12_BASEBAND RFM12_BAND_433
 
 //center frequency to use (+-125kHz FSK frequency shift)
-#define FREQ 433175000UL
+#define FREQ 433000000UL
 
 //use this for datarates >= 2700 Baud
 #define DATARATE_VALUE RFM12_DATARATE_CALC_HIGH(9600.0)

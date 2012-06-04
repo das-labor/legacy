@@ -31,7 +31,7 @@ typedef uint16_t ldc_addr_t;
 /* at last ... the locodoco header */
 typedef struct
 {
-	ldc_upper_hdr_t uhdr;
+	//ldc_upper_hdr_t uhdr;
 	uint8_t ltype;
 	uint16_t chksum;
 	ldc_addr_t addr;
