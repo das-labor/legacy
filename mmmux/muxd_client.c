@@ -71,7 +71,7 @@ int mmmux_send (mmmux_sctx_t *in_c, void* in_buf, size_t in_len)
 			return rv;
 		}
 
-		sent -= rv;
+		sent += rv;
 	}
 	return sent;
 }
