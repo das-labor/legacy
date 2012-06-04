@@ -2,3 +2,4 @@ import sys,glob,os
 envprog = Environment(LIBPATH = ['./', 'mmmux-lib/'], CPPPATH = ['./', 'mmmux-lib/'], parse_flags='-lusb -lmmmuxd')
 
 statusmonbuild = envprog.Program ('statusmonitor', ['statusmonitor.c'])
+ldcbuild = envprog.Program ('ldc', ['ldc.c'])

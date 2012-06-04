@@ -1,8 +1,7 @@
 #include "locodoco.h"
 
 
-
-void ldc_packet_handler2 ()
+void ldc_packet_handler ()
 {
 	uint8_t rxlen;
 	uint8_t *rxbuf;
@@ -11,11 +10,12 @@ void ldc_packet_handler2 ()
 		return;
 	
 	rxbuf = rfm12_rx_buffer();
-	if (!LDC_MATCH(rxbuf))
+	if (rfm12_rx_type() != LDC_TYPE)
 	{
 		rfm12_rx_clear();
 		return;
 	}
+	PORT_LIGHT_FRONT ^= PIN_LIGHT_BACK;
 
 	switch (LDC_TYPE_GET(rxbuf))
 	{
@@ -23,19 +23,17 @@ void ldc_packet_handler2 ()
 		break;
 
 		case LDC_TIMESLOT_END:
-			if (!ldc_state.txlen)
-				break;
 		break;
 
 		case LDC_TIMESLOT_ACK:
-			ldc_timeslot_set (rxbuf);
+			//ldc_timeslot_set (rxbuf);
 		break;
 
 		case LDC_CMD_RESUME:
 		break;
 
 		case LDC_DISASSOC:
-			ldc_disassoc (rxbuf);
+			//ldc_disassoc (rxbuf);
 		break;
 
 		case LDC_CMD_CONFIG_SET:
@@ -45,7 +43,7 @@ void ldc_packet_handler2 ()
 		break;
 
 		case LDC_CMD_REBOOT:
-			ldc_disassoc (rxbuf);
+			//ldc_disassoc (rxbuf);
 			wdt_enable(WDTO_15MS);
 			while(23);
 		break;
@@ -92,6 +90,13 @@ void ldc_packet_handler2 ()
 		break;
 
 		case LDC_CMD_SPEED_GET:
+		break;
+
+		case LDC_CMD_TARGET_SPEED_SET:
+			motor_set_target_speed (*((uint16_t *) (rxbuf + sizeof(ldc_header_t))));
+		break;
+
+		case LDC_CMD_TARGET_SPEED_GET:
 		break;
 
 		default:
