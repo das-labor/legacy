@@ -42,10 +42,12 @@ void motor_adjust_speed ()
 }
 
 /* motor control "daemon"
- */
+*/
 void motor_tick ()
 {
 	static uint16_t c = 0, c2 = 0;
+	uint8_t txbuf[sizeof(ldc_header_t) + 2];
+	ldc_header_t *h = (ldc_header_t*) txbuf;
 
 	if (motor_state & MOTOR_SAMPLE_READY)
 	{
@@ -63,12 +65,17 @@ void motor_tick ()
 
 	c2++;
 
-	if (c2 == 100)
+	if (c2 == 1000)
 	{
-		uint8_t txbuf[sizeof(ldc_header_t) + 2];
-		ldc_header_t *h = (ldc_header_t*) txbuf;
-		
-		*((uint16_t *) (txbuf + sizeof(ldc_header_t))) = m_targetval;
+		h->ltype = LDC_CMD_SPEED_GET;
+		*((uint16_t *) (txbuf + sizeof(ldc_header_t))) = M_OCR;
+		rfm12_tx (sizeof(ldc_header_t) + sizeof(uint16_t), LDC_TYPE, txbuf);
+	}
+
+	if (c2 == 1200)
+	{
+		h->ltype = LDC_CMD_TARGET_SPEED_GET;
+		*((uint16_t *) (txbuf + sizeof(ldc_header_t))) = m_sampleval;
 		rfm12_tx (sizeof(ldc_header_t) + sizeof(uint16_t), LDC_TYPE, txbuf);
 		c2 = 0;
 	}

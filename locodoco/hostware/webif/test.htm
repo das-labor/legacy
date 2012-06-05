@@ -14,6 +14,40 @@ function get_statinfo()
 	stat_rq.send(null);
 }
 
+function dbg_packetdisplay (in_txt)
+{
+
+	if (!in_txt.length)
+	{
+		return '0len0';
+	}
+
+	//var ed = eval(in_txt);
+	var ed = eval('('+in_txt+')');
+
+	var html_out = '<table class="dbgpacket"><tr>' +
+		'<td class="dbgtype">';
+	
+
+	if (ed.cmd == 'non-ldc')
+	{
+		html_out += 'non-ldc</td><td class="dbgrdata">' +
+			ed.debuginfo.rawdata.substr(0,16) + ' ... </td>';
+	} else
+	{
+		html_out += ed.cmd + '</td><td class="dbgaddr">' + ed.addr + '</td>';
+		if (ed.val)
+		{
+			html_out += '<td class="dbgval">' + ed.val + '</td>';
+		}
+		html_out += '<td class="dbgrdata" alt="' + ed.debuginfo.rawdata + '">' +
+			ed.debuginfo.rawdata.substr(5,12) + ' ... </td>';
+	}
+
+	html_out += '</tr></table>';
+	return html_out;
+}
+
 function dbg_print(in_txt)
 {
 	var de = document.getElementById('dbgwin');
@@ -37,14 +71,29 @@ function handle_response()
 	rsplen = tmp.length;
 
 	var new_msg = tmp.substr(oldlen, rsplen);
-	dbg_print (new_msg);
-	var ed = eval(new_msg);
+	
+	if (new_msg.length > 10)
+	{
+		var htdbg = dbg_packetdisplay(new_msg);
+		dbg_print (htdbg);
+		var ed = eval('(' + new_msg + ')');
 
-	//if (ed.cmd == 'speed_get'
+		if (ed.cmd == 'target_speed_get')
+		{
+			/* XXX need an array with loco status instead of just one val */
+			document.getElementById('adcspeedval').innerHTML = ed.val;
+		}
+		
+		if (ed.cmd == 'speed_get')
+		{
+			/* XXX need an array with loco status instead of just one val */
+			document.getElementById('ocrspeedval').innerHTML = ed.val;
+		}
 
-	/* update status */
-	document.getElementById('statwin').innerHTML = "rx bytes: " + tmp.length
-		+ "<br />state: " + stat_rq.readyState;
+		/* update status */
+		document.getElementById('statwin').innerHTML = "rx bytes: " + tmp.length
+			+ "<br />state: " + stat_rq.readyState;
+	}
 	
 	if (stat_rq.readyState==4)
 	{
@@ -59,7 +108,7 @@ function bclick(in_cmd)
 	var target = document.getElementById('inptarget').value;
 
 	el.src = '/cgi-bin/ldc?target=' + target + '&cmd=' + in_cmd +
-		'u16val=' + document.getElementById('speedval').value +
+		'u16val=' + document.getElementById('speedinp').value +
 		'&rand=' + Math.random();
 	return false;
 }
@@ -73,20 +122,21 @@ function bclick(in_cmd)
 <div id="statwin">status info</div>
 <div id="dbgwin">debug info</div>
 <div id="bfield">
-<strong>Target:</strong><input type="text" id="inptarget" /><br />
+<strong>Speed:</strong><input type="text" id="inptarget" /><br />
 <a href="javascript:void(0)" onclick="bclick('reverse')">&laquo;</a>
 <a href="javascript:void(0)" onclick="bclick('stop')">||</a>
 <a href="javascript:void(0)" onclick="bclick('forward')">&raquo;</a>
 <br />
 <fieldset>
 	<legend>Speed setting</legend>
-	<input type="text" id="speedval" size="5" />&nbsp;Target<br />
+	<input type="text" id="speedinp" size="5" />&nbsp;Target<br />
 	<a href="javascript:void(0)" onclick="bclick('target_speed_set')">target</a>
 	<a href="javascript:void(0)" onclick="bclick('speed_set')">immed.</a>
 </fieldset>
 <fieldset>
 	<legend>status</legend>
-	Speed: <strong id="speedval">000</strong>
+	ADC Speed: <strong id="adcspeedval">000</strong><br />
+	OCR Speed: <strong id="ocrspeedval">000</strong><br />
 </fieldset>
 </div>
 </body>

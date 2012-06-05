@@ -79,12 +79,17 @@ int main (int argc, char* argv[])
 		if (rh->type != LDC_TYPE)
 		{
 			/* not a locodoco packet */
-			printf ("\"non-ldc\":\"1\",");
+			printf ("{\"cmd\":\"non-ldc\",");
 		} else
 		{
 			/* ldc command */
 			printf ("{\"cmd\":\"%s\",", cmd_to_str(lh));
 			printf ("\"addr\":\"%u\",", lh->addr);
+			printf ("\"pllen\":\"%u\",",
+				rv - (sizeof(rfm12_header_t) + sizeof(ldc_header_t)));
+			if (rv > sizeof(rfm12_header_t) + sizeof(ldc_header_t))
+				printf ("\"val\":\"%u\",", 
+					le16toh(*((uint16_t *) (buf + sizeof(rfm12_header_t) + sizeof(ldc_header_t)))));
 		}
 
 		printf ("\"debuginfo\":{\"rawdata\":\"");
@@ -92,7 +97,7 @@ int main (int argc, char* argv[])
 		{
 			printf ("%02X ", buf[i]);
 		}
-		printf ("\"} };\r\n");
+		printf ("\"} }\r\n");
 		fflush(0);
 	}
 }

@@ -31,6 +31,7 @@ int main (void)
 
 	while (23)
 	{
+		rfm12_tick();
 		motor_tick();
 		ldc_packet_handler();
 	}
