@@ -17,7 +17,7 @@
 
 #define M_OCR     OCR1B
 #define M_TIMER_INIT(a) \
-		TCCR1B = (_BV(CS11)); \
+		TCCR1B = (_BV(CS11)); /* clk / 8 */ \
 		TCCR1A = (_BV(WGM11) | _BV(WGM10) | _BV(COM1B1))
 
 #define M_TIMER_OFF(a) \

@@ -56,3 +56,49 @@ div#bfield a
 	text-decoration:none;
 	font-size:18px;
 }
+
+table.dbgpacket
+{
+	padding:0px;
+	margin:0px;
+	display:block;
+	float:left;
+	width:300px;
+	border-bottom:1px;
+	border-bottom-style:dotted;
+	border-bottom-color:#999;
+	font-size:10px;
+}
+
+table.dbgpacket td,tr
+{
+	padding:inherit;
+	margin:inherit;
+}
+table.dbgpacket td.dbgtype
+{
+	background-color:#FF8000;
+}
+
+table.dbgpacket td.dbgtype:contains("non-ldc")
+{
+	background-color:#CCC;
+}
+
+table.dbgpacket td.dbgaddr
+{
+	background-color:#FCC;
+	width:4em;
+	text-align:center;
+}
+
+table.dbgpacket td.dbgval
+{
+	background-color:#CFC;
+	width:4em;
+	text-align:right;
+}
+table.dbgpacket td.dbgrdata
+{
+	color:#999;
+}
