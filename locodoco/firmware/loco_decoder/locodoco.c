@@ -93,7 +93,7 @@ void ldc_packet_handler ()
 		break;
 
 		case LDC_CMD_TARGET_SPEED_SET:
-			motor_set_target_speed (*((uint16_t *) (rxbuf + sizeof(ldc_header_t))));
+			motor_set_target_speed (*((int16_t *) (rxbuf + sizeof(ldc_header_t))));
 		break;
 
 		case LDC_CMD_TARGET_SPEED_GET:

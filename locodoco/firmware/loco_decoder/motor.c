@@ -1,7 +1,7 @@
 #include "motor.h"
 
 volatile static uint16_t m_sampleval = 0x0000;
-volatile static uint16_t m_targetval = 0x0002;
+volatile static int16_t m_targetval = 0x0002;
 volatile static uint8_t motor_state = 0x00;
 
 void motor_set_sampleval (uint16_t in_val)
@@ -82,7 +82,7 @@ void motor_tick ()
 }
 
 
-void motor_set_target_speed (uint16_t in_val)
+void motor_set_target_speed (int16_t in_val)
 {
 	m_targetval = in_val;
 }

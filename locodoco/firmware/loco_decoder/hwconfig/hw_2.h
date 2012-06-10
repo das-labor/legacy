@@ -87,10 +87,10 @@
 /* speed measurement feature */
 #define FEATURE_SPEED_SENSE 1
 #define SENSE_SPEED_SETUP(a) \
-	ADMUX = (0x07 | _BV(REFS0) | _BV(REFS1)); \
-	ADCSRB = 0x00; \
+	ADMUX = (0x07 | _BV(REFS0) | _BV(REFS1)); /* 1.1V, ADC7 */ \
+	ADCSRB = (_BV(ADTS0) | _BV(ADTS2)); /* start on ocr1b match (midist of off cycle) */ \
 	ADCSRA = (_BV(ADATE) | _BV(ADEN) | _BV(ADPS0) | _BV(ADPS1) | _BV(ADPS2) \
-		| _BV(ADIE) | _BV(ADSC))
+		| _BV(ADIE) | _BV(ADSC)) /* int, start, auto trigger (ocr1b), /128 */
 
 /* rfm12 config */
 #define DDR_SS DDRB
