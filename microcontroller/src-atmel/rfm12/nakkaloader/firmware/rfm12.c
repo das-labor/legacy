@@ -3,6 +3,6 @@
 #if 0
 	#include "../rfm12-usart-spi/rfm12.c"
 #else
-	#include "../../../lib/rfm12/rfm12.c"
+	#include "../rfm12lib/src/rfm12.c"
 #endif
 
