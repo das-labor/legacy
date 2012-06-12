@@ -111,7 +111,8 @@ static void nl_boot_app ( void )
 	//move interrupts back (also disables rfm12 int)
 	#if (MCU == atmega328p) || (MCU == atmega168)
 	MCUCR = _BV(IVCE);
-	MCUCR = 0x00;
+	MCUCR &= ~(_BV(IVSEL));
+	//MCUCR = 0x00;
 	#else
 	GICR = (1 << IVCE);
 	GICR = 0;
@@ -131,7 +132,8 @@ int main (void)
 	uint16_t crcsum = 0;
 	nl_flashcmd *mycmd;
 
-	#ifdef nl_bootloader_condition
+
+	#if NL_CONDITION_SET
 	/* boot right into the application */
 	if (!nl_bootloader_condition())
 		nl_boot_app();

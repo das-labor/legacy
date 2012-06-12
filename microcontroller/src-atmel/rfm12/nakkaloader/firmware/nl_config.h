@@ -1,4 +1,7 @@
 #ifndef NL_CONFIG_H
+#include <avr/wdt.h>
+#include <avr/pgmspace.h>
+#include <avr/interrupt.h>
 
 /* Maximum size of packets transmitted and received by this
  * bootloader.
@@ -34,5 +37,24 @@
  *
  * */
 #define NL_VERBOSITY 0
+
+#define NL_CONDITION_SET 1
+inline uint8_t nl_bootloader_condition ();
+inline uint8_t nl_bootloader_condition ()
+{
+	if (!(MCUSR & _BV(WDRF)) && pgm_read_word(0x00) != 0xffff)
+	{
+		return 0;
+	}
+	
+	cli();
+	/* we came here from a watchdog reset -> start bootloader */
+	wdt_reset();
+	MCUSR &= ~(_BV(WDRF));
+	WDTCSR |= (_BV(WDCE) | _BV(WDE));
+	WDTCSR = 0x00;
+
+	return 1;
+}
 
 #endif
