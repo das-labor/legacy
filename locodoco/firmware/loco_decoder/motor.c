@@ -1,13 +1,21 @@
 #include "motor.h"
 
 volatile static uint16_t m_sampleval = 0x0000;
-volatile static int16_t m_targetval = 0x0002;
+volatile static uint16_t m_targetval = 0x0002;
 volatile static uint8_t motor_state = 0x00;
 
 void motor_set_sampleval (uint16_t in_val)
 {
-	m_sampleval = in_val;
+	static uint8_t c = 0;
+	m_sampleval += in_val;
+	
+	c++;
+
+	if (c < 8)
+		return;
+	
 	motor_state |= MOTOR_SAMPLE_READY;
+	c = 0;
 }
 
 void motor_init ()
@@ -51,38 +59,32 @@ void motor_tick ()
 
 	if (motor_state & MOTOR_SAMPLE_READY)
 	{
+		m_sampleval >>= 3;
 		motor_adjust_speed();
 		motor_state &= ~(MOTOR_SAMPLE_READY);
+
+		h->ltype = LDC_CMD_SPEED_GET;
+		h->addr = 0xff;
+		*((uint16_t *) (txbuf + sizeof(ldc_header_t))) = m_sampleval;
+		rfm12_tx (sizeof(ldc_header_t) + sizeof(uint16_t), LDC_TYPE, txbuf);
 	}
 	
 	c++;
 	
-	if (c < 50)
+	if (c < 255)
 		return;
 	
-	c = 0;
-	adcd_ctl (ADCD_SAMPLE_MOTOR);
-
 	c2++;
 
-	if (c2 == 1000)
-	{
-		h->ltype = LDC_CMD_SPEED_GET;
-		*((uint16_t *) (txbuf + sizeof(ldc_header_t))) = M_OCR;
-		rfm12_tx (sizeof(ldc_header_t) + sizeof(uint16_t), LDC_TYPE, txbuf);
-	}
+	if (c2 < 250)
+		return;
 
-	if (c2 == 1200)
-	{
-		h->ltype = LDC_CMD_TARGET_SPEED_GET;
-		*((uint16_t *) (txbuf + sizeof(ldc_header_t))) = m_sampleval;
-		rfm12_tx (sizeof(ldc_header_t) + sizeof(uint16_t), LDC_TYPE, txbuf);
-		c2 = 0;
-	}
+	c2 = 0;
+	adcd_ctl (ADCD_SAMPLE_MOTOR);
 }
 
 
-void motor_set_target_speed (int16_t in_val)
+void motor_set_target_speed (uint16_t in_val)
 {
 	m_targetval = in_val;
 }

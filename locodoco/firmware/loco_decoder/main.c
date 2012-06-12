@@ -11,21 +11,22 @@
 
 int main (void)
 {
+	MCUCR = _BV(IVCE);
+	MCUCR = 0x00;
+
 	ldc_header_t tst;
 
-	MCUCR |= _BV(IVCE);
-	MCUCR &= ~(_BV(IVSEL));
 	//SENSE_SPEED_SETUP();
-	SENSE_DEC();
+	SENSE_INC();
 	motor_init();
 	LIGHTS_INIT();
 	LIGHT_CABIN_OFF();
 	rfm12_init();
-	rfm12_init();
-	rfm12_init();
-	//LIGHT_RW_ON();
+	LIGHT_RW_ON();
 	sei();
-
+	
+	tst.addr = 0x01;
+	tst.ltype = LDC_CMD_EHLO;
 	rfm12_tx (sizeof(ldc_header_t), LDC_TYPE, (uint8_t*) &tst);
 
 

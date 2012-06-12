@@ -17,7 +17,7 @@
 
 #define M_OCR     OCR1B
 #define M_TIMER_INIT(a) \
-		TCCR1B = (_BV(CS11)); /* clk / 8 */ \
+		TCCR1B = (_BV(CS11) | _BV(CS10)); /* clk / 64 */ \
 		TCCR1A = (_BV(WGM11) | _BV(WGM10) | _BV(COM1B1))
 
 #define M_TIMER_OFF(a) \
@@ -31,17 +31,17 @@
 
 #define M_OCR_MAX 0x3ff
 
-#define DDR_LIGHT_CABIN   DDRC
+#define DDR_LIGHT_CABIN   DDRD
 #define DDR_LIGHT_FRONT   DDRC
 #define DDR_LIGHT_BACK    DDRC
 
-#define PORT_LIGHT_CABIN  PORTC
+#define PORT_LIGHT_CABIN  PORTD
 #define PORT_LIGHT_BACK   PORTC
 #define PORT_LIGHT_FRONT  PORTC
 
 #define PIN_LIGHT_BACK    (_BV(PC3))
 #define PIN_LIGHT_FRONT   (_BV(PC2))
-#define PIN_LIGHT_CABIN   (_BV(PC5))
+#define PIN_LIGHT_CABIN   (_BV(PD2))
 
 #define LIGHTS_INIT(a) \
 	DDR_LIGHT_CABIN |= PIN_LIGHT_CABIN; \
@@ -89,7 +89,8 @@
 #define SENSE_SPEED_SETUP(a) \
 	ADMUX = (0x07 | _BV(REFS0) | _BV(REFS1)); /* 1.1V, ADC7 */ \
 	ADCSRB = (_BV(ADTS0) | _BV(ADTS2)); /* start on ocr1b match (midist of off cycle) */ \
-	ADCSRA = (_BV(ADATE) | _BV(ADEN) | _BV(ADPS0) | _BV(ADPS1) | _BV(ADPS2) \
+	ADCSRA = (_BV(ADATE) | _BV(ADEN) | _BV(ADPS2) \
+	/* ADCSRA = (_BV(ADATE) | _BV(ADEN) | _BV(ADPS0) | _BV(ADPS1) | _BV(ADPS2) */ \
 		| _BV(ADIE) | _BV(ADSC)) /* int, start, auto trigger (ocr1b), /128 */
 
 /* rfm12 config */
@@ -154,10 +155,10 @@
  */
 
 #define RFM12_LIVECTRL 0
-#define RFM12_NORETURNS 0
-#define RFM12_NOCOLLISIONDETECTION 0
+#define RFM12_NORETURNS 1
+#define RFM12_NOCOLLISIONDETECTION 1
 #define RFM12_TRANSMIT_ONLY 0
-#define RFM12_SPI_SOFTWARE 0
+#define RFM12_SPI_SOFTWARE 1
 #define RFM12_USE_POLLING 0
 #define RFM12_RECEIVE_ASK 0
 #define RFM12_TRANSMIT_ASK 0

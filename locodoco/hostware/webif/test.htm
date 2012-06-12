@@ -32,7 +32,7 @@ function dbg_packetdisplay (in_txt)
 	if (ed.cmd == 'non-ldc')
 	{
 		html_out += 'non-ldc</td><td class="dbgrdata">' +
-			ed.debuginfo.rawdata.substr(0,16) + ' ... </td>';
+			ed.debuginfo.rawdata.substr(0,32) + ' ... </td>';
 	} else
 	{
 		html_out += ed.cmd + '</td><td class="dbgaddr">' + ed.addr + '</td>';
@@ -122,14 +122,14 @@ function bclick(in_cmd)
 <div id="statwin">status info</div>
 <div id="dbgwin">debug info</div>
 <div id="bfield">
-<strong>Speed:</strong><input type="text" id="inptarget" /><br />
+<strong>Address:</strong><input type="text" id="inptarget" size="5" /><br />
 <a href="javascript:void(0)" onclick="bclick('reverse')">&laquo;</a>
 <a href="javascript:void(0)" onclick="bclick('stop')">||</a>
 <a href="javascript:void(0)" onclick="bclick('forward')">&raquo;</a>
 <br />
 <fieldset>
 	<legend>Speed setting</legend>
-	<input type="text" id="speedinp" size="5" />&nbsp;Target<br />
+	Speed:&nbsp;<input type="text" id="speedinp" size="5" /><br />
 	<a href="javascript:void(0)" onclick="bclick('target_speed_set')">target</a>
 	<a href="javascript:void(0)" onclick="bclick('speed_set')">immed.</a>
 </fieldset>
@@ -137,6 +137,10 @@ function bclick(in_cmd)
 	<legend>status</legend>
 	ADC Speed: <strong id="adcspeedval">000</strong><br />
 	OCR Speed: <strong id="ocrspeedval">000</strong><br />
+</fieldset>
+<fieldset>
+	<legend>debug foo</legend>
+	<a href="javascript:void(0)" onclick="bclick('reboot')">reboot</a>
 </fieldset>
 </div>
 </body>
