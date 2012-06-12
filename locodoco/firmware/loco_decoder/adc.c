@@ -39,7 +39,6 @@ ISR(ADC_vect)
 
 		case ADCD_SAMPLE_MOTOR:
 		{
-			static uint16_t res = 0;
 			static uint8_t c = 0;
 
 			c++;
@@ -51,20 +50,15 @@ ISR(ADC_vect)
 				M_TIMER_OFF();
 				SENSE_INC();
 				*/
+				SENSE_SPEED_SETUP();
 				return; /* first result -> discard */
 			}
 
-			res += a;
-
-			if (c < 9)
-				return;
-
 			ADCSRA &= ~(_BV(ADEN) | _BV(ADIE));
-			res /= 8;
 			c = 0;
 			adcd_state = ADCD_IDLE;
 			lock_release (LOCK_ADC);
-			motor_set_sampleval (res);
+			motor_set_sampleval (a);
 			/*
 			SENSE_DEC();
 			M_TIMER_INIT();

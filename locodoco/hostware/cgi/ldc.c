@@ -117,6 +117,9 @@ int match_cmd (char *in_s)
 	if (str_search(in_s, "speed_set") == in_s)
 		return LDC_CMD_SPEED_SET;
 
+	if (str_search(in_s, "reboot") == in_s)
+		return LDC_CMD_REBOOT;
+
 	return -1;
 }
 

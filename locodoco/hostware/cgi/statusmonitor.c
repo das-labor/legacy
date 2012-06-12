@@ -37,6 +37,9 @@ const char* cmd_to_str (ldc_header_t *in_hdr)
 		
 		case LDC_CMD_TARGET_SPEED_GET:
 			return (const char*) "target_speed_get";
+		
+		case LDC_CMD_EHLO:
+			return (const char*) "ehlo";
 
 		default:
 			return (const char*) "unknown_command";

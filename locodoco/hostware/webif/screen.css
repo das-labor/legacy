@@ -80,7 +80,7 @@ table.dbgpacket td.dbgtype
 	background-color:#FF8000;
 }
 
-table.dbgpacket td.dbgtype:contains("non-ldc")
+table.dbgpacket td.dbgdata[*^="non-ldc"]
 {
 	background-color:#CCC;
 }

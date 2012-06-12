@@ -11,4 +11,4 @@
 void motor_set_sampleval (uint16_t in_val);
 void motor_tick (void);
 void motor_init (void);
-void motor_set_target_speed (int16_t in_val);
+void motor_set_target_speed (uint16_t in_val);
