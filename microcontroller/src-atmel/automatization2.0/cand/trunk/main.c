@@ -14,7 +14,10 @@
 #include <signal.h>
 #include <unistd.h>
 #include <errno.h>
+#include <usb.h>
 
+#include "usb_id.h"
+#include "opendevice.h"
 #include "can.h"
 #include "can-tcp.h"
 #include "uart-host.h"
@@ -55,18 +58,22 @@ static const char *gregs[] = {
 
 char *progname;
 char *serial;
+char *usb_parm;
 char *logfile = NULL;
 char *scriptfile = NULL;
 char *debugfile = NULL;
 
+usb_dev_handle *udhandle = NULL;
 
-static char *optstring = "hdv::S:p:l:s:D:";
+
+static char *optstring = "hdv::S:U:p:l:s:D:";
 struct option longopts[] =
 {
   { "help", no_argument, NULL, 'h' },
   { "daemon", no_argument, NULL, 'd' },
   { "verbose", optional_argument, NULL, 'v' },
   { "serial", required_argument, NULL, 'S' },
+  { "usb", required_argument, NULL, 'U' },
   { "port", required_argument, NULL, 'p' },
   { "logfile", required_argument, NULL, 'l'},
   { "scriptfile", required_argument, NULL, 's'},
@@ -82,6 +89,8 @@ void help()
    -v, --verbose           be more verbose and display a CAN packet dump\n\
    -d, --daemon            become daemon\n\
    -S, --serial PORT       use specified serial port\n\
+   -U, --usb PORT          use specified usb port\n\
+                           (may cause prompt with multiple devices connected)\n\
    -s, --scriptfile FILE   use a scripte file to execute cmds on package\n\
    -l, --logfile FILE      log every package to a logfile\n\
    -p, --port PORT         use specified TCP/IP port (default: 2342)\n\
@@ -293,25 +302,10 @@ void sprint_atmega8_resetcause(char *buf, unsigned char reset_flags)
 }
 
 
-void process_uart_msg()
+void process_msg(rs232can_msg *msg)
 {
-	rs232can_msg *msg = canu_get_nb();	//get message from uart
 	char buf[sizeof(RESETCAUSE_PORF_STR) + sizeof(RESETCAUSE_EXTRF_STR) + sizeof(RESETCAUSE_BORF_STR) + sizeof(RESETCAUSE_WDRF_STR)];
-
-	debug( 10, "Activity on uart_fd" );
-
-	if (!msg)
-		return;
-	else if(canu_failcnt > CANU_FAILTHRESH)
-	{
-		debug(0, "UART failure threshold exceeded (%u), resyncing gateway.", canu_failcnt);
-		canu_reset();
-		canu_transmit_cmd(RS232CAN_RESYNC);
-		canu_failcnt = 0;
-	}
-
-	debug(3, "Processing message from uart..." );
-
+	
 	switch(msg->cmd)
 	{
 		case RS232CAN_PKT:
@@ -342,14 +336,47 @@ void process_uart_msg()
 		case RS232CAN_GET_RESETCAUSE:
 			msg_to_clients(msg);	//pipe reply to network clients
 			break;
+		case RS232CAN_NOTIFY_TX_OVF:
+			debug(0, "GATEWAY: buffer overrun from CAN to host");
+			msg_to_clients(msg);	//pipe reply to network clients
+			break;
 		default:
 			debug(0, "Whats going on? Received unknown type 0x%02x on Uart", msg->cmd);
 			break;
 	}
+}
 
+void process_uart_msg()
+{
+	rs232can_msg *msg = canu_get_nb();	//get message from uart
+
+	debug( 10, "Activity on uart_fd" );
+
+	if (!msg)
+		return;
+	else if(canu_failcnt > CANU_FAILTHRESH)
+	{
+		debug(0, "UART failure threshold exceeded (%u), resyncing gateway.", canu_failcnt);
+		canu_reset();
+		canu_transmit_cmd(RS232CAN_RESYNC);
+		canu_failcnt = 0;
+	}
+
+	debug(3, "Processing message from uart..." );
+	process_msg(msg);
 	canu_free(msg);
 	debug(3, "...processing done.");
 }
+
+
+void canusb_transmit(rs232can_msg * msg){
+	int r = usb_control_msg (udhandle,
+            USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
+            0x18, 0, 0, (char *)msg, msg->len + 2,
+            100);
+
+}
+
 
 void process_client_msg( cann_conn_t *client )
 {
@@ -373,6 +400,7 @@ void process_client_msg( cann_conn_t *client )
 		case RS232CAN_PKT:
 			// to UART
 			if (serial) canu_transmit(msg);		//send to client on the can
+			if (usb_parm) canusb_transmit(msg); //same via usb
 			msg_to_clients(msg);				//send to all network clients
 			break;
 		case RS232CAN_PING_GATEWAY:
@@ -392,10 +420,12 @@ void process_client_msg( cann_conn_t *client )
 		case RS232CAN_ERROR:
 		case RS232CAN_NOTIFY_RESET:
 		case RS232CAN_RESYNC:
+		case RS232CAN_NOTIFY_TX_OVF:
 			//don't react on these commands
 			break;
 		default:
 			if (serial) canu_transmit(msg);		//send to client on the can
+			if (usb_parm) canusb_transmit(msg); //same via usb
 			break;
 	}
 	cann_free(msg);
@@ -407,42 +437,94 @@ void new_client( cann_conn_t *client )
 	// XXX
 }
 
+int poll_usb(){
+	debug( 9, "IN POLL_USB" );
+	char packetBuffer[1000];
+ 	
+ 	int r;
+ 	
+	 
+	 r = usb_control_msg (udhandle,
+            USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
+            0x17, 0, 0, (char *)packetBuffer, 1000,
+            100);
+
+
+	if(r > 0){
+		debug( 8, "RECEIVED DATA FROM USB" );
+		
+		if(debug_level >= 8){
+			hexdump(packetBuffer, r);
+		}
+				
+		int p = 0;
+		
+		
+	
+		while ( (p < r) && ((p+packetBuffer[p+1]+2) <= r) ){
+			debug(11, "p=%x\n", p);
+			process_msg((rs232can_msg *) &packetBuffer[p]);
+			
+			p += packetBuffer[p+1] + 2;
+		}	
+	}
+	return 0;
+}
+
 void event_loop()
 {
 	for (;;) {
 		int ret;
 		int highfd = 0;;
-		fd_set rset;
+		fd_set rset, rset_tmp;
 		cann_conn_t *client;
-
+		struct timeval tv;
+		tv.tv_sec = 0;
+		tv.tv_usec = 10000;
 		FD_ZERO(&rset);
 
+		//add serial connection to rset
 		if (serial) {
 			highfd = uart_fd;
 			FD_SET(uart_fd, &rset);
 		};
+		
+		//add network connections to rset
 		highfd = max(highfd, cann_fdset(&rset));
 
 
 		debug( 9, "VOR SELECT" );
 		cann_dumpconn();
-
-		if( ret = select(highfd+1, &rset, (fd_set *)NULL, (fd_set *)NULL, NULL) < 0)
-			switch(errno)
+		
+		do
+		{
+			rset_tmp = rset;
+			
+			//handle usb
+			if(usb_parm)
 			{
-				case EBADF:
-					debug_perror(1, "select");
-					continue;
-				case EINVAL:
-				case ENOMEM:
-				default:
-					debug_perror(0, "select: help, it's all broken, giving up!");
-					return;
+				poll_usb();
 			}
+			
+			//wait for activity on file descriptors with timeout
+			if( ret = select(highfd+1, &rset_tmp, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0)
+				//print debug info
+				switch(errno)
+				{
+					case EBADF:
+						debug_perror(1, "select: bad descriptor ");
+						continue;
+					case EINVAL:
+					case ENOMEM:
+					default:
+						debug_perror(0, "select: help, it's all broken, giving up!");
+						return;
+				}
+		} while(ret == 0);
 		debug( 10, "Select returned %d", ret);
 
 		// check activity on uart_fd
-		if (serial && FD_ISSET(uart_fd, &rset))
+		if (serial && FD_ISSET(uart_fd, &rset_tmp))
 			process_uart_msg();
 
 		debug( 9, "AFTER UART" );
@@ -450,19 +532,17 @@ void event_loop()
 
 		// check client activity
 		//
-		while ( client = cann_activity(&rset) ) {
+		while ( client = cann_activity(&rset_tmp) ) {
 			debug(5, "CANN actiity found" );
 			process_client_msg(client);
-			//cann_conn_free(client);
 		}
 
 		debug( 9, "AFTER CANN ACTIVITY" );
 		cann_dumpconn();
 
 		// new connections
-		if ( client = cann_accept(&rset) ) {
+		if ( client = cann_accept(&rset_tmp) ) {
 			debug( 2, "===> New connection (fd=%d)", client->fd );
-			//cann_conn_free(client);
 		}
 
 		debug( 9, "AFTER CANN NEWCONN" );
@@ -585,15 +665,11 @@ int main(int argc, char *argv[])
         QUIT_EARLY("failed to register SIGSEGV handler");
 
 	progname = argv[0];
-	optc=getopt_long(argc, argv, optstring, longopts, (int *)0);
-	if(optc == EOF)
+	
+	while ((optc=getopt_long(argc, argv, optstring, longopts, (int *)0)) != EOF)
 	{
-		printf("ERROR: no arguments given, serial port not specified\n");
-		help();
-		exit(EXIT_SUCCESS);
-	}
-	while (optc != EOF) {
-		switch (optc) {
+		switch (optc)
+		{
 			case 'v':
 				if (optarg)
 					debug_level = atoi(optarg);
@@ -605,6 +681,9 @@ int main(int argc, char *argv[])
 				break;
 			case 'S':
 				serial = optarg;
+				break;
+			case 'U':
+				usb_parm = optarg;
 				break;
 			case 'p':
 				tcpport = atoi(optarg);
@@ -628,19 +707,54 @@ int main(int argc, char *argv[])
 		optc=getopt_long(argc, argv, optstring, longopts, (int *)0);
 	} // while
 
-	if(!serial)
-	{
-		printf("ERROR: no serial port specified\n");
-		help();
-		exit(EXIT_SUCCESS);
-	}
 
 	debug_init(debugfile);
 	debug(0, "Starting Cand");
 
 	// setup serial communication
-	canu_init(serial);
-	debug(1, "Serial CAN communication established" );
+	if (serial) {
+		canu_init(serial);
+		debug(1, "Serial CAN communication established" );
+	}
+	
+	if (usb_parm) {
+		//////////HACKHACK FOR MULTIPLE DEVICES
+		int vid, pid;
+		unsigned tmp = 0;
+	
+		const unsigned char rawVid[2] =
+		{
+			USB_CFG_VENDOR_ID
+		},
+		rawPid[2] =
+		{
+			USB_CFG_DEVICE_ID
+		};
+	
+		vid = rawVid[1] * 256 + rawVid[0];
+		pid = rawPid[1] * 256 + rawPid[0];
+	
+		usb_init();
+	
+	    int devcnt = usbCountDevices(vid, pid);
+	    printf("Found %i devices..\n", devcnt);
+	
+		debug_assert( devcnt != 0, "Can't find RfmUSB Device\r\n" );
+	
+	    struct usb_device **devices = malloc(sizeof(void *) * devcnt);
+	    usbListDevices(devices, vid, pid);
+	
+	    if(devcnt > 1)
+	    {
+	        printf("Which device (num)? ");
+	        scanf("%u", &tmp);
+	        fflush(stdin);
+	    }
+	
+	    udhandle = usb_open(devices[tmp]);
+	
+	    ///////////////////HACK END
+	}
 
 
 	// setup network socket
