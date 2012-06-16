@@ -104,7 +104,7 @@ void can_message_encap(char * dest, can_message * cmsg){
 }
 
 void put_overflow_message(char * dest){
-	*dest++ = (OVERFLOW);  //command
+	*dest++ = (RS232CAN_NOTIFY_TX_OVF);  //command
 	*dest++ = (0);           //length
 	*dest++ = 0x23;
 }
