@@ -1,5 +1,0 @@
-* roasterverwaltung
-* cmdline interface / programm zur ansteuerung des clients (raw-messages 1/0 ist kein interface)
-* parsen der wikiseite/calender zum informieren ueber anstehende events
-* logging / debug
-
