@@ -16,18 +16,9 @@
 // immer wieder der gleiche scheiss!
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
 
-/* 
+/*
    Aktionen als defines
 */
-#define F_SW_OFF      (0x00)
-#define F_SW_ON       (0x01)
-#define F_SW_STATUS   (0x02)
-#define F_SW_TOGGLE   (0x03)
-
-#define F_PWM_SET     (0x00)
-#define F_PWM_GET     (0x01)
-#define F_PWM_MOD     (0x02)
-#define F_PWM_DIR     (0x03)
 
 #define F_NDEF (0xFF)
 
@@ -36,9 +27,6 @@
 /*
 	funktionsklassen - switch oder PWMs
 */
-#define C_SW  (0x00)
-#define C_PWM (0x01)
-#define C_VIRT (0x02)
 #define C_NDEF (0xFF)
 
 /*
@@ -90,14 +78,6 @@
 #define O_PWM05 (0x05)
 #define O_PWM_NDEF (0xFF)
 
-#define O_VIRT00 (0x00)
-#define O_VIRT01 (0x01)
-#define O_VIRT02 (0x02)
-
-#define VIRT_POWER (O_VIRT00)
-#define VIRT_VORTRAG (O_VIRT01)
-#define VIRT_VORTRAG_PWM (O_VIRT02)
-
 #define PWM_TAFEL    (O_PWM00)
 #define PWM_BEAMER   (O_PWM01)
 #define PWM_SCHRANK  (O_PWM02)
@@ -121,18 +101,18 @@
 #define O_SW0B_PORT (&(PORTD))
 
 // PINs - uin8_t
-#define O_SW00_PIN (PC3)
-#define O_SW01_PIN (PC2)
-#define O_SW02_PIN (PC1)
-#define O_SW03_PIN (PC0)
-#define O_SW04_PIN (PB5)
-#define O_SW05_PIN (PB4)
-#define O_SW06_PIN (PB0)
-#define O_SW07_PIN (PD7)
-#define O_SW08_PIN (PD0)
-#define O_SW09_PIN (PD1)
-#define O_SW0A_PIN (PD2)
-#define O_SW0B_PIN (PD4)
+#define O_SW00_PIN (_BV(PC3))
+#define O_SW01_PIN (_BV(PC2))
+#define O_SW02_PIN (_BV(PC1))
+#define O_SW03_PIN (_BV(PC0))
+#define O_SW04_PIN (_BV(PB5))
+#define O_SW05_PIN (_BV(PB4))
+#define O_SW06_PIN (_BV(PB0))
+#define O_SW07_PIN (_BV(PD7))
+#define O_SW08_PIN (_BV(PD0))
+#define O_SW09_PIN (_BV(PD1))
+#define O_SW0A_PIN (_BV(PD2))
+#define O_SW0B_PIN (_BV(PD4))
 
 #define O_PWM00_PORT (&(OCR0A))
 #define O_PWM01_PORT (&(OCR0B))
@@ -144,15 +124,9 @@
 // Anordnen von Schaltern in einer Matrix
 // so, dass wird die mittels i++ durchgehen koennen
 
-
-struct t_i2cproto {
-	uint8_t class;
-	uint8_t object;
-	uint8_t fkt;
-	uint8_t has_in_data;
-	uint8_t has_out_data;
-	uint8_t in_data;
-	uint8_t out_data;
-};
+typedef struct {
+	uint16_t ports;
+	uint8_t pwmval[6];
+} t_outputdata;
 
 #endif
