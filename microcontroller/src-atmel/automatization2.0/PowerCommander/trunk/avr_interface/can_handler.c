@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
+#include <util/delay.h>
 
 #include "can/can.h"
 #include "can_handler.h"
@@ -12,15 +13,13 @@
 
 uint8_t myaddr;
 
-void twi_get(uint8_t *p);
-
-extern void can_handler()
+void can_handler()
 {
 	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 	can_message *rx_msg;
 	if ((rx_msg = can_get_nb()) != 0)			//get next canmessage in rx_msg
 	{
-		if ((rx_msg->addr_dst == myaddr))
+		if (rx_msg->addr_dst == myaddr)
 		{
 			if (rx_msg->port_dst == PORT_MGT)
 			{
@@ -30,9 +29,7 @@ extern void can_handler()
 						TCCR2 = 0;
 						wdt_enable(0);
 						while (1);
-			
 					case FKT_MGT_PING:
-
 						msg.addr_src = myaddr;
 						msg.addr_dst = rx_msg->addr_src;
 						can_transmit(&msg);
@@ -41,36 +38,28 @@ extern void can_handler()
 			}
 			else if (rx_msg->port_dst == 1)
 			{
-				/*
-					unterbinden, dass ueber can ein paar sachen umgelegt werden koennen
-				*/
-				if ( ( (rx_msg->data[0] == C_VIRT) &&	(rx_msg->data[1] == VIRT_POWER)) ||
-					( (rx_msg->data[0] == C_SW) &&
-					( (rx_msg->data[1] == SWA_HS) ||
-					(rx_msg->data[1] == SWA_STECKDOSEN) ||
-					(rx_msg->data[1] == SWA_KLO))))
-				{
-				}
-
-				/*
-					gehe davon aus, dass genau so viele daten die
-					via can reingekommen sind auch wieder auf i2c raus sollen
+				switch (rx_msg->data[0]) {
+					case 0: // switch
+						rx_msg->data[1]
+						
+						break;
+					case 1: //PWM
+						if (rx_msg->data[1] < 6 && rx_msg->data[2] == 0)
+							outputdata.pwmval[rx_msg->data[1]] = rx_msg->data[3];
+						break;
+					case 2:
+						switch (rx_msg->data[1])
+							case 0:
 								
-					XXX - check mit rx_msg->cmd und data[i] was steht wirklich wo
-				*/
-				else
-				{
-					twi_send(rx_msg->data);
-					if (((rx_msg->data[0] == C_SW) && (rx_msg->data[2] == F_SW_STATUS)) ||
-					    ((rx_msg->data[0] == C_PWM) && (rx_msg->data[2] == F_PWM_GET)))
-					{
-						uint8_t msg_tx[1];
-						twi_get(msg_tx);
-						can_send(0x01, msg_tx);
-					}
+								break;
+							case 1:
+								
+								break;
+						break;
 				}
 			}
 		}
+		if (rx_msg->addr_dst == )
 	}
 }
 
@@ -82,6 +71,17 @@ void can_send(uint8_t port, uint8_t *p)
 		msg.data[i] = p[i];
 	msg.addr_src = myaddr;
 	msg.port_dst = port;
+	can_transmit(&msg);
+}
+
+void can_send2(uint8_t p)
+{
+	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
+
+	msg.data[0] = p;
+	msg.addr_src = myaddr;
+	msg.addr_dst = 0x6f;
+	msg.port_dst = 1;
 	can_transmit(&msg);
 }
 
