@@ -1,12 +1,13 @@
-/* -*- Mode: C; tab-width: 2 -*- */
 /*
- * PowerCommander - Ausführungs Kontroller
+ * PowerCommander - Ausführungs Controller
  */
 
 #include <avr/io.h>
+#include <avr/wdt.h>
+
 #include "pc_init.h"
 
-void init_relais()
+void init_io_ports()
 {
 	DDRC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);	// relais ausgänge 1-4 küche licht, beamer, vortrag licht, lounge licht
 	PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));	// aus damit
@@ -24,11 +25,11 @@ void init_relais()
 
 void init_modi()
 {
-	/* 
+	/*
 		 Disable Analog Comparator (power save)
 	*/
 	ACSR = _BV(ACD);
-
+	wdt_enable(WDTO_250MS); // 250 ms
 }
 
 void init_timer()
@@ -43,16 +44,16 @@ void init_timer()
 	TCCR0B |= _BV(CS01) | _BV(CS00);								// clk/64
 
 	TCNT2 = 255;   // pwm timer clear
-	OCR2A = 255;   // pwm timer compare target
-	OCR2B = 255;   // pwm timer compare target
-	
+	//OCR2A = 255;   // pwm timer compare target
+	//OCR2B = 255;   // pwm timer compare target
+
 	TCNT1 = 255;   // pwm timer clear
-	OCR1A = 255;   // pwm timer compare target
-	OCR1B = 255;   // pwm timer compare target
+	//OCR1A = 255;   // pwm timer compare target
+	//OCR1B = 255;   // pwm timer compare target
 
 	TCNT0 = 255;   // pwm timer clear
-	OCR0A = 255;   // pwm timer compare target
-	OCR0B = 255;   // pwm timer compare target
+	//OCR0A = 255;   // pwm timer compare target
+	//OCR0B = 255;   // pwm timer compare target
 
 }
 
