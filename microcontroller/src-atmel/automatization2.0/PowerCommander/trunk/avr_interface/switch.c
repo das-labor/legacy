@@ -1,5 +1,3 @@
-/* -*- Mode: C; tab-width: 2 -*- */
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -14,8 +12,10 @@
 
 union {
 	struct {
-		uint8_t hauptschalter:1; // 1 Bit für bStatus_1
-		uint8_t power_ok:1;    // Dieses Feld ist 2 Bits breit
+		uint8_t hauptschalter:1;
+		uint8_t taster_lounge:1;
+		uint8_t taster_vortrag:1;
+		uint8_t power_ok:1;
 		uint8_t rcd_server:1;
 		uint8_t rcd_power:1;
 		uint8_t rcd_licht:1;
@@ -23,345 +23,245 @@ union {
 	uint8_t stat_sw;
 } stat_switches;
 
+#define HAUPTSCHALTER	(_BV(PA0))
+#define POWER_OK	(_BV(PC2))
+#define TASTER_LOUNGE	(_BV(PB2))
+#define TASTER_VORTRAG	(_BV(PD3))
+#define RCD_SERVER	(_BV(PD6))
+#define RCD_POWER	(_BV(PD7))
+#define RCD_LICHT	(_BV(PA1))
 
-
-typedef struct {
-	uint8_t class;
-	uint8_t object;
-	uint8_t function;
-	uint8_t data;
-} i2c_outdata;
-
-#define RCD_POWER			(PD7)
-#define RCD_LICHT			(PA1)
-#define RCD_SERVER		(PD6)
-#define HAUPTSCHALTER	(PA0)
-#define POWER_OK			(PC2)
+#define NUM_INPUTS 7
 
 static struct t_pin_parameter {
 	volatile uint8_t *pin;
 	uint8_t bit;
 } pin_matrix[] = {
 	{ (&(PINA)) , HAUPTSCHALTER},
+	{ (&(PINB)) , TASTER_LOUNGE},
+	{ (&(PIND)) , TASTER_VORTRAG},
 	{ (&(PINC)) , POWER_OK},
 	{ (&(PIND)) , RCD_SERVER},
-	{ (&(PINA)) , RCD_LICHT},
-	{ (&(PIND)) , RCD_POWER}
+	{ (&(PIND)) , RCD_POWER},
+	{ (&(PINA)) , RCD_LICHT}
 };
 
-void send_stat() {
-	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
+
+void send_stat(uint8_t pos) {
+	static can_message msg = {0x03, 0x00, 0x01, 0x01, 2, {0}};
 	msg.data[0] = stat_switches.stat_sw;
-	// send changed bit oder beim ziel mit tab vergleichen
+	msg.data[1] = pos;
 	msg.addr_src = myaddr;
 	can_transmit(&msg);
 }
 
-void get_switches() {
-	uint8_t i;
-	
-	for (i = 0; i < 5; i++) {
-		if (((*pin_matrix[i].pin) & _BV(pin_matrix[i].bit)) && (((stat_switches.stat_sw >> i) & 1) == 0)) {
-			stat_switches.stat_sw |= (1 << i);
-			send_stat();
+
+/*
+void virt_power_on()
+{
+	switch_on(sw_matrix[SWA_KLO].port, sw_matrix[SWA_KLO].pin);
+	switch_on(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
+	switch_on(sw_matrix[SWA_STECKDOSEN].port, sw_matrix[SWA_STECKDOSEN].pin);
+}
+
+
+void virt_power_off()
+{
+	switch_off(sw_matrix[SWL_TAFEL].port, sw_matrix[SWL_TAFEL].pin);
+	switch_off(sw_matrix[SWL_BEAMER].port, sw_matrix[SWL_BEAMER].pin);
+	switch_off(sw_matrix[SWL_SCHRANK].port, sw_matrix[SWL_SCHRANK].pin);
+	switch_off(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
+	switch_off(sw_matrix[SWL_VORTRAG].port, sw_matrix[SWL_VORTRAG].pin);
+	switch_off(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin);
+	switch_off(sw_matrix[SWA_KLO].port, sw_matrix[SWA_KLO].pin);
+	switch_off(sw_matrix[SWL_KUECHE].port, sw_matrix[SWL_KUECHE].pin);
+	switch_off(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
+	switch_off(sw_matrix[SWA_BEAMER].port, sw_matrix[SWA_BEAMER].pin);
+	switch_off(sw_matrix[SWA_STECKDOSEN].port, sw_matrix[SWA_STECKDOSEN].pin);
+}*/
+
+static struct t_i2c_cmd_matrix {
+	uint16_t ports;
+	uint8_t tue_etwas;
+} i2c_cmd_matrix[] = {{0, }};
+
+void exec(uint8_t index) {
+	if (i2c_cmd_matrix[index].tue_etwas) {
+		uint8_t i;
+		outputdata.ports = i2c_cmd_matrix[index]->ports;
+		for (i = 0; i <= (i2c_cmd_matrix[index])->i; i++) {
+			outdata.object = i2c_cmd_matrix[index]->objectlist[i];
 		}
-		
-		if (!((*pin_matrix[i].pin) & _BV(pin_matrix[i].bit)) && ((stat_switches.stat_sw >> i) & 1)) {
+		twi_send();
+	}
+}
+
+void get_inputs() {
+	uint8_t i;
+	for (i = 0; i < NUM_INPUTS; i++) {
+		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_switches.stat_sw >> i) & 1) == 0)) {
+			stat_switches.stat_sw |= (1 << i);
+			send_stat(i);
+			exec(i);
+		}
+		if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_switches.stat_sw >> i) & 1)) {
 			stat_switches.stat_sw &= ~(1 << i);
-			send_stat();
+			send_stat(i);
+			exec(i);
 		}
 	}
 }
 
-volatile uint16_t tickscounter;
+void set_led() {
+	if (stat_switches.stat_sw & 1) {
+		PORTA |= LED_GRUEN;
+		PORTA &= ~LED_BLAU;
+	}
+	else {
+		PORTA &= ~LED_GRUEN;
+		PORTA |= LED_BLAU;
+	}
 
-ISR(TIMER1_COMPA_vect)
-{
-	//976,5625 Hz
-	
-	// ueberlaeufe sind ok!	
-	tickscounter++;
-}
-
-
-void switch_timer_init()
-{
-	TCCR1B |=  _BV(WGM12) | 3; // CTC, clk/64
-
-	//1000 Hz
-	OCR1A = 250;   // pwm timer compare target
-	
-	TIMSK |= _BV(OCIE1A);							// Enable Timer1 Overflow Interrupt
+	if (stat_switches.stat_sw > 1)
+		PORTA |= LED_ROT;
+	else
+		PORTA &= ~LED_ROT;
 }
 
 
 #define HOLD_THRESHOLD 18
 #define CLICK_THRESHOLD 0
+#define NUM_TASTER 2
 
+typedef struct {
+	uint8_t counter;
+	uint8_t last_held;
+	uint8_t dim_dir;
+	uint8_t bright;
+} taster_status;
+/*
+void virt_vortrag_pwm_set_all(uint8_t min, uint8_t max)
+{
+	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
+	uint8_t tmp;
+	uint8_t x;
 
+	for (x=0;x<sizeof(objs);x++)
+	{
+		pwm_get(pwm_matrix[objs[x]].port, &tmp);
+		if (tmp < min) tmp = min;
+		if (tmp > max) tmp = max;
+		pwm_set(pwm_matrix[objs[x]].port, tmp);
+	}
+}
+
+uint8_t pwm_vortrag_get_min()
+{
+	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
+	uint8_t tmp;
+	uint8_t x;
+	uint8_t min = 255;
+
+	for (x = 0; x < sizeof(objs); x++)
+	{
+		pwm_get(pwm_matrix[objs[x]].port, &tmp);
+		if (tmp < min) min = tmp;
+	}
+	
+	return min;
+}
+
+uint8_t pwm_vortrag_get_max()
+{
+	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
+	uint8_t tmp;
+	uint8_t x;
+	uint8_t max = 0;
+
+	for (x = 0; x < sizeof(objs); x++)
+	{
+		pwm_get(pwm_matrix[objs[x]].port, &tmp);
+		if (tmp > max) max = tmp;
+	}
+	
+	return max;
+}
+*/
+void lamp_dim() {
+
+	uint8_t val;
+
+	if (virt_vortrag_stat == 0)
+	{
+		virt_vortrag_on();
+		virt_vortrag_pwm_set_all(0, 0);
+	}
+
+	if (virt_vortrag_pwm_dir == 1)
+	{
+		val = pwm_vortrag_get_min();
+		if (val == 255)
+		{
+			virt_vortrag_pwm_dir = 0;
+		} else
+		{
+			virt_vortrag_pwm_set_all(val + 1, 255);
+		}
+	} else
+	{
+		val = pwm_vortrag_get_max();
+		if (val == 0)
+		{
+			virt_vortrag_pwm_dir = 1;
+		} else
+		{
+			virt_vortrag_pwm_set_all(0, val - 1);
+		}
+	}
+}
+
+void taster() {
+	uint8_t i;
+	static taster_status status[NUM_TASTER];
+	for (i = 0; i < NUM_TASTER; i++)
+	{
+		uint8_t held = 0;
+
+		if ((stat_switches.stat_sw >> (i + 1)) & 0x01) //XXX
+		{
+			status[i].counter ++;
+			if (status[i].counter > HOLD_THRESHOLD)
+			{
+				held = 1;
+				status[i].counter = HOLD_THRESHOLD;
+			}
+		} else
+		{
+			if (status[i].counter > CLICK_THRESHOLD)
+			{
+				if (status[i].counter < HOLD_THRESHOLD)
+				{
+					exec(7); // alle an / aus;
+				}
+			}
+			status[i].counter = 0;
+		}
+		if (held)
+		{
+			lamp_dim(status[i].bright); // dim
+		}
+		else if (status[i].last_held)
+		{
+			status[i].dim_dir ^= 1; // toggle // XXX invert?
+		}
+		status[i].last_held = held;
+	}
+}
 
 
 void switch_handler()
 {
-	i2c_outdata outdata;
-
-	static uint16_t last_tickscounter;
-
-	cli();
-	uint16_t tc = tickscounter;
-	sei();
-
-	// alle 32 ticks ... 0.032 sekunden
-	if ((tc - last_tickscounter) >= 20)
-	{
-		last_tickscounter = tc;
-
-
-		// **** Vortrag Licht schalter ****
-
-		static uint8_t counter_0;
-		uint8_t clicked_0 = 0;
-		uint8_t held_0    = 0;
-		static uint8_t last_held_0;
-
-		if (!(PINB & _BV(PB2)))
-		{
-			counter_0 ++;
-			if (counter_0 > HOLD_THRESHOLD)
-			{
-				held_0 = 1;
-				counter_0 = HOLD_THRESHOLD;
-			}
-		} else
-		{
-			if (counter_0 > CLICK_THRESHOLD)
-			{
-				if (counter_0 < HOLD_THRESHOLD)
-				{
-					clicked_0 = 1;
-				}
-			} 
-			counter_0 = 0;
-		}
-		
-		if (clicked_0)
-		{
-			outdata.class    = C_VIRT;
-			outdata.object   = VIRT_VORTRAG;
-			outdata.function = F_SW_TOGGLE;
-			outdata.data     = 0x00;
-		
-			twi_send(&outdata);
-		}
-		
-		if (held_0)
-		{
-			outdata.class    = C_VIRT;
-			outdata.object   = VIRT_VORTRAG_PWM;
-			outdata.function = F_PWM_MOD;
-			outdata.data     = 0x00;
-		
-			twi_send(&outdata);
-			
-		}
-		else if (last_held_0)
-		{
-			outdata.class    = C_VIRT;
-			outdata.object   = VIRT_VORTRAG_PWM;
-			outdata.function = F_PWM_DIR;
-			outdata.data     = 0x00;
-		
-			twi_send(&outdata);
-				
-		}
-		
-		last_held_0 = held_0;
-
-
-		// **** Lounge Licht schalter ****
-
-		static uint8_t counter_1;
-		uint8_t clicked_1 = 0;
-		uint8_t held_1    = 0;
-		static uint8_t last_held_1;
-
-		if (!(PIND & _BV(PD3)))
-		{
-			counter_1 ++;
-			if (counter_1 > HOLD_THRESHOLD)
-			{
-				held_1 = 1;
-				counter_1 = HOLD_THRESHOLD;
-			}
-		}
-		else
-		{
-			if (counter_1 > CLICK_THRESHOLD)
-			{
-				if (counter_1 < HOLD_THRESHOLD)
-				{
-					clicked_1 = 1;
-				}
-			} 
-			counter_1 = 0;
-		}
-		
-		if (clicked_1)
-		{
-			outdata.class    = C_SW;
-			outdata.object   = SWL_LOUNGE;
-			outdata.function = F_SW_TOGGLE;
-			outdata.data     = 0x00;
-		
-			twi_send(&outdata);
-		}
-		
-		if (held_1)
-		{
-			outdata.class    = C_PWM;
-			outdata.object   = PWM_LOUNGE;
-			outdata.function = F_PWM_MOD;
-			outdata.data     = 0x00;
-		
-			twi_send(&outdata);
-			
-		}
-		else if (last_held_1)
-		{
-			outdata.class    = C_PWM;
-			outdata.object   = PWM_LOUNGE;
-			outdata.function = F_PWM_DIR;
-			outdata.data     = 0x00;
-		
-			twi_send(&outdata);
-		}
-		
-		last_held_1 = held_1;
-	}
-
-// Hauptschalter
-	if (!(PINA & _BV(PA0)) && stat_switches.hauptschalter)
-	{
-		stat_switches.hauptschalter = 0;
-
-		uint8_t msg[2];
-		msg[0] =  stat_switches.stat_sw;
-		can_send(0x02, msg);
-		
-		outdata.class    = C_VIRT;
-		outdata.object   = VIRT_POWER;
-		outdata.function = F_SW_OFF;
-		outdata.data     = 0x00;
-		
-		twi_send(&outdata);
-
-		PORTA |= LED_ROT; // red
-		PORTA &= ~LED_GRUEN; // green
-		_delay_ms(500);
-	}
-	if ((PINA & _BV(PA0)) && stat_switches.hauptschalter == 0)
-	{
-		stat_switches.hauptschalter = 1;
-
-		uint8_t msg[2];
-		msg[0] =  stat_switches.stat_sw;
-		can_send(0x02, msg);
-
-		outdata.class    = C_VIRT;
-		outdata.object   = VIRT_POWER;
-		outdata.function = F_SW_ON;
-		outdata.data     = 0x00;
-		
-		twi_send(&outdata);
-		
-		PORTA |= LED_GRUEN; // green
-		PORTA &= ~LED_ROT; // red
-		_delay_ms(500);
-	}
-/*
-// PC2 - 24V power good
-	if ((PINC & _BV(PC2)) && stat_switches.power_ok)
-	{
-		stat_switches.power_ok = 0;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
-		can_send(0x02, msg);
-		
-		PORTA |= LED_ROT; // red
-		PORTA &= ~LED_GRUEN; // green
-	}
-	if (!(PINC & _BV(PC2)) && stat_switches.power_ok == 0)
-	{
-		stat_switches.power_ok = 1;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
-		can_send(0x02, msg);
-		
-		PORTA |= LED_GRUEN; // green
-		PORTA &= ~LED_ROT; // red
-	}
-// PD6 - RCD Server
-	if ((PIND & _BV(PD6)) && stat_switches.rcd_server)
-	{
-		stat_switches.rcd_server = 0;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
-		can_send(0x02, msg);
-
-		PORTA |= LED_ROT; // red
-		PORTA &= ~LED_GRUEN; // green
-	}
-	if (!(PIND & _BV(PD6)) && stat_switches.rcd_server == 0)
-	{
-		stat_switches.rcd_server = 1;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
-		can_send(0x02, msg);
-		
-		PORTA |= LED_GRUEN; // green
-		PORTA &= ~LED_ROT; // red
-	}
-// PA1 - RCD Steckdosen 
-	if ((PINA & _BV(PA1)) && stat_switches.rcd_power)
-	{
-		stat_switches.rcd_power = 0;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
-		can_send(0x02, msg);
-		
-		PORTA |= LED_ROT; // red
-		PORTA &= ~LED_GRUEN; // green
-	}
-	if (!(PINA & _BV(PA1)) && stat_switches.rcd_power == 0)
-	{
-		stat_switches.rcd_power = 1;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
-		can_send(0x02, msg);
-		
-		PORTA |= LED_GRUEN; // green
-		PORTA &= ~LED_ROT; // red
-	}
-//  PD7 - RCD Licht
-	if ((PIND & _BV(PD7)) && stat_switches.rcd_licht)
-	{
-		stat_switches.rcd_licht = 0;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
-		can_send(0x02, msg);
-		
-		PORTA |= LED_ROT; // red
-		PORTA &= ~LED_GRUEN; // green
-	}
-	if (!(PIND & _BV(PD7)) && stat_switches.rcd_licht == 0)
-	{
-		stat_switches.rcd_licht = 1;
-		uint8_t msg[1];
-		msg[0] =  stat_switches.bla;
-		can_send(0x02, msg);
-		
-		PORTA |= LED_GRUEN; // green
-		PORTA &= ~LED_ROT; // red
-	}*/
+	get_inputs();
+	set_led();
+	taster();
 }
-

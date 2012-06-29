@@ -1,57 +1,36 @@
-/* -*- Mode: C; tab-width: 2 -*- */
-
 #include <avr/io.h>
 
-#include "i2c_funktionen.h"
 #include "twi_master/twi_master.h"
 #include "../include/PowerCommander.h"
+#include "i2c_funktionen.h"
 
-#define I2C_INDATACOUNT 1
 
 void sync_stat_cache()
 {
-
+	if (TWIM_Start(TWI_ADDRESS + TW_READ))
+	{
+		outputdata.ports = TWIM_ReadAck();
+		outputdata.ports += TWIM_ReadAck() << 8;
+		uint8_t i;
+		for (i = 0; i < 5; i++)
+			outputdata.pwmval[i] = TWIM_ReadAck();
+		outputdata.pwmval[i] = TWIM_ReadNack();
+	}
+	TWIM_Stop();
 }
 
 
-void twi_send(uint8_t *p)
+void twi_send()
 {
-	uint8_t i;
-	if (!TWIM_Start(TWI_ADDRESS + TW_WRITE))
+	if (TWIM_Start(TWI_ADDRESS + TW_WRITE))
 	{
-		TWIM_Stop();
+		TWIM_Write(outputdata.ports);
+		TWIM_Write(outputdata.ports >> 8);
+		uint8_t i;
+		for (i = 0; i < 6; i++)
+			TWIM_Write(outputdata.pwmval[i]);
 	}
-	else
-	{
-		/*
-			daten wirklich raus schreiben
-		*/
-		for (i = 0; i < 4; i++)
-		{
-			TWIM_Write(p[i]);
-		}
-		
-		TWIM_Stop();
-	}
+	TWIM_Stop();
+	// XXX send as can
 }
 
-void twi_get(uint8_t *p)
-{
-	uint8_t i;
-	if (!TWIM_Start(TWI_ADDRESS + TW_READ))
-	{
-		TWIM_Stop();
-	}
-	else
-	{
-		for (i = 0; i < (I2C_INDATACOUNT - 1); i++)
-		{
-			p[i] = TWIM_ReadAck();
-		}
-		
-		//	die letzte via ReadNack
-
-		p[i] = TWIM_ReadNack();
-		TWIM_Stop();
-	}
-}
