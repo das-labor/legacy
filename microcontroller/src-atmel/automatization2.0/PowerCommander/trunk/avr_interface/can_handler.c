@@ -62,7 +62,7 @@ void can_handler()
 		}
 		// sleepmode zustand abfangen
 		if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01) {
-			
+			//rx_msg->data[1];
 		}
 	}
 }
