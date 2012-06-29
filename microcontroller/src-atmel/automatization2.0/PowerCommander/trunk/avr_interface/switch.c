@@ -86,14 +86,14 @@ static struct t_i2c_cmd_matrix {
 } i2c_cmd_matrix[] = {{0, }};
 
 void exec(uint8_t index) {
-	if (i2c_cmd_matrix[index].tue_etwas) {
+/*	if (i2c_cmd_matrix[index].tue_etwas) {
 		uint8_t i;
 		outputdata.ports = i2c_cmd_matrix[index]->ports;
 		for (i = 0; i <= (i2c_cmd_matrix[index])->i; i++) {
 			outdata.object = i2c_cmd_matrix[index]->objectlist[i];
 		}
 		twi_send();
-	}
+	}*/
 }
 
 void get_inputs() {
@@ -188,7 +188,7 @@ uint8_t pwm_vortrag_get_max()
 }
 */
 void lamp_dim() {
-
+/*
 	uint8_t val;
 
 	if (virt_vortrag_stat == 0)
@@ -217,7 +217,7 @@ void lamp_dim() {
 		{
 			virt_vortrag_pwm_set_all(0, val - 1);
 		}
-	}
+	}*/
 }
 
 void taster() {
