@@ -122,7 +122,7 @@ void message_fetch(can_message_x * msg)
 	msg->msg.addr_dst = spi_send(0);
 #endif
 	
-	msg->msg.dlc = spi_send(0) & 0x0F;	
+	msg->msg.dlc = spi_send(0) & 0x0F;
 	for (x = 0; x < msg->msg.dlc; x++)
 	{
 		msg->msg.data[x] = spi_send(0);
@@ -141,7 +141,7 @@ static volatile unsigned char TX_INT;
 ISR (MCP_INT_VEC)
 {
 	unsigned char status = mcp_status();
-		
+
 	if (status & 0x01)
 	{	// Message in RX0
 		if (!(((can_message_x*)&RX_BUFFER[RX_HEAD])->flags & 0x01))

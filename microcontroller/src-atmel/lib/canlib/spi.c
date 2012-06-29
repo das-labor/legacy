@@ -8,12 +8,12 @@
 	#define AVR_MOSI_BIT PB3
 	#define AVR_MISO_BIT PB4
 	#define AVR_SCK_BIT PB5
-#elif defined(__AVR_ATmega32__) | defined(__AVR_ATmega644__)
+#elif defined(__AVR_ATmega32__) | defined(__AVR_ATmega644__) | defined(__AVR_ATmega324__)
 	#define AVR_SS_BIT PB4
 	#define AVR_MOSI_BIT PB5
 	#define AVR_MISO_BIT PB6
 	#define AVR_SCK_BIT PB7
-#elif defined(__AVR_ATmega128__) | defined(__AVR_ATmega102__)
+#elif defined(__AVR_ATmega128__) | defined(__AVR_ATmega102__) | defined(__AVR_AT90CAN128__)
 	#define AVR_SS_BIT PB0
 	#define AVR_MOSI_BIT PB2
 	#define AVR_MISO_BIT PB3
