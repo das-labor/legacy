@@ -40,26 +40,30 @@ void can_handler()
 			{
 				switch (rx_msg->data[0]) {
 					case 0: // switch
-						rx_msg->data[1]
+						rx_msg->data[1];
 						
 						break;
-					case 1: //PWM
+					case 1: // PWM
 						if (rx_msg->data[1] < 6 && rx_msg->data[2] == 0)
 							outputdata.pwmval[rx_msg->data[1]] = rx_msg->data[3];
 						break;
-					case 2:
-						switch (rx_msg->data[1])
+					case 2: // VIRT
+						switch (rx_msg->data[1]) {
 							case 0:
 								
 								break;
 							case 1:
 								
 								break;
+						}
 						break;
 				}
 			}
 		}
-		if (rx_msg->addr_dst == )
+		// sleepmode zustand abfangen
+		if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01) {
+			
+		}
 	}
 }
 
