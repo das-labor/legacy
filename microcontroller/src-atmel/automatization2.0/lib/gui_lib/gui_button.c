@@ -31,9 +31,9 @@ void gui_button_draw (gui_element_t * self, uint8_t redraw) {
 
 	if (s->icon) {
 		uint8_t icon_x = (s->box.w - s->icon->width) / 2;
-		g_draw_icon(s->box.x + icon_x, s->box.y, s->icon);
-		r.y += s->icon->height;
-		r.h -= s->icon->height;
+		g_draw_icon(s->box.x + icon_x, s->box.y + 1, s->icon);
+		r.y += s->icon->height+2;
+		r.h -= s->icon->height+2;
 	}
 
 	g_draw_string_in_rect(&r, s->text);
