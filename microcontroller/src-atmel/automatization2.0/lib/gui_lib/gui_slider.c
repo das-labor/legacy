@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "gui.h"
 
 #define SLIDER_SIZE 5
@@ -60,10 +61,10 @@ void gui_slider_draw(gui_element_t * self, uint8_t redraw) {
 	r.h -= text_height;
 
 	char valstr[6];
-	itoa(s->value, valstr, 10);
+	sprintf(valstr, "%d", s->value);
 	if (redraw) {
 		rectangle_t tr = r;
-		tr.h = text_height;
+		tr.h = text_height + 1;
 		clear_inner_rectangle(tr);
 	}
 	g_draw_string_in_rect(&r, valstr);
@@ -91,12 +92,8 @@ void gui_slider_set_on_screen(gui_element_t *self, uint8_t state) {
 
 }
 
-void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
+void gui_slider_set_value(gui_slider_t *self, int16_t val){
 	gui_slider_t * s = (gui_slider_t*)self;
-	
-	int range_size = s->range_rectangle.h - SLIDER_SIZE;
-	int offset = s->range_rectangle.y + s->range_rectangle.h - 2 - t.y;
-	int val = (s->max_value - s->min_value) * offset / range_size;
 	
 	if (val > s->max_value) val = s->max_value;
 	if (val < s->min_value) val = s->min_value;
@@ -108,6 +105,19 @@ void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
 		if (s->value_changed) {
 			s->value_changed(self, s->value);
 		}
+	}
+}
+
+void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
+	gui_slider_t * s = (gui_slider_t*)self;
+	last_touched_gui_element = self;
+
+	if(!(t.flags & TOUCH_FLAG_UP)){
+		int range_size = s->range_rectangle.h - SLIDER_SIZE;
+		int offset = s->range_rectangle.y + s->range_rectangle.h - 2 - t.y;
+		int val = s->min_value + (uint32_t)(s->max_value - s->min_value) * offset / range_size;
+
+		gui_slider_set_value(s, val);
 	}
 }
 

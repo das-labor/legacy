@@ -102,6 +102,7 @@ typedef struct {
 	char * text;
 	icon_t * icon;
 	uint8_t state;
+	uint8_t toggle_mode;
 
 	void(*click_handler)(gui_element_t *);
 } gui_button_t;
@@ -139,6 +140,7 @@ void gui_slider_draw (gui_element_t * self, uint8_t redraw);
 void gui_slider_set_on_screen (gui_element_t *self, uint8_t state);
 void gui_slider_touch_handler (gui_element_t *self, touch_event_t t);
 void gui_slider_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff);
+void gui_slider_set_value(gui_slider_t *self, int16_t val);
 gui_slider_t * new_gui_slider(); //constructor
 
 ////////////////////////////////////////////////////////////////////////////////
