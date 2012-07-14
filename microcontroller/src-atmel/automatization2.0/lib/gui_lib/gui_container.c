@@ -17,15 +17,15 @@ void gui_container_add(gui_container_t * c, gui_element_t * e) {
 		e->update_position(e, c->box.x + c->pos, c->box.y);
 		c->pos += e->box.w-1; //increment position for adding next element
 		if(e->box.h > c->box.h) c->box.h = e->box.h; //increase height to height of element
-		if(c->box.w < c->pos){
-			c->box.w = c->pos; //increase width of container if not larger allready
+		if(c->box.w < (c->pos+1)){
+			c->box.w = (c->pos+1); //increase width of container if not larger allready
 		}
 	} else {
 		e->update_position(e, c->box.x, c->box.y + c->pos);
 		c->pos += e->box.h-1;
 		if(e->box.w > c->box.w) c->box.w = e->box.w;
-		if(c->box.h < c->pos){
-			c->box.h = c->pos;
+		if(c->box.h < (c->pos+1)){
+			c->box.h = (c->pos+1);
 		}
 	}
 

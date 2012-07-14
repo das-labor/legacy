@@ -45,20 +45,33 @@ void gui_button_set_on_screen (gui_element_t *self, uint8_t state) {
 
 void gui_button_touch_handler (gui_element_t *self, touch_event_t t) {
 	gui_button_t * s = (gui_button_t*)self;
-	last_touched_gui_element = self;
 
 	if (t.flags & TOUCH_FLAG_DOWN) {
-		s->state = 1;
-		s->draw(self, 0);
+		//only take focus on press
+		last_touched_gui_element = self;
 	}
 
-	if ((t.flags & TOUCH_FLAG_UP) && (s->state == 1)) {
-		if (s->click_handler){
-			s->click_handler(self);
+	if(s->toggle_mode){
+		if (t.flags & TOUCH_FLAG_DOWN) {
+			s->state ^= 1;
+			s->draw(self, 0);
+			if (s->click_handler){
+				s->click_handler(self);
+			}
+		}
+	}else{
+		if (t.flags & TOUCH_FLAG_DOWN) {
+			s->state = 1;
+			s->draw(self, 0);
 		}
 
-		s->state = 0;
-		s->draw(self, 0);
+		if (t.flags & TOUCH_FLAG_UP) {
+			s->state = 0;
+			s->draw(self, 0);
+			if (s->click_handler){
+				s->click_handler(self);
+			}
+		}
 	}
 }
 
@@ -88,6 +101,7 @@ gui_button_t * new_gui_button() {
 	b->state = 0;
 	b->click_handler = 0;
 	b->frame_size = 0x80;
+	b->toggle_mode = 0;
 	return b;
 }
 
