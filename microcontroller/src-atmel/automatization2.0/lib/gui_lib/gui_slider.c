@@ -92,7 +92,7 @@ void gui_slider_set_on_screen(gui_element_t *self, uint8_t state) {
 
 }
 
-void gui_slider_set_value(gui_slider_t *self, int16_t val){
+void gui_slider_set_value(gui_slider_t *self, int16_t val) {
 	gui_slider_t * s = (gui_slider_t*)self;
 	
 	if (val > s->max_value) val = s->max_value;
@@ -109,10 +109,10 @@ void gui_slider_set_value(gui_slider_t *self, int16_t val){
 }
 
 void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
-	gui_slider_t * s = (gui_slider_t*)self;
+	gui_slider_t *s = (gui_slider_t*)self;
 	last_touched_gui_element = self;
 
-	if(!(t.flags & TOUCH_FLAG_UP)){
+	if (!(t.flags & TOUCH_FLAG_UP)) {
 		int range_size = s->range_rectangle.h - SLIDER_SIZE;
 		int offset = s->range_rectangle.y + s->range_rectangle.h - 2 - t.y;
 		int val = s->min_value + (uint32_t)(s->max_value - s->min_value) * offset / range_size;
