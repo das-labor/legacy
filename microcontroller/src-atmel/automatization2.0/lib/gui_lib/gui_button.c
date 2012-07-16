@@ -8,7 +8,7 @@
 #include "gui.h"
 
 void gui_button_draw(gui_element_t *self, uint8_t redraw) {
-	gui_button_t * s = (gui_button_t*)self;
+	gui_button_t *s = (gui_button_t*)self;
 
 	if (s->state) {
 		g_set_draw_color(1);
@@ -44,7 +44,7 @@ void gui_button_set_on_screen(gui_element_t *self, uint8_t state) {
 }
 
 void gui_button_touch_handler(gui_element_t *self, touch_event_t t) {
-	gui_button_t * s = (gui_button_t*)self;
+	gui_button_t *s = (gui_button_t*)self;
 
 	if (t.flags & TOUCH_FLAG_DOWN) {
 		//only take focus on press
@@ -77,11 +77,11 @@ void gui_button_touch_handler(gui_element_t *self, touch_event_t t) {
 
 
 void gui_button_delete(gui_element_t *self) {
-	free (self);
+	free(self);
 }
 
 void gui_button_update_position(gui_element_t *self, int16_t x_diff, int16_t y_diff) {
-	gui_button_t * s = (gui_button_t *) self;
+	gui_button_t *s = (gui_button_t *) self;
 
 	s->box.x += x_diff;
 	s->box.y += y_diff;
@@ -89,8 +89,8 @@ void gui_button_update_position(gui_element_t *self, int16_t x_diff, int16_t y_d
 
 
 //constructor
-gui_button_t * new_gui_button() {
-	gui_button_t * b = malloc(sizeof(gui_button_t));
+gui_button_t *new_gui_button() {
+	gui_button_t *b = malloc(sizeof(gui_button_t));
 	b->draw = gui_button_draw;
 	b->set_on_screen = gui_button_set_on_screen;
 	b->touch_handler = gui_button_touch_handler;
