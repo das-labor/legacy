@@ -10,7 +10,7 @@
 
 #define SLIDER_SIZE 5
 
-static rectangle_t calculate_slider_rectangle(gui_slider_t * s) {
+static rectangle_t calculate_slider_rectangle(gui_slider_t *s) {
 	rectangle_t r;
 
 	int range_size = s->range_rectangle.h - SLIDER_SIZE;
@@ -36,8 +36,8 @@ static void clear_inner_rectangle(rectangle_t r) {
 	g_set_draw_color(1);
 }
 
-void gui_slider_draw(gui_element_t * self, uint8_t redraw) {
-	gui_slider_t * s = (gui_slider_t*)self;
+void gui_slider_draw(gui_element_t *self, uint8_t redraw) {
+	gui_slider_t *s = (gui_slider_t*)self;
 
 	if (!redraw) {
 		g_set_draw_color(0);
@@ -93,17 +93,17 @@ void gui_slider_set_on_screen(gui_element_t *self, uint8_t state) {
 }
 
 void gui_slider_set_value(gui_slider_t *self, int16_t val) {
-	gui_slider_t * s = (gui_slider_t*)self;
+	gui_slider_t *s = (gui_slider_t*)self;
 	
 	if (val > s->max_value) val = s->max_value;
 	if (val < s->min_value) val = s->min_value;
 	
 	if (s->value != val) {
 		s->value = val;
-		s->draw(self, 1);
+		s->draw((gui_element_t*)self, 1);
 
 		if (s->value_changed) {
-			s->value_changed(self, s->value);
+			s->value_changed((gui_element_t*)self, s->value);
 		}
 	}
 }
@@ -126,8 +126,9 @@ void gui_slider_delete(gui_element_t *self) {
 	free(self);
 }
 
-void gui_slider_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff) {
-	gui_slider_t * s = (gui_slider_t *) self;
+
+void gui_slider_update_position(gui_element_t *self, int16_t x_diff, int16_t y_diff) {
+	gui_slider_t * s = (gui_slider_t*) self;
 
 	s->box.x += x_diff;
 	s->box.y += y_diff;
@@ -135,8 +136,8 @@ void gui_slider_update_position(gui_element_t * self, int16_t x_diff, int16_t y_
 
 
 //constructor
-gui_slider_t * new_gui_slider() {
-	gui_slider_t * b = malloc(sizeof(gui_slider_t));
+gui_slider_t *new_gui_slider() {
+	gui_slider_t *b = malloc(sizeof(gui_slider_t));
 	b->draw = gui_slider_draw;
 	b->set_on_screen = gui_slider_set_on_screen;
 	b->touch_handler = gui_slider_touch_handler;
