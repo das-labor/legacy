@@ -16,6 +16,7 @@
 #include "animations/laborlogo.h"
 #include "animations/outofspec.h"
 #include "animations/fairydust.h"
+#include "animations/ideenpark.h"
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
 #include "animations/blackhole.h"
@@ -215,20 +216,26 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_PLASMA
+#ifdef ANIMATION_IDEENPARK
 		case 21:
+			logo_Ideenpark();
+			break;
+#endif
+
+#ifdef ANIMATION_PLASMA
+		case 22:
 			plasma();
 			break;
 #endif
 
 #ifdef ANIMATION_PSYCHEDELIC
-		case 22:
+		case 23:
 			psychedelic();
 			break;
 #endif
 
 #ifdef ANIMATION_BLACKHOLE
-		case 23:
+		case 24:
 			blackhole();
 			break;
 #endif
