@@ -69,6 +69,10 @@ ifeq ($(ANIMATION_BLACKHOLE),y)
   SRC += blackhole.c
 endif
 
+ifeq ($(ANIMATION_SQUARES),y)
+  SRC += squares.c
+endif
+
 ifeq ($(ANIMATION_TIME),y)
   SRC += borg_time.c
 endif

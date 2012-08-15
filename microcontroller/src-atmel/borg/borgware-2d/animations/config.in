@@ -70,6 +70,8 @@ comment "Animations"
 
 	bool     "Black Hole"       ANIMATION_BLACKHOLE
 
+	dep_bool "Squares"          ANIMATION_SQUARES       $RANDOM_SUPPORT
+
 	comment  "Special Animations"
 	bool     "Test Animations"  ANIMATION_TESTS
 	bool     "Display off mode" ANIMATION_OFF

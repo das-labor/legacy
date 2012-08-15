@@ -20,6 +20,7 @@
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
 #include "animations/blackhole.h"
+#include "animations/squares.h"
 #ifdef ANIMATION_TIME
 #include "animations/borg_time.h"
 #endif
@@ -237,6 +238,12 @@ void display_loop(){
 #ifdef ANIMATION_BLACKHOLE
 		case 24:
 			blackhole();
+			break;
+#endif
+
+#ifdef ANIMATION_SQUARES
+		case 25:
+			squares();
 			break;
 #endif
 
