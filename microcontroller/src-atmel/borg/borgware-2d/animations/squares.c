@@ -20,7 +20,7 @@
 #include "squares.h"
 
 #define STEP_WIDTH (NUMPLANE * 2u)
-#define TICK 150
+#define TICK 100
 #define CYCLES 200u
 
 /**
@@ -54,7 +54,7 @@ void squares(void) {
 
 		// add randomly calculated offsets to each layer starting points
 		for (uint8_t i = 0; i < NUMPLANE; ++i) {
-			nOffsets[i] = (nOffsets[i] + random8()) & STEP_WIDTH;
+			nOffsets[i] = (nOffsets[i] + random8()) % STEP_WIDTH;
 		}
 		// rotate color map
 		nColOffset = (nColOffset + 1) % (NUMPLANE * 2);
