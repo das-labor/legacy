@@ -59,8 +59,6 @@ comment "Animations"
 	
 	mainmenu_option next_comment
 	comment "Fixed-point math patterns"
-		bool     "Double Buffering" FP_DOUBLE_BUFFERING 1
-
 		bool "Plasma"  ANIMATION_PLASMA  $ANIMATION_FIXEDPOINT
 		int  "Additional Frame Delay (in ms) For Plasma"  FP_PLASMA_DELAY 1
 
