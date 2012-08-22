@@ -11,7 +11,6 @@
 
 #include <assert.h>
 #include <stdint.h>
-#include <string.h>
 #include "../config.h"
 #include "../pixel.h"
 #include "../util.h"
@@ -19,24 +18,6 @@
 
 
 #ifdef DOXYGEN
-	/**
-	 * Double buffering helps in reducing the effect of visibly redrawing every
-	 * frame. With this option turned on, a frame is rendered into an off-screen
-	 * buffer first and then copied to the actual frame buffer in one piece.
-	 * However, given the borg's graphics architecture, half painted frames may
-	 * still occur, but they are barely noticeable with this option enabled.
-	 *
-	 * Turn this off if you prefer speed over beauty.
-	 */
-	#define FP_DOUBLE_BUFFERING
-#endif DOXYGEN
-
-
-#ifdef FP_LOW_PRECISION
-	#undef FP_LOW_PRECISION
-#endif
-
-#if NUM_COLS <= 16 && NUM_ROWS <= 16
 	/**
 	 * Low precision means that we use Q10.5 values and 16 bit types for almost
 	 * every calculation (with multiplication and division as notable exceptions
@@ -52,7 +33,19 @@
 	 * square root, sine, cosine, multiplication etc. utilize 32 bit types.
 	 */
 	#define FP_LOW_PRECISION
+#endif /* DOXYGEN */
+
+
+#ifdef FP_LOW_PRECISION
+	#undef FP_LOW_PRECISION
 #endif
+
+
+// low precision for displays where each dimension is less than or equal to 16
+#if NUM_COLS <= 16 && NUM_ROWS <= 16
+	#define FP_LOW_PRECISION
+#endif
+
 
 #ifdef FP_LOW_PRECISION
 	/** This is the type we expect ordinary integers to be. */
@@ -330,12 +323,6 @@ typedef unsigned char (*fpmath_pattern_func_t)(unsigned char const x,
                                                fixp_t const t,
                                                void *const r);
 
-#ifdef FP_DOUBLE_BUFFERING
-#    define BUFFER pixmap_buffer
-#else
-#    define BUFFER pixmap
-#endif
-
 
 /**
  * Draws an animated two dimensional graph for a given function f(x, y, t).
@@ -346,42 +333,51 @@ typedef unsigned char (*fpmath_pattern_func_t)(unsigned char const x,
  * @param fpPattern Function which generates a pattern depending on x, y and t.
  * @param r A pointer to persistent data required by the fpPattern function.
  */
-static void fixPattern(fixp_t const t_start,
-                       fixp_t const t_stop,
-                       fixp_t const t_delta,
-                       int const frame_delay,
-                       fpmath_pattern_func_t fpPattern,
-                       void *r)
+static void fixDrawPattern(fixp_t const t_start,
+                           fixp_t const t_stop,
+                           fixp_t const t_delta,
+                           int const frame_delay,
+                           fpmath_pattern_func_t fpPattern,
+                           void *r)
 {
-#ifdef FP_DOUBLE_BUFFERING
-	// double buffering to reduce half painted pictures
-	unsigned char pixmap_buffer[NUMPLANE][NUM_ROWS][LINEBYTES];
-#endif
-
 	for (fixp_t t = t_start; t < t_stop; t += t_delta)
 	{
+		// For performance reasons we draw the pattern to an off-screen buffer
+		// without distributing bits of higher planes down to lower ones. This
+		// is done afterwards when the off-screen contents are copied to the
+		// actual frame buffer.
+		unsigned char pOffScreen[NUMPLANE + 1][NUM_ROWS][LINEBYTES] = {{{0}}};
 		for (unsigned char y = 0; y < NUM_ROWS; ++y)
 		{
-			unsigned char nChunk[NUMPLANE + 1][LINEBYTES] = {{0}};
-			for (unsigned char x = 0; x < (LINEBYTES * 8); ++x)
+			for (unsigned char x = 0; x < (LINEBYTES * 8u); ++x)
 			{
-				assert (y < 16);
-				nChunk[fpPattern(x, y, t, r) - 1][x / 8u] |= shl_table[x % 8u];
-			}
-			for (unsigned char p = NUMPLANE; p--;)
-			{
-				for (unsigned char col = LINEBYTES; col--;)
-				{
-					nChunk[p][col] |= nChunk[p + 1][col];
-					BUFFER[p][y][col] = nChunk[p][col];
-				}
+				pOffScreen[fpPattern(x, y, t, r)][y][x / 8] |= shl_table[x % 8];
 			}
 		}
 
-#ifdef FP_DOUBLE_BUFFERING
-		memcpy(pixmap, pixmap_buffer, sizeof(pixmap));
-#endif
+		// better safe than sorry
+		#if ((NUM_ROWS * LINEBYTES) < 256)
+				typedef unsigned char bitmap_offset_t;
+		#else
+				typedef unsigned int bitmap_offset_t;
+		#endif
 
+		// Here we transcribe the off-screen contents to the actual frame buffer
+		// by distributing down 8 bits in parallel (per iteration).
+		for (bitmap_offset_t nOffset = sizeof(pixmap[0]); nOffset--;)
+		{
+			// for whatever reason, gcc produces leaner code if "p" is of type
+			// "unsigned int" as opposed to "unsigned char"
+			for (unsigned int p = NUMPLANE; p--;)
+			{
+				(&pixmap[p][0][0])[nOffset] =
+						(&pOffScreen[p + 1][0][0])[nOffset];
+				(&pOffScreen[p][0][0])[nOffset] |=
+						(&pOffScreen[p + 1][0][0])[nOffset];
+			}
+		}
+
+		// wait a moment to ensure that the current frame is visible
 		wait(frame_delay);
 	}
 }
@@ -471,12 +467,12 @@ void plasma(void)
 {
 	fixp_plasma_t r;
 #ifndef __AVR__
-	fixPattern(0, fixScaleUp(75), 0.1 * FIX, 80, fixAnimPlasma, &r);
+	fixDrawPattern(0, fixScaleUp(75), 0.1 * FIX, 15, fixAnimPlasma, &r);
 #else
 	#ifndef FP_PLASMA_DELAY
 		#define FP_PLASMA_DELAY 1
 	#endif
-	fixPattern(0, fixScaleUp(60), 0.1 * FIX,
+	fixDrawPattern(0, fixScaleUp(60), 0.1 * FIX,
 			FP_PLASMA_DELAY, fixAnimPlasma, &r);
 #endif /* __AVR__ */
 }
@@ -539,12 +535,12 @@ void psychedelic(void)
 {
 	fixp_psychedelic_t r;
 #ifndef __AVR__
-	fixPattern(0, fixScaleUp(75), 0.1 * FIX, 80, fixAnimPsychedelic, &r);
+	fixDrawPattern(0, fixScaleUp(75), 0.1 * FIX, 30, fixAnimPsychedelic, &r);
 #else
 	#ifndef FP_PSYCHO_DELAY
 		#define FP_PSYCHO_DELAY 15
 	#endif
-	fixPattern(0, fixScaleUp(60), 0.1 * FIX, FP_PSYCHO_DELAY,
+	fixDrawPattern(0, fixScaleUp(60), 0.1 * FIX, FP_PSYCHO_DELAY,
 			fixAnimPsychedelic, &r);
 #endif /* __AVR__ */
 }
