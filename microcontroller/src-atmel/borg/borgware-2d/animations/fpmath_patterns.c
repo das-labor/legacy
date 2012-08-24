@@ -340,13 +340,13 @@ static void fixDrawPattern(fixp_t const t_start,
                            fpmath_pattern_func_t fpPattern,
                            void *r)
 {
+	unsigned char pOffScreen[NUMPLANE + 1][NUM_ROWS][LINEBYTES];
 	for (fixp_t t = t_start; t < t_stop; t += t_delta)
 	{
 		// For performance reasons we draw the pattern to an off-screen buffer
 		// without distributing bits of higher planes down to lower ones. This
 		// is done afterwards when the off-screen contents are copied to the
 		// actual frame buffer.
-		unsigned char pOffScreen[NUMPLANE + 1][NUM_ROWS][LINEBYTES] = {{{0}}};
 		for (unsigned char y = 0; y < NUM_ROWS; ++y)
 		{
 			for (unsigned char x = 0; x < (LINEBYTES * 8u); ++x)
@@ -374,6 +374,7 @@ static void fixDrawPattern(fixp_t const t_start,
 						(&pOffScreen[p + 1][0][0])[nOffset];
 				(&pOffScreen[p][0][0])[nOffset] |=
 						(&pOffScreen[p + 1][0][0])[nOffset];
+				(&pOffScreen[p + 1][0][0])[nOffset] = 0;
 			}
 		}
 
