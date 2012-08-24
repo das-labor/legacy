@@ -340,10 +340,12 @@ static void fixDrawPattern(fixp_t const t_start,
                            fpmath_pattern_func_t fpPattern,
                            void *r)
 {
+	// off-screen buffer
 	unsigned char pOffScreen[NUMPLANE + 1][NUM_ROWS][LINEBYTES];
+
 	for (fixp_t t = t_start; t < t_stop; t += t_delta)
 	{
-		// For performance reasons we draw the pattern to an off-screen buffer
+		// For performance reasons the pattern is drawn to an off-screen buffer
 		// without distributing bits of higher planes down to lower ones. This
 		// is done afterwards when the off-screen contents are copied to the
 		// actual frame buffer.
@@ -355,27 +357,27 @@ static void fixDrawPattern(fixp_t const t_start,
 			}
 		}
 
-		// better safe than sorry
-		#if ((NUM_ROWS * LINEBYTES) < 256)
-				typedef unsigned char bitmap_offset_t;
-		#else
-				typedef unsigned int bitmap_offset_t;
-		#endif
+		// last byte of the frame buffer
+		unsigned char *pPixmap =
+				&pixmap[NUMPLANE - 1][NUM_ROWS - 1][LINEBYTES - 1];
+		// last byte of the off-screen buffer
+		unsigned char *pOffscreenDistHigh =
+				&pOffScreen[NUMPLANE][NUM_ROWS - 1][LINEBYTES - 1];
+		// last byte of the second last plane of the off-screen buffer
+		unsigned char *pOffscreenDistLow =
+				&pOffScreen[NUMPLANE - 1][NUM_ROWS - 1][LINEBYTES - 1];
 
 		// Here we transcribe the off-screen contents to the actual frame buffer
-		// by distributing down 8 bits in parallel (per iteration).
-		for (bitmap_offset_t nOffset = sizeof(pixmap[0]); nOffset--;)
+		// by distributing down 8 bits in parallel per iteration. We start at
+		// the end of both buffers and move backwards through their space.
+		while (pPixmap >= (unsigned char *)pixmap) // stop at the beginning
 		{
-			// for whatever reason, gcc produces leaner code if "p" is of type
-			// "unsigned int" as opposed to "unsigned char"
-			for (unsigned int p = NUMPLANE; p--;)
-			{
-				(&pixmap[p][0][0])[nOffset] =
-						(&pOffScreen[p + 1][0][0])[nOffset];
-				(&pOffScreen[p][0][0])[nOffset] |=
-						(&pOffScreen[p + 1][0][0])[nOffset];
-				(&pOffScreen[p + 1][0][0])[nOffset] = 0;
-			}
+			// actually draw off-screen contents
+			*(pPixmap--) = *pOffscreenDistHigh;
+			// distribute bits down to the next lower plane
+			*(pOffscreenDistLow--) |= *pOffscreenDistHigh;
+			// clear already drawn off-screen contents
+			*(pOffscreenDistHigh--) = 0;
 		}
 
 		// wait a moment to ensure that the current frame is visible
@@ -413,7 +415,7 @@ typedef struct fixp_plasma_s
 
 
 /**
- * Draws a plasma like pattern (sort of... four shades of grey are pretty
+ * Generates a plasma like pattern (sort of... four shades of grey are pretty
  * scarce for a neat plasma animation). This is realized by superimposing two
  * functions which generate independent patterns for themselves.
  *
@@ -496,7 +498,7 @@ typedef struct fixp_psychedelic_s
 
 
 /**
- * Draws flowing circular waves with a rotating center.
+ * Generates flowing circular waves with a rotating center.
  * @param x x-coordinate
  * @param y y-coordinate
  * @param t A step value which changes for each frame, allowing for animations.
