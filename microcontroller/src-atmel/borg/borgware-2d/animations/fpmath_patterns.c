@@ -413,7 +413,7 @@ typedef struct fixp_plasma_s
 	 * function. Those results only need to be calculated for the first row of
 	 * the current frame and are then reused for the remaining rows.
 	 */
-	fixp_t fFunc1[NUM_COLS];
+	fixp_t fFunc1[LINEBYTES * 8u];
 	/**
 	 * This value is part of the formula for the second internal pattern
 	 * function. It needs to be calculated only once per frame.
@@ -460,7 +460,7 @@ static unsigned char fixAnimPlasma(unsigned char const x,
 	{
 		p->fFunc2CosArg = NUM_ROWS * fixCos(t) + fixScaleUp(NUM_ROWS);
 		p->fFunc2SinArg = NUM_COLS * fixSin(t) + fixScaleUp(NUM_COLS);
-		for (unsigned char i = NUM_COLS; i--;)
+		for (unsigned char i = LINEBYTES * 8u; i--;)
 		{
 			p->fFunc1[i] = fixSin(fixMul(fixScaleUp(i), fPlasmaX) + t);
 		}
