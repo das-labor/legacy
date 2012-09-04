@@ -29,7 +29,7 @@
 void squares(void) {
 	// add a rotating color map for smooth transitions
 	uint8_t nColorMap[NUMPLANE * 2];
-	for (uint8_t i = 0; i < (((NUMPLANE + 1) * 2) - 1); ++i) {
+	for (uint8_t i = 0; i <  (NUMPLANE * 2); ++i) {
 		if (i < (NUMPLANE + 1)) {
 			nColorMap[i] = i;
 		} else {
