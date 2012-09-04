@@ -11,6 +11,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <stddef.h>
 #include "../config.h"
 #include "../pixel.h"
 #include "../util.h"
@@ -346,38 +347,50 @@ static void fixDrawPattern(fixp_t const t_start,
 	for (fixp_t t = t_start; t < t_stop; t += t_delta)
 	{
 		// For performance reasons the pattern is drawn to an off-screen buffer
-		// without distributing bits of higher planes down to lower ones. This
-		// is done afterwards when the off-screen contents are copied to the
-		// actual frame buffer.
-		for (unsigned char y = 0; y < NUM_ROWS; ++y)
+		// without distributing bits of higher planes down to lower ones.
+		ptrdiff_t nRowColOffset = 0;
+		for (unsigned char y = 0; y < UNUM_ROWS; ++y)
 		{
 			for (unsigned char x = 0; x < (LINEBYTES * 8u); ++x)
 			{
-				pOffScreen[fpPattern(x, y, t, r)][y][x / 8] |= shl_table[x % 8];
+				// Since multidimensional subscript expressions are rather
+				// expensive, we just resolve the first dimension (which
+				// represents the plane) and add an offset that correlates to
+				// the currently processed row and column.
+				*(&pOffScreen[fpPattern(x, y, t, r)][0][0] + nRowColOffset) |=
+						shl_table[x % 8u];
+
+				// increment the offset after completion of a byte
+				if ((x % 8u) == 7u)
+				{
+					nRowColOffset++;
+				}
 			}
 		}
 
-		// last byte of the frame buffer
+		// one byte behind the frame buffer
 		unsigned char *pPixmap =
-				&pixmap[NUMPLANE - 1][NUM_ROWS - 1][LINEBYTES - 1];
-		// last byte of the off-screen buffer
+				(&pixmap[NUMPLANE - 1][NUM_ROWS - 1][LINEBYTES - 1]) + 1;
+		// one byte behind the off-screen buffer
 		unsigned char *pOffscreenDistHigh =
-				&pOffScreen[NUMPLANE][NUM_ROWS - 1][LINEBYTES - 1];
-		// last byte of the second last plane of the off-screen buffer
+				(&pOffScreen[NUMPLANE][NUM_ROWS - 1][LINEBYTES - 1]) + 1;
+		// one byte behind the second last plane of the off-screen buffer
 		unsigned char *pOffscreenDistLow =
-				&pOffScreen[NUMPLANE - 1][NUM_ROWS - 1][LINEBYTES - 1];
+				(&pOffScreen[NUMPLANE - 1][NUM_ROWS - 1][LINEBYTES - 1]) + 1;
 
 		// Here we transcribe the off-screen contents to the actual frame buffer
 		// by distributing down 8 bits in parallel per iteration. We start at
 		// the end of both buffers and move backwards through their space.
+		// The pre-decrement operator is used so that GCC utilizes the AVR's
+		// built-in pre-decrement variants of the "ld" and "st" instructions.
 		while (pPixmap >= (unsigned char *)pixmap) // stop at the beginning
 		{
 			// actually draw off-screen contents
-			*(pPixmap--) = *pOffscreenDistHigh;
+			*(--pPixmap) = *(--pOffscreenDistHigh);
 			// distribute bits down to the next lower plane
-			*(pOffscreenDistLow--) |= *pOffscreenDistHigh;
+			*(--pOffscreenDistLow) |= *pOffscreenDistHigh;
 			// clear already drawn off-screen contents
-			*(pOffscreenDistHigh--) = 0;
+			*pOffscreenDistHigh = 0;
 		}
 
 		// wait a moment to ensure that the current frame is visible
@@ -447,10 +460,10 @@ static unsigned char fixAnimPlasma(unsigned char const x,
 	{
 		p->fFunc2CosArg = NUM_ROWS * fixCos(t) + fixScaleUp(NUM_ROWS);
 		p->fFunc2SinArg = NUM_COLS * fixSin(t) + fixScaleUp(NUM_COLS);
-	}
-	if (y == 0)
-	{
-		p->fFunc1[x] = fixSin(fixMul(fixScaleUp(x), fPlasmaX) + t);
+		for (unsigned char i = NUM_COLS; i--;)
+		{
+			p->fFunc1[i] = fixSin(fixMul(fixScaleUp(i), fPlasmaX) + t);
+		}
 	}
 
 	fixp_t const fFunc2 = fixSin(fixMul(fixDist(fixScaleUp(x), fixScaleUp(y),
@@ -458,7 +471,7 @@ static unsigned char fixAnimPlasma(unsigned char const x,
 
 	uint8_t const nRes = fixScaleDown(fixDiv(fixMul(p->fFunc1[x] + fFunc2 +
 			fixScaleUp(2), fixScaleUp(NUMPLANE - 1)), fixScaleUp(2)));
-	assert (nRes <= 3);
+	assert (nRes <= NUMPLANE);
 
 	return nRes;
 }
