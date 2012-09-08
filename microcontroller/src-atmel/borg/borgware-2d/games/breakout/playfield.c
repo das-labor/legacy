@@ -54,7 +54,7 @@ static void draw_single_field (uint8_t in_x, uint8_t in_y, game_field_t in_f)
 	setpixel (tmp, b);
 }
 
-static void brick_damage (uint8_t in_x, uint8_t in_y)
+static void brick_damage (int8_t in_x, int8_t in_y)
 {
 	if ((*playfield)[in_x][in_y] >= bs || (*playfield)[in_x][in_y] == 0)
 		return;
@@ -74,9 +74,9 @@ void playfield_set (uint8_t in_x, uint8_t in_y, game_field_t in_field)
 	(*playfield)[in_x][in_y] = in_field;
 }
 
-uint8_t check_bounce (int8_t in_x, int8_t in_y)
+int8_t check_bounce (int8_t in_x, int8_t in_y)
 {
-	uint8_t ov = 0;
+	int8_t ov = 0;
 	/* overflow check */
 	if (in_x >= NUM_ROWS || in_x < 0)
 		ov |= BOUNCE_X;

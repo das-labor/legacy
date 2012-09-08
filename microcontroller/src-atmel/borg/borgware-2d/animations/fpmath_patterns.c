@@ -288,7 +288,7 @@ static fixp_t fixSqrt(ufixp_interim_t const a)
 			nRoot++;
 		}
 	} while (nCount-- != 0);
-	return (nRoot);
+	return (fixp_t)nRoot;
 }
 
 

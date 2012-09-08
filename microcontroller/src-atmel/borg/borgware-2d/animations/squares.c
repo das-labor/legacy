@@ -19,7 +19,7 @@
 #include "../random/prng.h"
 #include "squares.h"
 
-#define STEP_WIDTH (NUMPLANE * 2u)
+#define STEP ((uint8_t)(NUMPLANE * 2u))
 #define TICK 100
 #define CYCLES 200u
 
@@ -44,8 +44,8 @@ void squares(void) {
 			for (uint8_t y = 0; y < NUM_ROWS; ++y) {
 				uint8_t nColor = 0;
 				for (uint8_t nLayer = 0; nLayer < NUMPLANE; ++nLayer) {
-					nColor += (((x + nOffsets[nLayer]) / STEP_WIDTH) + ((y +
-							nOffsets[nLayer] + STEP_WIDTH) / STEP_WIDTH)) % 2u;
+					nColor += (uint8_t)(((x + nOffsets[nLayer]) / STEP) +
+							((y + nOffsets[nLayer] + STEP) / STEP)) % 2u;
 				}
 				setpixel((pixel){x, y},
 						nColorMap[(nColOffset + nColor) % (2* NUMPLANE)]);
@@ -54,7 +54,7 @@ void squares(void) {
 
 		// add randomly calculated offsets to each layer starting points
 		for (uint8_t i = 0; i < NUMPLANE; ++i) {
-			nOffsets[i] = (nOffsets[i] + random8()) % STEP_WIDTH;
+			nOffsets[i] = (uint8_t)(nOffsets[i] + random8()) % STEP;
 		}
 		// rotate color map
 		nColOffset = (nColOffset + 1) % (NUMPLANE * 2);

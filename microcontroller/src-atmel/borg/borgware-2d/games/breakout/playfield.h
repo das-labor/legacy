@@ -55,6 +55,6 @@ void playfield_set (uint8_t in_x, uint8_t in_y, game_field_t in_field);
 
 /* @description Checks if there is an object in the way. If so, it returns 1
  */
-uint8_t check_bounce (int8_t in_x, int8_t in_y);
+int8_t check_bounce (int8_t in_x, int8_t in_y);
 
 #endif /* PLAYFIELD_H */

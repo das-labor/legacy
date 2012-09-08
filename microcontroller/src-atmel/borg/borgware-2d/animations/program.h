@@ -20,7 +20,7 @@ inline static void off()
 }
 #endif
 
-void spiral(unsigned int delay);
+void spiral(int delay);
 void joern1();
 void checkerboard(unsigned char times);
 void fire();

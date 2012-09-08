@@ -132,7 +132,7 @@ typedef struct
 
 typedef struct
 {
-	signed char lives;
+	unsigned char lives;
 	unsigned int points;
 } Player;
 

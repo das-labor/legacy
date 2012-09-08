@@ -150,7 +150,7 @@ void tetris_std_completeDrop(void *pVariantData,
 	assert(pVariantData != 0);
 	tetris_standard_variant_t *pStdVariant =
 			(tetris_standard_variant_t *)pVariantData;
-	pStdVariant->nScore += nLines * 2;
+	pStdVariant->nScore += nLines * 2u;
 }
 
 

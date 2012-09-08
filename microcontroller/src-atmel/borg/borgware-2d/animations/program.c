@@ -47,7 +47,7 @@ void test_palette2(){
 
 
 #ifdef ANIMATION_SPIRAL
-static void walk(cursor_t* cur, unsigned char steps, unsigned int delay){
+static void walk(cursor_t* cur, unsigned char steps, int delay){
 	unsigned char x;
 	for(x=steps;x--;){
 		set_cursor(cur, next_pixel(cur->pos, cur->dir));
@@ -55,7 +55,7 @@ static void walk(cursor_t* cur, unsigned char steps, unsigned int delay){
 	}
 }
 
-void spiral(unsigned int delay){
+void spiral(int delay){
 	clear_screen(0);
 
 	cursor_t cur;

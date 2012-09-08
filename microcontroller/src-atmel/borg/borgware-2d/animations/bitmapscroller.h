@@ -38,7 +38,7 @@ void bitmap_scroll(unsigned char const nWidth,
                    unsigned char const nHeight,
                    unsigned char const nBitPlanes,
                    unsigned int const nTickCount,
-                   unsigned int const nTick,
+                   int const nTick,
                    unsigned char const nFrameTickDivider,
                    unsigned char const nMovementTickDivider,
                    bitmap_getChunk_t fpGetChunk);
