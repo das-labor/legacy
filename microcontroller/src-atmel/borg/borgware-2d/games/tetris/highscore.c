@@ -35,7 +35,7 @@ uint16_t tetris_highscore_inputName(void)
 	while (1)
 	{
 		// we need our own blink interval
-		nBlink = (nBlink + 1) % 4u;
+		nBlink = (nBlink + 1u) % 4u;
 
 		// construct command for scrolltext and execute
 		static uint8_t const nOffset[3] = {15, 19, 23};
@@ -98,7 +98,9 @@ uint16_t tetris_highscore_inputName(void)
 	}
 
 	// return result
-	return (pszNick[0] - 65) << 10 | (pszNick[1] - 65) << 5 | (pszNick[2] - 65);
+	return (uint16_t)(pszNick[0] - 65) << 10 |
+	       (uint16_t)(pszNick[1] - 65) <<  5 |
+	       (uint16_t)(pszNick[2] - 65);
 #else
 	return (0);
 #endif

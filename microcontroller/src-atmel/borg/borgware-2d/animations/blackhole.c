@@ -18,7 +18,7 @@
  * @param angle angle based on an integer (range from 0 to 63)
  * @return result of the sine function normalized to a range from -64 to 64
  */
-static signed char sin_i(signed char angle) {
+static signed char sin_i(unsigned char angle) {
 	// the aforementioned lookup table
 	static signed char const sine_table[] PROGMEM =
 			{0, 6, 12, 19, 24, 30, 36, 41, 45, 49, 53, 56, 59, 61, 63, 64};

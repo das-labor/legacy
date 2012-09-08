@@ -90,7 +90,7 @@ void process_borg_msg(pdo_message *msg)
 
 	case FKT_BORG_SCROLLTEXT_RESET:
 		for (i = 0; i < msg->dlc - 1; i++) {
-			scrolltext_text[i] = msg->data[i];
+			scrolltext_text[i] = (char)msg->data[i];
 		}
 		scrolltext_text[i] = 0;
 		break;
@@ -101,7 +101,7 @@ void process_borg_msg(pdo_message *msg)
 			j++;
 
 		for (i = 0; i < msg->dlc - 1; i++) {
-			scrolltext_text[i + j] = msg->data[i];
+			scrolltext_text[i + j] = (char)msg->data[i];
 		}
 		scrolltext_text[i + j] = 0;
 		break;

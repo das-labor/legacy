@@ -58,12 +58,13 @@
 static void tetris_bastet_doPreprocessing(tetris_bastet_variant_t *pBastet)
 {
 	// retrieve sane start and stop values for the column and row indices
-	int8_t const nWidth = tetris_bucket_getWidth(pBastet->pBucket);
+	size_t const nWidth = (size_t)tetris_bucket_getWidth(pBastet->pBucket);
 	int8_t const nStartRow = tetris_bucket_getHeight(pBastet->pBucket) - 1;
 	int8_t const nStopRow = tetris_bucket_getFirstTaintedRow(pBastet->pBucket);
 
 	// clear old precalculated scores (last three elements are always 0)
 	memset(pBastet->pColScore, 0, nWidth * sizeof(int16_t));
+
 	// calculate the column heights of the actual bucket configuration
 	// NOTE: in this loop, pColScore stores the actual column heights,
 	//       later it will contain the "score impact" of every unchanged column
@@ -132,7 +133,7 @@ static void tetris_bastet_predictColHeights(tetris_bastet_variant_t *pBastet,
 			pBastet->pBucket, pPiece, nDeepestRow, nColumn);
 	while (pDump != NULL)
 	{
-		uint16_t nColMask = 0x0001 << nStartCol;
+		uint16_t nColMask = 0x0001u << nStartCol;
 		for (int8_t x = nStartCol; x <= nStopCol; ++x)
 		{
 			if ((*pDump & nColMask) != 0)
@@ -248,9 +249,9 @@ static void tetris_bastet_evaluatePieces(tetris_bastet_variant_t *pBastet)
 			TETRIS_PC_ANGLE_0);
 	for (uint8_t nBlock = TETRIS_PC_LINE; nBlock <= TETRIS_PC_Z; ++nBlock)
 	{
-		int16_t nMaxScore = -32768;
+		int16_t nMaxScore = INT16_MIN;
 		tetris_piece_setShape(pPiece, nBlock);
-		int8_t nAngleCount = tetris_piece_getAngleCount(pPiece);
+		uint8_t nAngleCount = tetris_piece_getAngleCount(pPiece);
 		for (uint8_t nAngle = TETRIS_PC_ANGLE_0; nAngle < nAngleCount; ++nAngle)
 		{
 			tetris_piece_setAngle(pPiece, nAngle);
@@ -325,7 +326,7 @@ void *tetris_bastet_construct(tetris_bucket_t *pBucket)
 
 	pBastet->pBucket = pBucket;
 
-	int8_t nWidth = tetris_bucket_getWidth(pBastet->pBucket);
+	size_t nWidth = (size_t)tetris_bucket_getWidth(pBastet->pBucket);
 	pBastet->pColScore = (int16_t*) calloc(nWidth + 3, sizeof(int16_t));
 	pBastet->pStartingRow = (int8_t*) calloc(nWidth + 3, sizeof(int8_t));
 	pBastet->pColHeights = (int8_t*) calloc(nWidth, sizeof(int8_t));

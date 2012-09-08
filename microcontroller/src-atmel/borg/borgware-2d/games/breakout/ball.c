@@ -20,7 +20,7 @@
 
 /* internal functions */
 
-static void ball_spawn (ball_t *in_ball, uint16_t in_x, uint16_t in_y, int16_t in_dir_x, int16_t in_dir_y)
+static void ball_spawn (ball_t *in_ball, int16_t in_x, int16_t in_y, int16_t in_dir_x, int16_t in_dir_y)
 {
 	in_ball->x = in_x;
 	in_ball->y = in_y;
@@ -41,7 +41,7 @@ static void ball_die (ball_t *in_b)
 }
 
 /* modify a vecotor according to given type of bouncing */
-static void bounce_rand_vector (ball_t *in_b, uint8_t in_bouncetype)
+static void bounce_rand_vector (ball_t *in_b, int8_t in_bouncetype)
 {
 	uint8_t rval = random8();
 	
@@ -183,6 +183,5 @@ void ball_spawn_default (ball_t *in_b)
 	if (random8() & 0x01)
 		xdir *= -1;
 	
-	ball_spawn (in_b, (uint16_t) rebound_getpos() * 256, (NUM_ROWS -2) * 256,
-		xdir, -131);
+	ball_spawn (in_b, rebound_getpos() * 256, (NUM_ROWS - 2) * 256, xdir, -131);
 }

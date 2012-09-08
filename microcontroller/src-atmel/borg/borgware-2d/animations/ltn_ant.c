@@ -19,33 +19,53 @@
  * IN THE SOFTWARE.
  */
 
-
+#include <limits.h>
 #include "../config.h"
 #include "../pixel.h"
 #include "../util.h"
 #include "../random/prng.h"
+
+#if (UNUMCOLS <= (UCHAR_MAX / 2)) && (UNUMROWS <= (UCHAR_MAX / 2))
+	typedef unsigned char coord_t;
+#else
+	typedef unsigned int coord_t;
+#endif
+
+#define P (1u)
+#define NX (UNUM_COLS - 1u)
+#define NY (UNUM_ROWS - 1u)
+
+#if UNUM_ROWS == UNUM_COLS
+	static coord_t const dcomp[] = {0, P, NX};
+	#define xdcomp dcomp
+	#define ydcomp dcomp
+#else
+	static coord_t const xdcomp[] = {0, P, NX};
+	static coord_t const ydcomp[] = {0, P, NY};
+#endif
+
 
 
 void ltn_ant() {
 	clear_screen(0);
 
 	struct {
-		unsigned char  x,  y;
-		unsigned char ox, oy; /* Used to set old pixels so brightness 2 */
-		signed char   dx, dy; /* Vector can only be (0,1),(1,0),(0,-1),(-1,0) */
+		coord_t  x,  y;
+		coord_t ox, oy; /* Used to set old pixels to brightness 2 */
+		coord_t dx, dy; /* Vector can only be (0,1),(1,0),(0,-1),(-1,0) */
 	} ant; 
 		                    
-	signed char temp;
+	unsigned char temp;
 	unsigned int cycles = 500;
 
 	/* Random start position and direction */
-	ant.x = random8() % NUM_COLS;
-	ant.y = random8() % NUM_ROWS;
+	ant.x = random8() % UNUM_COLS;
+	ant.y = random8() % UNUM_ROWS;
 
 	/* Make sure we do have a valid vector */
-	ant.dx = (random8() % 3) - 1;
+	ant.dx = xdcomp[random8() % 3];
 	do {
-		ant.dy = (random8() % 3) - 1;
+		ant.dy = ydcomp[random8() % 3];
 	} while(ant.dx == ant.dy);
 
 	ant.ox = ant.x;
@@ -78,15 +98,8 @@ void ltn_ant() {
 		wait(100);
 
 		/* Playing field is modeled after a torus */
-		if(ant.x == 0 && ant.dx < 0)
-			ant.x = NUM_COLS - 1;
-		else
-			ant.x = (ant.x + ant.dx) % UNUM_COLS;
-
-		if(ant.y == 0 && ant.dy < 0)
-			ant.y = NUM_ROWS - 1;
-		else
-			ant.y = (ant.y + ant.dy) % UNUM_ROWS;
+		ant.x = (coord_t)(ant.x + ant.dx) % UNUM_COLS;
+		ant.y = (coord_t)(ant.y + ant.dy) % UNUM_ROWS;
 
 		cycles--;
 	}

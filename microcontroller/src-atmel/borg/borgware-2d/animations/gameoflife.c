@@ -124,14 +124,27 @@ static cell_t getcell(field_t pf, coord_t x, coord_t y) {
 /******************************************************************************/
 
 uint8_t countsurroundingalive(field_t pf, coord_t x, coord_t y) {
+#define P 1u
+#define NX (XSIZE - 1u) /* emulated horizontal -1 */
+#define NY (YSIZE - 1u) /* emulated vertical -1 */
 
-	static int8_t const offset[] = {-1, -1, 0, +1, +1, +1, 0, -1, -1, -1};
-	x += XSIZE;
-	y += YSIZE;
+#if XSIZE == YSIZE
+	static coord_t const offset[] = {NX, NX, 0, P, P, P, 0, NX, NX, NX};
+#else
+	static coord_t const xoffset[] = {0, P, P, P, 0, NX, NX, NX};
+	static coord_t const yoffset[] = {NY, NY, 0, P, P, P, 0, NY};
+#endif
+
 	uint8_t i, ret = 0;
 	for (i = 8; i--;) {
 		// getcell(...) returns either 0 or 1
-		ret += getcell(pf, (x + offset[i+2]) % XSIZE, (y + offset[i]) % YSIZE);
+#if XSIZE == YSIZE
+		ret += getcell(pf, (coord_t)(x + offset[i+2u]) % XSIZE,
+				(coord_t)(y + offset[i]) % YSIZE);
+#else
+		ret += getcell(pf, (coord_t)(x + xoffset[i]) % XSIZE,
+				(coord_t)(y + yoffset[i]) % YSIZE);
+#endif
 	}
 
 	return ret;
@@ -315,6 +328,6 @@ void gameoflife() {
 			}
 		}
 		pfcopy(ldbuf[ldbuf_idx], pf1);
-		ldbuf_idx = (ldbuf_idx + 1) % LOOP_DETECT_BUFFER_SIZE;
+		ldbuf_idx = (ldbuf_idx + 1u) % LOOP_DETECT_BUFFER_SIZE;
 	}
 }

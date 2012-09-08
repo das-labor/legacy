@@ -152,33 +152,27 @@ static void bitmap_drawViewport(bitmap_t const *const pBitmap,
 
 
 /**
- * This functions calculates randomly chosen offsets to move the viewport
- * accross the bitmap.
- * @param pBitmap The bitmap of interest.
- * @param x The current x-coordinate of the viewport.
- * @param y The current y-coordinate of the viewport.
- * @param pdx Pointer to a variable which shall hold the horizontal offset.
- * @param pdy Pointer to a variable which shall hold the vertical offset.
+ * Dices a new value for one component of the movement vector so that the
+ * moving view port changes its direction.
+ * @param nComponent The component (either x or y) we want to change.
+ * @param nDomain The maximum allowed value for nCompoment.
+ * @param nDelta The delta which is currently applied to nComponent.
+ * @return The newly calculated delta for nComponent.
  */
-static void bitmap_recalculateVector(bitmap_t const *const pBitmap,
-                                     unsigned char const x,
-                                     unsigned char const y,
-                                     signed char *const pdx,
-                                     signed char *const pdy)
+static signed char bitmap_bounce(unsigned char const nComponent,
+                                 unsigned char const nDomain,
+                                 signed char const nDelta)
 {
-	if (((x + *pdx) > (pBitmap->nXDomain)) || ((x + *pdx) < 0))
+	signed char nResult;
+	if (((nComponent == 0u) || (nComponent >= nDomain)) && nDelta)
 	{
-		*pdx = random8() % 2u * (x < (pBitmap->nXDomain / 2) ? 1 : -1);
+		nResult = (signed char)(random8() & 0x01) * (nComponent ? -1 : 1);
 	}
-	if (((y + *pdy) > (pBitmap->nYDomain)) || ((y + *pdy) < 0))
+	else
 	{
-		*pdy = random8() % 2u * (y < (pBitmap->nYDomain / 2) ? 1 : -1);
+		nResult = nDelta;
 	}
-	if (*pdx == 0 && *pdy == 0)
-	{
-		*pdx = (x < (pBitmap->nXDomain / 2) ? 1 : -1);
-		*pdy = (y < (pBitmap->nYDomain / 2) ? 1 : -1);
-	}
+	return nResult;
 }
 
 
@@ -197,7 +191,7 @@ void bitmap_scroll(unsigned char const nWidth,
                    unsigned char const nHeight,
                    unsigned char const nBitPlanes,
                    unsigned int const nTickCount,
-                   unsigned int const nTick,
+                   int const nTick,
                    unsigned char const nFrameTickDivider,
                    unsigned char const nMovementTickDivider,
                    bitmap_getChunk_t fpGetChunk)
@@ -238,7 +232,14 @@ void bitmap_scroll(unsigned char const nWidth,
 		}
 		if ((i % nMovementTickDivider) == 0)
 		{
-			bitmap_recalculateVector(&bitmap, x, y, &dx, &dy);
+			dx = bitmap_bounce(x, bitmap.nXDomain, dx);
+			dy = bitmap_bounce(y, bitmap.nYDomain, dy);
+			if ((dx == 0) && (dy == 0))
+			{
+				dx = (x < (bitmap.nXDomain / 2) ? 1 : -1);
+				dy = (y < (bitmap.nYDomain / 2) ? 1 : -1);
+			}
+
 			x += bitmap.nWidth > bitmap.nViewportWidth ? dx : 0;
 			y += bitmap.nHeight > bitmap.nViewportHeight ? dy : 0;
 		}

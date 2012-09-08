@@ -142,7 +142,7 @@ static
 tetris_input_command_t tetris_input_mapCommand(tetris_bearing_t nBearing,
                                                tetris_input_command_t nCmd)
 {
-	return (nCmd < TETRIS_INCMD_ROT_CCW) ? (nCmd - nBearing + 4) % 4u : nCmd;
+	return (nCmd < TETRIS_INCMD_ROT_CCW) ? (nCmd - nBearing + 4u) % 4u : nCmd;
 }
 
 

@@ -243,8 +243,8 @@ static void tetris_view_drawDump(tetris_view_t *pV)
 					tetris_piece_getBitmap(tetris_bucket_getPiece(pV->pBucket));
 			// clear all bits of the piece we are not interested in and
 			// align the remaining row to LSB
-			int8_t y = nRow - nPieceRow;
-			nPieceMap = (nPieceMap & (0x000F << (y * 4))) >> (y * 4);
+			uint8_t y = (uint8_t)(nRow - nPieceRow);
+			nPieceMap = (nPieceMap & (0x000Fu << (y * 4u))) >> (y * 4u);
 			// shift remaining part to current column and embed piece into view
 			nRowMap |= nColumn >= 0 ?
 					nPieceMap << nColumn : nPieceMap >> -nColumn;
@@ -256,7 +256,7 @@ static void tetris_view_drawDump(tetris_view_t *pV)
 			unsigned char nColor = (nRowMap & nElementMask) ?
 					tetris_view_getPieceColor(pV) : TETRIS_VIEW_COLORSPACE;
 			tetris_view_setpixel(nBearing, TETRIS_VIEW_XOFFSET_DUMP + x,
-					TETRIS_VIEW_YOFFSET_DUMP + nRow, nColor);
+					TETRIS_VIEW_YOFFSET_DUMP + (uint8_t)nRow, nColor);
 			nElementMask <<= 1;
 		}
 	}
@@ -481,8 +481,8 @@ static void tetris_view_blinkLines(tetris_view_t *pV)
 						uint8_t nColor = (nColIdx == 0 ? TETRIS_VIEW_COLORFADE
 								: TETRIS_VIEW_COLORPIECE);
 						tetris_view_setpixel(nBearing,
-								TETRIS_VIEW_XOFFSET_DUMP + x,
-								TETRIS_VIEW_YOFFSET_DUMP + y,
+								TETRIS_VIEW_XOFFSET_DUMP + (uint8_t)x,
+								TETRIS_VIEW_YOFFSET_DUMP + (uint8_t)y,
 								nColor);
 					}
 				}

@@ -103,7 +103,8 @@ void borg_invaders()
 			}
 			else if (ivStatus == 1) //WON
 			{
-				unsigned int bonus= POINTS_FOR_LEVEL * (level + 1) * (12 - iv.pos.y);
+				unsigned int bonus = POINTS_FOR_LEVEL * (level + 1u) *
+						(unsigned int)(12 - iv.pos.y);
 				pl.points += bonus;
 				//printf("cleared l: %d , y: %d bonus: %d \n", 
 				//              level, iv.pos.y, bonus);

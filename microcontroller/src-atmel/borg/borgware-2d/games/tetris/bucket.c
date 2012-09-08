@@ -73,7 +73,7 @@ static uint8_t tetris_bucket_collision(tetris_bucket_t *pBucket,
 	int8_t const nStart = nRow + tetris_piece_getBottomOffset(nPieceMap);
 	int8_t const nStop = nRow >= 0 ? nRow : 0;
 	// mask those blocks which are not covered by the piece
-	uint16_t const nDumpMask = nCol >= 0 ? 0x000F << nCol : 0x000F >> -nCol;
+	uint16_t const nDumpMask = nCol >= 0 ? 0x000Fu << nCol : 0x000Fu >> -nCol;
 	// value for shifting blocks to the corresponding part of the piece
 	int8_t nShift = 12 - nCol - 4 * (nRow + 3 - nStart);
 	// compare piece with dump
@@ -124,7 +124,7 @@ tetris_bucket_t *tetris_bucket_construct(int8_t nWidth,
 	tetris_bucket_t *pBucket =
 			(tetris_bucket_t *)malloc(sizeof(tetris_bucket_t));
 	assert(pBucket != NULL);
-	pBucket->dump = (uint16_t *)calloc(nHeight, sizeof(uint16_t));
+	pBucket->dump = (uint16_t *)calloc((size_t)nHeight, sizeof(uint16_t));
 	assert(pBucket->dump != NULL);
 
 	// setting requested attributes
@@ -156,7 +156,7 @@ void tetris_bucket_reset(tetris_bucket_t *pBucket)
 	pBucket->status = TETRIS_BUS_READY;
 
 	// clear dump
-	memset(pBucket->dump, 0, pBucket->nHeight * sizeof(uint16_t));
+	memset(pBucket->dump, 0, (size_t)pBucket->nHeight * sizeof(uint16_t));
 }
 
 

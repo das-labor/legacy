@@ -306,7 +306,7 @@ static void snake_autoRoute(snake_protagonist_t *pprotSnake,
 					return;
 				}
 			}
-			pprotSnake->dir = (pprotSnake->dir + 1) % 4u;
+			pprotSnake->dir = (pprotSnake->dir + 1u) % 4u;
 		}
 		else
 		{
@@ -423,7 +423,7 @@ void snake_engine(uint8_t bDemoMode)
 
 		// actually move head
 		pixel pxOldHead = protSnake.aSegments[protSnake.nHeadIndex];
-		protSnake.nHeadIndex = (protSnake.nHeadIndex + 1) % USNAKE_MAX_LENGTH;
+		protSnake.nHeadIndex = (protSnake.nHeadIndex + 1u) % USNAKE_MAX_LENGTH;
 		protSnake.aSegments[protSnake.nHeadIndex] =
 				snake_nextDirection(pxOldHead, protSnake.dir);
 
@@ -440,7 +440,8 @@ void snake_engine(uint8_t bDemoMode)
 
 			// remove last segment
 			clearpixel(protSnake.aSegments[protSnake.nTailIndex])
-			protSnake.nTailIndex = (protSnake.nTailIndex +1) % USNAKE_MAX_LENGTH;
+			protSnake.nTailIndex =
+					(protSnake.nTailIndex + 1u) % USNAKE_MAX_LENGTH;
 
 			// new apples
 			snake_spawnApples(&apples);
