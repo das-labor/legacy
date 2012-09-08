@@ -17,11 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "uart_i.h"
-#include "md5.h"
-#include <avr/pgmspace.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
+#include <avr/pgmspace.h>
+#include "md5.h"
+#include "uart_i.h"
 
 void printstr_P(PGM_P s){
 	unsigned char c;
@@ -100,9 +101,11 @@ int main (void){
 		c = uart0_getc();
 		printhex(c);
 		uart0_putc(' ');
-		if(c=='h')
+		if(c == 'h'){
+		    printstr_P(PSTR("\r\HOOK activated\r\n"));
 			uart0_sethook(myhook);
-		if(c=='m')
+		}
+		if(c == 'm')
 			md5_test();
 	}
 }

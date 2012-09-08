@@ -156,6 +156,15 @@ uint16_t uart0_getc(void);
  */
 uint8_t uart0_dataavail(void);
 
+/**
+ * \brief flushes the internal transmit buffer.
+ *
+ * This function function waits until all data was send (the transmit-buffer
+ * does not contain any data).
+ */
+void uart0_flush(void);
+
+
 #if	UART0_HOOK
 /**
  * \brief sets the hook for uart0.
