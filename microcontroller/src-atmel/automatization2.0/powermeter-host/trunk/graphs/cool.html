@@ -1,0 +1,31 @@
+
+<html>
+  <head>
+    <link rel=StyleSheet href="cool.css" type="text/css"/>
+    <title>Das Labor -- Powermeter</title>
+  </head>
+  <body bgcolor="000000">
+    <SCRIPT LANGUAGE="JavaScript">
+    <!--
+      function reload_img(name, url){
+        var rnd = "&rnd=" + (new Date()).getTime();
+        document.getElementById(name).src = url + rnd;
+      }
+      var power_url  = 'http://wl.lan.labor-bochum.net/cgi-bin/graph.cgi?graph=power-P&start=-60m&theme=black';
+      var uplink_url = 'http://wl.lan.labor-bochum.net/cgi-bin/graph.cgi?graph=uplink&start=-60m&theme=black';
+    
+      var timed_func = '';
+      timed_func += "reload_img('power', power_url);";
+      timed_func += "reload_img('uplink', uplink_url);";
+
+      window.setInterval(timed_func, 5000);
+    //-->
+    </script>
+
+    <div class="content">
+      <img id="power" alt="Energieverbrauch" src="http://wl.lan.labor-bochum.net/cgi-bin/graph.cgi?graph=power-P&start=-60m&theme=black"/>
+      <p/>
+      <img id="uplink" alt="Energieverbrauch" src="http://wl.lan.labor-bochum.net/cgi-bin/graph.cgi?graph=uplink&start=-60m&theme=black"/>
+    </div>
+  </body>
+</html>
