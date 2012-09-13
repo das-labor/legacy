@@ -14,5 +14,8 @@ endif
 ifeq ($(RFM12_JOYSTICK_SUPPORT), y)
   SRC  = rfm12_joystick.c
 endif
+ifeq ($(HC165_JOYSTICK_SUPPORT), y)
+  SRC  = hc165_joystick.c
+endif
 
 include $(TOPDIR)/rules.mk
