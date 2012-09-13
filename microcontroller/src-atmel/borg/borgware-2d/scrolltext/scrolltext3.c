@@ -17,6 +17,9 @@
 #elif SCROLLTEXT_FONT == FONT_SMALL6
 	#include "font_small6.h"
 	#define FONT_NAME font_small6
+#elif SCROLLTEXT_FONT == FONT_C64
+	#include "font_c64.h"
+	#define FONT_NAME font_c64
 #elif SCROLLTEXT_FONT == FONT_UNI53
 	#include "font_uni53.h"
 	#define FONT_NAME font_uni53

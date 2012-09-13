@@ -1,0 +1,11 @@
+mainmenu_option next_comment
+comment "LedBrett setup"
+
+comment "fixing hardwareproblems in software"
+
+
+bool "projection mode (mirrored)" PROJECTION_MODE n
+
+
+
+endmenu

@@ -26,6 +26,14 @@ ifeq ($(BORG_HW),HW_BORG_MH)
   SRC = borg_hw_borg_mh.c
 endif
 
+ifeq ($(BORG_HW),HW_BORG_LSJO)
+  SRC = borg_hw_borg_lsjo.c
+endif
+
+ifeq ($(BORG_HW),HW_LEDBRETT)
+  SRC = borg_hw_ledbrett.c
+endif
+
 ifeq ($(BORG_HW),HW_BORG_MINI)
   SRC = borg_hw_borg_mini.c
 endif

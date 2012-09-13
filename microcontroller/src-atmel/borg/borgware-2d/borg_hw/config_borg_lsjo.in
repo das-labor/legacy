@@ -1,0 +1,55 @@
+mainmenu_option next_comment
+comment "Laufschrift-Borg Jochen port setup"
+
+
+choice 'port for row select'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTB' ROWPORT
+
+
+choice 'Column shiftregister Port'			\
+   "PORTA  PORTA \
+    PORTB  PORTB \
+    PORTC  PORTC \
+    PORTD  PORTD" \
+   'PORTD' COLPORT 
+ 
+comment "pin numbers on shiftregister port"
+
+choice 'CLK Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin6' PIN_CLK
+   
+choice 'DATA Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin4' PIN_DATA
+
+choice 'LINE_EN Pin'			\
+   "Pin0 0 \
+    Pin1 1 \
+    Pin2 2 \
+    Pin3 3 \
+    Pin4 4 \
+    Pin5 5 \
+    Pin6 6 \
+    Pin7 7" \
+   'Pin5' PIN_LINE_EN
+
+endmenu

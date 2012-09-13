@@ -14,6 +14,8 @@ choice 'Hardware Driver'			\
     Andre-Borg             HW_BORG_ANDRE \
     Laufschrift-Borg	   HW_BORG_LS \
     Laufschrift-Borg-MH    HW_BORG_MH \
+    FFM-Jochen             HW_BORG_LSJO \
+    FFM-LedBrett           HW_LEDBRETT \
     Borg-Mini              HW_BORG_MINI \
     Panel-One              HW_PANEL_ONE \
     4xPD1165               HW_PD1165 \
@@ -41,6 +43,14 @@ fi
 
 if [ "$BORG_HW" == "HW_BORG_MH" ] ; then
   source borg_hw/config_borg_mh.in
+fi
+
+if [ "$BORG_HW" == "HW_BORG_LSJO" ] ; then
+  source borg_hw/config_borg_lsjo.in
+fi
+
+if [ "$BORG_HW" == "HW_LEDBRETT" ] ; then
+  source borg_hw/config_ledbrett.in
 fi
 
 if [ "$BORG_HW" == "HW_BORG_MINI" ] ; then

@@ -60,7 +60,7 @@ void wait(int ms){
 		}
 #endif
 
-#if defined (__AVR_ATmega644P__) || defined (__AVR_ATmega644__)
+#if defined (__AVR_ATmega644P__) || defined (__AVR_ATmega644__) || defined (__AVR_ATmega328__)
 		while(!(TIFR1&(1<<OCF1A)));	//wait for compare match flag
 		TIFR1=(1<<OCF1A);		//reset flag
 #else

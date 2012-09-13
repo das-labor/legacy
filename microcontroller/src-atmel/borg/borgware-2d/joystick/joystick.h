@@ -30,6 +30,17 @@ void joy_init();
 #		define JOYISRIGHT (!! ((1<<3) & rfm12_joystick_val))
 #		define JOYISFIRE  (!! ((1<<4) & rfm12_joystick_val))
 
+#	elif defined(HC165_JOYSTICK_SUPPORT)
+
+		extern volatile uint8_t hc165_joystick_val;
+
+#		define JOYISUP    (! ((1<<0) & hc165_joystick_val))
+#		define JOYISDOWN  (! ((1<<1) & hc165_joystick_val))
+#		define JOYISLEFT  (! ((1<<2) & hc165_joystick_val))
+#		define JOYISRIGHT (! ((1<<3) & hc165_joystick_val))
+#		define JOYISFIRE  (! ((1<<4) & hc165_joystick_val))
+
+
 #	else
 
 #		define JOYISUP    (!(JOYSTICK_PIN_UP    & (1<<JOYSTICK_BIT_UP   )))

@@ -167,6 +167,31 @@ if [ "$JOYSTICK_SUPPORT" = "y" ]; then
 
    endmenu
 
+###################### 74HC165 joystick menu #################################
+   dep_bool_menu "74HC165 joystick support" HC165_JOYSTICK_SUPPORT y
+
+   if [ "$HC165_JOYSTICK_SUPPORT" = "y" ]; then
+      choice 'Port load'			\
+         "PORTA  PORTA \
+          PORTB  PORTB \
+          PORTC  PORTC \
+          PORTD  PORTD" \
+         'PORTD' HC165_JOYSTICK_PORT_LOAD
+
+      choice 'Bit load'			\
+         "Bit0 0 \
+          Bit1 1 \
+          Bit2 2 \
+          Bit3 3 \
+          Bit4 4 \
+          Bit5 5 \
+          Bit6 6 \
+          Bit7 7" \
+         'Bit2' HC165_JOYSTICK_BIT_LOAD
+   fi
+
+   endmenu
+###############################################################################
 
 fi
 

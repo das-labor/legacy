@@ -5,7 +5,8 @@ if [ "$SCROLLTEXT_SUPPORT" = "y" ]; then
    choice 'Scrolltext Font'			\
       "Arial_8              FONT_ARIAL8 \
        Small_6              FONT_SMALL6 \
-       Uni_53               FONT_UNI53" \
+       Uni_53               FONT_UNI53 \
+       C64                  FONT_C64" \
       'Arial_8' SCROLLTEXT_FONT
 
    int "Scrolltest buffer size" SCROLLTEXT_BUFFER_SIZE 128

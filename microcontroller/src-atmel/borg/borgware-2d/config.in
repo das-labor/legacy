@@ -8,6 +8,7 @@ comment "General Setup"
 	choice 'Target MCU'           \
  	  "ATmega8        atmega8     \
 	   ATmega32       atmega32    \
+	   ATmega328      atmega328   \
 	   ATmega644      atmega644   \
 	   ATmega644p     atmega644p  \
 	   ATmega8515     atmega8515" \
