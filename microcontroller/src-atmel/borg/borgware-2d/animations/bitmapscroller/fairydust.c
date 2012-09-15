@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <assert.h>
 
-#include "../compat/pgmspace.h"
+#include "../../compat/pgmspace.h"
 #include "bitmapscroller.h"
 #include "fairydust.h"
 
