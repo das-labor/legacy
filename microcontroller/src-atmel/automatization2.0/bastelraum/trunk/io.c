@@ -13,7 +13,7 @@ void change_shift_reg(uint8_t sreg);
 uint8_t stat_licht = 0;
 
 volatile uint16_t tickscounter = 0;
-ISR(TIMER0_OVF_vect)
+ISR(TIMER2_OVF_vect)
 {
 	tickscounter++;
 }
@@ -36,6 +36,7 @@ void init_io() {
 
 	TCCR1A |= _BV(WGM10) | _BV(COM1A1) | _BV(COM1B1);	// FastPWM, Set OC1X on Compare Match, clear OC1X at BOTTOM, (non inverting mode).
 	TCCR1B |= _BV(WGM12) | _BV(CS11) | _BV(CS10);		// FastPWM bit 2, clk/64
+	TIMSK2 |= _BV(TOIE2);
 
 	//PWM
 

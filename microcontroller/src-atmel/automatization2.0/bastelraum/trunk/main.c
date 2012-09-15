@@ -25,8 +25,10 @@ void init(void)
 
 	DDRB |= _BV(PB0); // LED out
 
-	TCCR0B = _BV(CS01) | _BV(CS00); /* clk / 64 */
-	TIMSK0 = _BV(TOIE0);
+	// this stuff is now handled by timer2 (see io.c)
+	// -> timer0 is used by the motion detectors (see motion.c)
+	// TCCR0B = _BV(CS01) | _BV(CS00); /* clk / 64 */
+	// TIMSK0 = _BV(TOIE0); 
 
 	init_io();
 
@@ -47,7 +49,6 @@ int main(void)
 {
 	//system initialization
 	init();
-	uint16_t cnt = 0;
 
 	//the main loop continuously handles can messages
 	while (1)
@@ -56,9 +57,6 @@ int main(void)
 
 		switch_handler();
 		wdt_reset();
-		cnt++;
-		if (cnt < 0xffff)
-			continue;
 		motion_tick();
 	}
 	return 1;
