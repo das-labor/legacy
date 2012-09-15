@@ -37,30 +37,6 @@ ifeq ($(ANIMATION_LTN_ANT),y)
   SRC += ltn_ant.c
 endif
 
-ifeq ($(ANIMATION_BMSCROLLER),y)
-  SRC += bitmapscroller.c
-endif
-
-ifeq ($(ANIMATION_LABORLOGO),y)
-  SRC += laborlogo.c
-endif
-
-ifeq ($(ANIMATION_AMPHIBIAN),y)
-  SRC += amphibian.c
-endif
-
-ifeq ($(ANIMATION_LOGO_OOS),y)
-  SRC += outofspec.c
-endif
-
-ifeq ($(ANIMATION_FAIRYDUST),y)
-  SRC += fairydust.c
-endif
-
-ifeq ($(ANIMATION_IDEENPARK),y)
-  SRC += ideenpark.c
-endif
-
 ifneq (,$(filter y,$(ANIMATION_PLASMA) $(ANIMATION_PSYCHEDELIC)))
   SRC += fpmath_patterns.c
 endif

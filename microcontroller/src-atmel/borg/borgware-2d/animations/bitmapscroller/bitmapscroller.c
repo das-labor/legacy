@@ -13,10 +13,10 @@
 #include <stdint.h>
 #include <assert.h>
 
-#include "../random/prng.h"
-#include "../util.h"
-#include "../autoconf.h"
-#include "../pixel.h"
+#include "../../random/prng.h"
+#include "../../util.h"
+#include "../../autoconf.h"
+#include "../../pixel.h"
 #include "bitmapscroller.h"
 
 

@@ -49,14 +49,8 @@ comment "Animations"
 		int "Request Timeout (ms)" TIME_UPDATE_TIMEOUT     50
 	endmenu
 
-	dep_bool_menu "Bitmap Scroller" ANIMATION_BMSCROLLER y $RANDOM_SUPPORT
-		dep_bool "LABOR Logo"       ANIMATION_LABORLOGO $ANIMATION_BMSCROLLER
-		dep_bool "Amphibian"        ANIMATION_AMPHIBIAN $ANIMATION_BMSCROLLER
-		dep_bool "Out of Spec Logo" ANIMATION_LOGO_OOS  $ANIMATION_BMSCROLLER
-		dep_bool "Fairydust"        ANIMATION_FAIRYDUST $ANIMATION_BMSCROLLER
-		dep_bool "Ideenpark"        ANIMATION_IDEENPARK $ANIMATION_BMSCROLLER
-	endmenu
-	
+	source animations/bitmapscroller/config.in
+
 	mainmenu_option next_comment
 	comment "Fixed-point math patterns"
 		bool "Plasma"  ANIMATION_PLASMA  $ANIMATION_FIXEDPOINT

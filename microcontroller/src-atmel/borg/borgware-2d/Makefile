@@ -40,6 +40,7 @@ include defaults.mk
 	@ echo "checking in which subdirs to build"
 	@ $(RM) -f $@
 	@ echo "SUBDIRS += animations" >> $@
+	@ echo "SUBDIRS += animations/bitmapscroller" >> $@
 	@ echo "SUBDIRS += smallani" >> $@
 	@ (for subdir in `grep -e "^#define .*_SUPPORT" autoconf.h \
 	      | sed -e "s/^#define //" -e "s/_SUPPORT.*//" \
