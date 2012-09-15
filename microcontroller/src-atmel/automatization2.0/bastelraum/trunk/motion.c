@@ -16,6 +16,8 @@ volatile static uint8_t hscount = 0;
 /* current motion detector channel */
 volatile static uint8_t mux_chan = 0;
 
+/* number of idle periods counted */
+volatile static uint8_t motion_idlecount = 0;
 
 void timer0_init ()
 {
@@ -104,9 +106,40 @@ ISR(TIMER0_OVF_vect)
 /* handler to be executed from main() */
 void motion_tick ()
 {
-	if (hscount < 240)
+//	static uint8_t sreg_old;
+	static uint8_t warnperiod = 0;
+
+	if (warnperiod && hscount > M_WARN_LENGTH)
+	{
+		/* restore old sreg state */
+		sreg ^= 0xff;
+		change_shift_reg (sreg);
+		warnperiod = 0;
+	}
+
+	if (hscount < 240) /* 240 * 0.5s -> 2 minutes */
 		return;
 	
+	motion_idlecount++;
+	if (motion_ticks >= MOTION_NUM_IGNORE)
+	{
+		motion_idlecount = 0;
+	}
+
+	if (motion_idlecount == M_IDLE_TRESHOLD + M_OFF_TRESHOLD)
+	{
+		sreg = 0;
+		change_shift_reg (sreg);
+		send_status();
+		motion_idlecount = M_IDLE_TRESHOLD + M_OFF_TRESHOLD + 1; /* anti-overflow... */
+	} else if (motion_idlecount == M_IDLE_TRESHOLD)
+	{
+		sreg ^= 0xff;
+		change_shift_reg (sreg);
+		warnperiod = 1;
+	}
+
+
 	motion_ticks = 0;
 	hscount = 0;
 }
