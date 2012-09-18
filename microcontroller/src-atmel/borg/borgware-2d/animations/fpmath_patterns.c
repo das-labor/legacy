@@ -88,13 +88,14 @@
 	 * values. These values are intended for Q5 types.
 	 */
 	static lut_t const fix_sine_lut[FIX_SIN_COUNT / 4] =
-			{ 0,  1,  2,  3,  4,  5,  6,  7,
-			  8,  9, 10, 11, 12, 13, 14, 15,
-			 15, 16, 17, 18, 19, 20, 20, 21,
-			 22, 22, 23, 24, 24, 25, 26, 26,
-			 27, 27, 28, 28, 29, 29, 29, 30,
-			 30, 30, 31, 31, 31, 31, 31, 31,
-			 31, 31};
+		{  0,   1,   2,   3,   4,   5,   6,   7,
+		   8,   9,  10,  11,  12,  13,  14,  14,
+		  15,  16,  17,  18,  19,  20,  20,  21,
+		  22,  23,  23,  24,  25,  25,  26,  26,
+		  27,  27,  28,  28,  29,  29,  30,  30,
+		  30,  31,  31,  31,  31,  32,  32,  32,
+		  32,  32};
+
 #else
 	/** This is the type we expect ordinary integers to be. */
 	typedef int16_t  ordinary_int_t;
@@ -469,8 +470,8 @@ static unsigned char fixAnimPlasma(unsigned char const x,
 	fixp_t const fFunc2 = fixSin(fixMul(fixDist(fixScaleUp(x), fixScaleUp(y),
 			p->fFunc2SinArg, p->fFunc2CosArg), fPlasmaX));
 
-	uint8_t const nRes = fixScaleDown(fixDiv(fixMul(p->fFunc1[x] + fFunc2 +
-			fixScaleUp(2), fixScaleUp(NUMPLANE - 1)), fixScaleUp(2)));
+	unsigned char const nRes = (unsigned char)(fixMul(p->fFunc1[x] + fFunc2 +
+			fixScaleUp(2), ((NUMPLANE + 1) / 4.0 - 0.05) * FIX)) / FIX;
 	assert (nRes <= NUMPLANE);
 
 	return nRes;
@@ -534,10 +535,10 @@ static unsigned char fixAnimPsychedelic(unsigned char const x,
 		p->ft10 = fixMul(t, fixScaleUp(10));
 	}
 
-	uint8_t const nResult =
-			fixScaleDown(fixMul(fixSin((fixp_interim_t)fixDist(fixScaleUp(x),
-			fixScaleUp(y), p->fCos, p->fSin) - p->ft10) + fixScaleUp(1),
-			fixScaleUp(NUMPLANE - 1)));
+	unsigned char const nResult =
+			(unsigned char)(fixMul(fixSin(fixDist(fixScaleUp(x), fixScaleUp(y),
+			p->fCos, p->fSin) - p->ft10) + fixScaleUp(1),
+			(fixp_t)((NUMPLANE - 1.05) * FIX))) / FIX;
 	assert(nResult <= NUMPLANE);
 
 	return nResult;
