@@ -80,14 +80,18 @@ def update_rrd(cmd, vals):
 
 
 
+def initialize():
+    # Enabe CAN-GW auto-reporting
+    print "Enabling CAN GW autoreport..."
+    subprocess.call(AUTOREPORT_CMD.split())
+
 #############################################################################
 # Main
 
 if __name__ == "__main__":
 
-    # Enabe auto-reporting
-    print "Enabling autoreport..."
-    subprocess.call(AUTOREPORT_CMD.split())
+    initialize()
+    last_init = time()
 
     while 1:
         try:
@@ -99,6 +103,11 @@ if __name__ == "__main__":
             gw_pstats_ts = 0
 
             while True:
+                # Reinitialize peers once per hour
+                if time() - last_init > 3600:
+                    inititalize()
+                    last_init = time()
+
                 pkt = c.get_pkt()
 
                 if isinstance(pkt, ControlPacket):
