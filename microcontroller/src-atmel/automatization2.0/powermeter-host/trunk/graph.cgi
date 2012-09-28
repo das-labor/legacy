@@ -115,16 +115,39 @@ graph_templates = {
         "DEF:cached=$COLLECTDRRD/$HOST/memory/memory-cached.rrd:value:AVERAGE"
         "DEF:free=$COLLECTDRRD/$HOST/memory/memory-free.rrd:value:AVERAGE"
         "DEF:used=$COLLECTDRRD/$HOST/memory/memory-used.rrd:value:AVERAGE"
-        "AREA:buffered#94541F40::"
-        "AREA:cached#94541F40::STACK"
-        "AREA:used#948E1F40::STACK"
-        "AREA:free#1F9454C0::STACK"
-        "LINE1:buffered#94541FC0:buffered:"
-        "LINE1:cached#94541FC0:cached:STACK"
-        "LINE1:used#948E1FC0:used:STACK"
-        "LINE1:free#1F9454C0:free:STACK"
+        "AREA:used#$ACOLOR1::"
+        "AREA:buffered#$ACOLOR2::STACK"
+        "AREA:cached#$ACOLOR4::STACK"
+        "AREA:free#$ACOLOR3::STACK"
+        "LINE1:used#$LCOLOR1:used:"
+        "LINE1:buffered#$LCOLOR2:buffered:STACK"
+        "LINE1:cached#$LCOLOR4:cached:STACK"
+        "LINE1:free#$LCOLOR3:free:STACK"
     """,
-    "cpu": """
+    "cpu1": """
+        --title="CPU Nutzung"
+        DEF:cpu-idle=$COLLECTDRRD/$HOST/cpu-0/cpu-idle.rrd:value:AVERAGE
+        DEF:cpu-interrupt=$COLLECTDRRD/$HOST/cpu-0/cpu-interrupt.rrd:value:AVERAGE
+        DEF:cpu-nice=$COLLECTDRRD/$HOST/cpu-0/cpu-nice.rrd:value:AVERAGE           
+        DEF:cpu-softirq=$COLLECTDRRD/$HOST/cpu-0/cpu-softirq.rrd:value:AVERAGE     
+        DEF:cpu-steal=$COLLECTDRRD/$HOST/cpu-0/cpu-steal.rrd:value:AVERAGE         
+        DEF:cpu-system=$COLLECTDRRD/$HOST/cpu-0/cpu-system.rrd:value:AVERAGE       
+        DEF:cpu-user=$COLLECTDRRD/$HOST/cpu-0/cpu-user.rrd:value:AVERAGE           
+        AREA:cpu-steal#$ACOLOR1::                     
+        AREA:cpu-system#$ACOLOR1::STACK               
+        AREA:cpu-interrupt#$ACOLOR2::STACK            
+        AREA:cpu-softirq#$ACOLOR2::STACK              
+        AREA:cpu-user#$ACOLOR4::STACK                 
+        AREA:cpu-nice#$ACOLOR3::STACK                 
+        LINE1:cpu-steal#$LCOLOR1::               
+        LINE1:cpu-system#$LCOLOR1:system:STACK        
+        LINE1:cpu-interrupt#$LCOLOR2::STACK  
+        LINE1:cpu-softirq#$LCOLOR2:irq:STACK     
+        LINE1:cpu-user#$LCOLOR4:user:STACK            
+        LINE1:cpu-nice#$LCOLOR3:nice:STACK
+    """, 
+ 
+    "cpu4": """
         --title="CPU Nutzung"
         DEF:cpu-0-idle=$COLLECTDRRD/$HOST/cpu-0/cpu-idle.rrd:value:AVERAGE
         DEF:cpu-0-interrupt=$COLLECTDRRD/$HOST/cpu-0/cpu-interrupt.rrd:value:AVERAGE
@@ -161,12 +184,12 @@ graph_templates = {
         CDEF:cpu-steal=cpu-0-steal,cpu-1-steal,cpu-2-steal,cpu-3-steal,+,+,+
         CDEF:cpu-system=cpu-0-system,cpu-1-system,cpu-2-system,cpu-3-system,+,+,+
         CDEF:cpu-user=cpu-0-user,cpu-1-user,cpu-2-user,cpu-3-user,+,+,+
-        AREA:cpu-steal#94541F40::                     
-        AREA:cpu-system#94541F40::STACK               
-        AREA:cpu-interrupt#94541F40::STACK            
-        AREA:cpu-softirq#94541F40::STACK              
-        AREA:cpu-user#948E1F40::STACK                 
-        AREA:cpu-nice#1F9454C0::STACK                 
+        AREA:cpu-steal#$ACOLOR1::                     
+        AREA:cpu-system#$ACOLOR1::STACK               
+        AREA:cpu-interrupt#$ACOLOR2::STACK            
+        AREA:cpu-softirq#$ACOLOR2::STACK              
+        AREA:cpu-user#$ACOLOR4::STACK                 
+        AREA:cpu-nice#$ACOLOR3::STACK                 
         LINE1:cpu-steal#94541FC0:steal:               
         LINE1:cpu-system#94541FC0:system:STACK        
         LINE1:cpu-interrupt#94541FC0:interrupt:STACK  
