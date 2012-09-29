@@ -105,7 +105,7 @@ if __name__ == "__main__":
             while True:
                 # Reinitialize peers once per hour
                 if time() - last_init > 3600:
-                    inititalize()
+                    initialize()
                     last_init = time()
 
                 pkt = c.get_pkt()

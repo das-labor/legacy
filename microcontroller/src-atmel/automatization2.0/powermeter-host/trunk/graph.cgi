@@ -124,6 +124,13 @@ graph_templates = {
         "LINE1:cached#$LCOLOR4:cached:STACK"
         "LINE1:free#$LCOLOR3:free:STACK"
     """,
+    "load": """
+        --title="System Load"
+        DEF:load=$COLLECTDRRD/$HOST/load/load.rrd:shortterm:AVERAGE
+        DEF:load_=$COLLECTDRRD/$HOST/load/load.rrd:shortterm:MAX
+        AREA:load#$ACOLOR1::                     
+        LINE1:load#$LCOLOR1::               
+    """, 
     "cpu1": """
         --title="CPU Nutzung"
         DEF:cpu-idle=$COLLECTDRRD/$HOST/cpu-0/cpu-idle.rrd:value:AVERAGE
@@ -146,7 +153,6 @@ graph_templates = {
         LINE1:cpu-user#$LCOLOR4:user:STACK            
         LINE1:cpu-nice#$LCOLOR3:nice:STACK
     """, 
- 
     "cpu4": """
         --title="CPU Nutzung"
         DEF:cpu-0-idle=$COLLECTDRRD/$HOST/cpu-0/cpu-idle.rrd:value:AVERAGE

@@ -1,6 +1,6 @@
 <html>
   <head>
-    <meta http-equiv="refresh" content="30"/>
+    <meta http-equiv="refresh" content="120"/>
     <link rel=StyleSheet href="style.css" type="text/css"/>
     <title>Das Labor -- Powermeter</title>
   </head>
@@ -18,16 +18,28 @@
       </div>
 
       <hr/>
-      <h1>casino</h1>
-      <img src="/cgi-bin/graph.cgi?graph=cpu1&host=casino&start=-8h" alt="CPU"/>
-      <p/>
-      <img src="/cgi-bin/graph.cgi?graph=memory&host=casino&start=-8h" alt="Memory"/>
-
-      <hr/>
       <h1>kvm</h1>
+      <img src="/cgi-bin/graph.cgi?graph=load&host=kvm&start=-8h" alt="LOAD"/>
+      <p/>
       <img src="/cgi-bin/graph.cgi?graph=cpu1&host=kvm&start=-8h" alt="CPU"/>
       <p/>
       <img src="/cgi-bin/graph.cgi?graph=memory&host=kvm&start=-8h" alt="Memory"/>
+
+      <hr/>
+      <h1>weblab</h1>
+      <img src="/cgi-bin/graph.cgi?graph=load&host=weblab&start=-8h" alt="LOAD"/>
+      <p/>
+      <img src="/cgi-bin/graph.cgi?graph=cpu1&host=weblab&start=-8h" alt="CPU"/>
+      <p/>
+      <img src="/cgi-bin/graph.cgi?graph=memory&host=weblab&start=-8h" alt="Memory"/>
+
+      <hr/>
+      <h1>casino</h1>
+      <img src="/cgi-bin/graph.cgi?graph=load&host=casino&start=-8h" alt="LOAD"/>
+      <p/>
+      <img src="/cgi-bin/graph.cgi?graph=cpu1&host=casino&start=-8h" alt="CPU"/>
+      <p/>
+      <img src="/cgi-bin/graph.cgi?graph=memory&host=casino&start=-8h" alt="Memory"/>
 
     <div class="content">
   </body>
