@@ -124,15 +124,82 @@ graph_templates = {
         "LINE1:cached#$LCOLOR4:cached:STACK"
         "LINE1:free#$LCOLOR3:free:STACK"
     """,
+    "disk": """
+        --title="Disk IO in Bytes/s"
+        DEF:sda_read=$COLLECTDRRD/$HOST/disk-sda/disk_octets.rrd:read:AVERAGE
+        DEF:sdb_read=$COLLECTDRRD/$HOST/disk-sdb/disk_octets.rrd:read:AVERAGE
+        DEF:sdc_read=$COLLECTDRRD/$HOST/disk-sdc/disk_octets.rrd:read:AVERAGE
+        DEF:sdd_read=$COLLECTDRRD/$HOST/disk-sdd/disk_octets.rrd:read:AVERAGE
+        DEF:sda_write=$COLLECTDRRD/$HOST/disk-sda/disk_octets.rrd:write:AVERAGE
+        DEF:sdb_write=$COLLECTDRRD/$HOST/disk-sdb/disk_octets.rrd:write:AVERAGE
+        DEF:sdc_write=$COLLECTDRRD/$HOST/disk-sdc/disk_octets.rrd:write:AVERAGE
+        DEF:sdd_write=$COLLECTDRRD/$HOST/disk-sdd/disk_octets.rrd:write:AVERAGE
+        CDEF:sda_write_m=-1,sda_write,*
+        CDEF:sdb_write_m=-1,sdb_write,*
+        CDEF:sdc_write_m=-1,sdc_write,*
+        CDEF:sdd_write_m=-1,sdd_write,*
+        AREA:sda_read#$ACOLOR4::                     
+        AREA:sdb_read#$ACOLOR4::STACK
+        AREA:sdc_read#$ACOLOR4::STACK
+        AREA:sdd_read#$ACOLOR4::STACK
+        LINE1:sda_read#$LCOLOR4::
+        LINE1:sdb_read#$LCOLOR4::STACK
+        LINE1:sdc_read#$LCOLOR4::STACK
+        LINE1:sdd_read#$LCOLOR4::STACK
+        AREA:sda_write_m#$ACOLOR1::                     
+        AREA:sdb_write_m#$ACOLOR1::STACK
+        AREA:sdc_write_m#$ACOLOR1::STACK
+        AREA:sdd_write_m#$ACOLOR1::STACK
+        LINE1:sda_write_m#$LCOLOR1::
+        LINE1:sdb_write_m#$LCOLOR1::STACK
+        LINE1:sdc_write_m#$LCOLOR1::STACK
+        LINE1:sdd_write_m#$LCOLOR1::STACK
+    """, 
+    "disk-ops": """
+        --title="Disk IO in Ops/s"
+        DEF:sda_read=$COLLECTDRRD/$HOST/disk-sda/disk_ops.rrd:read:AVERAGE
+        DEF:sdb_read=$COLLECTDRRD/$HOST/disk-sdb/disk_ops.rrd:read:AVERAGE
+        DEF:sdc_read=$COLLECTDRRD/$HOST/disk-sdc/disk_ops.rrd:read:AVERAGE
+        DEF:sdd_read=$COLLECTDRRD/$HOST/disk-sdd/disk_ops.rrd:read:AVERAGE
+        DEF:sda_write=$COLLECTDRRD/$HOST/disk-sda/disk_ops.rrd:write:AVERAGE
+        DEF:sdb_write=$COLLECTDRRD/$HOST/disk-sdb/disk_ops.rrd:write:AVERAGE
+        DEF:sdc_write=$COLLECTDRRD/$HOST/disk-sdc/disk_ops.rrd:write:AVERAGE
+        DEF:sdd_write=$COLLECTDRRD/$HOST/disk-sdd/disk_ops.rrd:write:AVERAGE
+        CDEF:sda_write_m=-1,sda_write,*
+        CDEF:sdb_write_m=-1,sdb_write,*
+        CDEF:sdc_write_m=-1,sdc_write,*
+        CDEF:sdd_write_m=-1,sdd_write,*
+        AREA:sda_read#$ACOLOR4::                     
+        AREA:sdb_read#$ACOLOR4::STACK
+        AREA:sdc_read#$ACOLOR4::STACK
+        AREA:sdd_read#$ACOLOR4::STACK
+        LINE1:sda_read#$LCOLOR4::
+        LINE1:sdb_read#$LCOLOR4::STACK
+        LINE1:sdc_read#$LCOLOR4::STACK
+        LINE1:sdd_read#$LCOLOR4::STACK
+        AREA:sda_write_m#$ACOLOR1::                     
+        AREA:sdb_write_m#$ACOLOR1::STACK
+        AREA:sdc_write_m#$ACOLOR1::STACK
+        AREA:sdd_write_m#$ACOLOR1::STACK
+        LINE1:sda_write_m#$LCOLOR1::
+        LINE1:sdb_write_m#$LCOLOR1::STACK
+        LINE1:sdc_write_m#$LCOLOR1::STACK
+        LINE1:sdd_write_m#$LCOLOR1::STACK
+    """, 
+ 
     "load": """
         --title="System Load"
+        -l 0
+        -u 1
         DEF:load=$COLLECTDRRD/$HOST/load/load.rrd:shortterm:AVERAGE
         DEF:load_=$COLLECTDRRD/$HOST/load/load.rrd:shortterm:MAX
-        AREA:load#$ACOLOR1::                     
+        AREA:load_#$ACOLOR1::                     
         LINE1:load#$LCOLOR1::               
     """, 
     "cpu1": """
         --title="CPU Nutzung"
+        -l 0
+        -u 100
         DEF:cpu-idle=$COLLECTDRRD/$HOST/cpu-0/cpu-idle.rrd:value:AVERAGE
         DEF:cpu-interrupt=$COLLECTDRRD/$HOST/cpu-0/cpu-interrupt.rrd:value:AVERAGE
         DEF:cpu-nice=$COLLECTDRRD/$HOST/cpu-0/cpu-nice.rrd:value:AVERAGE           
@@ -155,6 +222,8 @@ graph_templates = {
     """, 
     "cpu4": """
         --title="CPU Nutzung"
+        -l 0
+        -u 400
         DEF:cpu-0-idle=$COLLECTDRRD/$HOST/cpu-0/cpu-idle.rrd:value:AVERAGE
         DEF:cpu-0-interrupt=$COLLECTDRRD/$HOST/cpu-0/cpu-interrupt.rrd:value:AVERAGE
         DEF:cpu-0-nice=$COLLECTDRRD/$HOST/cpu-0/cpu-nice.rrd:value:AVERAGE           
@@ -273,10 +342,10 @@ graph_templates = {
         'CDEF:tx4_=tx_,tx6_,-'
         'CDEF:mrx6=rx6,-1,*'
         'CDEF:mrx6_=rx6_,-1,*'
-        'AREA:tx4#$ACOLOR4:'
-        'AREA:tx6#$BCOLOR4::STACK'
-        'AREA:mrx4#$ACOLOR2:'
-        'AREA:mrx6#$BCOLOR2::STACK'
+        'AREA:tx4_#$ACOLOR4:'
+        'AREA:tx6_#$BCOLOR4::STACK'
+        'AREA:mrx4_#$ACOLOR2:'
+        'AREA:mrx6_#$BCOLOR2::STACK'
         'LINE1:tx4#$LCOLOR4:TX IPv4'
         'LINE1:tx6#$LCOLOR4:TX IPv6:STACK'
         'LINE1:mrx4#$LCOLOR2:RX IPv4'
@@ -290,16 +359,22 @@ themes = {
     "white": {
         "LCOLOR1": "94541FC0",
         "ACOLOR1": "94541F40",
+        "ACOLOR1": "94541F40",
         "LCOLOR2": "948E1FC0",
         "ACOLOR2": "948E1F40",
+        "BCOLOR2": "948E1F40",
         "LCOLOR3": "1F9454C0",
         "ACOLOR3": "1F945440",
+        "BCOLOR3": "1F945440",
         "LCOLOR4": "1F948EC0",
         "ACOLOR4": "1F948E40",
+        "BCOLOR4": "1F948E40",
         "LCOLOR5": "541F94C0",
         "ACOLOR5": "541F9440",
+        "BCOLOR5": "541F9440",
         "LCOLOR6": "8E1F94C0",
-        "ACOLOR6": "8E1F9440"
+        "ACOLOR6": "8E1F9440",
+        "BCOLOR6": "8E1F9440"
     },
     "black": {
         "BACK":    "000000",
