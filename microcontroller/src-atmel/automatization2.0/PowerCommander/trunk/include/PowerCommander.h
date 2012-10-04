@@ -19,6 +19,15 @@
 /*
    Aktionen als defines
 */
+#define F_SW_OFF      (0x00)
+#define F_SW_ON       (0x01)
+#define F_SW_STATUS   (0x02)
+#define F_SW_TOGGLE   (0x03)
+
+#define F_PWM_SET     (0x00)
+#define F_PWM_GET     (0x01)
+#define F_PWM_MOD     (0x02)
+#define F_PWM_DIR     (0x03)
 
 #define F_NDEF (0xFF)
 
@@ -27,6 +36,9 @@
 /*
 	funktionsklassen - switch oder PWMs
 */
+#define C_SW  (0x00)
+#define C_PWM (0x01)
+#define C_VIRT (0x02)
 #define C_NDEF (0xFF)
 
 /*
@@ -77,6 +89,13 @@
 #define O_PWM04 (0x04)
 #define O_PWM05 (0x05)
 #define O_PWM_NDEF (0xFF)
+
+#define O_VIRT00 (0x00)
+#define O_VIRT01 (0x01)
+#define O_VIRT02 (0x02)
+
+#define VIRT_VORTRAG (O_VIRT01)
+#define VIRT_VORTRAG_PWM (O_VIRT02)
 
 #define PWM_TAFEL    (O_PWM00)
 #define PWM_BEAMER   (O_PWM01)

@@ -39,20 +39,28 @@ void can_handler()
 			else if (rx_msg->port_dst == 1)
 			{
 				switch (rx_msg->data[0]) {
-					case 0: // switch
-						rx_msg->data[1];
+					case C_SW: // switch // eingangs variable füllen  <<
+						//rx_msg->data[1];
 						
 						break;
-					case 1: // PWM
-						if (rx_msg->data[1] < 6 && rx_msg->data[2] == 0)
-							outputdata.pwmval[rx_msg->data[1]] = rx_msg->data[3];
-						break;
-					case 2: // VIRT
-						switch (rx_msg->data[1]) {
-							case 0:
-								
+					case C_PWM: // PWM F_PWM_SET
+						switch (rx_msg->data[2]) {
+							case F_PWM_SET:
+								if (rx_msg->data[1] < 6)
+									outputdata.pwmval[rx_msg->data[1]] = rx_msg->data[3];
 								break;
-							case 1:
+							case F_PWM_MOD:
+								break;
+							case F_PWM_DIR:
+								break;
+						}
+						break;
+					case C_VIRT: // VIRT
+						switch (rx_msg->data[1]) {
+							case VIRT_VORTRAG:
+								//exec
+								break;
+							case VIRT_VORTRAG_PWM:
 								
 								break;
 						}
@@ -62,7 +70,7 @@ void can_handler()
 		}
 		// sleepmode zustand abfangen
 		if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01) {
-			//rx_msg->data[1];
+			// = rx_msg->data[1];
 		}
 	}
 }
