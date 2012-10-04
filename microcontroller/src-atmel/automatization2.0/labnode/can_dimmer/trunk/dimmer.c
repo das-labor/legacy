@@ -1,8 +1,8 @@
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define NUM_CHANNELS 4
+#include "config.h"
+#include "can_handler.h"
 
 
 /*
@@ -45,7 +45,6 @@ Output3
 */
 
 #define MAX_VAL 550
-
 
 
 //synchronize to zero cross
@@ -150,7 +149,7 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 	//  254        4         0
 	//  255        2         1
 
-	if (channel == 3) bright = (bright>128) ? 255:0;//only allow full or no brighnes for evg on channel 3
+	if (channel == 3) bright = (bright > 128) ? 255:0;//only allow full or no brighnes for evg on channel 3
 
 	uint16_t dimval = 512 - bright * 2;
 	if (bright == 0) dimval = MAX_VAL;
@@ -163,32 +162,32 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 	//the respective channel is stored in channels_sorted.
 	//example:
 	// dim_vals_sorted    channels_sorted
-	//        150                3         
+	//        150                3
 	//        400                1
 	//        500                2
 	//        625                0
 
 	uint8_t x;
 	//remove channel from list
-	for (x = 0; x < NUM_CHANNELS; x++) { 
+	for (x = 0; x < NUM_CHANNELS; x++) {
 		if (channels_sorted[x] == channel) {
-			for (; x<NUM_CHANNELS - 1; x++) {
+			for (; x < NUM_CHANNELS - 1; x++) {
 				channels_sorted[x] = channels_sorted[x+1];
-				dim_vals_sorted[x] = dim_vals_sorted[x+1];				
+				dim_vals_sorted[x] = dim_vals_sorted[x+1];
 			}
 			break;
 		}
 	}
 
-	dim_vals_sorted[NUM_CHANNELS-1] = MAX_VAL+1;
+	dim_vals_sorted[NUM_CHANNELS - 1] = MAX_VAL+1;
 
 	//insert channel into table
-	for (x = 0; x < NUM_CHANNELS; x++) { 
+	for (x = 0; x < NUM_CHANNELS; x++) {
 		if (dimval < dim_vals_sorted[x]) {
 			uint8_t y;
 			for (y = NUM_CHANNELS - 1; y > x; y--) {
-				dim_vals_sorted[y] = dim_vals_sorted[y-1];
-				channels_sorted[y] = channels_sorted[y-1];
+				dim_vals_sorted[y] = dim_vals_sorted[y - 1];
+				channels_sorted[y] = channels_sorted[y - 1];
 			}
 			dim_vals_sorted[x] = dimval;
 			channels_sorted[x] = channel;
@@ -197,3 +196,4 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 	}
 	update_in_progress = 0;
 }
+

@@ -107,17 +107,6 @@ extern void can_handler()
 	}
 }
 
-void can_send(uint8_t port, uint8_t *p)
-{
-	static can_message msg = {0xa9, 0x00, 0x00, 0x01, 1, {0}};
-	uint8_t i;
-	for (i = 0; i < 2; i++)
-		msg.data[i] = p[i];
-	msg.addr_src = myaddr;
-	msg.port_dst = port;
-	can_transmit(&msg);
-}
-
 void read_can_addr()
 {
 	myaddr = eeprom_read_byte(0x00);

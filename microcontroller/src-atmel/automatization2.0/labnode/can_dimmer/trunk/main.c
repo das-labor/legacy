@@ -1,6 +1,3 @@
-/* -*- Mode: C; tab-width: 2 -*- */
-
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -17,11 +14,11 @@
 
 
 ISR(TIMER0_COMP_vect) {
-  PORTD |= _BV(PD5);
+	PORTD |= _BV(PD5);
 }
 
 ISR(TIMER0_OVF_vect) {
-  PORTD &= ~_BV(PD5);
+	PORTD &= ~_BV(PD5);
 }
 
 void init(void)
@@ -32,17 +29,17 @@ void init(void)
 	TCCR0 = _BV(CS02);
 	TIMSK |= _BV(OCIE0) | _BV(TOIE0);
 	OCR0 = 50;
-	
+
 	//initialize spi port
 	spi_init();
-	
+
 	//initialize can communication
 	can_init();
-	
+
 	read_can_addr();
-	wdt_enable(5); // 500ms
+	wdt_enable(WDTO_250MS); // 250 ms
 }
-	 
+
 int main(void)
 {
 	//system initialization
