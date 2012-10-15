@@ -18,10 +18,10 @@ echo
 echo "in 5 seconds. Press CTRL-C to abort..."
 sleep 6
 
-sed 's%start=-30m%start=-8h%'   < $GRAPH-minutes.html > $GRAPH-hours.html
-sed 's%start=-30m%start=-8d%'   < $GRAPH-minutes.html > $GRAPH-days.html
-sed 's%start=-30m%start=-60d%'  < $GRAPH-minutes.html > $GRAPH-weeks.html
-sed 's%start=-30m%start=-400d%' < $GRAPH-minutes.html > $GRAPH-months.html
+sed 's%start=-60m%start=-8h%'   < $GRAPH-minutes.html > $GRAPH-hours.html
+sed 's%start=-60m%start=-8d%'   < $GRAPH-minutes.html > $GRAPH-days.html
+sed 's%start=-60m%start=-60d%'  < $GRAPH-minutes.html > $GRAPH-weeks.html
+sed 's%start=-60m%start=-400d%' < $GRAPH-minutes.html > $GRAPH-months.html
 
 sed -i 's%meta http-equiv="refresh" content="60"%meta http-equiv="refresh" content="600"%'  $GRAPH-hours.html
 sed -i 's%meta http-equiv="refresh" content="60"%meta http-equiv="refresh" content="3600"%' $GRAPH-days.html
