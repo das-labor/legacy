@@ -1,4 +1,4 @@
-﻿/**
+/**
  * \defgroup winsimulator Simulation of the Borg API for the Win32 platform.
  */
 /*@{*/
@@ -442,6 +442,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	HWND hWnd;
 	MSG msg;
 	HANDLE hThread;
+	UINT_PTR uTimerId;
 	
 	/* regster window class (with nice black background!) */
 	if (simRegisterWindowClass(&wc, hInstance))
@@ -460,16 +461,21 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					/* ensure that the display loop stays responsive */
 					SetThreadPriority(hThread, THREAD_PRIORITY_HIGHEST);
 
-					/* issue a timer message every 40 ms (roughly 25 fps) */
+					/* issue a UI timer message every 40 ms (roughly 25 fps) */
 					/* NOTE: this has nothing to do with the multimedia timer */
-					SetTimer(hWnd, 23, 40, NULL);
-
-					/* standard Windows(R) message loop */
-					/* (runs as long as the window hasn't been closed) */
-					while (GetMessageA(&msg, NULL, 0, 0))
+					uTimerId = SetTimer(hWnd, 23, 40, NULL);
+					if (uTimerId != NULL)
 					{
-						TranslateMessage(&msg);
-						DispatchMessageA(&msg);
+						/* standard Windows(R) message loop */
+						/* (runs as long as the window hasn't been closed) */
+						while (GetMessageA(&msg, NULL, 0, 0))
+						{
+							TranslateMessage(&msg);
+							DispatchMessageA(&msg);
+						}
+
+						/* remove that UI timer */
+						KillTimer(hWnd, uTimerId);
 					}
 
 					/* stop the display loop */
