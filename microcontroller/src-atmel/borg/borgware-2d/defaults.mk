@@ -21,7 +21,7 @@ LIBS = -lm
 
 # flags for the compiler
 CFLAGS ?= -Wall -W -Wno-unused-parameter -Wno-sign-compare
-CFLAGS += -g -Os -std=gnu99 -mstrict-X -fgnu89-inline -D_XOPEN_SOURCE=600 -DNDEBUG
+CFLAGS += -g -Os -std=gnu99 -fgnu89-inline -D_XOPEN_SOURCE=600 -DNDEBUG
 
 # flags for the linker
 LDFLAGS += -T ./avr5.x -Wl,-Map,image.map -mmcu=$(MCU)
@@ -39,7 +39,7 @@ ifeq ($(OSTYPE),cygwin)
   LDFLAGS_SIM = -Wl -T simulator/i386pe.x
   LIBS_SIM    = -lgdi32 -lwinmm -lm
 else
-  CFLAGS_SIM  = -g -g -Wall -pedantic -std=c99 -O0 -D_XOPEN_SOURCE=600
+  CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_XOPEN_SOURCE=600
   ifeq ($(MACHINE),x86_64)
     LDFLAGS_SIM = -g -Wl -T simulator/elf_x86_64.x
   else
