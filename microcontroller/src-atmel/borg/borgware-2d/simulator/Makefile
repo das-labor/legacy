@@ -3,7 +3,10 @@ TOPDIR = ..
 
 include $(TOPDIR)/defaults.mk
 
-SRC_SIM = main.c trackball.c util.c eeprom.c
-
+ifeq ($(OSTYPE),cygwin)  
+	SRC_SIM = winmain.c trackball.c eeprom.c
+else
+	SRC_SIM = main.c trackball.c eeprom.c
+endif
 
 include $(TOPDIR)/rules.mk
