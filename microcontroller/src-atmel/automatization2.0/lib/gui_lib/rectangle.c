@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include "rectangle.h"
 
@@ -11,5 +10,3 @@ uint8_t rectangle_contains (rectangle_t r, uint16_t x, uint16_t y) {
 		return 0;
 	}
 }
-
-
