@@ -479,6 +479,7 @@ static void sys_init(void)
 	buspower(1);
 	uart_init();
 	spi_init();
+	wdt_reset();
 	can_init();
 	adc_init();
 	timer0_init();
