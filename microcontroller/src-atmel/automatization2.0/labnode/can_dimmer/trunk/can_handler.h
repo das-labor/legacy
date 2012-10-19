@@ -3,6 +3,8 @@
 
 extern void can_handler();
 
+extern void send_status();
+
 extern void read_can_addr();
 
 extern uint8_t myaddr;

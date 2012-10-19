@@ -13,22 +13,41 @@
 #include "can/lap.h"
 
 
-ISR(TIMER0_COMP_vect) {
-	PORTD |= _BV(PD5);
+static uint16_t time_cnt;
+
+//simple timer counting down
+ISR(TIMER0_OVF_vect) {
+	if(time_cnt)
+			time_cnt--;
+	else
+			TCCR0=0;	//stop counting
 }
 
-ISR(TIMER0_OVF_vect) {
-	PORTD &= ~_BV(PD5);
+void start_counter(uint16_t countdown)
+{
+	TCCR0 = _BV(CS02)|_BV(CS00);	//1:1024 prescaler
+	TCNT0=0;
+	time_cnt=countdown;
+}
+
+uint8_t get_counter_status(void)
+{
+		if(time_cnt)
+			return 1;
+		return 0;
 }
 
 void init(void)
 {
 	DDRB |= _BV(PB0); // LED out
-	DDRD |= _BV(PD5); // 0-10V
+	//DDRD |= _BV(PD5); // EVG: 0-10V
 
-	TCCR0 = _BV(CS02);
-	TIMSK |= _BV(OCIE0) | _BV(TOIE0);
-	OCR0 = 50;
+	TCCR0 = 0; //stop counting
+	//TCCR0 = _BV(CS02)|_BV(CS00);	//1:1024 prescaler
+	TCNT0 =0;
+	TIMSK |= _BV(TOIE0);	//Overflow Interrupt enable
+	OCR0 = 0;
+	time_cnt = 0;
 
 	//initialize spi port
 	spi_init();
@@ -52,12 +71,15 @@ int main(void)
 	PORTC |= (1<<PC4)|(1<<PC5);
 	*/
 	dimmer_init();
-	
-	set_dimmer(0, 255);
-	set_dimmer(1, 255);
-	set_dimmer(2, 255);
-	set_dimmer(3, 255);
 
+	//enable all channels, set maximum brightness
+	set_dimmer(0, 127);
+	set_dimmer(1, 127);
+	set_dimmer(2, 127);
+	set_dimmer(3, 127); //neon tube is inverted
+
+
+	//allow interrupts
 	sei();
 
 	//the main loop continuously handles can messages
