@@ -71,10 +71,10 @@ static gui_element_t *child_at(gui_container_t *s, uint16_t x, uint16_t y) {
 
 	extern void gui_button_draw(gui_element_t *self, uint8_t redraw);
 	extern void gui_container_draw(gui_element_t *self, uint8_t redraw);
-	
+
 	void gui_object_info(gui_element_t *obj) {
 		printf("%08X: draw=%08X sos=%08X th=%08X up=%08X", obj, obj->draw, obj->set_on_screen, obj->touch_handler, obj->update_position);
-		
+
 		if (obj->draw == gui_button_draw) {
 			printf(" type=button");
 		} else if (obj->draw == gui_container_draw) {
@@ -124,7 +124,7 @@ void gui_container_set_on_screen(gui_element_t *self, uint8_t state) {
 
 void gui_container_touch_handler (gui_element_t *self, touch_event_t t) {
 	gui_container_t *s = (gui_container_t*)self;
-	
+
 	gui_element_t *child;
 	if ( (child = child_at(s, t.x, t.y)) != 0) {
 		if (child->touch_handler != 0)

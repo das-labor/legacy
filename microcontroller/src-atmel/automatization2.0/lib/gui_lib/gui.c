@@ -1,5 +1,5 @@
 //
-// This file is part of the gui-library for microcontrollers 
+// This file is part of the gui-library for microcontrollers
 // by Peter Fuhrmann.
 //
 
@@ -16,7 +16,7 @@
 //#include "can/can.h"
 //#include "can/lap.h"
 
-#define TYPE_BUTTON 1 
+#define TYPE_BUTTON 1
 #define TYPE_SLIDER 2
 
 /*
@@ -31,7 +31,7 @@ typedef struct {
 	uint8_t type;
 	uint8_t redraw;
 	void(*touched)(void* self, uint16_t x, uint16_t y);
-	
+
 	//void * self;
 	//void(*touched)(void* self, uint16_t x, uint16_t y);
 	//void(*draw)(void* self, uint16_t x, uint16_t y);
@@ -106,7 +106,7 @@ button_t test_button5={
 	TYPE_BUTTON,
 	0,
 	self_destruct,
-	"Selbstzerstörung",
+	"SelbstzerstÃ¶rung",
 	0
 };
 
@@ -136,19 +136,19 @@ button_t test_button8={
 
 
 menu_item_t * main_menu[] = {
-	(menu_item_t*)&test_button1,	
+	(menu_item_t*)&test_button1,
 	(menu_item_t*)&test_button2,
-	(menu_item_t*)&test_button3,	
-	(menu_item_t*)&test_button4,	
+	(menu_item_t*)&test_button3,
+	(menu_item_t*)&test_button4,
 	(menu_item_t*)&test_button5,
-	(menu_item_t*)&test_button6,	
-	(menu_item_t*)&test_slider1,	
+	(menu_item_t*)&test_button6,
+	(menu_item_t*)&test_slider1,
 	(menu_item_t*)&test_button7,
-	(menu_item_t*)&test_button8,	
+	(menu_item_t*)&test_button8,
 	(menu_item_t*)&test_button1,
-	(menu_item_t*)&test_button1,	
 	(menu_item_t*)&test_button1,
-	(menu_item_t*)&test_button1,	
+	(menu_item_t*)&test_button1,
+	(menu_item_t*)&test_button1,
 	(menu_item_t*)&test_button1,
 	0
 };
@@ -156,7 +156,7 @@ menu_item_t * main_menu[] = {
 
 void self_destruct(void* self, uint16_t x, uint16_t y) {
 	static can_message msg = {0, 0, 1, 1, 4, {0,0,0,0}};
-	
+
 	msg.addr_src = 0xd0;
 	msg.addr_dst = 0x02;
 	msg.data[0] = 0;
@@ -172,7 +172,7 @@ void self_slider(void* self, uint16_t x, uint16_t y) {
 	uint16_t v = ((slider_t *)self)->value;
 	v *= 255;
 	v /= 112;
-	
+
 	msg.addr_src = 0xd0;
 	msg.addr_dst = 0x02;
 	msg.data[0] = 2;
@@ -204,7 +204,7 @@ void draw_slider(slider_t *self, uint16_t x, uint16_t y) {
 	g_fill_rectangle(&b);
 
 	g_set_draw_color(PIXEL_OFF);
-	
+
 	r.w = 12;
 }
 
@@ -241,13 +241,13 @@ void button_touched(button_t * self, uint8_t click) {
 
 void slider_touched(slider_t * self, uint16_t x, uint16_t y, uint8_t click) {
 	uint8_t oldvalue = self->value;
-	
+
 	if (y > 112) y = 112;
 	self->value = 112 - y;
-	
+
 	if (self->value != oldvalue) {
 		self->redraw = 1;
-		
+
 		if (self->touched != 0) {
 			self->touched(self, x, y);
 		}
@@ -298,7 +298,7 @@ void draw_menu(uint8_t force_draw) {
 				case TYPE_BUTTON:
 					draw_button(item, akt_menu[i].x, akt_menu[i].y);
 					break;
-		
+
 				case TYPE_SLIDER:
 					if ((i % 2) == 0) draw_slider(item, akt_menu[i].x, akt_menu[i].y);
 					break;
@@ -315,9 +315,9 @@ void menu_handle_touch(uint16_t x, uint16_t y, uint8_t click) {
 		uint16_t end_x   = (i / 2) * 64 + 16 + 60;
 		uint16_t start_y = (i % 2) * 64 + 10;
 		uint16_t end_y   = (i % 2) * 64 + 10 + 60;
-		
+
 		menu_item_t * item = akt_menu[i].item;
-		
+
 		if ((x >= start_x && x <= end_x)
 		    && (y >= start_y && y <= end_y)) {
 			x -= akt_menu[i].x;

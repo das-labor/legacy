@@ -12,27 +12,27 @@
 //it takes getter and setter funktions for setting the number so instant
 //response to changes is possible.
 typedef struct {
-	void(*draw)(gui_element_t * self, uint8_t redraw);
+	void(*draw)(gui_element_t *self, uint8_t redraw);
 	void(*set_on_screen)(gui_element_t *self, uint8_t state);
 	void(*touch_handler)(gui_element_t *self, touch_event_t t);
 	void(*update_position)(gui_element_t *self, int16_t x_diff, int16_t y_diff); //moves an element and all sub elements.
 	void(*delete)(gui_element_t *self);
 	rectangle_t box;//gui element sets height and width, container sets x and y.
 
-	char * text;
-	icon_t * icon;
+	char *text;
+	icon_t *icon;
 
 	//ref is a user definable reference for use with the set/get functions
-	int (*get)(void * ref);
-	void(*set)(void * ref, int value);
-	void * ref;
+	int (*get)(void *ref);
+	void(*set)(void *ref, int value);
+	void *ref;
 
 } gui_number_widget_t;
 
 
 
-void gui_number_widget_draw (gui_element_t * self, uint8_t redraw) {
-	gui_number_widget_t * s = (gui_number_widget_t*)self;
+void gui_number_widget_draw (gui_element_t *self, uint8_t redraw) {
+	gui_number_widget_t *s = (gui_number_widget_t*)self;
 
 	g_set_draw_color(0);
 
@@ -87,20 +87,20 @@ void gui_number_widget_delete (gui_element_t *self) {
 }
 
 
-void gui_number_widget_update_position(gui_element_t * self, int16_t x_diff, int16_t y_diff) {
+void gui_number_widget_update_position(gui_element_t *self, int16_t x_diff, int16_t y_diff) {
 	self->box.x += x_diff;
 	self->box.y += y_diff;
 }
 
 //constructor
-gui_number_widget_t * new_gui_number_widget() {
-	gui_number_widget_t * s = malloc(sizeof(gui_number_widget_t));
+gui_number_widget_t *new_gui_number_widget() {
+	gui_number_widget_t *s = malloc(sizeof(gui_number_widget_t));
 	s->draw = gui_number_widget_draw;
 	s->set_on_screen = gui_number_widget_set_on_screen;
 	s->touch_handler = gui_number_widget_touch_handler;
 	s->update_position = gui_number_widget_update_position;
 	s->delete = gui_number_widget_delete;
-	s->box = (rectangle_t){0,0,0,0};
+	s->box = (rectangle_t){0, 0, 0, 0};
 	s->icon = 0;
 	s->state = 0;
 	return b;

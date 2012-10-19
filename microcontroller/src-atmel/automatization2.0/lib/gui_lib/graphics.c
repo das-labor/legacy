@@ -143,7 +143,7 @@ void g_draw_char(char ch) {
 	for (;s < e; s += bytes) {
 		i = 0; b = 0;
 		do {
-			if ((i%8) == 0)
+			if ((i % 8) == 0)
 				d = PB(draw_font->fontData[s + b++]);
 			if (d & 0x01) {
 				g_draw_pixel(text_x, text_y + i);
@@ -182,7 +182,7 @@ void g_draw_char_vert(char ch) {
 			d >>= 1;
 		}
 		if (bytes > 1) {
-			d = PB(draw_font->fontData[s+1]);
+			d = PB(draw_font->fontData[s + 1]);
 			for (i = 8; i < h; i++) {
 				if (d & 0x01) {
 					g_draw_pixel(text_x + i, text_y);
@@ -321,7 +321,7 @@ void g_draw_cross(uint16_t x, uint16_t y) {
 }
 
 
-void g_draw_icon(uint16_t x, uint16_t y, icon_t * i) {
+void g_draw_icon(uint16_t x, uint16_t y, icon_t *i) {
 	uint16_t w;
 	uint16_t h;
 
