@@ -272,9 +272,11 @@ void can_init()
 	can_error = 0;
 #endif	
 	
+	_delay_ms(10);
+	
 	mcp_reset();
 	
-	_delay_ms(1);
+	_delay_ms(10);
 	
 	mcp_write(BFPCTRL, 0x0C);//RXBF Pins to Output
 	
