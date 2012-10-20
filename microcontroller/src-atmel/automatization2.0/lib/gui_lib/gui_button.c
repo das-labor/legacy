@@ -98,6 +98,7 @@ gui_button_t *new_gui_button() {
 	b->delete = gui_button_delete;
 	b->box = (rectangle_t){0, 0, 0, 0};
 	b->icon = 0;
+	b->text = 0;
 	b->state = 0;
 	b->click_handler = 0;
 	b->frame_size = 0x80;

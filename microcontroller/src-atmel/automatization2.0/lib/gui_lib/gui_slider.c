@@ -12,16 +12,27 @@
 
 static rectangle_t calculate_slider_rectangle(gui_slider_t *s) {
 	rectangle_t r;
+	int range_size;
 
-	int range_size = s->range_rectangle.h - SLIDER_SIZE;
+	if (s->orientation)
+		range_size = s->range_rectangle.w - SLIDER_SIZE;
+	else
+		range_size = s->range_rectangle.h - SLIDER_SIZE;
 
 	int pos = (s->value - s->min_value) * range_size / (s->max_value - s->min_value);
 
-	r.y = s->range_rectangle.y + s->range_rectangle.h - SLIDER_SIZE - pos;
-	r.x = s->range_rectangle.x;
-	r.w = s->range_rectangle.w;
-	r.h = SLIDER_SIZE;
-
+	if (s->orientation) {
+		r.y = s->range_rectangle.y;
+		r.x = s->range_rectangle.x + pos;
+		r.w = SLIDER_SIZE;
+		r.h = s->range_rectangle.h;
+	}
+	else {
+		r.y = s->range_rectangle.y + s->range_rectangle.h - SLIDER_SIZE - pos;
+		r.x = s->range_rectangle.x;
+		r.w = s->range_rectangle.w;
+		r.h = SLIDER_SIZE;
+	}
 	return r;
 }
 
@@ -71,10 +82,18 @@ void gui_slider_draw(gui_element_t *self, uint8_t redraw) {
 
 	text_height = g_get_last_text_height();
 
-	r.y += text_height + 2;
-	r.h -= text_height + 4;
-	r.x += 2;
-	r.w -= 4;
+	if (s->orientation) {
+		uint8_t strwidth = get_string_width("000");
+		r.y += 2;
+		r.h -= 4;
+		r.x += strwidth + 2;
+		r.w -= strwidth + 4;
+	} else {
+		r.y += text_height + 2;
+		r.h -= text_height + 4;
+		r.x += 2;
+		r.w -= 4;
+	}
 
 	s->range_rectangle = r;
 	g_draw_rectangle(&r);
@@ -113,8 +132,14 @@ void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
 	last_touched_gui_element = self;
 
 	if (!(t.flags & TOUCH_FLAG_UP)) {
-		int range_size = s->range_rectangle.h - SLIDER_SIZE;
-		int offset = s->range_rectangle.y + s->range_rectangle.h - 2 - t.y;
+		int range_size, offset;
+		if (s->orientation) {
+			range_size = s->range_rectangle.w - SLIDER_SIZE;
+			offset = t.x - s->range_rectangle.x - 2;
+		} else {
+			range_size = s->range_rectangle.h - SLIDER_SIZE;
+			offset = s->range_rectangle.y + s->range_rectangle.h - 2 - t.y;
+		}
 		int val = s->min_value + (uint32_t)(s->max_value - s->min_value) * offset / range_size;
 
 		gui_slider_set_value(s, val);
@@ -146,6 +171,6 @@ gui_slider_t *new_gui_slider() {
 	b->box = (rectangle_t){0, 0, 0, 0};
 	b->icon = 0;
 	b->value_changed = 0;
+	b->orientation = 0; // vertical - default
 	return b;
 }
-
