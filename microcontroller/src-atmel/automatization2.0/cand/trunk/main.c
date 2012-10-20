@@ -69,16 +69,16 @@ usb_dev_handle *udhandle = NULL;
 static char *optstring = "hdv::S:U:p:l:s:D:";
 struct option longopts[] =
 {
-  { "help", no_argument, NULL, 'h' },
-  { "daemon", no_argument, NULL, 'd' },
-  { "verbose", optional_argument, NULL, 'v' },
-  { "serial", required_argument, NULL, 'S' },
-  { "usb", required_argument, NULL, 'U' },
-  { "port", required_argument, NULL, 'p' },
-  { "logfile", required_argument, NULL, 'l'},
-  { "scriptfile", required_argument, NULL, 's'},
-  { "debugfile", optional_argument, NULL, 'D'},
-  { NULL, 0, NULL, 0 }
+	{ "help", no_argument, NULL, 'h' },
+	{ "daemon", no_argument, NULL, 'd' },
+	{ "verbose", optional_argument, NULL, 'v' },
+	{ "serial", required_argument, NULL, 'S' },
+	{ "usb", required_argument, NULL, 'U' },
+	{ "port", required_argument, NULL, 'p' },
+	{ "logfile", required_argument, NULL, 'l'},
+	{ "scriptfile", required_argument, NULL, 's'},
+	{ "debugfile", optional_argument, NULL, 'D'},
+	{ NULL, 0, NULL, 0 }
 };
 
 void help()
@@ -103,9 +103,11 @@ void hexdump(unsigned char * addr, int size)
 	unsigned char x = 0;
 
 	printf( "Size: %d\n", size);
-	while (size--) {
+	while (size--)
+	{
 		printf("%02x ", *addr++);
-		if (++x == 16) {
+		if (++x == 16)
+		{
 			printf("\n");
 			x = 0;
 		}
@@ -270,7 +272,7 @@ void customscripts(rs232can_msg *msg)
 void msg_to_clients(rs232can_msg *msg)
 {
 	cann_conn_t *ac;
-	if(msg->cmd == RS232CAN_PKT)
+	if (msg->cmd == RS232CAN_PKT)
 		customscripts(msg);
 
 	// foreach client
@@ -306,7 +308,7 @@ void process_msg(rs232can_msg *msg)
 {
 	char buf[sizeof(RESETCAUSE_PORF_STR) + sizeof(RESETCAUSE_EXTRF_STR) + sizeof(RESETCAUSE_BORF_STR) + sizeof(RESETCAUSE_WDRF_STR)];
 	
-	switch(msg->cmd)
+	switch (msg->cmd)
 	{
 		case RS232CAN_PKT:
 			msg_to_clients(msg);
@@ -369,11 +371,11 @@ void process_uart_msg()
 }
 
 
-void canusb_transmit(rs232can_msg * msg){
+void canusb_transmit(rs232can_msg * msg)
+{
 	int r = usb_control_msg (udhandle,
-            USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-            0x18, 0, 0, (char *)msg, msg->len + 2,
-            100);
+		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
+		0x18, 0, 0, (char *)msg, msg->len + 2, 100);
 
 }
 
@@ -385,14 +387,16 @@ void process_client_msg( cann_conn_t *client )
 	debug( 10, "Activity on client %d", client->fd );
 
 	rs232can_msg *msg = cann_get_nb(client);	//get message from network
-	if(!msg) return;
+	if (!msg)
+		return;
 
 	debug(3, "Processing message from network..." );
-	if (debug_level >= 3) hexdump((void *)msg, msg->len + 2);
+	if (debug_level >= 3)
+		hexdump((void *)msg, msg->len + 2);
 
 	customscripts(msg);
 
-	switch(msg->cmd) {
+	switch (msg->cmd) {
 		case RS232CAN_SETFILTER:
 		case RS232CAN_SETMODE:
 			/* XXX */
@@ -425,7 +429,7 @@ void process_client_msg( cann_conn_t *client )
 			break;
 		default:
 			if (serial) canu_transmit(msg);		//send to client on the can
-			if (usb_parm) canusb_transmit(msg); //same via usb
+			if (usb_parm) canusb_transmit(msg);	//same via usb
 			break;
 	}
 	cann_free(msg);
@@ -437,36 +441,35 @@ void new_client( cann_conn_t *client )
 	// XXX
 }
 
-int poll_usb(){
+int poll_usb()
+{
 	debug( 9, "IN POLL_USB" );
 	char packetBuffer[1000];
- 	
- 	int r;
- 	
-	 
-	 r = usb_control_msg (udhandle,
-            USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-            0x17, 0, 0, (char *)packetBuffer, 1000,
-            100);
+
+	int r;
 
 
-	if(r > 0){
+	r = usb_control_msg (udhandle,
+	    USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
+	    0x17, 0, 0, (char *)packetBuffer, 1000, 100);
+
+
+	if (r > 0) {
 		debug( 8, "RECEIVED DATA FROM USB" );
 		
 		if(debug_level >= 8){
 			hexdump(packetBuffer, r);
 		}
-				
+
 		int p = 0;
-		
-		
-	
-		while ( (p < r) && ((p+packetBuffer[p+1]+2) <= r) ){
+
+
+		while ( (p < r) && ((p+packetBuffer[p+1]+2) <= r) ) {
 			debug(11, "p=%x\n", p);
 			process_msg((rs232can_msg *) &packetBuffer[p]);
-			
+
 			p += packetBuffer[p+1] + 2;
-		}	
+		}
 	}
 	return 0;
 }
@@ -488,24 +491,24 @@ void event_loop()
 			highfd = uart_fd;
 			FD_SET(uart_fd, &rset);
 		};
-		
+
 		//add network connections to rset
 		highfd = max(highfd, cann_fdset(&rset));
 
 
 		debug( 9, "VOR SELECT" );
 		cann_dumpconn();
-		
+
 		do
 		{
 			rset_tmp = rset;
-			
+
 			//handle usb
 			if(usb_parm)
 			{
 				poll_usb();
 			}
-			
+
 			//wait for activity on file descriptors with timeout
 			if( ret = select(highfd+1, &rset_tmp, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0)
 				//print debug info
@@ -561,7 +564,7 @@ unsigned int running = 0;
 
 void shutdown_all()
 {
-	if(running)
+	if (running)
 	{
 		cann_close_errors();
 		cann_close(NULL);
@@ -611,7 +614,7 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 	);
 
 	fprintf(debugFP, "General Registers:\n");
-	for(i = 0; i < 19; i++)
+	for (i = 0; i < 19; i++)
 		fprintf(debugFP, "\t%7s: 0x%x\n", gregs[i], context->uc_mcontext.gregs[i]);
 	/*fprintf(debugFP, "\tOLDMASK: 0x%lx\n", context->uc_mcontext.oldmask);
 	fprintf(debugFP, "\t    CR2: 0x%lx\n", context->uc_mcontext.cr2);*/
@@ -648,25 +651,25 @@ int main(int argc, char *argv[])
 	struct sigaction sa;
 
 	sa.sa_flags = SA_SIGINFO;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_sigaction = signal_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_sigaction = signal_handler;
 
 	//register various quit signals
 	if (sigaction(SIGINT, &sa, NULL) == -1)
-        QUIT_EARLY("failed to register SIGINT handler");
+		QUIT_EARLY("failed to register SIGINT handler");
 	if (sigaction(SIGTERM, &sa, NULL) == -1)
-        QUIT_EARLY("failed to register SIGTERM handler");
+		QUIT_EARLY("failed to register SIGTERM handler");
 	if (sigaction(SIGQUIT, &sa, NULL) == -1)
-        QUIT_EARLY("failed to register SIGQUIT handler");
+		QUIT_EARLY("failed to register SIGQUIT handler");
 
-    //register segfault handler
-    sa.sa_sigaction = handle_segv;
-    if (sigaction(SIGSEGV, &sa, NULL) == -1)
-        QUIT_EARLY("failed to register SIGSEGV handler");
+	//register segfault handler
+	sa.sa_sigaction = handle_segv;
+	if (sigaction(SIGSEGV, &sa, NULL) == -1)
+		QUIT_EARLY("failed to register SIGSEGV handler");
 
 	progname = argv[0];
-	
-	while ((optc=getopt_long(argc, argv, optstring, longopts, (int *)0)) != EOF)
+
+	while ((optc = getopt_long(argc, argv, optstring, longopts, (int *)0)) != EOF)
 	{
 		switch (optc)
 		{
@@ -716,12 +719,12 @@ int main(int argc, char *argv[])
 		canu_init(serial);
 		debug(1, "Serial CAN communication established" );
 	}
-	
+
 	if (usb_parm) {
 		//////////HACKHACK FOR MULTIPLE DEVICES
 		int vid, pid;
 		unsigned tmp = 0;
-	
+
 		const unsigned char rawVid[2] =
 		{
 			USB_CFG_VENDOR_ID
@@ -730,30 +733,30 @@ int main(int argc, char *argv[])
 		{
 			USB_CFG_DEVICE_ID
 		};
-	
+
 		vid = rawVid[1] * 256 + rawVid[0];
 		pid = rawPid[1] * 256 + rawPid[0];
-	
+
 		usb_init();
-	
-	    int devcnt = usbCountDevices(vid, pid);
-	    printf("Found %i devices..\n", devcnt);
-	
+
+		int devcnt = usbCountDevices(vid, pid);
+		printf("Found %i devices..\n", devcnt);
+
 		debug_assert( devcnt != 0, "Can't find RfmUSB Device\r\n" );
 	
-	    struct usb_device **devices = malloc(sizeof(void *) * devcnt);
-	    usbListDevices(devices, vid, pid);
-	
-	    if(devcnt > 1)
-	    {
-	        printf("Which device (num)? ");
-	        scanf("%u", &tmp);
-	        fflush(stdin);
-	    }
-	
-	    udhandle = usb_open(devices[tmp]);
-	
-	    ///////////////////HACK END
+		struct usb_device **devices = malloc(sizeof(void *) * devcnt);
+		usbListDevices(devices, vid, pid);
+
+		if (devcnt > 1)
+		{
+			printf("Which device (num)? ");
+			scanf("%u", &tmp);
+			fflush(stdin);
+		}
+
+		udhandle = usb_open(devices[tmp]);
+
+		///////////////////HACK END
 	}
 
 
