@@ -55,8 +55,11 @@ LPCSTR g_strWindowClass = "BorgSimulatorWindowClass";
 LPCSTR g_strWindowTitle = "Borg Simulator";
 
 LPCSTR g_strError = "Error";
-LPCSTR g_strErrorRegisterWindow = "Error: Could not register window class.";
-LPCSTR g_strErrorCreateWindow = "Error: Could not create window.";
+LPCSTR g_strErrorRegisterWindow = "Could not register window class.";
+LPCSTR g_strErrorCreateWindow   = "Could not create window.";
+LPCSTR g_strErrorCreateEvent    = "Could not create wait event.";
+LPCSTR g_strErrorCreateThread   = "Could not create display loop thread.";
+LPCSTR g_strErrorCreateUITimer  = "Could not create UI Timer.";
 
 
 /** Event object for the multimedia timer (wait() function). */
@@ -114,21 +117,27 @@ BOOL simCreateWindow(HWND *lphWnd,
                      HINSTANCE hInstance,
                      int nCmdShow)
 {
+	BOOL bSuccess = FALSE;
+
+	/* ensure that the client area has the right proportions */
+	RECT rectMin = {0, 0, WND_X_EXTENTS *  1.5 - 1, WND_Y_EXTENTS * 1.5 - 1};
+	AdjustWindowRect(&rectMin, WS_OVERLAPPEDWINDOW & ~(WS_OVERLAPPED), FALSE);
+
 	/* create window and retrieve its handle */
 	*lphWnd = CreateWindow(g_strWindowClass, g_strWindowTitle,
 		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-		WND_X_EXTENTS * 2, WND_Y_EXTENTS * 2, HWND_DESKTOP,
-		NULL, hInstance, NULL);
+		rectMin.right - rectMin.left, rectMin.bottom - rectMin.top,
+		HWND_DESKTOP, NULL, hInstance, NULL);
 
-	/* mske it visible */
+	/* make it visible */
 	if (*lphWnd != NULL)
 	{
 		ShowWindow(*lphWnd, nCmdShow);
 		UpdateWindow(*lphWnd);
-		return TRUE;
+		bSuccess = TRUE;
 	}
 
-	return FALSE;
+	return bSuccess;
 }
 
 
@@ -201,8 +210,8 @@ void simDisplay(HWND hWnd)
 	/* retrieve window dimensions */
 	if (GetClientRect(hWnd, &rect))
 	{
-		int const cx = rect.right - rect.left;
-		int const cy = rect.bottom - rect.top;
+		int const cx = rect.right;
+		int const cy = rect.bottom;
 
 		/* retrieve device context */
 		if ((hdc = GetDC(hWnd)) != NULL)
@@ -225,7 +234,7 @@ void simDisplay(HWND hWnd)
 				hBmp = CreateCompatibleBitmap(hdc, cx, cy);
 				if (hBmp != NULL)
 				{
-					/* ...and selct that into that DC */
+					/* ...and select that into that DC */
 					hOldBmp = (HBITMAP)SelectObject(hMemDc, hBmp);
 
 					/* finally *sigh* draw the LED matrix */
@@ -257,17 +266,30 @@ LRESULT CALLBACK simWndProc(HWND hWnd,
                             WPARAM wParam,
                             LPARAM lParam)
 {
+	LRESULT lResult = 0;
 	PAINTSTRUCT ps;
 	HDC hdc;
 	LPMINMAXINFO lpminmax;
+
+	/* minimum size of the window's client area */
+	RECT rectMin = {0, 0, WND_X_EXTENTS - 1, WND_Y_EXTENTS - 1};
 
 	switch (msg)
 	{
 	/* enforce minimum window size */
 	case WM_GETMINMAXINFO:
+		/* minimum size applies to client area */
+		AdjustWindowRect(&rectMin, GetWindowLongA(hWnd, GWL_STYLE),
+				GetMenu(hWnd) != NULL);
+
+		/* actually set minimum and maximum size */
 		lpminmax = (LPMINMAXINFO)lParam;
-		lpminmax->ptMinTrackSize.x = WND_X_EXTENTS * 2;
-		lpminmax->ptMinTrackSize.y = WND_Y_EXTENTS * 2;
+		lpminmax->ptMinTrackSize.x = rectMin.right - rectMin.left;
+		lpminmax->ptMinTrackSize.y = rectMin.bottom - rectMin.top;
+		lpminmax->ptMaxTrackSize.x = GetSystemMetrics(SM_CXMAXTRACK);
+		lpminmax->ptMaxTrackSize.y = GetSystemMetrics(SM_CYMAXTRACK);
+		lpminmax->ptMaxSize.x = GetSystemMetrics(SM_CXMAXTRACK);
+		lpminmax->ptMaxSize.y = GetSystemMetrics(SM_CYMAXTRACK);
 		break;
 
 	/* paint window contents */
@@ -310,7 +332,7 @@ LRESULT CALLBACK simWndProc(HWND hWnd,
 			break;
 
 		default:
-			return DefWindowProcA(hWnd, msg, wParam, lParam);
+			lResult = DefWindowProcA(hWnd, msg, wParam, lParam);
 			break;
 		}
 		break;
@@ -340,7 +362,7 @@ LRESULT CALLBACK simWndProc(HWND hWnd,
 			break;
 
 		default:
-			return DefWindowProcA(hWnd, msg, wParam, lParam);
+			lResult = DefWindowProcA(hWnd, msg, wParam, lParam);
 			break;
 		}
 		break;
@@ -348,6 +370,7 @@ LRESULT CALLBACK simWndProc(HWND hWnd,
 	/* refresh the LED matrix every 40 ms */
 	case WM_TIMER:
 		simDisplay(hWnd);
+		UpdateWindow(hWnd);
 		break;
 
 	/* quit application */
@@ -357,11 +380,11 @@ LRESULT CALLBACK simWndProc(HWND hWnd,
 
 	/* Windows' default handler */
 	default:
-		return DefWindowProcA(hWnd, msg, wParam, lParam);
+		lResult = DefWindowProcA(hWnd, msg, wParam, lParam);
 		break;
 	}
 
-	return 0;
+	return lResult;
 }
 
 
@@ -391,8 +414,10 @@ void wait(int ms)
 	UINT uResolution;
 
 	/* check if fire button is pressed (and if it is, jump to the menu) */
-	if (waitForFire) {
-		if (fakeport & 0x01) {
+	if (waitForFire)
+	{
+		if (fakeport & 0x01)
+		{
 			longjmp(newmode_jmpbuf, 43);
 		}
 	}
@@ -407,12 +432,13 @@ void wait(int ms)
 		if (mmresult == TIMERR_NOERROR)
 		{
 			/* actually retrieve a multimedia timer */
-			mmTimerEventId = timeSetEvent(ms, uResolution, g_hWaitEvent, NULL,
-				TIME_ONESHOT | TIME_CALLBACK_EVENT_PULSE);
-			if (mmTimerEventId != NULL)
+			mmTimerEventId = timeSetEvent(ms, uResolution, g_hWaitEvent, 0,
+					TIME_ONESHOT | TIME_CALLBACK_EVENT_SET);
+			if (mmTimerEventId != 0)
 			{
 				/* now halt until that timer pulses our wait event object */
 				WaitForSingleObject(g_hWaitEvent, INFINITE);
+				ResetEvent(g_hWaitEvent);
 
 				/* relieve the timer from its duties */
 				timeKillEvent(mmTimerEventId);
@@ -441,58 +467,79 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	WNDCLASS wc;
 	HWND hWnd;
 	MSG msg;
-	HANDLE hThread;
+	HANDLE hLoopThread;
 	UINT_PTR uTimerId;
+	int nExitCode = 0;
 	
-	/* regster window class (with nice black background!) */
+	/* register window class (with nice black background!) and create window */
 	if (simRegisterWindowClass(&wc, hInstance))
 	{
-		/* actually create the window and make it visible */
 		if (simCreateWindow(&hWnd, hInstance, nCmdShow))
 		{
 			/* event handle for multimedia timer (for the wait() function) */
-			g_hWaitEvent = CreateEventA(NULL, FALSE, FALSE, "Local\\WaitEvent");
+			g_hWaitEvent = CreateEventA(NULL, TRUE, FALSE, "Local\\WaitEvent");
 			if (g_hWaitEvent != NULL)
 			{
 				/* start the display loop thread */
-				hThread = CreateThread(NULL, 0, simLoop, NULL, 0, NULL);
-				if (hThread != NULL)
+				hLoopThread = CreateThread(NULL, 0, simLoop, NULL, 0, NULL);
+				if (hLoopThread != NULL)
 				{
-					/* ensure that the display loop stays responsive */
-					SetThreadPriority(hThread, THREAD_PRIORITY_HIGHEST);
+					SetThreadPriority(hLoopThread, THREAD_PRIORITY_HIGHEST);
 
 					/* issue a UI timer message every 40 ms (roughly 25 fps) */
-					/* NOTE: this has nothing to do with the multimedia timer */
 					uTimerId = SetTimer(hWnd, 23, 40, NULL);
-					if (uTimerId != NULL)
+					if (uTimerId != 0)
 					{
 						/* standard Windows(R) message loop */
-						/* (runs as long as the window hasn't been closed) */
 						while (GetMessageA(&msg, NULL, 0, 0))
 						{
 							TranslateMessage(&msg);
 							DispatchMessageA(&msg);
 						}
+						nExitCode = msg.wParam;
 
-						/* remove that UI timer */
 						KillTimer(hWnd, uTimerId);
 					}
+					else
+					{
+						MessageBoxA(HWND_DESKTOP, g_strErrorCreateUITimer,
+								g_strError, MB_OK | MB_ICONERROR);
+					}
 
-					/* stop the display loop */
-					TerminateThread(hThread, 0);
+					TerminateThread(hLoopThread, 0);
+				}
+				else
+				{
+					MessageBoxA(HWND_DESKTOP, g_strErrorCreateThread,
+							g_strError, MB_OK | MB_ICONERROR);
 				}
 
 				/* relieve wait event object from its duties */
 				CloseHandle(g_hWaitEvent);
 			}
+			else
+			{
+				MessageBoxA(HWND_DESKTOP, g_strErrorCreateEvent,
+						g_strError,  MB_OK | MB_ICONERROR);
+			}
 
-			return msg.wParam;
+			DestroyWindow(hWnd);
 		}
-		MessageBoxA(HWND_DESKTOP, g_strErrorCreateWindow, g_strError, MB_OK);
-	}
-	MessageBoxA(HWND_DESKTOP, g_strErrorRegisterWindow, g_strError, MB_OK);
+		else
+		{
+			MessageBoxA(HWND_DESKTOP, g_strErrorCreateWindow,
+					g_strError,  MB_OK | MB_ICONERROR);
+		}
 
-	return 0;
+		UnregisterClassA(g_strWindowClass, hInstance);
+	}
+	else
+	{
+		MessageBoxA(HWND_DESKTOP, g_strErrorRegisterWindow,
+				g_strError, MB_OK | MB_ICONERROR);
+	}
+
+	return nExitCode;
 }
 
 /*@}*/
