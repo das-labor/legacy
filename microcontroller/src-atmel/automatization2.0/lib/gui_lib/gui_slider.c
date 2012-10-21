@@ -14,14 +14,14 @@ static rectangle_t calculate_slider_rectangle(gui_slider_t *s) {
 	rectangle_t r;
 	int range_size;
 
-	if (s->orientation)
+	if (!s->orientation)
 		range_size = s->range_rectangle.w - SLIDER_SIZE;
 	else
 		range_size = s->range_rectangle.h - SLIDER_SIZE;
 
 	int pos = (s->value - s->min_value) * range_size / (s->max_value - s->min_value);
 
-	if (s->orientation) {
+	if (!s->orientation) {
 		r.y = s->range_rectangle.y;
 		r.x = s->range_rectangle.x + pos;
 		r.w = SLIDER_SIZE;
@@ -82,7 +82,7 @@ void gui_slider_draw(gui_element_t *self, uint8_t redraw) {
 
 	text_height = g_get_last_text_height();
 
-	if (s->orientation) {
+	if (!s->orientation) {
 		uint8_t strwidth = get_string_width("000");
 		r.y += 2;
 		r.h -= 4;
@@ -133,9 +133,9 @@ void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
 
 	if (!(t.flags & TOUCH_FLAG_UP)) {
 		int range_size, offset;
-		if (s->orientation) {
+		if (!s->orientation) {
 			range_size = s->range_rectangle.w - SLIDER_SIZE;
-			offset = t.x - s->range_rectangle.x - 2;
+			offset = t.x - s->range_rectangle.x;
 		} else {
 			range_size = s->range_rectangle.h - SLIDER_SIZE;
 			offset = s->range_rectangle.y + s->range_rectangle.h - 2 - t.y;
