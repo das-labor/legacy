@@ -110,7 +110,7 @@ Commands:\n\n" );
  */
 int main(int argc, char *argv[])
 {
-	int tcpport  = 2342;         // TCP Port
+	char *tcpport  = "2342";         // TCP Port
 	char *server = "localhost";
 	char *serial = NULL;
 	int optc;
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 				server = optarg;
 				break;
 			case 'p':
-				tcpport = atoi(optarg);
+				tcpport = optarg;
 				break;
 			case 'h':
 				help();
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
 				canu_init(serial);
 				can_init(NULL);		// use serial
 			} else {
-				debug(1, "Trying to establish CAN communication via cand (%s:%d)", server, tcpport);
+				debug(1, "Trying to establish CAN communication via cand (%s:%s)", server, tcpport);
 				conn = cann_connect(server, tcpport);
 				can_init(conn);		// use specified connection to cand
 			}
