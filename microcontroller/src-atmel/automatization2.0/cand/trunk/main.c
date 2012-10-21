@@ -504,13 +504,13 @@ void event_loop()
 			rset_tmp = rset;
 
 			//handle usb
-			if(usb_parm)
+			if (usb_parm)
 			{
 				poll_usb();
 			}
 
 			//wait for activity on file descriptors with timeout
-			if( ret = select(highfd+1, &rset_tmp, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0)
+			if( ret = select(highfd + 1, &rset_tmp, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0)
 				//print debug info
 				switch(errno)
 				{
@@ -523,8 +523,8 @@ void event_loop()
 						debug_perror(0, "select: help, it's all broken, giving up!");
 						return;
 				}
-		} while(ret == 0);
-		debug( 10, "Select returned %d", ret);
+		} while (ret == 0);
+		debug(10, "Select returned %d", ret);
 
 		// check activity on uart_fd
 		if (serial && FD_ISSET(uart_fd, &rset_tmp))
@@ -583,7 +583,7 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 	int i;
 
 	debug_time = 1;
-	if(debugFP == NULL)
+	if (debugFP == NULL)
 		debugFP = stderr;
 	debug(0, "Got SIGSEGV at address: 0x%lx",(long) info->si_addr);
 
@@ -646,7 +646,7 @@ static void signal_handler(int sig, siginfo_t *si, void *unused)
 int main(int argc, char *argv[])
 {
 	int d = 0;                   // daemon
-	int tcpport  = 2342;         // TCP Port
+	char *tcpport  = "2342";         // TCP Port
 	int optc;
 	struct sigaction sa;
 
@@ -689,7 +689,7 @@ int main(int argc, char *argv[])
 				usb_parm = optarg;
 				break;
 			case 'p':
-				tcpport = atoi(optarg);
+				tcpport = optarg;
 				break;
 			case 'h':
 				help();
@@ -762,7 +762,7 @@ int main(int argc, char *argv[])
 
 	// setup network socket
 	cann_listen(tcpport);
-	debug(1, "Listenig for network connections on port %d", tcpport );
+	debug(1, "Listenig for network connections on port %s", tcpport );
 
 	running = 1;
 	atexit(shutdown_all);
