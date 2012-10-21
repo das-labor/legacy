@@ -4,15 +4,14 @@
 #include <string.h>
 #include <getopt.h>
 #include <sys/select.h>
+#include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <ucontext.h>
-#include <unistd.h>
+#include <linux/limits.h>
 #include <time.h>
 #include <locale.h>
 #include <langinfo.h>
 #include <signal.h>
-#include <unistd.h>
 #include <errno.h>
 #include <usb.h>
 
@@ -125,7 +124,7 @@ void customscripts(rs232can_msg *msg)
 	char as_args[9][5];
 	struct tm *tm;
 
-	int result;
+	int result, status;
 
 	uint8_t i;
 
@@ -233,7 +232,7 @@ void customscripts(rs232can_msg *msg)
 					// double fork a client to exec the command right under init
 					if (vfork())
 					{
-						wait();// dump
+						wait(&status);// dump
 					}
 					else
 					{
@@ -371,7 +370,7 @@ void process_uart_msg()
 }
 
 
-void canusb_transmit(rs232can_msg * msg)
+void canusb_transmit(rs232can_msg *msg)
 {
 	int r = usb_control_msg (udhandle,
 		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
@@ -380,10 +379,8 @@ void canusb_transmit(rs232can_msg * msg)
 }
 
 
-void process_client_msg( cann_conn_t *client )
+void process_client_msg(cann_conn_t *client)
 {
-	cann_conn_t *ac;
-
 	debug( 10, "Activity on client %d", client->fd );
 
 	rs232can_msg *msg = cann_get_nb(client);	//get message from network
@@ -510,9 +507,9 @@ void event_loop()
 			}
 
 			//wait for activity on file descriptors with timeout
-			if( ret = select(highfd + 1, &rset_tmp, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0)
+			if (ret = select(highfd + 1, &rset_tmp, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0)
 				//print debug info
-				switch(errno)
+				switch (errno)
 				{
 					case EBADF:
 						debug_perror(1, "select: bad descriptor ");
@@ -616,8 +613,8 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 	fprintf(debugFP, "General Registers:\n");
 	for (i = 0; i < 19; i++)
 		fprintf(debugFP, "\t%7s: 0x%x\n", gregs[i], context->uc_mcontext.gregs[i]);
-	/*fprintf(debugFP, "\tOLDMASK: 0x%lx\n", context->uc_mcontext.oldmask);
-	fprintf(debugFP, "\t    CR2: 0x%lx\n", context->uc_mcontext.cr2);*/
+	//fprintf(debugFP, "\tOLDMASK: 0x%lx\n", context->uc_mcontext.oldmask);
+	//fprintf(debugFP, "\t    CR2: 0x%lx\n", context->uc_mcontext.cr2);
 
 	exit(EXIT_FAILURE);
 }
@@ -645,11 +642,11 @@ static void signal_handler(int sig, siginfo_t *si, void *unused)
 
 int main(int argc, char *argv[])
 {
-	int d = 0;                   // daemon
 	char *tcpport  = "2342";         // TCP Port
 	int optc;
 	struct sigaction sa;
 
+	memset(&sa, 0, sizeof(sa));
 	sa.sa_flags = SA_SIGINFO;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_sigaction = signal_handler;
@@ -678,9 +675,6 @@ int main(int argc, char *argv[])
 					debug_level = atoi(optarg);
 				else
 					debug_level = 0;
-				break;
-			case 'd':
-				d = 1;
 				break;
 			case 'S':
 				serial = optarg;
@@ -762,7 +756,7 @@ int main(int argc, char *argv[])
 
 	// setup network socket
 	cann_listen(tcpport);
-	debug(1, "Listenig for network connections on port %s", tcpport );
+	debug(1, "Listenig for network connections on port %s", tcpport);
 
 	running = 1;
 	atexit(shutdown_all);
