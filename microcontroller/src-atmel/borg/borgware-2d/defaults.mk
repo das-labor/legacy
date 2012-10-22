@@ -41,9 +41,9 @@ ifeq ($(OSTYPE),cygwin)
 else
   CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_XOPEN_SOURCE=600
   ifeq ($(MACHINE),x86_64)
-    LDFLAGS_SIM = -g -Wl -T simulator/elf_x86_64.x
+    LDFLAGS_SIM = -g -T simulator/elf_x86_64.x
   else
-    LDFLAGS_SIM = -Wl -T simulator/elf_i386.x
+    LDFLAGS_SIM = -T simulator/elf_i386.x
   endif
   LIBS_SIM    = -lglut -lpthread -lGL -lGLU -lm
 endif
