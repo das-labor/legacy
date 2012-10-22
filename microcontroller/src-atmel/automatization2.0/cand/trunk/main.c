@@ -69,7 +69,6 @@ static char *optstring = "hdv::S:U:p:l:s:D:";
 struct option longopts[] =
 {
 	{ "help", no_argument, NULL, 'h' },
-	{ "daemon", no_argument, NULL, 'd' },
 	{ "verbose", optional_argument, NULL, 'v' },
 	{ "serial", required_argument, NULL, 'S' },
 	{ "usb", required_argument, NULL, 'U' },
@@ -86,7 +85,6 @@ void help()
 	printf("\
    -h, --help              display this help and exit\n\
    -v, --verbose           be more verbose and display a CAN packet dump\n\
-   -d, --daemon            become daemon\n\
    -S, --serial PORT       use specified serial port\n\
    -U, --usb PORT          use specified usb port\n\
                            (may cause prompt with multiple devices connected)\n\
@@ -347,6 +345,7 @@ void process_msg(rs232can_msg *msg)
 	}
 }
 
+
 void process_uart_msg()
 {
 	rs232can_msg *msg = canu_get_nb();	//get message from uart
@@ -496,31 +495,30 @@ void event_loop()
 		debug( 9, "VOR SELECT" );
 		cann_dumpconn();
 
-		do
+
+		rset_tmp = rset;
+
+		//handle usb
+		if (usb_parm)
 		{
-			rset_tmp = rset;
+			poll_usb();
+		}
 
-			//handle usb
-			if (usb_parm)
+		//wait for activity on file descriptors with timeout
+		if (ret = select(highfd + 1, &rset_tmp, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0) {
+			//print debug info
+			switch (errno)
 			{
-				poll_usb();
+				case EBADF:
+					debug_perror(1, "select: bad descriptor ");
+					continue;
+				case EINVAL:
+				case ENOMEM:
+				default:
+					debug_perror(0, "select: help, it's all broken, giving up!");
+					return;
 			}
-
-			//wait for activity on file descriptors with timeout
-			if (ret = select(highfd + 1, &rset_tmp, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0)
-				//print debug info
-				switch (errno)
-				{
-					case EBADF:
-						debug_perror(1, "select: bad descriptor ");
-						continue;
-					case EINVAL:
-					case ENOMEM:
-					default:
-						debug_perror(0, "select: help, it's all broken, giving up!");
-						return;
-				}
-		} while (ret == 0);
+		}
 		debug(10, "Select returned %d", ret);
 
 		// check activity on uart_fd
