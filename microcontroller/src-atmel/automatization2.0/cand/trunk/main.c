@@ -699,12 +699,17 @@ int main(int argc, char *argv[])
 				help();
 				exit(EXIT_SUCCESS);
 		}
-		optc=getopt_long(argc, argv, optstring, longopts, (int *)0);
+		optc = getopt_long(argc, argv, optstring, longopts, (int *)0);
 	} // while
 
 
 	debug_init(debugfile);
 	debug(0, "Starting Cand");
+
+	if (!serial && !usb_parm) {
+		debug(0, "No interface for CAN-Gateway");
+		exit(EXIT_FAILURE);
+	}
 
 	// setup serial communication
 	if (serial) {
