@@ -36,7 +36,7 @@ MACHINE = $(shell uname -m)
 
 ifeq ($(OSTYPE),cygwin)  
   CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_WIN32 -D_XOPEN_SOURCE=600
-  LDFLAGS_SIM = -Wl -T simulator/i386pe.x
+  LDFLAGS_SIM = -T simulator/i386pe.x
   LIBS_SIM    = -lgdi32 -lwinmm -lm
 else
   CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_XOPEN_SOURCE=600
