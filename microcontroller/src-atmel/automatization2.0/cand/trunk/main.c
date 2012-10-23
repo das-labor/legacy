@@ -475,7 +475,7 @@ void event_loop()
 	for (;;) {
 		int ret;
 		int highfd = 0;;
-		fd_set rset, rset_tmp;
+		fd_set rset;
 		cann_conn_t *client;
 		struct timeval tv;
 		tv.tv_sec = 0;
@@ -496,16 +496,14 @@ void event_loop()
 		cann_dumpconn();
 
 
-		rset_tmp = rset;
-
-		//handle usb
+		// handle usb
 		if (usb_parm)
 		{
 			poll_usb();
 		}
 
 		//wait for activity on file descriptors with timeout
-		if (ret = select(highfd + 1, &rset_tmp, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0) {
+		if (ret = select(highfd + 1, &rset, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0) {
 			//print debug info
 			switch (errno)
 			{
@@ -522,7 +520,7 @@ void event_loop()
 		debug(10, "Select returned %d", ret);
 
 		// check activity on uart_fd
-		if (serial && FD_ISSET(uart_fd, &rset_tmp))
+		if (serial && FD_ISSET(uart_fd, &rset))
 			process_uart_msg();
 
 		debug( 9, "AFTER UART" );
@@ -530,7 +528,7 @@ void event_loop()
 
 		// check client activity
 		//
-		while ( client = cann_activity(&rset_tmp) ) {
+		while ( client = cann_activity(&rset) ) {
 			debug(5, "CANN actiity found" );
 			process_client_msg(client);
 		}
@@ -539,7 +537,7 @@ void event_loop()
 		cann_dumpconn();
 
 		// new connections
-		if ( client = cann_accept(&rset_tmp) ) {
+		if ( client = cann_accept(&rset) ) {
 			debug( 2, "===> New connection (fd=%d)", client->fd );
 		}
 
@@ -699,7 +697,6 @@ int main(int argc, char *argv[])
 				help();
 				exit(EXIT_SUCCESS);
 		}
-		optc = getopt_long(argc, argv, optstring, longopts, (int *)0);
 	} // while
 
 
