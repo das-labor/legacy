@@ -371,7 +371,7 @@ void process_uart_msg()
 
 void canusb_transmit(rs232can_msg *msg)
 {
-	int r = usb_control_msg (udhandle,
+	(void) usb_control_msg (udhandle,
 		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
 		0x18, 0, 0, (char *)msg, msg->len + 2, 100);
 
@@ -453,8 +453,8 @@ int poll_usb()
 	if (r > 0) {
 		debug( 8, "RECEIVED DATA FROM USB" );
 		
-		if(debug_level >= 8){
-			hexdump(packetBuffer, r);
+		if (debug_level >= 8) {
+			hexdump((unsigned char *) packetBuffer, r);
 		}
 
 		int p = 0;
@@ -503,7 +503,7 @@ void event_loop()
 		}
 
 		//wait for activity on file descriptors with timeout
-		if (ret = select(highfd + 1, &rset, (fd_set *)NULL, (fd_set *)NULL, &tv) < 0) {
+		if ((ret = select(highfd + 1, &rset, (fd_set *)NULL, (fd_set *)NULL, &tv)) < 0) {
 			//print debug info
 			switch (errno)
 			{
@@ -528,7 +528,7 @@ void event_loop()
 
 		// check client activity
 		//
-		while ( client = cann_activity(&rset) ) {
+		while ( (client = cann_activity(&rset)) ) {
 			debug(5, "CANN actiity found" );
 			process_client_msg(client);
 		}
@@ -537,7 +537,7 @@ void event_loop()
 		cann_dumpconn();
 
 		// new connections
-		if ( client = cann_accept(&rset) ) {
+		if ( (client = cann_accept(&rset)) ) {
 			debug( 2, "===> New connection (fd=%d)", client->fd );
 		}
 
@@ -571,7 +571,7 @@ void shutdown_all()
 void handle_segv(int sig, siginfo_t *info, void *c)
 {
 	extern FILE *debugFP;
-	extern debug_time;
+	extern int debug_time;
 	ucontext_t *context = c;
 	int i;
 
