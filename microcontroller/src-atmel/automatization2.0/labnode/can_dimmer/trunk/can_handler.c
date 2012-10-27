@@ -183,6 +183,9 @@ extern void can_handler()
 									enable_channel((rx_msg->data[1]), 0);
 						}
 						break;
+					case 5: //request state
+						send_status();
+						break;
 				}
 			}
 		}
