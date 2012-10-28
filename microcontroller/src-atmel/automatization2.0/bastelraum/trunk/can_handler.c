@@ -62,6 +62,10 @@ void can_handler()
 					case C_SET_MOTION_T:
 						eeprom_write_byte ((uint8_t *) EEP_MOTION_TRESH, rx_msg->data[2]);
 						break;
+						
+					case C_GET_STATE:
+						send_status();
+						break;
 				}
 				//state_to_output();
 			}

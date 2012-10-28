@@ -1,6 +1,7 @@
 #define C_SW 0
 #define C_PWM	1
 #define C_SET_MOTION_T 2
+#define C_GET_STATE 3
 
 #define F_REG_DRUCKER_1 1
 #define F_REG_DRUCKER_2 2
