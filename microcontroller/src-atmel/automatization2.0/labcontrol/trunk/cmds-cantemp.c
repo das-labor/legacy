@@ -48,7 +48,7 @@ void cmd_cantemp(int argc, char *argv[])
 	{
 		result = can_get();
 
-		if (result->addr_src == addr && result->addr_dst == 0x00)
+		if ((result != NULL) && result->addr_src == addr && result->addr_dst == 0x00)
 		{
 			if (!mode)
 			{

@@ -72,7 +72,7 @@ void cmd_canpowermeter(int argc, char *argv[])
 	{
 		result = can_get();
 
-		if (result->addr_src == POWERMETER_ADDR && result->addr_dst == 0x00)
+		if ((result != NULL) && result->addr_src == POWERMETER_ADDR && result->addr_dst == 0x00)
 		{
 			if(result->port_dst == POWERMETER_PORT)
 			{

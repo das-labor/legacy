@@ -115,7 +115,7 @@ void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 	while (1)
 	{
 		can_message *incoming = can_get();
-		if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
+		if ((incoming != NULL) && incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
 		    incoming->addr_src == dst)
 		{
 			free(incoming);
@@ -156,7 +156,7 @@ void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 		while (1)
 		{
 			can_message *incoming = can_get();
-			if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
+			if ((incoming != NULL) && incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
 				incoming->addr_src == dst)
 			{
 				free(incoming);
@@ -193,7 +193,7 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename)
 	{
 		rxmsg = can_get();
 
-		if (rxmsg->port_dst == PORT_SDO && rxmsg->addr_src == addr)
+		if ((rxmsg != NULL) && rxmsg->port_dst == PORT_SDO && rxmsg->addr_src == addr)
 		{
 			break;
 		}
@@ -282,7 +282,7 @@ void flash_commodore(unsigned char addr, char * filename)
 	{
 		smsg = (sdo_message *)can_get();
 
-		if (smsg->port_dst == PORT_SDO && smsg->addr_src == addr)
+		if ((smsg != NULL) && smsg->port_dst == PORT_SDO && smsg->addr_src == addr)
 		{
 			break;
 		}
@@ -331,7 +331,7 @@ void flash_commodore(unsigned char addr, char * filename)
 		while (1)
 		{
 			can_message *incoming = can_get();
-			if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
+			if ((incoming != NULL) && incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
 			    incoming->addr_src == addr)
 				break;
 		}
@@ -361,7 +361,7 @@ void flash_commodore(unsigned char addr, char * filename)
 	while (1)
 	{
 		can_message *incoming = can_get();
-		if (incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
+		if ((incoming != NULL) && incoming->data[0]  == SDO_CMD_WRITE_BLK_ACK &&
 		    incoming->addr_src == addr)
 			break;
 	}
@@ -433,7 +433,7 @@ void cmd_flash(int argc, char *argv[])
 	{
 		smsg = (sdo_message *)can_get();
 
-		if (smsg->port_dst == PORT_SDO && smsg->addr_src == addr)
+		if ((smsg != NULL) && smsg->port_dst == PORT_SDO && smsg->addr_src == addr)
 		{
 			break;
 		}
