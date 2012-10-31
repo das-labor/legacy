@@ -3,7 +3,6 @@
 // by Peter Fuhrmann.
 //
 
-#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "gui.h"
@@ -36,6 +35,7 @@ static rectangle_t calculate_slider_rectangle(gui_slider_t *s) {
 	return r;
 }
 
+
 static void clear_inner_rectangle(rectangle_t r) {
 	r.x += 1;
 	r.y += 1;
@@ -46,6 +46,7 @@ static void clear_inner_rectangle(rectangle_t r) {
 	g_fill_rectangle(&r);
 	g_set_draw_color(1);
 }
+
 
 void gui_slider_draw(gui_element_t *self, uint8_t redraw) {
 	gui_slider_t *s = (gui_slider_t*)self;
@@ -107,25 +108,28 @@ void gui_slider_draw(gui_element_t *self, uint8_t redraw) {
 	g_fill_rectangle(&slider_rect);
 }
 
+
 void gui_slider_set_on_screen(gui_element_t *self, uint8_t state) {
 
 }
 
+
 void gui_slider_set_value(gui_slider_t *self, int16_t val) {
 	gui_slider_t *s = (gui_slider_t*)self;
-	
+
 	if (val > s->max_value) val = s->max_value;
 	if (val < s->min_value) val = s->min_value;
-	
+
 	if (s->value != val) {
 		s->value = val;
-		s->draw((gui_element_t*)self, 1);
+		s->draw((gui_element_t *)self, 1);
 
 		if (s->value_changed) {
-			s->value_changed((gui_element_t*)self, s->value);
+			s->value_changed((gui_element_t *)self, s->value);
 		}
 	}
 }
+
 
 void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
 	gui_slider_t *s = (gui_slider_t*)self;
@@ -153,7 +157,7 @@ void gui_slider_delete(gui_element_t *self) {
 
 
 void gui_slider_update_position(gui_element_t *self, int16_t x_diff, int16_t y_diff) {
-	gui_slider_t * s = (gui_slider_t*) self;
+	gui_slider_t *s = (gui_slider_t *) self;
 
 	s->box.x += x_diff;
 	s->box.y += y_diff;
@@ -168,7 +172,7 @@ gui_slider_t *new_gui_slider() {
 	b->touch_handler = gui_slider_touch_handler;
 	b->update_position = gui_slider_update_position;
 	b->delete = gui_slider_delete;
-	b->box = (rectangle_t){0, 0, 0, 0};
+	b->box = (rectangle_t) {0, 0, 0, 0};
 	b->icon = 0;
 	b->value_changed = 0;
 	b->orientation = 0; // vertical - default

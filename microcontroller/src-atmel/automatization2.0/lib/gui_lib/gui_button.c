@@ -3,7 +3,6 @@
 // by Peter Fuhrmann.
 //
 
-#include <stdint.h>
 #include <stdlib.h>
 #include "gui.h"
 
@@ -39,9 +38,11 @@ void gui_button_draw(gui_element_t *self, uint8_t redraw) {
 	g_draw_string_in_rect(&r, s->text);
 }
 
+
 void gui_button_set_on_screen(gui_element_t *self, uint8_t state) {
 
 }
+
 
 void gui_button_touch_handler(gui_element_t *self, touch_event_t t) {
 	gui_button_t *s = (gui_button_t*)self;
@@ -79,6 +80,7 @@ void gui_button_touch_handler(gui_element_t *self, touch_event_t t) {
 void gui_button_delete(gui_element_t *self) {
 	free(self);
 }
+
 
 void gui_button_update_position(gui_element_t *self, int16_t x_diff, int16_t y_diff) {
 	gui_button_t *s = (gui_button_t *) self;

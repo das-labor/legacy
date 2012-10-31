@@ -167,10 +167,41 @@ typedef struct {
 void gui_graph_view_draw(gui_element_t *self, uint8_t redraw);
 void gui_graph_view_set_on_screen(gui_element_t *self, uint8_t state);
 void gui_graph_view_touch_handler(gui_element_t *self, touch_event_t t);
+void gui_graph_view_delete(gui_element_t *self);
 void gui_graph_view_update_position(gui_element_t *self, int16_t x_diff, int16_t y_diff);
 gui_graph_view_t *new_gui_graph_view(char *txt, uint8_t idx); //constructor
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
+//a number widget.//////////////////////////////////////////////////////////////
+//it takes getter and setter funktions for setting the number so instant
+//response to changes is possible.
+typedef struct {
+	void(*draw)(gui_element_t *self, uint8_t redraw);
+	void(*set_on_screen)(gui_element_t *self, uint8_t state);
+	void(*touch_handler)(gui_element_t *self, touch_event_t t);
+	void(*update_position)(gui_element_t *self, int16_t x_diff, int16_t y_diff); //moves an element and all sub elements.
+	void(*delete)(gui_element_t *self);
+	rectangle_t box;//gui element sets height and width, container sets x and y.
+
+	char *text;
+	icon_t *icon;
+
+	//ref is a user definable reference for use with the set/get functions
+	int (*get)(void *ref);
+	void(*set)(void *ref, int value);
+	void *ref;
+
+} gui_number_widget_t;
+
+void gui_number_widget_draw(gui_element_t *self, uint8_t redraw);
+void gui_number_widget_set_on_screen(gui_element_t *self, uint8_t state);
+void gui_number_widget_touch_handler(gui_element_t *self, touch_event_t t);
+void gui_number_widget_delete(gui_element_t *self);
+void gui_number_widget_update_position(gui_element_t *self, int16_t x_diff, int16_t y_diff);
+gui_number_widget_t *new_gui_number_widget();
+
+////////////////////////////////////////////////////////////////////////////////
 
 #endif // _H_GUI
