@@ -38,140 +38,6 @@ can_message panic_msg = {0x23, 0x00, ALARMCANPORT, 0x00, 0x06, {0x41,0x4C,0x41,0
 //can_message light_on_msg = {0x23, 0x02, LIGHTCANPORT, 0x01, 0x04, {0x00,0x00,0x01,0x00}};
 //can_message light_off_msg = {0x23, 0x02, LIGHTCANPORT, 0x01, 0x04, {0x00,0x00,0x00,0x00}};
 
-/*
-	set as backgroundcolor
-*/
-
-i2c_message commblock = {0,0,0,{0,0,0,0,0,0,0,0}};
-void twi_mhandler_read(i2c_message *indata)
-{
-	uint8_t i=0;
-	can_message dstrl = {0x23,0x00,I2CTEMPCANPORT,I2CTEMPCANPORT,0x08, {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
-	dstrl.dlc=indata->dlc+1;
-	dstrl.data[0]=indata->process;
-	for(i=0;i<indata->dlc;i++)
-		{
-			dstrl.data[i+1]=indata->data[i];
-		}
-	
-	can_transmit(&dstrl);
-}
-// postwrite
-void twi_mhandler_write(i2c_message *outdata)
-{
-	// not needed it is postwrite
-}
-void twi_mhandler_error(uint8_t error,i2c_message *errdata)
-{
-	//can_message dstrl = {0x23,0x00,I2CTEMPCANPORT,I2CTEMPCANPORT,0x06, {error,errdata->data[0],errdata->data[1],errdata->data[2],0x11,0x11}};
-	//can_transmit(&dstrl);
-  
-}
-
-void init_sensor()
-{
-	if(TWIM_Init()==0)
-		{
-			can_message dstrl = {0x23,0x00,I2CTEMPCANPORT,I2CTEMPCANPORT,0x06, {0x33,0x33,0x33,0x33,0x33,0x33}};
-			can_transmit(&dstrl);
-			
-		}
-
-	commblock.addr_dst = 0x9e;
-	commblock.dlc = 1;
-	commblock.data[0]=SOFTWARE_POR;
-	// set command last 
-	commblock.process=PROCESSI2CWRITE;
-
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
-	
-	commblock.addr_dst = 0x9e;
-	commblock.dlc = 2;
-	commblock.data[0]=ACCESS_CONFIG;
-	commblock.data[1]=I2CDEFAULTCONFIG; 
-	commblock.process=PROCESSI2CWRITE;
-
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
-
-	commblock.addr_dst = 0x9e;
-	commblock.dlc = 1;
-	commblock.data[0]=START_CONVERT;
-	commblock.process=PROCESSI2CWRITE;
-
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
-
-}
-/* data: 0x9e 0x01 0x02 0x22 0x8c 0x00  */
-/* data: 0x9e 0x01 0x02 0xaa 0x8c 0x00  */
-/* data: 0x8c 0x00 0x01 0x00 0x00 0x00  */
-/* data: 0x9e 0x01 0x02 0x51 0x00 0x00  */
-void read_sensor()
-{
-
-	commblock.addr_dst = 0x9e;
-	commblock.dlc = 1;
-	commblock.data[0]=STOP_CONVERT;
-	// set command last 
-	commblock.process=PROCESSI2CWRITE;
-
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
-
-	commblock.addr_dst = 0x9e;
-	commblock.dlc = 1;
-	commblock.data[0]=READ_TEMPERATURE;
-	// set command last 
-	commblock.process=PROCESSI2CWRITE;
-
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
-
-	commblock.addr_dst = 0x9e;
-	commblock.dlc = 2;
-	commblock.process=PROCESSI2CREAD;
-
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
-
-	commblock.addr_dst = 0x9e;
-	commblock.dlc = 1;
-	commblock.data[0]=START_CONVERT;
-	commblock.process=PROCESSI2CWRITE;
-
-	while(commblock.process != PROCESSI2CNONE)
-		{
-			taskDelayFromNow(10);
-		}
-
-}
-
-/*
-  dies funktion wird aufgerufen wenn das Packet
-  an unser devid ging, wir uns also dafuer
-  interressieren
-*/
-void can_user_cmd(can_message *rx_msg)
-{
-	if(rx_msg->port_dst == I2CTEMPCANPORT)
-		read_sensor();
-}
-
-
 void app_run(void)
 {
 	static can_message dstpower = {0x23,0x02,LIGHTCANPORT,0x01,0x04, {0x00,0x00,0x00,0x00}};
@@ -262,6 +128,7 @@ void app_run(void)
 }
 
 #if 0
+//this is the deactivated panic button, it does not work with the current version
 void appLoop_alarmt(void)
 { 
 	while(true)
@@ -273,10 +140,8 @@ void appLoop_alarmt(void)
 					rgb_panic=0;
 					lastpanic=0;
 				}
-			taskDelayFromNow(100);
-			
+			taskDelayFromNow(100);	
 		}
-
 }
 
 void appLoop_alarm(void)
@@ -297,7 +162,6 @@ void appLoop_alarm(void)
 				}
 			taskDelayFromNow(100);
 		}
-
 }
 #endif
 
@@ -389,9 +253,9 @@ void main()
 	
 	while(true)
 	{
-		update_leds
+		update_leds();
+		twi_mhandler();
 		can_handler();
-		twi_mhandler(); 
 		app_run();
 	}
 }
