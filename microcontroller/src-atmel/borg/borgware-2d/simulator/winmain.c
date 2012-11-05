@@ -158,7 +158,6 @@ void simDrawMatrix(HDC hdc)
 	unsigned int c, p, x, y, absX;
 
 	/* geometric values */
-	RECT rect = {0, 0, WND_X_EXTENTS, WND_Y_EXTENTS};
 	int left, right, top, bottom;
 
 	/* lookup table for fast bit shifts of the value 0x01 */
