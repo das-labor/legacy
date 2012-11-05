@@ -38,14 +38,32 @@ typedef struct{
 } pdo_message;
 
 /****************************************************************************
- * Known ports and services
+ * Known ports
  */
+ 
+typedef enum {
+	PORT_MGT	= 0x30,
+	PORT_LAMPE	= 0x20,
+	PORT_SDO	= 0x15,
+	PORT_SDO_DATA = 0x16,
+	PORT_LAPD	= 0x18,
+	PORT_BORG	= 0x23,
+	PORT_MOOD	= 0x17,
+	PORT_REMOTE	= 0x21,
+	PORT_GATE	= 0x22,
+	PORT_CHUCK	= 0x26
+} ports;
 
-typedef enum { PORT_MGT=0x30, PORT_LAMPE=0x20, PORT_SDO=0x15, PORT_SDO_DATA=0x16, PORT_LAPD=0x18,
-		PORT_BORG=0x23, PORT_MOOD=0x17, PORT_REMOTE=0x21, PORT_GATE=0x22, PORT_CHUCK=0x26 }  ports;
-
-typedef enum { FKT_MGT_PING=0x00, FKT_MGT_PONG=0x01, 
-		FKT_MGT_RESET=0x02, FKT_MGT_AWAKE=0x03 }	lap_mgt_fkts;
+/****************************************************************************
+ * Known services
+ */
+typedef enum {
+	FKT_MGT_PING	= 0x00,
+	FKT_MGT_PONG	= 0x01, 
+	FKT_MGT_RESET	= 0x02,
+	FKT_MGT_AWAKE	= 0x03
+} lap_mgt_fkts;
+		
 typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01, 
 		FKT_LAMPE_SETDELAY=0x02, FKT_LAMPE_ADD=0x03 }			lap_lampe_fkts;
 
