@@ -147,11 +147,21 @@ BOOL simCreateWindow(HWND *lphWnd,
  */
 void simDrawMatrix(HDC hdc)
 {
-	COLORREF colorLed;
-	HBRUSH hBrushLed;
-	HGDIOBJ hGdiOld;
+	/* color, pen and brush for drawing the LEDS */
+	COLORREF colorLed; /* RGB color for the pen and the brush */
+	HPEN hPen;         /* pen for the border of the LEDs */
+	HGDIOBJ hPenOld;   /* SelectObject swap space for the pen */
+	HBRUSH hBrushLed;  /* brush for filling the LED circles */
+	HGDIOBJ hOldBrush; /* SelectObject swap space for the brush */
+
+	/* loop variables */
 	unsigned int c, p, x, y, absX;
+
+	/* geometric values */
+	RECT rect = {0, 0, WND_X_EXTENTS, WND_Y_EXTENTS};
 	int left, right, top, bottom;
+
+	/* lookup table for fast bit shifts of the value 0x01 */
 	static unsigned char const shl_map[8] =
 		{0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
@@ -164,7 +174,9 @@ void simDrawMatrix(HDC hdc)
 		/* create and select red brush into device context */
 		colorLed = RGB((255.0 / NUMPLANE) * (p + 1), 0, 0);
 		hBrushLed = CreateSolidBrush(colorLed);
-		hGdiOld = SelectObject(hdc, hBrushLed);
+		hOldBrush = SelectObject(hdc, hBrushLed);
+		hPen = CreatePen(PS_INSIDEFRAME | PS_SOLID, 1, colorLed);
+		hPenOld = SelectObject(hdc, hPen);
 
 		/* translate pixmap into LEDs */
 		for (y = 0; y < NUM_ROWS; ++y)
@@ -175,7 +187,7 @@ void simDrawMatrix(HDC hdc)
 				{
 					if (pixmap[p][y][c] & shl_map[x])
 					{
-						// eventually draw a LED, mirroring its coordinates
+						/* eventually draw a LED, mirroring its coordinates */
 						absX = (c * 8 + x) * LED_EXTENT + LED_MARGIN;
 						left = WND_X_EXTENTS - absX;
 						right = WND_X_EXTENTS - absX - LED_DIAMETER + 1;
@@ -187,8 +199,9 @@ void simDrawMatrix(HDC hdc)
 			}
 		}
 
-		/* dispose that brush */
-		DeleteObject(SelectObject(hdc, hGdiOld));
+		/* dispose old brush and pen */
+		DeleteObject(SelectObject(hdc, hOldBrush));
+		DeleteObject(SelectObject(hdc, hPenOld));
 	}
 }
 
@@ -306,28 +319,28 @@ LRESULT CALLBACK simWndProc(HWND hWnd,
 	case WM_KEYDOWN:
 		switch (wParam)
 		{
-		case VK_ESCAPE:
+		case VK_ESCAPE: /* quit simulator */
 		case 'Q':
 			PostQuitMessage(0);
 			break;
 
-		case VK_SPACE:
+		case VK_SPACE: /* fire */
 			fakeport |= 0x01;
 			break;
 
-		case 'A':
+		case 'A': /* left */
 			fakeport |= 0x02;
 			break;
 
-		case 'D':
+		case 'D': /* right */
 			fakeport |= 0x04;
 			break;
 
-		case 'S':
+		case 'S': /* down */
 			fakeport |= 0x08;
 			break;
 
-		case 'W':
+		case 'W': /* up */
 			fakeport |= 0x10;
 			break;
 
@@ -341,23 +354,23 @@ LRESULT CALLBACK simWndProc(HWND hWnd,
 	case WM_KEYUP:
 		switch(wParam)
 		{
-		case VK_SPACE:
+		case VK_SPACE: /* fire */
 			fakeport &= ~0x01;
 			break;
 
-		case 'A':
+		case 'A': /* left */
 			fakeport &= ~0x02;
 			break;
 
-		case 'D':
+		case 'D': /* right */
 			fakeport &= ~0x04;
 			break;
 
-		case 'S':
+		case 'S': /* down */
 			fakeport &= ~0x08;
 			break;
 
-		case 'W':
+		case 'W': /* up */
 			fakeport &= ~0x10;
 			break;
 
@@ -484,7 +497,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 				hLoopThread = CreateThread(NULL, 0, simLoop, NULL, 0, NULL);
 				if (hLoopThread != NULL)
 				{
-					SetThreadPriority(hLoopThread, THREAD_PRIORITY_HIGHEST);
+					SetThreadPriority(hLoopThread,
+							THREAD_PRIORITY_TIME_CRITICAL);
 
 					/* issue a UI timer message every 40 ms (roughly 25 fps) */
 					uTimerId = SetTimer(hWnd, 23, 40, NULL);
