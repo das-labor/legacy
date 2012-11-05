@@ -362,10 +362,10 @@ void process_uart_msg()
 		canu_failcnt = 0;
 	}
 
-	debug(3, "Processing message from uart..." );
+	debug(6, "Processing message from uart..." );
 	process_msg(msg);
 	canu_free(msg);
-	debug(3, "...processing done.");
+	debug(6, "...processing done.");
 }
 
 
