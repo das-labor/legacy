@@ -1,4 +1,4 @@
-OBJ = main.o can/can.o can/spi.o can_handler.o light.o
+OBJ = main.o can/can.o can/spi.o can_handler.o light.o switch.o
 
 # Default values
 OUT           ?= main
