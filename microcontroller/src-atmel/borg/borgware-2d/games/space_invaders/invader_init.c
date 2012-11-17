@@ -11,12 +11,25 @@ uint16_t const hans[7] PROGMEM =
 
 void initGuards(unsigned char *guards)
 {
-	memset(guards, 0, BORG_WIDTH);
+	memset(guards, 0, NUM_COLS);
 
-	guards[3] = 3;
-	guards[6] = 3;
+#if NUM_COLS == 16
+	guards[2] = 3;
+	guards[5] = 3;
 	guards[10] = 3;
 	guards[13] = 3;
+#else
+	unsigned const guard_min_distance = 3;
+	unsigned char pos;
+	for (pos = 0; pos <= ((NUM_COLS - (guard_min_distance - 1)) / 2); ++pos)
+	{
+		if (((pos % guard_min_distance) == 0) && (pos != 0))
+		{
+			guards[pos - 1] = 3;
+			guards[NUM_COLS - pos] = 3;
+		}
+	}
+#endif
 }
 
 void initInvaders(Invaders * iv, unsigned char lv)
@@ -32,16 +45,16 @@ void initInvaders(Invaders * iv, unsigned char lv)
 	switch (lv)
 	{
 	case 0:
+	default:
 		for (x = 0; x < 8; ++x)
 		{
 			iv->map[x][0] = 2;
 			iv->map[x][1] = 2;
 			iv->map[x][2] = 2;
 			iv->map[x][3] = 1;
-			// iv->map[x][4] = 1;
 		}
 
-		iv->pos.x = 4;
+		iv->pos.x = (NUM_COLS - 8) / 2;
 		iv->pos.y = SPACESHIP_LINE + 1;
 		iv->speed = MIN_SPEED - 3;
 		iv->direction = 1;
@@ -50,16 +63,13 @@ void initInvaders(Invaders * iv, unsigned char lv)
 	case 1:
 		for (x = 0; x < 8; ++x)
 		{
-			//for(y = 0; y < MAX_INVADER_HEIGHT; ++y) {
 			iv->map[x][0] = 3;
 			iv->map[x][1] = 3;
 			iv->map[x][2] = 2;
 			iv->map[x][3] = 2;
-			// iv->map[x][4] = 1;
-			//}     
 		}
 
-		iv->pos.x = 4;
+		iv->pos.x = (NUM_COLS - 8) / 2;
 		iv->pos.y = SPACESHIP_LINE + 1;
 		iv->speed = MIN_SPEED - 2;
 
@@ -69,16 +79,14 @@ void initInvaders(Invaders * iv, unsigned char lv)
 	case 2:
 		for (x = 0; x < 8; ++x)
 		{
-			//for(y = 0; y < MAX_INVADER_HEIGHT; ++y) {
 			iv->map[x][0] = 3;
 			iv->map[x][1] = 3;
 			iv->map[x][2] = 2;
 			iv->map[x][3] = 2;
 			iv->map[x][4] = 1;
-			//}     
 		}
 
-		iv->pos.x = 4;
+		iv->pos.x = (NUM_COLS - 8) / 2;
 		iv->pos.y = SPACESHIP_LINE + 1;
 		iv->speed = MIN_SPEED - 1;
 
@@ -97,12 +105,11 @@ void initInvaders(Invaders * iv, unsigned char lv)
 			}
 		}
 
-		iv->pos.x = 3;
+		iv->pos.x = (NUM_COLS - 11) / 2;
 		iv->pos.y = SPACESHIP_LINE + 1;
 
 		iv->speed = MIN_SPEED + 2;
 		iv->direction = 1;
-
 		break;
 
 	case 4:
@@ -120,13 +127,11 @@ void initInvaders(Invaders * iv, unsigned char lv)
 			}
 		}
 
-		iv->pos.x = 3;
+		iv->pos.x = (NUM_COLS - 11) / 2;
 		iv->pos.y = SPACESHIP_LINE + 1;
 
 		iv->speed = MIN_SPEED + 3;
 		iv->direction = 1;
-
 		break;
-
 	}
 }
