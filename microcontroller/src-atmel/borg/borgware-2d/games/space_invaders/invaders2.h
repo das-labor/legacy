@@ -9,43 +9,10 @@
 
 #ifndef INVADERS2_H
 #define INVADERS2_H
-/* TEST PARTS NEW API */
 
 #include <stdint.h>
 #include "../../config.h"
 #include "../../pixel.h"
-
-
-typedef struct
-{
-	signed char x;
-	signed char y;
-} sPixel;
-
-typedef struct
-{
-	unsigned char x;
-	unsigned char y;
-} uPixel;
-
-#define USE_ORIGINAL_PIXEL_API
-
-//for compatibility to pixel.h api!
-#ifdef USE_ORIGINAL_PIXEL_API
-
-//typedef uPixel pixel;
-#define uPixel pixel
-//#define getPixel(_X, _Y) get_pixel( (pixel){_X, _Y})
-#define clearScreen() 	clear_screen(0)
-//#define 
-
-//#ifdef SIMULATOR
-#define setPixel(_X, _Y, _V) setpixel( (pixel){_X, _Y}, _V)
-//#else //if defined (AVR)
-//#define setPixel(_X, _Y, _V) reverseSetPixel( (pixel){_X, _Y}, _V)
-//#endif
-
-#endif
 
 /****************************************************************/
 /*                   GLOBALE VAR                                */
@@ -57,56 +24,47 @@ extern uint16_t const hans[7];
 /****************************************************************/
 /*                          DEFINES                             */
 /****************************************************************/
-#define START_LIVES		3
+#define START_LIVES 3
 
-#define SPACESHIP_LINE  1
-//#define SPACESHIP_TRIGGER_POINTS 250
-//#define SPACESHIP_TRIGGER_RATE 333
+#define SPACESHIP_LINE 1
 
+#define GUARD_LINE (NUM_ROWS - 3)
 
-#define GUARD_LINE		13
+#define MAX_INVADER_HEIGHT  8
+#define MAX_INVADER_WIDTH  12
+#define MAX_INVADER_LIVES   3
 
-#define BORG_WIDTH 16
-#define BORG_HEIGHT 16
+#define POINTS_FOR_HIT         5
+#define POINTS_FOR_KILL       25
+#define POINTS_FOR_SPACESHIP  75
+#define POINTS_FOR_LEVEL     100
 
-#ifdef SWITCHED_SIDE
-#define RIGHT_BORDER 0
-#define LEFT_BORDER	(BORG_WIDTH -1 )
-#else
-#define RIGHT_BORDER (BORG_WIDTH -1 )
-#define LEFT_BORDER	0
-#endif
+#define MAX_SHOTS        7
+#define MIN_SPEED       70
+#define SPEED_INC_RATE   2
+#define SPEED_INC_VALUE  3
+#define MAX_LEVEL        5
 
-#define MAX_INVADER_HEIGHT	8
-#define MAX_INVADER_WIDTH	12
-#define MAX_INVADER_LIVES	3
-
-#define POINTS_FOR_HIT 			5
-#define POINTS_FOR_KILL 		25
-#define POINTS_FOR_SPACESHIP 	75
-#define POINTS_FOR_LEVEL		100
-
-#define MAX_SHOTS 	7
-#define MIN_SPEED   	70
-#define SPEED_INC_RATE 	2
-#define SPEED_INC_VALUE 3
-#define MAX_LEVEL 5
-
-#define SHOOTING_RATE 	6
+#define SHOOTING_RATE           6
 #define INVADER_SHOOTING_SPEED 10
-#define CANNON_SHOOTING_SPEED  4
-#define SPACESHIP_SPEED	30
+#define CANNON_SHOOTING_SPEED   4
+#define SPACESHIP_SPEED        30
+#define NO_SPACESHIP 255
 
 #define CANNON_SPEED 2
 
-#define WAIT_MS 		15
-//#define WAIT_MS               20
+#define WAIT_MS 15
 
+typedef struct
+{
+	signed char x;
+	signed char y;
+} spixel;
 
 typedef struct
 {
 	unsigned char map[MAX_INVADER_WIDTH][MAX_INVADER_HEIGHT];
-	sPixel pos;
+	spixel pos;
 
 	unsigned char speed;
 	unsigned char speedinc;
@@ -114,11 +72,13 @@ typedef struct
 	unsigned char isEdged;
 } Invaders;
 
+
 typedef struct
 {
 	unsigned char pos;
 	unsigned char lives;
 } Spaceship;
+
 
 typedef struct
 {
@@ -126,15 +86,15 @@ typedef struct
 	unsigned char ready;
 } Cannon;
 
-//typedef struct {
-//      unsigned char guards[numGards];
-//}
 
 typedef struct
 {
 	unsigned char lives;
 	unsigned int points;
 } Player;
+
+typedef unsigned char offScreen_t[NUMPLANE + 1][NUM_ROWS][LINEBYTES];
+
 
 /****************************************************************/
 /*                          FUNCTIONS                           */
@@ -144,19 +104,18 @@ void borg_invaders();
 /*----------------------main_level_funcs-------------------------*/
 
 void procSpaceship(Spaceship * sp);
-void procCannon(Cannon * cn, uPixel * shot);
+void procCannon(Cannon * cn, pixel * shot);
 
-void procInvaders(Invaders * iv, uPixel st[MAX_SHOTS]);
+void procInvaders(Invaders * iv, pixel st[MAX_SHOTS]);
 void procShots(Invaders * iv, Player * pl, Cannon * cn, Spaceship * sc,
-		unsigned char guards[BORG_WIDTH], uPixel st[MAX_SHOTS], uPixel * shot);
+		unsigned char guards[NUM_COLS], pixel st[MAX_SHOTS], pixel * shot);
 
 unsigned char getStatus(Invaders * iv);
 
 /*----------------------Initialization---------------------------*/
-void initGuards(unsigned char guards[BORG_WIDTH]);
+
+void initGuards(unsigned char guards[NUM_COLS]);
 void initInvaders(Invaders * iv, unsigned char lv);
-//void initSpaceship(Spaceship* sc);
-//void initPlayer(Player* pl);
 
 /*----------------------getter/setter----------------------------*/
 
@@ -171,15 +130,14 @@ void setGuardPixel(unsigned char *guards, unsigned char x,
 inline static unsigned char getGuardPixel(unsigned char *guards,
 		unsigned char x, unsigned char y)
 {
-	if (x < BORG_WIDTH && y == GUARD_LINE)
+	if (x < NUM_COLS && y == GUARD_LINE)
 		return guards[x];
 	return 0;
 }
 
 /*----------------------drawing Method---------------------------*/
 
-void draw(Invaders * iv, Spaceship * sc, Player * pl, Cannon * cn,
-		unsigned char *guards, uPixel *ishots,
-		uPixel * shot);
+void draw(offScreen_t offscreen, Invaders * iv, Spaceship * sc, Player * pl,
+		Cannon * cn, unsigned char *guards, pixel *st, pixel * shot);
 
-#endif
+#endif /* INVADERS2_H */

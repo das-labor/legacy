@@ -6,8 +6,6 @@
 #include "../../scrolltext/scrolltext.h"
 #include "invaders2.h"
 
-//#include <stdio.h>
-
 void borg_invaders();
 
 #ifdef MENU_SUPPORT
@@ -23,44 +21,35 @@ game_descriptor_t invaders_game_descriptor __attribute__((section(".game_descrip
 
 void borg_invaders()
 {
-	//      waitForFire = 0;        
 	/****************************************************************/
 	/*                          INITIALIZE                          */
 	/****************************************************************/
+	offScreen_t offScreen = {{{0}}};
 
 	Invaders iv;
 	Cannon cn;
 	Player pl;
 	Spaceship sc;
 
-	unsigned char guards[BORG_WIDTH];
-
+	unsigned char guards[NUM_COLS];
 	unsigned char level = 0;
 	unsigned char ivStatus = 0;
 
-	uPixel st[MAX_SHOTS] =
+	pixel st[MAX_SHOTS] =
 	{
-		{	255, 255},
-		{	255, 255},
-		{	255, 255},
-		{	255, 255},
-		{	255, 255}
+		{255, 255},
+		{255, 255},
+		{255, 255},
+		{255, 255},
+		{255, 255},
+		{255, 255},
+		{255, 255}
 	};
 
-	uPixel shot;
-	// = {0,0};
+	pixel shot;
 
 	pl.points = 0;
 	pl.lives = 3;
-
-	//--------Init Cannon-------//
-	//cn.pos = 4;
-	//cn.ready = 1;
-
-	/****************************************************************/
-	/*                          INTRO                               */
-	/****************************************************************/
-	//drawIntroScreen(2000);
 
 
 	/****************************************************************/
@@ -74,77 +63,50 @@ void borg_invaders()
 
 		//Spaceship 
 		sc.lives = 1;
-		sc.pos = 255;
+		sc.pos = NO_SPACESHIP;
 
 		//Cannon
-		cn.pos = 7;
+		cn.pos = (NUM_COLS - 3) / 2;
 		cn.ready = 1;
 
-		draw(&iv, &sc, &pl, &cn, guards, st, &shot);
-
-		while (1)
+		while (pl.lives != 0)
 		{
 			procInvaders(&iv, st);
 			procSpaceship(&sc);
-
 			procShots(&iv, &pl, &cn, &sc, guards, st, &shot);
 			procCannon(&cn, &shot);
 
-			draw(&iv, &sc, &pl, &cn, guards, st, &shot);
+			draw(offScreen, &iv, &sc, &pl, &cn, guards, st, &shot);
 
 			ivStatus = getStatus(&iv);
 
-			if (ivStatus == 2) //LOST  
+			if (ivStatus == 2) //LOST
 			{
-				//pl.lives--;
 				pl.lives = 0;
 				break;
-
 			}
 			else if (ivStatus == 1) //WON
 			{
 				unsigned int bonus = POINTS_FOR_LEVEL * (level + 1u) *
-						(unsigned int)(12 - iv.pos.y);
+						(unsigned int)(NUM_ROWS - 4 - iv.pos.y);
 				pl.points += bonus;
-				//printf("cleared l: %d , y: %d bonus: %d \n", 
-				//              level, iv.pos.y, bonus);
-				if (level == MAX_LEVEL - 1)
-				{
-					level = 0;
-				}
-				else
-				{
-					level = (level + 1);
-				}
-				break;
-			}
 
-			if (pl.lives <= 0)
-			{
-				//scrolltext("GAME OVER",0,80);
+				level = (level + 1) % MAX_LEVEL;
 				break;
 			}
 
 			wait (WAIT_MS);
 		} //IN LEVEL LOOP
 
-	} while (pl.lives > 0); //GAME LOOP
-
-	clearScreen ();
-	//wait(5000);
-	#ifdef SCROLLTEXT_SUPPORT
-		char text[64];
-		snprintf(text, 64, "</#points: %u", pl.points);
-		scrolltext(text);
-	#endif
-	//printf("scores: %d\n", pl.points);
-
+	} while (pl.lives != 0); //GAME LOOP
 
 	/****************************************************************/
 	/*                         PLAYER STAT                          */
 	/*                         HIGH SCORES                          */
 	/****************************************************************/
-
-	//      waitForFire = 1;                
-
+	#ifdef SCROLLTEXT_SUPPORT
+		char text[64];
+		snprintf(text, 64, "</#points: %u", pl.points);
+		scrolltext(text);
+	#endif
 }
