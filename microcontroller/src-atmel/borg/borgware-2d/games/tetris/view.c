@@ -269,7 +269,8 @@ static void tetris_view_drawDump(tetris_view_t *pV)
  * @param pV pointer to the view on which the piece should be drawn
  * @param pPc pointer to the piece for the preview window (may be NULL)
  */
-static void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
+static void tetris_view_drawPreviewPiece(tetris_view_t *pV,
+                                         tetris_piece_t *pPc)
 {
 	tetris_bearing_t nBearing =
 			pV->pVariantMethods->getBearing(pV->pVariant);
@@ -331,7 +332,7 @@ static void tetris_view_drawPreviewPiece(tetris_view_t *pV, tetris_piece_t *pPc)
  * @param nColor the color for the border
  */
 static void tetris_view_drawBorders(tetris_view_t *pV,
-                             uint8_t nColor)
+                                    uint8_t nColor)
 {
 	tetris_bearing_t nBearing =
 			pV->pVariantMethods->getBearing(pV->pVariant);
