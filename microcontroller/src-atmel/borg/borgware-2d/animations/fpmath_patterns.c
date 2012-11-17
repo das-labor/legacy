@@ -384,7 +384,7 @@ static void fixDrawPattern(fixp_t const t_start,
 		// the end of both buffers and move backwards through their space.
 		// The pre-decrement operator is used so that GCC utilizes the AVR's
 		// built-in pre-decrement variants of the "ld" and "st" instructions.
-		while (pPixmap >= (unsigned char *)pixmap) // stop at the beginning
+		while (pPixmap != &pixmap[0][0][0]) // stop at the beginning
 		{
 			// actually draw off-screen contents
 			*(--pPixmap) = *(--pOffscreenDistHigh);
