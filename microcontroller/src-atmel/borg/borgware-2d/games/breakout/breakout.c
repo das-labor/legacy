@@ -46,6 +46,7 @@ void borg_breakout(uint8_t demomode)
 	uint8_t level = demomode ? random8() % 5 : 0;
 	ball_t balls[1];
 
+	score_reset();
 	/* spawn a ball in the middle bottom of the field, let it move upwards with random speed & direction */
 	ball_spawn_default(&(balls[0]));
 	balls[0].strength = START_LIFES;

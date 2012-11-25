@@ -21,6 +21,11 @@
 #define SCORE_H
 
 extern unsigned short score;
+inline static void score_reset()
+{
+	score = 0;
+}
+
 inline static void score_add (uint8_t in_score)
 {
 	score += in_score;
