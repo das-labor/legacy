@@ -35,7 +35,7 @@
 #include "../display_loop.h"
 
 /** Number of bytes per row. */
-#define LINEBYTES ((NUM_COLS + 1) / 8)
+#define LINEBYTES (((NUM_COLS - 1) / 8) + 1)
 
 /** The width (in pixels) of the margin around a LED. */
 #define LED_MARGIN 1

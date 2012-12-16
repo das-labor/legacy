@@ -448,7 +448,7 @@ static unsigned char fixAnimPlasma(unsigned char const x,
                                    fixp_t const t,
                                    void *const r)
 {
-	assert(x < NUM_COLS);
+	assert(x < (LINEBYTES * 8));
 	assert(y < NUM_ROWS);
 
 	// scaling factor
@@ -524,7 +524,7 @@ static unsigned char fixAnimPsychedelic(unsigned char const x,
                                         fixp_t const t,
                                         void *const r)
 {
-	assert(x < NUM_COLS);
+	assert(x < (LINEBYTES * 8));
 	assert(y < NUM_ROWS);
 	fixp_psychedelic_t *p = (fixp_psychedelic_t *)r;
 

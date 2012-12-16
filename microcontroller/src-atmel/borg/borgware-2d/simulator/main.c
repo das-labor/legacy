@@ -28,7 +28,7 @@
 #include "trackball.h"
 
 /** Number of bytes per row. */
-#define LINEBYTES ((NUM_COLS + 1) / 8)
+#define LINEBYTES (((NUM_COLS - 1) / 8) + 1)
 
 /** Fake port for simulating joystick input. */
 volatile unsigned char fakeport;
