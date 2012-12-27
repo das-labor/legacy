@@ -24,7 +24,7 @@ all: compile-$(TARGET)
 	@echo "==============================="
 	@echo "$(TARGET) compiled for: $(MCU)"
 	@echo "size is: "
-	@${TOPDIR}/scripts/size $(TARGET)
+	@$(CONFIG_SHELL) ${TOPDIR}/scripts/size $(TARGET)
 	@echo "==============================="
 
 ##############################################################################
@@ -70,7 +70,7 @@ SUBDIRS_AVR += $(SUBDIRS)
 
 .PHONY: compile-subdirs_avr
 compile-subdirs_avr:
-	@ for dir in $(SUBDIRS_AVR); do make -C $$dir objects_avr || exit 5; done
+	@ for dir in $(SUBDIRS_AVR); do $(MAKE) -C $$dir objects_avr || exit 5; done
 
 .PHONY: compile-$(TARGET)
 compile-$(TARGET): compile-subdirs_avr $(TARGET).hex $(TARGET).bin $(TARGET).lst
@@ -114,8 +114,8 @@ SUBDIRS_SIM += $(SUBDIRS)
 
 .PHONY: compile-subdirs_sim
 compile-subdirs_sim:
-	@ for dir in $(SUBDIRS_SIM); do make -C $$dir objects_sim || exit 5; done
-	@ make -C ./simulator/ objects_sim || exit 5;
+	@ for dir in $(SUBDIRS_SIM); do $(MAKE) -C $$dir objects_sim || exit 5; done
+	@ $(MAKE) -C ./simulator/ objects_sim || exit 5;
 
 simulator: autoconf.h .config .subdirs compile-subdirs_sim $(TARGET_SIM)
 
@@ -133,10 +133,11 @@ $(TARGET_SIM): $(OBJECTS_SIM) $(SUBDIROBJECTS_SIM)
 
 ##############################################################################
 CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
-          else if [ -x /bin/bash ]; then echo /bin/bash; \
+          else if [ -x $$(whereis -qb bash) ]; then echo $$(whereis -qb bash); \
           else echo sh; fi ; fi)
 
 menuconfig:
+	@echo $(CONFIG_SHELL)
 	$(MAKE) -C scripts/lxdialog all
 	$(CONFIG_SHELL) scripts/Menuconfig config.in
 	test -e .config
@@ -155,7 +156,7 @@ clean:
 	for subdir in `find . -type d` ; do \
 	  test "x$$subdir" != "x." \
 	  && test -e $$subdir/Makefile \
-	  && make no_deps=t -C $$subdir clean ; done ; true
+	  && $(MAKE) no_deps=t -C $$subdir clean ; done ; true
 
 mrproper:
 	$(MAKE) clean

@@ -46,6 +46,6 @@ clean-common:
 clean: clean-common
 
 all:
-	make -C $(TOPDIR) all
+	$(MAKE) -C $(TOPDIR) all
 
 include $(TOPDIR)/depend.mk
