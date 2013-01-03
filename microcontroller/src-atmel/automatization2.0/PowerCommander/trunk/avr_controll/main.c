@@ -11,6 +11,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <avr/wdt.h>
+#include <avr/sleep.h>
 
 #include "twi_slave/twi_slave.h"
 #include "pc_init.h"
@@ -31,12 +32,17 @@ int main(void)
 	*/
 	TWIS_Init();
 
+	/* Init Sleepmode Register */
+        SMCR = 1; /* Idle */
 
 	/*
 		mainloop - Kommunikation mit dem master
 	*/
 	while (1)
 	{
+		/* shut down CPU - power save */
+                sleep_cpu();
+
 		if (TWIS_ResponseRequired(&TWIS_ResponseType))
 		{
 			switch (TWIS_ResponseType)
@@ -51,9 +57,26 @@ int main(void)
 					uint8_t i;
 					for (i = 0; i < PWM_CHAN - 1; i++)
 						outputdata.pwmval[i] = TWIS_ReadAck();
+
 					outputdata.pwmval[i] = TWIS_ReadNack();
 					TWIS_Stop();                // I2C stop
 					set_outputs();
+
+					uint8_t cnt_high, cnt_low;
+					cnt_high = cnt_low = 0;
+
+					for (i = 0; i < PWM_CHAN - 1; i++){
+						if(outputdata.pwmval[i] == 0xff)
+							cnt_high++;
+						else if(outputdata.pwmval[i] == 0x00)
+							cnt_low++;
+					}					
+
+					/* Test if all PWMs are on / off */
+					if( (cnt_high == PWM_CHAN) || (cnt_low == PWM_CHAN) )
+						SMCR = 13; /* Standby - Fast Wakeup */
+					else
+						SMCR = 1;  /* Idle */
 				}
 				break;
 				/*
