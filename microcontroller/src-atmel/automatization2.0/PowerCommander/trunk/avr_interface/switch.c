@@ -20,9 +20,9 @@ union {
 		uint8_t rcd_server:1;
 		uint8_t rcd_power:1;
 		uint8_t rcd_licht:1;
-	};
-	uint8_t stat_sw;
-} stat_switches;
+	} inputs;
+	uint8_t status_input;
+} stat_inputs;
 
 #define HAUPTSCHALTER	(_BV(PA0))
 #define POWER_OK	(_BV(PC2))
@@ -50,7 +50,7 @@ static struct t_pin_parameter {
 
 void send_stat(uint8_t pos) {
 	static can_message msg = {0x03, 0x00, 0x01, 0x01, 2, {0}};
-	msg.data[0] = stat_switches.stat_sw;
+	msg.data[0] = stat_inputs.status_input;
 	msg.data[1] = pos;
 	msg.addr_src = myaddr;
 	can_transmit(&msg);
@@ -58,41 +58,34 @@ void send_stat(uint8_t pos) {
 
 
 /*
-void virt_power_on()
-{
-	switch_on(sw_matrix[SWA_KLO].port, sw_matrix[SWA_KLO].pin);
-	switch_on(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
-	switch_on(sw_matrix[SWA_STECKDOSEN].port, sw_matrix[SWA_STECKDOSEN].pin);
-}
-
-
-void virt_power_off()
-{
-	switch_off(sw_matrix[SWL_TAFEL].port, sw_matrix[SWL_TAFEL].pin);
-	switch_off(sw_matrix[SWL_BEAMER].port, sw_matrix[SWL_BEAMER].pin);
-	switch_off(sw_matrix[SWL_SCHRANK].port, sw_matrix[SWL_SCHRANK].pin);
-	switch_off(sw_matrix[SWL_FLIPPER].port, sw_matrix[SWL_FLIPPER].pin);
-	switch_off(sw_matrix[SWL_VORTRAG].port, sw_matrix[SWL_VORTRAG].pin);
-	switch_off(sw_matrix[SWL_LOUNGE].port, sw_matrix[SWL_LOUNGE].pin);
-	switch_off(sw_matrix[SWA_KLO].port, sw_matrix[SWA_KLO].pin);
-	switch_off(sw_matrix[SWL_KUECHE].port, sw_matrix[SWL_KUECHE].pin);
-	switch_off(sw_matrix[SWA_HS].port, sw_matrix[SWA_HS].pin);
-	switch_off(sw_matrix[SWA_BEAMER].port, sw_matrix[SWA_BEAMER].pin);
-	switch_off(sw_matrix[SWA_STECKDOSEN].port, sw_matrix[SWA_STECKDOSEN].pin);
-}*/
-
 static struct t_i2c_cmd_matrix {
 	uint16_t ports;
 	uint8_t tue_etwas;
-} i2c_cmd_matrix[] = {{0, }};
+} i2c_cmd_matrix[] = {{0, }, {0, }, {0, }, {0, }, {0, }, {0, }};*/
 
 void exec(uint8_t index) {
-	if (i2c_cmd_matrix[index].tue_etwas) {
-		uint8_t i;
-		outputdata.ports = i2c_cmd_matrix[index].ports;
+	//if (i2c_cmd_matrix[index].tue_etwas) {
+	//	uint8_t i;
+	//	outputdata.ports = i2c_cmd_matrix[index].ports;
 		/*for (i = 0; i <= (i2c_cmd_matrix[index]).i; i++) {
-			outdata.object = i2c_cmd_matrix[index]->objectlist[i];
+			outputdata.pwm = i2c_cmd_matrix[index]->objectlist[i];
 		}*/
+	//	twi_send();
+	//}
+	if (index == 0) {
+		if (stat_inputs.inputs.hauptschalter == 1) {
+			outputdata.ports = 0x70;
+		}
+		else
+		{
+			outputdata.ports = 0;
+			outputdata.pwmval[0] = 178;
+			outputdata.pwmval[1] = 178;
+			outputdata.pwmval[2] = 178;
+			outputdata.pwmval[3] = 178;
+			outputdata.pwmval[4] = 178;
+			outputdata.pwmval[5] = 178;
+		}
 		twi_send();
 	}
 }
@@ -105,19 +98,45 @@ void exec(uint8_t index) {
 void get_inputs() {
 	uint8_t i;
 	for (i = 0; i < NUM_INPUTS; i++) {
-		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_switches.stat_sw >> i) & 1) == 0)) {
-			stat_switches.stat_sw |= (1 << i);
+		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_inputs.status_input >> i) & 1) == 0)) {
+			stat_inputs.status_input |= (1 << i);
 			send_stat(i);
 			exec(i);
 		}
-		if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_switches.stat_sw >> i) & 1)) {
-			stat_switches.stat_sw &= ~(1 << i);
+		if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input >> i) & 1)) {
+			stat_inputs.status_input &= ~(1 << i);
 			send_stat(i);
 			exec(i);
 		}
 	}
 }
 
+/*
+void set_led() {
+	if (stat_inputs.status_input & 1) {
+#ifdef TESTBOARD
+		PORTA |= LED_GRUEN;
+		PORTA &= ~LED_BLAU;
+#else
+		PORTA |= LED_BLAU;
+		PORTA &= ~LED_GRUEN;
+#endif
+	}
+	else {
+#ifdef TESTBOARD
+		PORTA &= ~LED_GRUEN;
+		PORTA |= LED_BLAU;
+#else
+		PORTA |= LED_GRUEN;
+		PORTA &= ~LED_BLAU;
+#endif
+
+	}
+	if (stat_switches.status_input > 1)
+		PORTA |= LED_ROT;
+	else
+		PORTA &= ~LED_ROT;
+}*/
 
 #define HOLD_THRESHOLD 18
 #define CLICK_THRESHOLD 0
@@ -217,7 +236,7 @@ void taster() {
 	{
 		uint8_t held = 0;
 
-		if ((stat_switches.stat_sw >> (i + 1)) & 0x01) //XXX
+		if ((stat_inputs.status_input >> (i + 1)) & 0x01) //XXX
 		{
 			status[i].counter ++;
 			if (status[i].counter > HOLD_THRESHOLD)
@@ -231,7 +250,7 @@ void taster() {
 			{
 				if (status[i].counter < HOLD_THRESHOLD)
 				{
-					exec(7); // alle an / aus;
+					//exec(7); // alle an / aus;
 				}
 			}
 			status[i].counter = 0;
@@ -242,7 +261,7 @@ void taster() {
 		}
 		else if (status[i].last_held)
 		{
-			status[i].dim_dir ^= 1; // toggle // XXX invert?
+			status[i].dim_dir ^= 1; // toggle invert?
 		}
 		status[i].last_held = held;
 	}

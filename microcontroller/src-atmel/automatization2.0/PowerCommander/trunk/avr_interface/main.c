@@ -39,8 +39,11 @@ void init(void)
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
 	DDRA |= LED_GRUEN | LED_ROT | LED_BLAU; // Status LED G R B
+#ifdef TESTBOARD
+	PORTA &= ~(LED_GRUEN | LED_ROT | LED_BLAU);
+#else
 	PORTA |= LED_GRUEN | LED_ROT | LED_BLAU;
-
+#endif
 	DDRA &= ~(_BV(PA0) | _BV(PA1)); // Eingänge Hauptschalter, RCD Steckdosen
 	DDRD &= ~(_BV(PD6) | _BV(PD7)); // Eingänge RCD Licht, Server
 	DDRC &= ~_BV(PC2); // Eingang 24V Schützspannung ok

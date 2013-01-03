@@ -20,10 +20,11 @@
 #include "../include/PowerCommander.h"
 
 
-#define LED_GRUEN   _BV(PA2)
-#define LED_ROT _BV(PA3)
+#define LED_ROT   _BV(PA3)
+#define LED_GRUEN _BV(PA2)
 #define LED_BLAU  _BV(PA4)
 
+#define TESTBOARD
 
 
 #endif // ifndef CONFIG_H
