@@ -37,16 +37,16 @@ void init(void)
 
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
-
 	DDRA |= LED_GRUEN | LED_ROT | LED_BLAU; // Status LED G R B
 	PORTA |= LED_GRUEN | LED_ROT | LED_BLAU;
-	DDRA &= ~(_BV(PA0) | _BV(PA1)); // Eingänge HS, rcd
-	DDRD &= ~(_BV(PD6) | _BV(PD7)); // Eingänge rcd licht, server
-	DDRC &= ~_BV(PC2); // Eingang power good
+
+	DDRA &= ~(_BV(PA0) | _BV(PA1)); // Eingänge Hauptschalter, RCD Steckdosen
+	DDRD &= ~(_BV(PD6) | _BV(PD7)); // Eingänge RCD Licht, Server
+	DDRC &= ~_BV(PC2); // Eingang 24V Schützspannung ok
 
 
 	DDRB &= ~_BV(PB2); // Eingang Lounge Taster
-	DDRD &= ~_BV(PD3); // Eingang Vortrag Taster
+	DDRD &= ~_BV(PD3); // Eingang Vortragsraum Taster
 
 /*
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
@@ -56,7 +56,6 @@ void init(void)
 		while (1);
 	}
 
-	t_outputdata outputdata;
 	// get output states
 	sync_stat_cache();
 
