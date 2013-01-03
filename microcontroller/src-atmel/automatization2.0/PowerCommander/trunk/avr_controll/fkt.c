@@ -1,9 +1,9 @@
 /*
 	set-ter funktionen fuer den i2cslave
 */
-#include "PowerCommander.h"
-#include "PowerCommander_matrix.h"
 #include "fkt.h"
+#include "PowerCommander_matrix.h"
+
 
 void switch_set(uint8_t output, uint8_t value);
 void pwm_set(uint8_t port, uint8_t value);

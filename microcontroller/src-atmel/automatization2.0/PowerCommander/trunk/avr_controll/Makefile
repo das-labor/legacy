@@ -1,91 +1,79 @@
-DEVICE  = atmega168
-F_CPU   = 16000000	# in Hz
-FUSE_L  = 0x9f  # see below for fuse values for particular devices
-FUSE_H  = 0xc9
-AVRDUDE = avrdude -c usbasp -p $(DEVICE) # edit this line for your programmer
+OBJ = main.o twi_slave/twi_slave.o fkt.o pc_init.o
 
-CFLAGS  = -I. -DDEBUG_LEVEL=0 -I../include
-OBJECTS =  main.o twi_slave/twi_slave.o pc_init.o fkt.o
+# Default values
+OUT           ?= image
+MCU_TARGET    ?= atmega168
+MCU_CC        ?= avr-gcc
+MCU_AS	      ?= avr-as
+OPTIMIZE      ?= -Os
+WARNINGS      ?= -Wall -Winline -pedantic
+DEFS          ?= -DF_CPU=16000000UL
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections
+ASFLAGS	      += -mmcu=avr5
+LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
 
-COMPILE = avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99
+# External Tools
+OBJCOPY       ?= avr-objcopy
+OBJDUMP       ?= avr-objdump
+FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U $(OUT).hex
 
-hex: main.hex
+#############################################################################
+# Rules
+all: $(OUT).elf lst text eeprom
 
-help:
-	@echo "This Makefile has no default rule. Use one of the following:"
-	@echo "make hex ....... to build main.hex (default)"
-	@echo "make program ... to flash fuses and firmware"
-	@echo "make fuse ...... to flash the fuses"
-	@echo "make flash ..... to flash the firmware (use this on metaboard)"
-	@echo "make clean ..... to delete objects and hex file"
-
-program: flash fuse
-
-fkt.h:
-
-PowerCommander_matrix.h:
-
-PowerCommander.h:
-
-pc_init.h:
-
-twi_slave/twi_slave.h:
-
-fkt.c: fkt.h PowerCommander.h PowerCommander_matrix.h
-
-pc_init.c: pc_init.h
-
-main.c: twi_slave/twi_slave.h PowerCommander.h pc_init.h fkt.h 
-
-main.o: main.c twi_slave/twi_slave.h PowerCommander.h pc_init.h fkt.h 
-	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o main.o -c main.c
-
-twi_slave/twi_slave.o: twi_slave/twi_slave.h PowerCommander.h
-	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o twi_slave/twi_slave.o -c twi_slave/twi_slave.c
-
-pc_init.o: pc_init.c pc_init.h
-	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o pc_init.o -c pc_init.c
-
-fkt.o: fkt.c fkt.h PowerCommander.h PowerCommander_matrix.h
-	avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE) -std=c99 -o fkt.o -c fkt.c
-
-
-# rule for programming fuse bits:
-fuse:
-	@[ "$(FUSE_H)" != "" -a "$(FUSE_L)" != "" ] || \
-		{ echo "*** Edit Makefile and choose values for FUSE_L and FUSE_H!"; exit 1; }
-	$(AVRDUDE) -U hfuse:w:$(FUSE_H):m -U lfuse:w:$(FUSE_L):m
-
-# rule for uploading firmware:
-flash: main.hex
-	$(AVRDUDE) -U flash:w:main.hex:i
-
-# rule for deleting dependent files (those which can be built by Make):
 clean:
-	rm -f main.hex main.lst main.obj main.cof main.list main.map main.eep.hex main.elf *.o 
-# Generic rule for compiling C files:
-.c.o:
-	$(COMPILE) -c $< -o $@
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec twi_slave/*.o
+	rm -rf *.srec $(OUT).elf
 
-# Generic rule for assembling Assembler source files:
-.S.o:
-	$(COMPILE) -x assembler-with-cpp -c $< -o $@
-# "-x assembler-with-cpp" should not be necessary since this is the default
-# file type for the .S (with capital S) extension. However, upper case
-# characters are not always preserved on Windows. To ensure WinAVR
-# compatibility define the file type manually.
+flash: $(OUT).hex
+	$(FLASHCMD)
 
-# Generic rule for compiling C to assembler, used for debugging only.
-.c.s:
-	$(COMPILE) -S $< -o $@
-# file targets:
+#############################################################################
+# Building Rules
+$(OUT).elf: $(OBJ)
+	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-main.elf: twi_slave/twi_slave.o main.o pc_init.o fkt.o	# usbdrv dependency only needed because we copy it
-	$(COMPILE) -o main.elf $(OBJECTS)
+%.o: %.c
+	$(MCU_CC) $(CFLAGS) -c $< -o $@
 
-main.hex: main.elf
-	rm -f main.hex main.eep.hex
-	avr-objcopy -j .text -j .data -O ihex main.elf main.hex
-	avr-size main.hex
+%.o: %.S
+	$(MCU_AS) $(ASFLAGS) -o $@ $<
 
+lst: $(OUT).lst
+
+%.lst: %.elf
+	$(OBJDUMP) -h -S $< > $@
+
+# Rules for building the .text rom images
+text: hex bin srec
+
+hex:  $(OUT).hex
+bin:  $(OUT).bin
+srec: $(OUT).srec
+
+%.hex: %.elf
+	$(OBJCOPY) -j .text -j .data -O ihex $< $@
+
+%.srec: %.elf
+	$(OBJCOPY) -j .text -j .data -O srec $< $@
+
+%.bin: %.elf
+	$(OBJCOPY) -j .text -j .data -O binary $< $@
+
+# Rules for building the .eeprom rom images
+
+eeprom: ehex ebin esrec
+
+ehex:  $(OUT)_eeprom.hex
+ebin:  $(OUT)_eeprom.bin
+esrec: $(OUT)_eeprom.srec
+
+%_eeprom.hex: %.elf
+	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O ihex $< $@
+
+%_eeprom.srec: %.elf
+	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O srec $< $@
+
+%_eeprom.bin: %.elf
+	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O binary $< $@
 

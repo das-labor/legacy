@@ -2,7 +2,6 @@
 #ifndef POWERCOMMANDER_MATRIX_H
 #define POWERCOMMANDER_MATRIX_H
 
-#include "PowerCommander.h"
 
 static struct t_switch_parameter {
 	volatile uint8_t *port;
