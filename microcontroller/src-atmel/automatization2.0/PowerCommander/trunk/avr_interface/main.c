@@ -13,6 +13,7 @@
 #include "can/lap.h"
 #include "switch.h"
 #include "i2c_funktionen.h"
+#include "statusled.h"
 
 volatile uint8_t tickscounter;
 
@@ -79,10 +80,14 @@ int main(void)
 	//system initialization
 	init();
 
+	set_led( (rgb){ .r = 1, .g = 1, .b = 1 , .fade=1 , .blink=0} );
+
 	//the main loop continuously handles can messages
 	while (1)
 	{
 		can_handler();
+
+		/* execute every 20 ms */
 		if (tickscounter >= 20) {
 			tickscounter = 0;
 			switch_handler();
