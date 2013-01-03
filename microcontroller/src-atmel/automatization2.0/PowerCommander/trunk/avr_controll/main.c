@@ -13,7 +13,6 @@
 #include <avr/wdt.h>
 
 #include "twi_slave/twi_slave.h"
-#include "PowerCommander.h"
 #include "pc_init.h"
 #include "fkt.h"
 
