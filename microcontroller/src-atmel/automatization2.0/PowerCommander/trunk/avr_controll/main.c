@@ -21,15 +21,11 @@ int main(void)
 {
 	uint8_t TWIS_ResponseType;
 
-	t_outputdata outputdata = {0, {0xff, 0xff, 0xff, 0xff, 0xff, 0xff}};
+
 	init_modi();
 	init_io_ports();
 	init_timer();
 	set_outputs();
-	/*
-	** Clear any interrupt
-	*/
-	cli();
 
 	/*
 	** Start TWI Slave with address 15 and bitrate of 100000 Hz
@@ -38,7 +34,7 @@ int main(void)
 
 
 	/*
-		mainloop - die ist die kommunikation mit einem master
+		mainloop - Kommunikation mit dem master
 	*/
 	while (1)
 	{
@@ -54,18 +50,20 @@ int main(void)
 					outputdata.ports = TWIS_ReadAck();
 					outputdata.ports += TWIS_ReadAck() << 8;
 					uint8_t i;
-					for (i = 0; i < 5; i++)
+					for (i = 0; i < PWM_CHAN - 1; i++)
 						outputdata.pwmval[i] = TWIS_ReadAck();
 					outputdata.pwmval[i] = TWIS_ReadNack();
 					TWIS_Stop();                // I2C stop
 					set_outputs();
 				}
 				break;
-
+				/*
+					** Slave is requested to send bytes from the master.
+				*/
 				case TW_ST_SLA_ACK:
 					TWIS_Write(outputdata.ports);
 					TWIS_Write(outputdata.ports >> 8);
-					for (int read_p = 0; read_p < 6; read_p++)
+					for (int read_p = 0; read_p < PWM_CHAN; read_p++)
 						TWIS_Write(outputdata.pwmval[read_p]);
 					TWIS_Stop();
 					break;

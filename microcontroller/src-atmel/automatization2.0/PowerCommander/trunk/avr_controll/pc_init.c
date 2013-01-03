@@ -1,5 +1,5 @@
 /*
- * PowerCommander - Ausf¸hrungs Controller
+ * PowerCommander - Ausf√ºhrungs Controller
  */
 
 #include <avr/io.h>
@@ -9,18 +9,18 @@
 
 void init_io_ports()
 {
-	DDRC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);	// relais ausg‰nge 1-4 k¸che licht, beamer, vortrag licht, lounge licht
+	DDRC |= _BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0);	// relais ausg√§nge 1-4 k√ºche licht, beamer, vortrag licht, lounge licht
 	PORTC &= ~(_BV(PC3) | _BV(PC2) | _BV(PC1) | _BV(PC0));	// aus damit
 
-	DDRB |= _BV(PB5) | _BV(PB4) | _BV(PB0);	// , relais ausg‰nge 5-7, tischsteckdose lounge, licht toilette
+	DDRB |= _BV(PB5) | _BV(PB4) | _BV(PB0);	// , relais ausg√§nge 5-7, tischsteckdose lounge, licht toilette
 	PORTB &= ~(_BV(PB5)| _BV(PB4) | _BV(PB0));	// aus damit
 
-	DDRD |= _BV(PD7) | _BV(PD4) | _BV(PD2) | _BV(PD1) | _BV(PD0);		// relais ausgang 8, hauptsch¸tz, licht 3, licht 2, licht 1, licht 4
+	DDRD |= _BV(PD7) | _BV(PD4) | _BV(PD2) | _BV(PD1) | _BV(PD0);		// relais ausgang 8, hauptsch√ºtz, licht 3, licht 2, licht 1, licht 4
 	PORTD &= ~(_BV(PD7) | _BV(PD4) | _BV(PD2) | _BV(PD1) | _BV(PD0));	// aus
 
 
-	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3);                 // Pins mit pwm als ausg‰nge
-	DDRD |= _BV(PD3) | _BV(PD5) | _BV(PD6);                 // Pins mit pwm als ausg‰nge
+	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3);                 // Pins mit pwm als ausg√§nge
+	DDRD |= _BV(PD3) | _BV(PD5) | _BV(PD6);                 // Pins mit pwm als ausg√§nge
 }
 
 void init_modi()
@@ -54,6 +54,5 @@ void init_timer()
 	TCNT0 = 255;   // pwm timer clear
 	//OCR0A = 255;   // pwm timer compare target
 	//OCR0B = 255;   // pwm timer compare target
-
 }
 

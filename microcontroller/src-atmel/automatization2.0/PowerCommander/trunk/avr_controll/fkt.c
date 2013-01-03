@@ -1,5 +1,5 @@
 /*
-	set-ter und get-ter funktionen fuer den i2cslave
+	set-ter funktionen fuer den i2cslave
 */
 #include "PowerCommander.h"
 #include "PowerCommander_matrix.h"
@@ -8,12 +8,13 @@
 void switch_set(uint8_t output, uint8_t value);
 void pwm_set(uint8_t port, uint8_t value);
 
+t_outputdata outputdata = {0, {0xff, 0xff, 0xff, 0xff, 0xff, 0xff}};
 
 void set_outputs() {
-	for (uint8_t i = 0; i < 12; i++) {
+	for (uint8_t i = 0; i < 12; i++)
 		switch_set(i, ((outputdata.ports) >> i) & 0x01);
-	}
-	for (uint8_t i = 0; i < 6; i++)
+
+	for (uint8_t i = 0; i < PWM_CHAN; i++)
 		pwm_set(i, outputdata.pwmval[i]);
 }
 
