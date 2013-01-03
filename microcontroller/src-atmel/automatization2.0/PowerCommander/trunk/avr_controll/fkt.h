@@ -3,7 +3,7 @@
 
 #include "PowerCommander.h"
 
-t_outputdata outputdata;
-void set_outputs();
+extern t_outputdata outputdata;
+extern void set_outputs();
 #endif
 
