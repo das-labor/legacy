@@ -4,6 +4,7 @@
 #include "../include/PowerCommander.h"
 #include "i2c_funktionen.h"
 
+t_outputdata outputdata;
 
 void sync_stat_cache()
 {
@@ -12,7 +13,7 @@ void sync_stat_cache()
 		outputdata.ports = TWIM_ReadAck();
 		outputdata.ports += TWIM_ReadAck() << 8;
 		uint8_t i;
-		for (i = 0; i < 5; i++)
+		for (i = 0; i < PWM_CHAN - 1; i++)
 			outputdata.pwmval[i] = TWIM_ReadAck();
 		outputdata.pwmval[i] = TWIM_ReadNack();
 	}
@@ -27,7 +28,7 @@ void twi_send()
 		TWIM_Write(outputdata.ports);
 		TWIM_Write(outputdata.ports >> 8);
 		uint8_t i;
-		for (i = 0; i < 6; i++)
+		for (i = 0; i < PWM_CHAN; i++)
 			TWIM_Write(outputdata.pwmval[i]);
 	}
 	TWIM_Stop();

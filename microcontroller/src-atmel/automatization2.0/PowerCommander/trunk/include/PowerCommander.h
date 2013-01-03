@@ -10,9 +10,6 @@
 #define HASDATA (0x01)
 #define HASNDATA (0x00)
 
-#define RINGBUFFERSIZE 3
-// der schalter generiert $Anzahl von events pro sekunde
-
 // immer wieder der gleiche scheiss!
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
 
@@ -143,9 +140,10 @@
 // Anordnen von Schaltern in einer Matrix
 // so, dass wird die mittels i++ durchgehen koennen
 
+#define PWM_CHAN 6
 typedef struct {
 	uint16_t ports;
-	uint8_t pwmval[6];
+	uint8_t pwmval[PWM_CHAN];
 } t_outputdata;
 
 #endif
