@@ -9,6 +9,7 @@
 #include "can_handler.h"
 #include "i2c_funktionen.h"
 #include "../include/PowerCommander.h"
+#include "statusled.h"
 
 union {
 	struct {
@@ -96,6 +97,11 @@ void exec(uint8_t index) {
 	}
 }
 
+/* 
+*  check for changes on monitored inputs
+*  on change: call send_stat() and call exec()
+*/
+
 void get_inputs() {
 	uint8_t i;
 	for (i = 0; i < NUM_INPUTS; i++) {
@@ -110,22 +116,6 @@ void get_inputs() {
 			exec(i);
 		}
 	}
-}
-
-void set_led() {
-	if (stat_switches.stat_sw & 1) {
-		PORTA |= LED_GRUEN;
-		PORTA &= ~LED_BLAU;
-	}
-	else {
-		PORTA &= ~LED_GRUEN;
-		PORTA |= LED_BLAU;
-	}
-
-	if (stat_switches.stat_sw > 1)
-		PORTA |= LED_ROT;
-	else
-		PORTA &= ~LED_ROT;
 }
 
 
@@ -262,6 +252,6 @@ void taster() {
 void switch_handler()
 {
 	get_inputs();
-	set_led();
+	rgb_led_animation();
 	taster();
 }
