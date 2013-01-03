@@ -28,20 +28,37 @@ void set_led(rgb color) {
 		rgb_led_color.fade = 0;
 	}
 
-	if(!rgb_led_color.fade && !rgb_led_color.blink)
+	PORTA &= ~LED_ROT;
+	PORTA &= ~LED_GRUEN;
+	PORTA &= ~LED_BLAU;
+
+	if(rgb_led_color.fade)
+	{
+		if(color.r){
+			PORTA |= LED_ROT;
+			return;
+		}
+
+		if(color.g){
+			PORTA |= LED_GRUEN;
+			return;
+		}
+
+		if(color.b){
+			PORTA |= LED_BLAU;
+		}
+
+	}
+	else
 	{
 		if(color.r)
 			PORTA |= LED_ROT;
-		else
-			PORTA &= ~LED_ROT;
+
 		if(color.g)
 			PORTA |= LED_GRUEN;
-		else
-			PORTA &= ~LED_GRUEN;
+
 		if(color.b)
 			PORTA |= LED_BLAU;
-		else
-			PORTA &= ~LED_BLAU;
 	}
 }
 
@@ -97,18 +114,18 @@ void rgb_led_animation( void ) {
 
 		/* update at 3 Hz */
 		if(rgb_led_counter == 15){
+			PORTA &= ~LED_ROT;
+			PORTA &= ~LED_GRUEN;
+			PORTA &= ~LED_BLAU;
+		}
+		else if(rgb_led_counter > 30){
+			rgb_led_counter = 0;
 			if(rgb_led_color.r)
 				PORTA |= LED_ROT;
 			if(rgb_led_color.g)
 				PORTA |= LED_GRUEN;
 			if(rgb_led_color.b)
 				PORTA |= LED_BLAU;
-		}
-		else if(rgb_led_counter > 30){
-			rgb_led_counter = 0;
-			PORTA &= ~LED_ROT;
-			PORTA &= ~LED_GRUEN;
-			PORTA &= ~LED_BLAU;
 		}
 	}
 
