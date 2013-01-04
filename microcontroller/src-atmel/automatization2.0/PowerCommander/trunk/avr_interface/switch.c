@@ -90,6 +90,48 @@ void exec(uint8_t index) {
 	}
 }
 
+
+/* 
+* set the rgb led according to the current state
+* Green         : No Error - Labor On
+* Red           : No Error - Labor Off
+* White blinking: Error, 24V Power down
+* Green blinking: Error, rcd server failed
+* Red blinking  : Error, rcd main failed
+* Blue blinking : Error, rcd licht failed
+*/
+void update_rgb_led() {
+	if(stat_switches.power_ok) /* Error case */
+	{
+		set_led( (rgb){ .r = 1, .g = 1, .b = 1 , .fade=0 , .blink=1} );
+		return;
+	}
+	if(stat_switches.rcd_server) /* Error case */
+	{
+		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=1} );
+		return;
+	}
+	if(stat_switches.rcd_power) /* Error case */
+	{
+		set_led( (rgb){ .r = 1, .g = 0, .b = 0 , .fade=0 , .blink=1} );
+		return;
+	}
+	if(stat_switches.rcd_licht) /* Error case */
+	{
+		set_led( (rgb){ .r = 0, .g = 0, .b = 1 , .fade=0 , .blink=1} );
+		return;
+	}
+	if(stat_switches.hauptschalter) /* Switch on */
+	{
+		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=0} );
+	}
+	else
+	{
+		set_led( (rgb){ .r = 1, .g = 0, .b = 0 , .fade=0 , .blink=0} );
+	}
+}
+
+
 /* 
 *  check for changes on monitored inputs
 *  on change: call send_stat() and call exec()
@@ -101,42 +143,19 @@ void get_inputs() {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_inputs.status_input >> i) & 1) == 0)) {
 			stat_inputs.status_input |= (1 << i);
 			send_stat(i);
+			update_rgb_led();
 			exec(i);
 		}
 		if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input >> i) & 1)) {
 			stat_inputs.status_input &= ~(1 << i);
 			send_stat(i);
+			update_rgb_led();
 			exec(i);
 		}
 	}
 }
 
-/*
-void set_led() {
-	if (stat_inputs.status_input & 1) {
-#ifdef TESTBOARD
-		PORTA |= LED_GRUEN;
-		PORTA &= ~LED_BLAU;
-#else
-		PORTA |= LED_BLAU;
-		PORTA &= ~LED_GRUEN;
-#endif
-	}
-	else {
-#ifdef TESTBOARD
-		PORTA &= ~LED_GRUEN;
-		PORTA |= LED_BLAU;
-#else
-		PORTA |= LED_GRUEN;
-		PORTA &= ~LED_BLAU;
-#endif
 
-	}
-	if (stat_switches.status_input > 1)
-		PORTA |= LED_ROT;
-	else
-		PORTA &= ~LED_ROT;
-}*/
 
 #define HOLD_THRESHOLD 18
 #define CLICK_THRESHOLD 0
@@ -216,7 +235,8 @@ void lamp_dim() {
 		{
 			virt_vortrag_pwm_set_all(val + 1, 255);
 		}
-	} else
+	} 
+	else
 	{
 		val = pwm_vortrag_get_max();
 		if (val == 0)
