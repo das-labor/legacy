@@ -1,4 +1,4 @@
-OBJ = main.o can/can.o can/spi.o can_handler.o twi_master/twi_master.o switch.o i2c_funktionen.o statusled.o
+OBJ = main.o can/can.o can/spi.o can_handler.o twi_master/twi_master.o switch.o i2c_funktionen.o statusled.o virt_lamp.o
 
 # Default values
 OUT           ?= image
