@@ -91,32 +91,32 @@ void exec(uint8_t index) {
 }
 
 
-/* 
+/*
 * set the rgb led according to the current state
 * Green         : No Error - Labor On
-* Red           : No Error - Labor Off
+* Blue          : No Error - Labor Off
 * White blinking: Error, 24V Power down
 * Green blinking: Error, rcd server failed
 * Red blinking  : Error, rcd main failed
 * Blue blinking : Error, rcd licht failed
 */
 void update_rgb_led() {
-	if(stat_inputs.inputs.power_ok) /* Error case */
+	if(!stat_inputs.inputs.power_ok) /* Error case */
 	{
 		set_led( (rgb){ .r = 1, .g = 1, .b = 1 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(stat_inputs.inputs.rcd_server) /* Error case */
+	if(!stat_inputs.inputs.rcd_server) /* Error case */
 	{
 		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(stat_inputs.inputs.rcd_power) /* Error case */
+	if(!stat_inputs.inputs.rcd_power) /* Error case */
 	{
 		set_led( (rgb){ .r = 1, .g = 0, .b = 0 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(stat_inputs.inputs.rcd_licht) /* Error case */
+	if(!stat_inputs.inputs.rcd_licht) /* Error case */
 	{
 		set_led( (rgb){ .r = 0, .g = 0, .b = 1 , .fade=0 , .blink=1} );
 		return;
@@ -127,7 +127,7 @@ void update_rgb_led() {
 	}
 	else
 	{
-		set_led( (rgb){ .r = 1, .g = 0, .b = 0 , .fade=0 , .blink=0} );
+		set_led( (rgb){ .r = 0, .g = 0, .b = 1 , .fade=0 , .blink=0} );
 	}
 }
 
