@@ -30,12 +30,16 @@ LDFLAGS += -T ./avr5.x -Wl,-Map,image.map -mmcu=$(MCU)
 #############################################################################
 #Settings for Simulator build
 
-CYGWINTYPE = $(shell echo $$OSTYPE)
+#ugly hack to define a newline (yes, there are two blank lines, on purpose!!)
+define n
+
+
+endef
+
 OSTYPE = $(shell uname)
 MACHINE = $(shell uname -m)
-#$(info $(OSTYPE))
 
-ifeq ($(CYGWINTYPE),cygwin)
+ifeq ($(findstring CYGWIN,$(OSTYPE)),CYGWIN)
   CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_WIN32 -D_XOPEN_SOURCE=600
   LDFLAGS_SIM = -T simulator/i386pe.x
   LIBS_SIM    = -lgdi32 -lwinmm -lm
@@ -49,13 +53,21 @@ else
     endif
     LIBS_SIM = -lglut -lpthread -lGL -lGLU -lm
   else
-    CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_XOPEN_SOURCE=600
-    ifeq ($(MACHINE),x86_64)
-      LDFLAGS_SIM = -g -T simulator/elf_x86_64.x
+    ifeq ($(OSTYPE),Linux)
+      CFLAGS_SIM  = -g -Wall -pedantic -std=c99 -O0 -D_XOPEN_SOURCE=600
+      ifeq ($(MACHINE),x86_64)
+        LDFLAGS_SIM = -g -T simulator/elf_x86_64.x
+      else
+        LDFLAGS_SIM = -T simulator/elf_i386.x
+      endif
+      LIBS_SIM = -lglut -lpthread -lGL -lGLU -lm
     else
-      LDFLAGS_SIM = -T simulator/elf_i386.x
+      ($(error $(n)$(n)Simulator build is not supported on your system.$(n)$(n)\
+Currently supported platforms:$(n) \
+  Linux on x86 and amd64$(n) \
+  FreeBSD on x86 and amd64$(n) \
+  Windows (through Cygwin) on x86 and amd64)
     endif
-    LIBS_SIM = -lglut -lpthread -lGL -lGLU -lm
   endif
 endif
 
