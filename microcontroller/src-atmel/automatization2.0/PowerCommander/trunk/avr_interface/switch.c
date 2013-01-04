@@ -101,27 +101,27 @@ void exec(uint8_t index) {
 * Blue blinking : Error, rcd licht failed
 */
 void update_rgb_led() {
-	if(stat_switches.power_ok) /* Error case */
+	if(stat_inputs.inputs.power_ok) /* Error case */
 	{
 		set_led( (rgb){ .r = 1, .g = 1, .b = 1 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(stat_switches.rcd_server) /* Error case */
+	if(stat_inputs.inputs.rcd_server) /* Error case */
 	{
 		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(stat_switches.rcd_power) /* Error case */
+	if(stat_inputs.inputs.rcd_power) /* Error case */
 	{
 		set_led( (rgb){ .r = 1, .g = 0, .b = 0 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(stat_switches.rcd_licht) /* Error case */
+	if(stat_inputs.inputs.rcd_licht) /* Error case */
 	{
 		set_led( (rgb){ .r = 0, .g = 0, .b = 1 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(stat_switches.hauptschalter) /* Switch on */
+	if(stat_inputs.inputs.hauptschalter) /* Switch on */
 	{
 		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=0} );
 	}
