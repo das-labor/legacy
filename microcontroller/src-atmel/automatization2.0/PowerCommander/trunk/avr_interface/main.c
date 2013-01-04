@@ -14,6 +14,7 @@
 #include "switch.h"
 #include "i2c_funktionen.h"
 #include "statusled.h"
+#include "virt_lamp.h"
 
 volatile uint8_t tickscounter;
 
@@ -70,6 +71,9 @@ void init(void)
 	can_init();
 
 	read_can_addr();
+
+	// init lamp matrix
+	init_lamp_control();
 
 	//turn on interrupts
 	sei();

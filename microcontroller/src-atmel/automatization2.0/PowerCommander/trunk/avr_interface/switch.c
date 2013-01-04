@@ -10,6 +10,7 @@
 #include "i2c_funktionen.h"
 #include "../include/PowerCommander.h"
 #include "statusled.h"
+#include "virt_lamp.h"
 
 union {
 	struct {
@@ -63,6 +64,25 @@ static struct t_i2c_cmd_matrix {
 	uint8_t tue_etwas;
 } i2c_cmd_matrix[] = {{0, }, {0, }, {0, }, {0, }, {0, }, {0, }};*/
 
+static uint8_t timeout_cnt;
+void start_main_switch_timeout(void) {
+	/* 5 seconds timeout */
+	timeout_cnt = 250;
+}
+
+void handle_main_switch_timeout(void) {
+	if(timeout_cnt > 0)
+	{
+		timeout_cnt--;
+		if(!timeout_cnt)
+		{
+			/* no need to handle other relais, they are controled by set_lamp... */
+			outputdata.ports &= ~(1<<SWA_HS)|(1<<SWA_KLO)|(1<<SWA_STECKDOSEN);
+			twi_send();
+		}
+	}
+}
+
 void exec(uint8_t index) {
 	//if (i2c_cmd_matrix[index].tue_etwas) {
 	//	uint8_t i;
@@ -72,21 +92,24 @@ void exec(uint8_t index) {
 		}*/
 	//	twi_send();
 	//}
+	uint8_t i;
 	if (index == 0) {
 		if (stat_inputs.inputs.hauptschalter == 1) {
-			outputdata.ports = 0x70;
+			outputdata.ports |= (1<<SWA_HS)|(1<<SWA_KLO)|(1<<SWA_STECKDOSEN);
+			twi_send();
 		}
 		else
 		{
-			outputdata.ports = 0;
-			outputdata.pwmval[0] = 178;
-			outputdata.pwmval[1] = 178;
-			outputdata.pwmval[2] = 178;
-			outputdata.pwmval[3] = 178;
-			outputdata.pwmval[4] = 178;
-			outputdata.pwmval[5] = 178;
+			/* turn of lights, preset default dim level */
+			set_lamp_all(ROOM_VORTRAG,0);
+			set_lamp_all(ROOM_LOUNGE,0);
+			set_lamp_all(ROOM_KUECHE,0);
+			set_bright_all(ROOM_VORTRAG,178);
+			set_bright_all(ROOM_KUECHE,178);
+			set_bright_all(ROOM_LOUNGE,178);
+			/* start timeout, shutdown after 5 seconds */
+			start_main_switch_timeout();
 		}
-		twi_send();
 	}
 }
 
@@ -293,4 +316,5 @@ void switch_handler()
 	get_inputs();
 	rgb_led_animation();
 	taster();
+	handle_main_switch_timeout();
 }
