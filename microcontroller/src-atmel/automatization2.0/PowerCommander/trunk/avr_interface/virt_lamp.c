@@ -7,10 +7,6 @@
 #include "virt_lamp.h"
 #include "../include/PowerCommander.h"
 
-#define ROOM_VORTRAG 0
-#define ROOM_LOUNGE 1
-#define ROOM_KUECHE 2
-
 static void relais_control(void);
 
 /*
@@ -236,6 +232,42 @@ void set_bright_all(uint8_t room, uint8_t value)
 	}
 
 	relais_control();	/* update relais status, will call twi_send() */
+}
+
+
+/*
+* Return status of all lamp channels
+*/
+uint8_t get_channel_status(void)
+{
+	uint8_t tmp=0;
+	if(outputdata.ports & _BV(SWL_TAFEL))
+		tmp |= 1;
+	if(outputdata.ports & _BV(SWL_BEAMER))
+		tmp |= 2;
+	if(outputdata.ports & _BV(SWL_SCHRANK))
+		tmp |= 4;
+	if(outputdata.ports & _BV(SWL_FLIPPER))
+		tmp |= 8;
+	if(outputdata.ports & _BV(SWL_KUECHE))
+		tmp |= 16;
+	return tmp;
+}
+
+/*
+* Return brightness of lamp channel <index>
+*  index == 0: SWL_TAFEL
+*  index == 1: SWL_BEAMER
+*  index == 2: SWL_SCHRANK
+*  index == 3: SWL_FLIPPER
+*  index == 4: SWL_KUECHE
+*/
+uint8_t get_channel_brightness(uint8_t index)
+{
+	if(index > 4)
+		return 0;
+
+	return outputdata.pwmval[index];
 }
 
 /*
