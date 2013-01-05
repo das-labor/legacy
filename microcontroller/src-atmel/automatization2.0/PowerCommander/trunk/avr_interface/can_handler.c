@@ -9,9 +9,11 @@
 #include "twi_master/twi_master.h"
 #include "../include/PowerCommander.h"
 #include "i2c_funktionen.h"
-
+#include "virt_lamp.h"
 
 uint8_t myaddr;
+
+void send_status(uint8_t addr);
 
 void can_handler()
 {
@@ -67,6 +69,38 @@ void can_handler()
 						break;
 				}
 			}
+			else if (rx_msg->port_dst == 2)
+			{
+				switch (rx_msg->data[0]) {
+					case 0: // switch lamp
+						if(rx_msg->data[1] < 4)
+							set_lamp(ROOM_VORTRAG,rx_msg->data[1],rx_msg->data[2]);
+						else
+							set_lamp(ROOM_KUECHE,0,rx_msg->data[2]);
+						send_status(rx_msg->addr_src);
+						break;
+					case 1: // set brightness lamp
+						if(rx_msg->data[1] < 4)
+							set_bright(ROOM_VORTRAG,rx_msg->data[1],rx_msg->data[2]);
+						else
+							set_bright(ROOM_KUECHE,0,rx_msg->data[2]);
+						send_status(rx_msg->addr_src);
+						break;
+					case 2: // request status packet
+						send_status(rx_msg->addr_src);
+						break;
+					case 3: // set all lamps
+						set_lamp_all(ROOM_VORTRAG,rx_msg->data[2]);
+						set_lamp_all(ROOM_KUECHE,rx_msg->data[2]);
+						send_status(rx_msg->addr_src);
+						break;
+					case 4: // set brightness all lamps
+						set_bright_all(ROOM_VORTRAG,rx_msg->data[2]);
+						set_bright_all(ROOM_KUECHE,rx_msg->data[2]);
+						send_status(rx_msg->addr_src);
+						break;
+				}
+			}
 		}
 		// sleepmode zustand abfangen
 		if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01) {
@@ -75,25 +109,17 @@ void can_handler()
 	}
 }
 
-void can_send(uint8_t port, uint8_t *p)
+void send_status(uint8_t addr)
 {
-	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
-	uint8_t i;
-	for (i = 0; i < 1; i++)
-		msg.data[i] = p[i];
+	static can_message msg = {0x00, 0x00, 0x03, 0x03, 6, {0}};
+	msg.data[0] = get_channel_status();
+	msg.data[1] = get_channel_brightness(0); /* SWL_TAFEL */
+	msg.data[2] = get_channel_brightness(1); /* SWL_BEAMER */
+	msg.data[3] = get_channel_brightness(2); /* SWL_SCHRANK */
+	msg.data[4] = get_channel_brightness(3); /* SWL_FLIPPER */
+	msg.data[5] = get_channel_brightness(4); /* SWL_KUECHE */
 	msg.addr_src = myaddr;
-	msg.port_dst = port;
-	can_transmit(&msg);
-}
-
-void can_send2(uint8_t p)
-{
-	static can_message msg = {0x03, 0x00, 0x00, 0x01, 1, {0}};
-
-	msg.data[0] = p;
-	msg.addr_src = myaddr;
-	msg.addr_dst = 0x6f;
-	msg.port_dst = 1;
+	msg.addr_dst = addr;
 	can_transmit(&msg);
 }
 
