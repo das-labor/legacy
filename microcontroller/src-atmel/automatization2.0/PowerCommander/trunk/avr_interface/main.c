@@ -87,8 +87,6 @@ int main(void)
 	//system initialization
 	init();
 
-	set_led( (rgb){ .r = 1, .g = 1, .b = 1 , .fade=1 , .blink=0} );
-
 	//the main loop continuously handles can messages
 	while (1)
 	{

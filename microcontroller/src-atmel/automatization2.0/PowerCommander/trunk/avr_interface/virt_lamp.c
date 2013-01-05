@@ -5,6 +5,7 @@
 #include "can_handler.h"
 #include "i2c_funktionen.h"
 #include "virt_lamp.h"
+#include "../include/PowerCommander.h"
 
 #define ROOM_VORTRAG 0
 #define ROOM_LOUNGE 1
@@ -19,7 +20,7 @@ static void relais_control(void);
 static struct t_lamp_control {
 	uint8_t pwmval[7];
 	uint8_t enabled;
-} lamp_matrix[4];
+} lamp_matrix;
 
 
 /*
@@ -28,15 +29,12 @@ static struct t_lamp_control {
 
 void init_lamp_control()
 {
-	uint8_t i,j;
-	for(i=0;i<4;i++)
+	uint8_t j;
+	for (j = 0; j < 7; j++)
 	{
-		for(j=0;j<7;j++)
-		{
-			lamp_matrix[i].pwmval[j] = 0;
-		}
-		lamp_matrix[i].enabled = 0;
+		lamp_matrix.pwmval[j] = 0;
 	}
+	lamp_matrix.enabled = 0;
 }
 
 
@@ -59,46 +57,40 @@ void init_lamp_control()
 
 void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 {
-	if(room > 2)
+	if (room > 2)
 		return;
-	if(index > 7)
+	if (index > 7)
 		return;
 
-	if(enable)
-		lamp_matrix[room].enabled |= 1<<index;
-	else
-		lamp_matrix[room].enabled &= ~(1<<index);
-
-	if(room == ROOM_VORTRAG)
+	if (room == ROOM_VORTRAG)
 	{
-		if(index == 0){ /* SWL_TAFEL */
-			if(enable)
+		if (index == 0) { /* SWL_TAFEL */
+			if (enable)
 				outputdata.ports |= (1<<SWL_TAFEL);
 			else
 				outputdata.ports &= ~(1<<SWL_TAFEL);
 		}
-		else if(index == 1){ /* SWL_BEAMER */
-			if(enable)
+		else if (index == 1) { /* SWL_BEAMER */
+			if (enable)
 				outputdata.ports |= (1<<SWL_BEAMER);
 			else
 				outputdata.ports &= ~(1<<SWL_BEAMER);
 		}
-		else if(index == 2){ /* SWL_SCHRANK */
-			if(enable)
+		else if (index == 2) { /* SWL_SCHRANK */
+			if (enable)
 				outputdata.ports |= (1<<SWL_SCHRANK);
 			else
 				outputdata.ports &= ~(1<<SWL_SCHRANK);
 		}
-		else if(index == 3){ /* SWL_FLIPPER */
-			if(enable)
+		else if (index == 3){ /* SWL_FLIPPER */
+			if (enable)
 				outputdata.ports |= (1<<SWL_FLIPPER);
 			else
 				outputdata.ports &= ~(1<<SWL_FLIPPER);
 		}
-
 	}
 
-	else if(room == ROOM_LOUNGE)
+	else if (room == ROOM_LOUNGE)
 	{
 		static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
 		msg.data[0] = 0; /* switch lamp */
@@ -109,12 +101,12 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 		msg.addr_dst = 0x61;
 		can_transmit(&msg);	/* send packet to can_dimmer */
 	}
-	else if(room == ROOM_KUECHE)
+	else if (room == ROOM_KUECHE)
 	{
-		if(enable)
-			outputdata.ports |= (1<<SWA_KUECHE);
+		if (enable)
+			outputdata.ports |= (1<<SWL_KUECHE);
 		else
-			outputdata.ports &= ~(1<<SWA_KUECHE);
+			outputdata.ports &= ~(1<<SWL_KUECHE);
 	}
 
 
@@ -123,29 +115,27 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 
 void set_lamp_all(uint8_t room, uint8_t enable)
 {
-	if(room > 2)
+	if (room > 2)
 		return;
 
-	if(room == ROOM_VORTRAG)
+	if (room == ROOM_VORTRAG)
 	{
-		if(enable)
+		if (enable)
 		{
-			lamp_matrix[room].enabled |= 15;
 			outputdata.ports |= (1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK);
 		}
 		else
 		{
-			lamp_matrix[room].enabled &= ~15;
 			outputdata.ports &= ~((1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK));
 		}
 
 	}
-	else if(room == ROOM_LOUNGE)
+	else if (room == ROOM_LOUNGE)
 	{
-		if(enable)
-			lamp_matrix[room].enabled |= 31;
+		if (enable)
+			lamp_matrix.enabled |= 1;
 		else
-			lamp_matrix[room].enabled &= ~31;
+			lamp_matrix.enabled &= ~1;
 
 		static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
 		msg.data[0] = 3; /* switch lamp all */
@@ -156,13 +146,12 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 		msg.addr_dst = 0x61;
 		can_transmit(&msg);	/* send packet to can_dimmer */
 	}
-	else if(room == ROOM_KUECHE)
+	else if (room == ROOM_KUECHE)
 	{
-		lamp_matrix[room].enabled = enable;
-		if(enable)
-			outputdata.ports |= (1<<SWA_KUECHE);
+		if (enable)
+			outputdata.ports |= (1<<SWL_KUECHE);
 		else
-			outputdata.ports &= ~(1<<SWA_KUECHE);
+			outputdata.ports &= ~(1<<SWL_KUECHE);
 	}
 
 	relais_control();	/* update relais status, will call twi_send() */
@@ -187,20 +176,20 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 
 void set_bright(uint8_t room, uint8_t index, uint8_t value)
 {
-	if(room > 2)
+	if (room > 2)
 		return;
-	if(index > 7)
+	if (index > 7)
 		return;
 
-	lamp_matrix[room].pwmval[index] = value;
-
-	if(room == ROOM_VORTRAG)
+	if (room == ROOM_VORTRAG)
 	{
-		if(index < 4)
+		if (index < 4)
 			outputdata.pwmval[index] = value;
 	}
 	else if(room == ROOM_LOUNGE)
 	{
+		lamp_matrix.pwmval[index] = value;
+
 		static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
 		msg.data[0] = 1; /* set brightness lamp */
 		msg.data[1] = index;
@@ -210,7 +199,7 @@ void set_bright(uint8_t room, uint8_t index, uint8_t value)
 		msg.addr_dst = 0x61;
 		can_transmit(&msg);	/* send packet to can_dimmer */
 	}
-	else if(room == ROOM_KUECHE)
+	else if (room == ROOM_KUECHE)
 	{
 		outputdata.pwmval[PWM_KUECHE] = value;	/* PWM_KUECHE is 5 */
 	}
@@ -220,17 +209,17 @@ void set_bright(uint8_t room, uint8_t index, uint8_t value)
 
 void set_bright_all(uint8_t room, uint8_t value)
 {
-	if(room > 2)
+	if (room > 2)
 		return;
 
-	if(room == ROOM_VORTRAG)
+	if (room == ROOM_VORTRAG)
 	{
 		outputdata.pwmval[PWM_TAFEL] = value;
 		outputdata.pwmval[PWM_BEAMER] = value;
 		outputdata.pwmval[PWM_SCHRANK] = value;
 		outputdata.pwmval[PWM_FLIPPER] = value;
 	}
-	else if(room == ROOM_LOUNGE)
+	else if (room == ROOM_LOUNGE)
 	{
 		static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
 		msg.data[0] = 4; /* set brightness lamp all */
@@ -241,7 +230,7 @@ void set_bright_all(uint8_t room, uint8_t value)
 		msg.addr_dst = 0x61;
 		can_transmit(&msg);	/* send packet to can_dimmer */
 	}
-	else if(room == ROOM_KUECHE)
+	else if (room == ROOM_KUECHE)
 	{
 		outputdata.pwmval[PWM_KUECHE] = value;	/* PWM_KUECHE is 5 */
 	}
@@ -256,24 +245,18 @@ void set_bright_all(uint8_t room, uint8_t value)
 */
 
 static void relais_control() {
-
-	if(lamp_matrix[ROOM_VORTRAG].enabled)	/* one ore more are on */
-		outputdata.ports |= SWA_VORTRAG;
+	if (outputdata.ports & _BV(SWL_TAFEL) || outputdata.ports & _BV(SWL_BEAMER) || outputdata.ports & _BV(SWL_SCHRANK) || outputdata.ports & _BV(SWL_FLIPPER))	/* one ore more are on */
+		outputdata.ports |= _BV(SWL_VORTRAG);
 	else
-		outputdata.ports &= ~SWA_VORTRAG;
+		outputdata.ports &= ~_BV(SWL_VORTRAG);
 
-	if(lamp_matrix[ROOM_KUECHE].enabled)	/* one ore more are on */
-		outputdata.ports |= SWA_KUECHE;
-	else
-		outputdata.ports &= ~SWA_KUECHE;
 
-	if(lamp_matrix[ROOM_LOUNGE].enabled)	/* one ore more are on */
-		outputdata.ports |= SWA_LOUNGE;
+	if (lamp_matrix.enabled)	/* one ore more are on */
+		outputdata.ports |= _BV(SWL_LOUNGE);
 	else
-		outputdata.ports &= ~SWA_LOUNGE;
+		outputdata.ports &= ~_BV(SWL_LOUNGE);
 
 	twi_send();	/* push outputdata */
-
 }
 
 
