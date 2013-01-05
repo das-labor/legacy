@@ -26,12 +26,12 @@ union {
 } stat_inputs;
 
 #define HAUPTSCHALTER	(_BV(PA0))
-#define POWER_OK	(_BV(PC2))
+#define POWER_OK		(_BV(PC2))
 #define TASTER_LOUNGE	(_BV(PB2))
 #define TASTER_VORTRAG	(_BV(PD3))
-#define RCD_SERVER	(_BV(PD6))
-#define RCD_POWER	(_BV(PD7))
-#define RCD_LICHT	(_BV(PA1))
+#define RCD_SERVER		(_BV(PD6))
+#define RCD_POWER		(_BV(PD7))
+#define RCD_LICHT		(_BV(PA1))
 
 #define NUM_INPUTS 7
 
@@ -71,12 +71,16 @@ void start_main_switch_timeout(void) {
 }
 
 void handle_main_switch_timeout(void) {
-	if(timeout_cnt > 0)
+	if (timeout_cnt > 0)
 	{
 		timeout_cnt--;
-		if(!timeout_cnt)
+		if (!timeout_cnt)
 		{
-			/* no need to handle other relais, they are controled by set_lamp... */
+			/* turn of lights, preset default dim level */
+			set_lamp_all(ROOM_VORTRAG,0);
+			set_lamp_all(ROOM_LOUNGE,0);
+			set_lamp_all(ROOM_KUECHE,0);
+			/* no need to handle other relays, they are controlled by set_lamp... */
 			outputdata.ports &= ~(1<<SWA_HS)|(1<<SWA_KLO)|(1<<SWA_STECKDOSEN);
 			twi_send();
 		}
@@ -95,15 +99,12 @@ void exec(uint8_t index) {
 	uint8_t i;
 	if (index == 0) {
 		if (stat_inputs.inputs.hauptschalter == 1) {
+			timeout_cnt = 0;
 			outputdata.ports |= (1<<SWA_HS)|(1<<SWA_KLO)|(1<<SWA_STECKDOSEN);
 			twi_send();
 		}
 		else
 		{
-			/* turn of lights, preset default dim level */
-			set_lamp_all(ROOM_VORTRAG,0);
-			set_lamp_all(ROOM_LOUNGE,0);
-			set_lamp_all(ROOM_KUECHE,0);
 			set_bright_all(ROOM_VORTRAG,178);
 			set_bright_all(ROOM_KUECHE,178);
 			set_bright_all(ROOM_LOUNGE,178);
@@ -124,27 +125,27 @@ void exec(uint8_t index) {
 * Blue blinking : Error, rcd licht failed
 */
 void update_rgb_led() {
-	if(!stat_inputs.inputs.power_ok) /* Error case */
+	if (!stat_inputs.inputs.power_ok) /* Error case */
 	{
 		set_led( (rgb){ .r = 1, .g = 1, .b = 1 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(!stat_inputs.inputs.rcd_server) /* Error case */
+	if (stat_inputs.inputs.rcd_server) /* Error case */
 	{
 		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(!stat_inputs.inputs.rcd_power) /* Error case */
+	if (stat_inputs.inputs.rcd_power) /* Error case */
 	{
 		set_led( (rgb){ .r = 1, .g = 0, .b = 0 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(!stat_inputs.inputs.rcd_licht) /* Error case */
+	if (stat_inputs.inputs.rcd_licht) /* Error case */
 	{
 		set_led( (rgb){ .r = 0, .g = 0, .b = 1 , .fade=0 , .blink=1} );
 		return;
 	}
-	if(stat_inputs.inputs.hauptschalter) /* Switch on */
+	if (stat_inputs.inputs.hauptschalter) /* Switch on */
 	{
 		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=0} );
 	}
@@ -166,13 +167,13 @@ void get_inputs() {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_inputs.status_input >> i) & 1) == 0)) {
 			stat_inputs.status_input |= (1 << i);
 			send_stat(i);
-			update_rgb_led();
+			//update_rgb_led();
 			exec(i);
 		}
 		if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input >> i) & 1)) {
 			stat_inputs.status_input &= ~(1 << i);
 			send_stat(i);
-			update_rgb_led();
+			//update_rgb_led();
 			exec(i);
 		}
 	}
@@ -180,16 +181,9 @@ void get_inputs() {
 
 
 
-#define HOLD_THRESHOLD 18
-#define CLICK_THRESHOLD 0
-#define NUM_TASTER 2
 
-typedef struct {
-	uint8_t counter;
-	uint8_t last_held;
-	uint8_t dim_dir;
-	uint8_t bright;
-} taster_status;
+
+
 /*
 void virt_vortrag_pwm_set_all(uint8_t min, uint8_t max)
 {
@@ -272,14 +266,43 @@ void lamp_dim() {
 	}*/
 }
 
+typedef struct {
+	uint8_t counter;
+	uint8_t last_held;
+	uint8_t dim_dir;
+	uint8_t bright;
+	void    (*sw_funct) ();
+	void    (*dim_funct) (void *);
+} taster_status;
+
+static void toggle_vortrag() {
+	set_lamp_all(ROOM_VORTRAG, (outputdata.ports >> SWL_VORTRAG) & 0x01?0:1);
+	set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=1} );
+}
+static void toggle_lounge() {
+	set_lamp_all(ROOM_LOUNGE, (outputdata.ports >> SWL_LOUNGE) & 0x01?0:1);
+	set_led( (rgb){ .r = 1, .g = 0, .b = 0 , .fade=0 , .blink=1} );
+}
+
+static void dim_vortrag(uint8_t *p) {
+	set_led( (rgb){ .r = 1, .g = 0, .b = 1 , .fade=0 , .blink=0} );
+}
+static void dim_lounge(uint8_t *p) {
+	set_led( (rgb){ .r = 0, .g = 1, .b = 1 , .fade=0 , .blink=0} );
+}
+
+#define HOLD_THRESHOLD 23
+#define CLICK_THRESHOLD 0
+#define NUM_TASTER 2
+
 void taster() {
 	uint8_t i;
-	static taster_status status[NUM_TASTER];
+	static taster_status status[NUM_TASTER] = {{0, 0, 0, 0, &toggle_vortrag, &dim_vortrag}, {0, 0, 0, 0, &toggle_lounge, &dim_lounge}};
 	for (i = 0; i < NUM_TASTER; i++)
 	{
 		uint8_t held = 0;
 
-		if ((stat_inputs.status_input >> (i + 1)) & 0x01) //XXX
+		if (!(stat_inputs.status_input & _BV(i + 1)))
 		{
 			status[i].counter ++;
 			if (status[i].counter > HOLD_THRESHOLD)
@@ -293,14 +316,14 @@ void taster() {
 			{
 				if (status[i].counter < HOLD_THRESHOLD)
 				{
-					//exec(7); // alle an / aus;
+					(*status[i].sw_funct) ();
 				}
 			}
 			status[i].counter = 0;
 		}
 		if (held)
 		{
-			lamp_dim(status[i].bright); // dim
+			(*status[i].dim_funct)(&status[i]); // dim
 		}
 		else if (status[i].last_held)
 		{
@@ -314,7 +337,7 @@ void taster() {
 void switch_handler()
 {
 	get_inputs();
-	rgb_led_animation();
 	taster();
+	rgb_led_animation();
 	handle_main_switch_timeout();
 }
