@@ -3,6 +3,7 @@
 #include <util/delay.h>
 
 #include "config.h"
+#include "can_handler.h"
 
 /*
 
@@ -231,7 +232,6 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 		}
 	}
 	update_in_progress = 0;
-	send_status();
 }
 
 void enable_channel(uint8_t channel, uint8_t enable)
@@ -259,7 +259,6 @@ void enable_channel(uint8_t channel, uint8_t enable)
 				case 2: PORTC &= ~_BV(PC4); break;
 				case 3: PORTC &= ~_BV(PC5); break; //disable triac (EVG)
 			}
-		send_status();
 	}
 }
 
