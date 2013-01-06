@@ -105,7 +105,6 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 			outputdata.ports &= ~(1<<SWL_KUECHE);
 	}
 
-
 	relais_control();	/* update relais status */
 }
 

@@ -96,7 +96,6 @@ void exec(uint8_t index) {
 		}*/
 	//	twi_send();
 	//}
-	uint8_t i;
 	if (index == 0) {
 		if (stat_inputs.inputs.hauptschalter == 1) {
 			timeout_cnt = 0;
@@ -184,86 +183,40 @@ void get_inputs() {
 
 
 
-/*
+
 void virt_vortrag_pwm_set_all(uint8_t min, uint8_t max)
 {
-	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
-	uint8_t tmp;
-	uint8_t x;
-
-	for (x=0;x<sizeof(objs);x++)
+	for (uint8_t x = 0; x < 4; x++)
 	{
-		pwm_get(pwm_matrix[objs[x]].port, &tmp);
-		if (tmp < min) tmp = min;
-		if (tmp > max) tmp = max;
-		pwm_set(pwm_matrix[objs[x]].port, tmp);
+		if (outputdata.pwmval[x] < min)
+			set_bright(ROOM_VORTRAG, x, min);
+		if (outputdata.pwmval[x] > max)
+			set_bright(ROOM_VORTRAG, x, max);
 	}
 }
 
 uint8_t pwm_vortrag_get_min()
 {
-	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
-	uint8_t tmp;
-	uint8_t x;
 	uint8_t min = 255;
 
-	for (x = 0; x < sizeof(objs); x++)
+	for (uint8_t x = 0; x < 4; x++)
 	{
-		pwm_get(pwm_matrix[objs[x]].port, &tmp);
-		if (tmp < min) min = tmp;
+		if (outputdata.pwmval[x] < min)
+			min = outputdata.pwmval[x];
 	}
-	
 	return min;
 }
 
 uint8_t pwm_vortrag_get_max()
 {
-	uint8_t objs[] = {PWM_TAFEL, PWM_BEAMER, PWM_SCHRANK, PWM_FLIPPER};
-	uint8_t tmp;
-	uint8_t x;
 	uint8_t max = 0;
 
-	for (x = 0; x < sizeof(objs); x++)
+	for (uint8_t x = 0; x < 4; x++)
 	{
-		pwm_get(pwm_matrix[objs[x]].port, &tmp);
-		if (tmp > max) max = tmp;
+		if (outputdata.pwmval[x] > max)
+			max = outputdata.pwmval[x];
 	}
-	
 	return max;
-}
-*/
-void lamp_dim() {
-/*
-	uint8_t val;
-
-	if (virt_vortrag_stat == 0)
-	{
-		virt_vortrag_on();
-		virt_vortrag_pwm_set_all(0, 0);
-	}
-
-	if (virt_vortrag_pwm_dir == 1)
-	{
-		val = pwm_vortrag_get_min();
-		if (val == 255)
-		{
-			virt_vortrag_pwm_dir = 0;
-		} else
-		{
-			virt_vortrag_pwm_set_all(val + 1, 255);
-		}
-	} 
-	else
-	{
-		val = pwm_vortrag_get_max();
-		if (val == 0)
-		{
-			virt_vortrag_pwm_dir = 1;
-		} else
-		{
-			virt_vortrag_pwm_set_all(0, val - 1);
-		}
-	}*/
 }
 
 typedef struct {
@@ -275,20 +228,53 @@ typedef struct {
 	void    (*dim_funct) (void *);
 } taster_status;
 
+void lamp_dim(taster_status *tst) {
+	uint8_t val;
+
+	if (!((outputdata.ports >> SWL_VORTRAG) & 0x01))
+	{
+		set_lamp_all(ROOM_VORTRAG, 1);
+		virt_vortrag_pwm_set_all(0, 0);
+	}
+
+	if (tst->dim_dir)
+	{
+		val = pwm_vortrag_get_min();
+		if (val == 255)
+		{
+			tst->dim_dir = 0;
+		} else
+		{
+			virt_vortrag_pwm_set_all(val + 1, 255);
+		}
+	}
+	else
+	{
+		val = pwm_vortrag_get_max();
+		if (val == 0)
+		{
+			tst->dim_dir = 1;
+		} else
+		{
+			virt_vortrag_pwm_set_all(0, val - 1);
+		}
+	}
+}
+
+
+
 static void toggle_vortrag() {
 	set_lamp_all(ROOM_VORTRAG, (outputdata.ports >> SWL_VORTRAG) & 0x01?0:1);
-	set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=1} );
 }
 static void toggle_lounge() {
 	set_lamp_all(ROOM_LOUNGE, (outputdata.ports >> SWL_LOUNGE) & 0x01?0:1);
-	set_led( (rgb){ .r = 1, .g = 0, .b = 0 , .fade=0 , .blink=1} );
 }
 
-static void dim_vortrag(uint8_t *p) {
-	set_led( (rgb){ .r = 1, .g = 0, .b = 1 , .fade=0 , .blink=0} );
+static void dim_vortrag(taster_status *p) {
+	lamp_dim(p);
 }
-static void dim_lounge(uint8_t *p) {
-	set_led( (rgb){ .r = 0, .g = 1, .b = 1 , .fade=0 , .blink=0} );
+static void dim_lounge(taster_status *p) {
+	//lamp_dim(p, , 6);
 }
 
 #define HOLD_THRESHOLD 23
