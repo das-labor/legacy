@@ -38,32 +38,74 @@ void can_handler()
 						break;
 				}
 			}
-			else if (rx_msg->port_dst == 1)
+			else if (rx_msg->port_dst == 1) // old proto
 			{
 				switch (rx_msg->data[0]) {
-					case C_SW: // switch // eingangs variable füllen  <<
-						//rx_msg->data[1];
-						
+					case C_SW: // SET LAMP
+							switch (rx_msg->data[1]) {
+								case SWL_TAFEL:
+									set_lamp(ROOM_VORTRAG, 0, rx_msg->data[2]);
+									break;
+								case SWL_BEAMER:
+									set_lamp(ROOM_VORTRAG, 1, rx_msg->data[2]);
+									break;
+								case SWL_SCHRANK:
+									set_lamp(ROOM_VORTRAG, 2, rx_msg->data[2]);
+									break;
+								case SWL_FLIPPER:
+									set_lamp(ROOM_VORTRAG, 3, rx_msg->data[2]);
+									break;
+								case SWL_LOUNGE:
+									set_lamp(ROOM_LOUNGE, 0, rx_msg->data[2]);
+									break;
+								case SWL_KUECHE:
+									set_lamp(ROOM_KUECHE, 0, rx_msg->data[2]);
+									break;
+								case SWA_BEAMER:
+									set_lamp(ROOM_VORTRAG, 4, rx_msg->data[2]);
+									break;
+							}
 						break;
 					case C_PWM: // PWM F_PWM_SET
 						switch (rx_msg->data[2]) {
 							case F_PWM_SET:
-								if (rx_msg->data[1] < 6)
-									outputdata.pwmval[rx_msg->data[1]] = rx_msg->data[3];
+								if (rx_msg->data[2] == 0) {
+									switch (rx_msg->data[1]) {
+										case PWM_TAFEL:
+											set_bright(ROOM_VORTRAG, 0, rx_msg->data[3]);
+											break;
+										case PWM_BEAMER:
+											set_bright(ROOM_VORTRAG, 1, rx_msg->data[3]);
+											break;
+										case PWM_SCHRANK:
+											set_bright(ROOM_VORTRAG, 2, rx_msg->data[3]);
+											break;
+										case PWM_FLIPPER:
+											set_bright(ROOM_VORTRAG, 3, rx_msg->data[3]);
+											break;
+										case PWM_KUECHE:
+											set_bright(ROOM_KUECHE, 0, rx_msg->data[3]);
+											break;
+									}
+								}
 								break;
-							case F_PWM_MOD:
+							case F_PWM_MOD: // TODO
+
 								break;
-							case F_PWM_DIR:
+							case F_PWM_DIR: // TODO
+
 								break;
 						}
 						break;
 					case C_VIRT: // VIRT
 						switch (rx_msg->data[1]) {
 							case VIRT_VORTRAG:
-								//exec
+								set_lamp_all(ROOM_VORTRAG, rx_msg->data[2]);
 								break;
 							case VIRT_VORTRAG_PWM:
-								
+								if (rx_msg->data[2] == 0) {
+									set_bright_all(ROOM_VORTRAG,rx_msg->data[3]);
+								}
 								break;
 						}
 						break;
@@ -125,6 +167,6 @@ void send_status(uint8_t addr)
 
 void read_can_addr()
 {
-	myaddr = eeprom_read_byte(0x00);
+	myaddr = 0x02;//eeprom_read_byte(0x00);
 }
 
