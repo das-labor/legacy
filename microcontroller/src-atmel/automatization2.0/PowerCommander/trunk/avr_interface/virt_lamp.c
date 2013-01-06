@@ -84,18 +84,28 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 			else
 				outputdata.ports &= ~(1<<SWL_FLIPPER);
 		}
+		else if (index == 4){ /* SWL_FLIPPER */
+			if (enable)
+				outputdata.ports |= (1<<SWA_BEAMER);
+			else
+				outputdata.ports &= ~(1<<SWA_BEAMER);
+		}
 	}
 
 	else if (room == ROOM_LOUNGE)
 	{
+		if (enable)
+			lamp_matrix.enabled |= 1;
+		else
+			lamp_matrix.enabled &= ~1;/*
 		static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
-		msg.data[0] = 0; /* switch lamp */
+		msg.data[0] = 0; // switch lamp
 		msg.data[1] = index;
 		msg.data[2] = enable;
 		msg.addr_src = myaddr;
-		can_transmit(&msg);	/* send packet to can_dimmer */
+		can_transmit(&msg);	// send packet to can_dimmer
 		msg.addr_dst = 0x61;
-		can_transmit(&msg);	/* send packet to can_dimmer */
+		can_transmit(&msg);	// send packet to can_dimmer */
 	}
 	else if (room == ROOM_KUECHE)
 	{
@@ -105,7 +115,7 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 			outputdata.ports &= ~(1<<SWL_KUECHE);
 	}
 
-	relais_control();	/* update relais status */
+	relais_control();	/* update relays status */
 }
 
 void set_lamp_all(uint8_t room, uint8_t enable)

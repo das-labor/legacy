@@ -81,7 +81,7 @@ void handle_main_switch_timeout(void) {
 			set_lamp_all(ROOM_LOUNGE,0);
 			set_lamp_all(ROOM_KUECHE,0);
 			/* no need to handle other relays, they are controlled by set_lamp... */
-			outputdata.ports &= ~(1<<SWA_HS)|(1<<SWA_KLO)|(1<<SWA_STECKDOSEN);
+			outputdata.ports &= ~(1<<SWA_HS)|(1<<SWA_KLO)|(1<<SWA_STECKDOSEN|1<<SWA_BEAMER);
 			twi_send();
 		}
 	}
@@ -177,11 +177,6 @@ void get_inputs() {
 		}
 	}
 }
-
-
-
-
-
 
 
 void virt_vortrag_pwm_set_all(uint8_t min, uint8_t max)
