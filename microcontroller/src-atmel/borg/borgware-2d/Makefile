@@ -133,7 +133,7 @@ $(TARGET_SIM): $(OBJECTS_SIM) $(SUBDIROBJECTS_SIM)
 
 ##############################################################################
 CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
-          else if [ -x $$(whereis -qb bash) ]; then echo $$(whereis -qb bash); \
+          else if [ -x $$(which bash) ]; then echo $$(which bash); \
           else echo sh; fi ; fi)
 
 menuconfig:
