@@ -21,4 +21,7 @@ uint8_t get_channel_brightness(uint8_t index);
 
 uint8_t get_channel_status(void);
 
+void set_lounge_lamp_1(uint8_t val);
+void set_lounge_lamp_2(uint8_t val);
+
 #endif
