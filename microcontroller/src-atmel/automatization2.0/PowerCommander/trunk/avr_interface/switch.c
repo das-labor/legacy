@@ -178,80 +178,128 @@ void get_inputs() {
 	}
 }
 
+uint8_t lamploungepwm[8];
 
-void virt_vortrag_pwm_set_all(uint8_t min, uint8_t max)
+typedef struct {
+        uint8_t counter;
+        uint8_t last_held;
+        uint8_t dim_dir;
+        uint8_t bright;
+        uint8_t room;
+        void    (*sw_funct) ();
+        void    (*dim_funct) ();
+} taster_status;
+
+void virt_pwm_set_all(taster_status *tst, uint8_t min, uint8_t max)
 {
-	for (uint8_t x = 0; x < 4; x++)
+	uint8_t x;
+	if(tst->room == 0){
+		for (x = 0; x < 4; x++)
+		{
+			if (outputdata.pwmval[x] < min)
+				set_bright(ROOM_VORTRAG, x, min);
+			if (outputdata.pwmval[x] > max)
+				set_bright(ROOM_VORTRAG, x, max);
+		}
+	}
+	else
 	{
-		if (outputdata.pwmval[x] < min)
-			set_bright(ROOM_VORTRAG, x, min);
-		if (outputdata.pwmval[x] > max)
-			set_bright(ROOM_VORTRAG, x, max);
+		for (x = 0; x < 8; x++)
+		{
+                        if (lamploungepwm[x] < min)
+                                set_bright(ROOM_LOUNGE, x, min);
+                        if (lamploungepwm[x] > max)
+                                set_bright(ROOM_LOUNGE, x, max);
+		}
 	}
 }
 
-uint8_t pwm_vortrag_get_min()
+uint8_t pwm_get_min(taster_status *tst)
 {
 	uint8_t min = 255;
-
-	for (uint8_t x = 0; x < 4; x++)
+	if(tst->room == 0)
 	{
-		if (outputdata.pwmval[x] < min)
-			min = outputdata.pwmval[x];
+		for (uint8_t x = 0; x < 4; x++)
+		{
+			if (outputdata.pwmval[x] < min)
+				min = outputdata.pwmval[x];
+		}
+	}
+	else
+	{
+   	        for (uint8_t x = 0; x < 4; x++)
+                {
+                        if (lamploungepwm[x] < min)
+                                min = lamploungepwm[x];
+                }
+
 	}
 	return min;
 }
 
-uint8_t pwm_vortrag_get_max()
+uint8_t pwm_get_max(taster_status *tst)
 {
 	uint8_t max = 0;
+        if(tst->room == 0)
+        {
 
-	for (uint8_t x = 0; x < 4; x++)
+		for (uint8_t x = 0; x < 4; x++)
+		{
+			if (outputdata.pwmval[x] > max)
+				max = outputdata.pwmval[x];
+		}
+	}
+	else
 	{
-		if (outputdata.pwmval[x] > max)
-			max = outputdata.pwmval[x];
+                for (uint8_t x = 0; x < 4; x++)
+                {
+                        if (lamploungepwm[x] > max)
+                                max = lamploungepwm[x];
+                }
+
 	}
 	return max;
 }
 
-typedef struct {
-	uint8_t counter;
-	uint8_t last_held;
-	uint8_t dim_dir;
-	uint8_t bright;
-	void    (*sw_funct) ();
-	void    (*dim_funct) ();
-} taster_status;
-
 void lamp_dim(taster_status *tst) {
 	uint8_t val;
-
-	if (!((outputdata.ports >> SWL_VORTRAG) & 0x01))
+        if(!tst->room){
+		if (!((outputdata.ports >> SWL_VORTRAG) & 0x01))
+		{
+			set_lamp_all(ROOM_VORTRAG, 1);
+			virt_pwm_set_all(tst, 0, 0);
+		}
+	}
+	else
 	{
-		set_lamp_all(ROOM_VORTRAG, 1);
-		virt_vortrag_pwm_set_all(0, 0);
+                if (!((outputdata.ports >> SWL_LOUNGE) & 0x01))
+                {
+                        set_lamp_all(ROOM_LOUNGE, 1);
+                        virt_pwm_set_all(tst, 0, 0);
+                }
+
 	}
 
 	if (tst->dim_dir)
 	{
-		val = pwm_vortrag_get_min();
+		val = pwm_get_min(tst);
 		if (val == 255)
 		{
 			tst->dim_dir = 0;
 		} else
 		{
-			virt_vortrag_pwm_set_all(val + 1, 255);
+			virt_pwm_set_all(tst, val + 1, 255);
 		}
 	}
 	else
 	{
-		val = pwm_vortrag_get_max();
+		val = pwm_get_max(tst);
 		if (val == 0)
 		{
 			tst->dim_dir = 1;
 		} else
 		{
-			virt_vortrag_pwm_set_all(0, val - 1);
+			virt_pwm_set_all(tst, 0, val - 1);
 		}
 	}
 }
@@ -272,13 +320,13 @@ void toggle_lounge() {
 
 void dim_vortrag();
 void dim_lounge();
-static taster_status status[NUM_TASTER] = {{0, 0, 0, 0, &toggle_vortrag, &dim_vortrag}, {0, 0, 0, 0, &toggle_lounge, &dim_lounge}};
+static taster_status status[NUM_TASTER] = {{0, 0, 0, 0, 0, &toggle_vortrag, &dim_vortrag}, {0, 0, 0, 0, 1, &toggle_lounge, &dim_lounge}};
 
 void dim_vortrag() {
 	lamp_dim(&status[0]);
 }
 void dim_lounge() {
-	//lamp_dim(p, , 6);
+	lamp_dim(&status[1]);
 }
 
 void tog_dimdir_vortrag() {
