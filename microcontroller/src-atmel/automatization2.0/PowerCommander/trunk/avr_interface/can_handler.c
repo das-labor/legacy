@@ -10,6 +10,7 @@
 #include "../include/PowerCommander.h"
 #include "i2c_funktionen.h"
 #include "virt_lamp.h"
+#include "switch.h"
 
 uint8_t myaddr;
 
@@ -42,6 +43,7 @@ void can_handler()
 			{
 				switch (rx_msg->data[0]) {
 					case C_SW: // SET LAMP
+						if (rx_msg->data[2] < F_SW_STATUS) {
 							switch (rx_msg->data[1]) {
 								case SWL_TAFEL:
 									set_lamp(ROOM_VORTRAG, 0, rx_msg->data[2]);
@@ -56,7 +58,7 @@ void can_handler()
 									set_lamp(ROOM_VORTRAG, 3, rx_msg->data[2]);
 									break;
 								case SWL_LOUNGE:
-									set_lamp(ROOM_LOUNGE, 0, rx_msg->data[2]);
+									set_lamp(ROOM_LOUNGE, 0, rx_msg->data[2]); // XXX rm
 									break;
 								case SWL_KUECHE:
 									set_lamp(ROOM_KUECHE, 0, rx_msg->data[2]);
@@ -65,6 +67,10 @@ void can_handler()
 									set_lamp(ROOM_VORTRAG, 4, rx_msg->data[2]);
 									break;
 							}
+						}
+						else if (rx_msg->data[2] == F_SW_TOGGLE && rx_msg->data[1] == SWL_KUECHE) {
+							set_lamp_all(ROOM_KUECHE, ((outputdata.ports >> SWL_KUECHE) & 0x01)^1);
+						}
 						break;
 					case C_PWM: // PWM F_PWM_SET
 						switch (rx_msg->data[2]) {
@@ -90,21 +96,33 @@ void can_handler()
 								}
 								break;
 							case F_PWM_MOD: // TODO
-
+								dim_vortrag();
 								break;
 							case F_PWM_DIR: // TODO
-
+								tog_dimdir_vortrag();
 								break;
 						}
 						break;
 					case C_VIRT: // VIRT
 						switch (rx_msg->data[1]) {
 							case VIRT_VORTRAG:
-								set_lamp_all(ROOM_VORTRAG, rx_msg->data[2]);
+								if (rx_msg->data[2] < F_SW_STATUS)
+									set_lamp_all(ROOM_VORTRAG, rx_msg->data[2]);
+								else if (rx_msg->data[2] == F_SW_TOGGLE)
+									toggle_vortrag();
 								break;
 							case VIRT_VORTRAG_PWM:
-								if (rx_msg->data[2] == 0) {
-									set_bright_all(ROOM_VORTRAG,rx_msg->data[3]);
+								switch (rx_msg->data[2])
+								{
+									case F_PWM_SET:
+										set_bright_all(ROOM_VORTRAG,rx_msg->data[3]);
+										break;
+									case F_PWM_MOD:
+										dim_vortrag();
+										break;
+									case F_PWM_DIR:
+										tog_dimdir_vortrag();
+										break;
 								}
 								break;
 						}
