@@ -166,13 +166,13 @@ void get_inputs() {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_inputs.status_input >> i) & 1) == 0)) {
 			stat_inputs.status_input |= (1 << i);
 			send_stat(i);
-			//update_rgb_led();
+			update_rgb_led();
 			exec(i);
 		}
 		if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input >> i) & 1)) {
 			stat_inputs.status_input &= ~(1 << i);
 			send_stat(i);
-			//update_rgb_led();
+			update_rgb_led();
 			exec(i);
 		}
 	}
@@ -220,7 +220,7 @@ typedef struct {
 	uint8_t dim_dir;
 	uint8_t bright;
 	void    (*sw_funct) ();
-	void    (*dim_funct) (void *);
+	void    (*dim_funct) ();
 } taster_status;
 
 void lamp_dim(taster_status *tst) {
@@ -258,27 +258,35 @@ void lamp_dim(taster_status *tst) {
 
 
 
-static void toggle_vortrag() {
+void toggle_vortrag() {
 	set_lamp_all(ROOM_VORTRAG, (outputdata.ports >> SWL_VORTRAG) & 0x01?0:1);
 }
-static void toggle_lounge() {
+void toggle_lounge() {
 	set_lamp_all(ROOM_LOUNGE, (outputdata.ports >> SWL_LOUNGE) & 0x01?0:1);
 }
 
-static void dim_vortrag(taster_status *p) {
-	lamp_dim(p);
-}
-static void dim_lounge(taster_status *p) {
-	//lamp_dim(p, , 6);
-}
 
 #define HOLD_THRESHOLD 23
 #define CLICK_THRESHOLD 0
 #define NUM_TASTER 2
 
+void dim_vortrag();
+void dim_lounge();
+static taster_status status[NUM_TASTER] = {{0, 0, 0, 0, &toggle_vortrag, &dim_vortrag}, {0, 0, 0, 0, &toggle_lounge, &dim_lounge}};
+
+void dim_vortrag() {
+	lamp_dim(&status[0]);
+}
+void dim_lounge() {
+	//lamp_dim(p, , 6);
+}
+
+void tog_dimdir_vortrag() {
+	status[0].dim_dir ^= 1;
+}
+
 void taster() {
 	uint8_t i;
-	static taster_status status[NUM_TASTER] = {{0, 0, 0, 0, &toggle_vortrag, &dim_vortrag}, {0, 0, 0, 0, &toggle_lounge, &dim_lounge}};
 	for (i = 0; i < NUM_TASTER; i++)
 	{
 		uint8_t held = 0;
@@ -297,18 +305,18 @@ void taster() {
 			{
 				if (status[i].counter < HOLD_THRESHOLD)
 				{
-					(*status[i].sw_funct) ();
+					(*status[i].sw_funct) (); // switch
 				}
 			}
 			status[i].counter = 0;
 		}
 		if (held)
 		{
-			(*status[i].dim_funct)(&status[i]); // dim
+			(*status[i].dim_funct)(); // dim
 		}
 		else if (status[i].last_held)
 		{
-			status[i].dim_dir ^= 1; // toggle invert?
+			status[i].dim_dir ^= 1; // toggle dimdir
 		}
 		status[i].last_held = held;
 	}
