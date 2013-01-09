@@ -10,14 +10,10 @@
 static void relais_control(void);
 
 /*
-* monitor lamp status and brightness
+* monitor lounge lamp status
 */
 
-static struct t_lamp_control {
-	uint8_t pwmval[7];
-	uint8_t enabled;
-} lamp_matrix;
-
+uint8_t lounge_lamp_status_1, lounge_lamp_status_2;
 
 /*
 * init lamp_matrix
@@ -25,14 +21,26 @@ static struct t_lamp_control {
 
 void init_lamp_control()
 {
-	uint8_t j;
-	for (j = 0; j < 7; j++)
-	{
-		lamp_matrix.pwmval[j] = 0;
-	}
-	lamp_matrix.enabled = 0;
+	lounge_lamp_status_1 = lounge_lamp_status_2 = 0;
+        static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
+        msg.data[0] = 2; // get lamp status
+        msg.addr_src = myaddr;
+        can_transmit(&msg);     // send packet to can_dimmer
+        msg.addr_dst = 0x61;
+        can_transmit(&msg);     // send packet to can_dimmer
 }
 
+void set_lounge_lamp_1(uint8_t val)
+{
+	lounge_lamp_status_1 = val;
+	relais_control();
+}
+
+void set_lounge_lamp_2(uint8_t val)
+{
+        lounge_lamp_status_2 = val;
+	relais_control();
+} 
 
 /*
 * enable or disable lamps
@@ -94,10 +102,6 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 
 	else if (room == ROOM_LOUNGE)
 	{
-		if (enable)
-			lamp_matrix.enabled |= 1;
-		else
-			lamp_matrix.enabled &= ~1;/*
 		static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
 		msg.data[0] = 0; // switch lamp
 		msg.data[1] = index;
@@ -105,7 +109,7 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 		msg.addr_src = myaddr;
 		can_transmit(&msg);	// send packet to can_dimmer
 		msg.addr_dst = 0x61;
-		can_transmit(&msg);	// send packet to can_dimmer */
+		can_transmit(&msg);	// send packet to can_dimmer
 	}
 	else if (room == ROOM_KUECHE)
 	{
@@ -137,11 +141,6 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 	}
 	else if (room == ROOM_LOUNGE)
 	{
-		if (enable)
-			lamp_matrix.enabled |= 1;
-		else
-			lamp_matrix.enabled &= ~1;
-
 		static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
 		msg.data[0] = 3; /* switch lamp all */
 		msg.data[1] = 0;
@@ -193,8 +192,6 @@ void set_bright(uint8_t room, uint8_t index, uint8_t value)
 	}
 	else if(room == ROOM_LOUNGE)
 	{
-		lamp_matrix.pwmval[index] = value;
-
 		static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
 		msg.data[0] = 1; /* set brightness lamp */
 		msg.data[1] = index;
@@ -286,16 +283,16 @@ uint8_t get_channel_brightness(uint8_t index)
 */
 
 static void relais_control() {
+	if(lounge_lamp_status_1 || lounge_lamp_status_2) /* one or more lamps in lounge are on */
+                outputdata.ports |= _BV(SWL_LOUNGE);
+	else
+                outputdata.ports |= _BV(SWL_LOUNGE);
+
 	if (outputdata.ports & _BV(SWL_TAFEL) || outputdata.ports & _BV(SWL_BEAMER) || outputdata.ports & _BV(SWL_SCHRANK) || outputdata.ports & _BV(SWL_FLIPPER))	/* one ore more are on */
 		outputdata.ports |= _BV(SWL_VORTRAG);
 	else
 		outputdata.ports &= ~_BV(SWL_VORTRAG);
 
-
-	if (lamp_matrix.enabled)	/* one ore more are on */
-		outputdata.ports |= _BV(SWL_LOUNGE);
-	else
-		outputdata.ports &= ~_BV(SWL_LOUNGE);
 
 	twi_send();	/* push outputdata */
 }
