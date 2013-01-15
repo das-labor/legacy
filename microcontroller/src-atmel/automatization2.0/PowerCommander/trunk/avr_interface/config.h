@@ -10,8 +10,11 @@
 
 #define SPI_REG_PIN_MCP_INT  PIND
 #define SPI_PIN_MCP_INT      PD2
-//#define CAN_INTERRUPT
-
+#define CAN_INTERRUPT
+#define CAN_RX_BUFFER_SIZE 16
+#define CAN_TX_BUFFER_SIZE 16
+#define MCP_INT_FLAG ISC01
+#define MCP_INT_MASK INT0
 
 #define F_MCP F_CPU
 

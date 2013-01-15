@@ -165,13 +165,13 @@ void get_inputs() {
 	for (i = 0; i < NUM_INPUTS; i++) {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_inputs.status_input >> i) & 1) == 0)) {
 			stat_inputs.status_input |= (1 << i);
-			send_stat(i);
+			//send_stat(i);
 			update_rgb_led();
 			exec(i);
 		}
 		if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input >> i) & 1)) {
 			stat_inputs.status_input &= ~(1 << i);
-			send_stat(i);
+			//send_stat(i);
 			update_rgb_led();
 			exec(i);
 		}
