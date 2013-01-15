@@ -7,5 +7,6 @@ extern void switch_timer_init();
 
 extern void tog_dimdir_vortrag();
 extern void dim_vortrag();
+extern void toggle_vortrag();
 
 #endif
