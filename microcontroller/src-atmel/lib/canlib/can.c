@@ -68,8 +68,7 @@ void message_load(can_message_x * msg)
 	unsigned char x;
 	
 	CLEAR_CS();
-	spi_send(WRITE);
-	spi_send(TXB0SIDH);
+	spi_send(LOAD_TX_BUFFER);
 
 #ifdef CAN_RAW
 	spi_send((uint8_t)((uint32_t)msg->msg.id>>21));
@@ -89,9 +88,7 @@ void message_load(can_message_x * msg)
 	}
 	SET_CS();
 	CLEAR_CS();
-	spi_send(WRITE);
-	spi_send(TXB0CTRL);
-	spi_send((1<<TXREQ));
+	spi_send(RTS + 1); //base addr + TXB0
 	SET_CS();
 }
 
@@ -102,8 +99,7 @@ void message_fetch(can_message_x * msg)
 	unsigned char x;
 
 	CLEAR_CS();
-	spi_send(READ);
-	spi_send(RXB0SIDH);
+	spi_send(READ_RX_BUFFER);
 
 #ifdef CAN_RAW
 	tmp1 = spi_send(0);
@@ -312,18 +308,18 @@ void can_init()
 
 #if defined (ENABLE_CAN_INT)
 	ENABLE_CAN_INT();
-#elif defined (__AVR_ATmega8__) || defined (__AVR_ATmega32__)
+#elif defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
 	//this turns on INT0
 	MCUCR |= (1 << MCP_INT_FLAG);
 	GIMSK |= (1 << MCP_INT_MASK);
 #elif defined (__AVR_ATmega168__)
-    EICRA |= (1 << MCP_INT_FLAG);
-    EIMSK |= (1 << MCP_INT_MASK);
+	EICRA |= (1 << MCP_INT_FLAG);
+	EIMSK |= (1 << MCP_INT_MASK);
 #else
 	#error Interrupt REG for Part not defined
 #endif
 
-#else  //CAN_INTERRUPT
+#else  //!CAN_INTERRUPT
 	// configure IRQ
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
 	mcp_write(CANINTE, (1<<RX0IE) ); //only turn RX int on
@@ -456,4 +452,4 @@ void can_free(can_message * msg)
 {
 }
 
-#endif
+#endif //CAN_INTERRUPT
