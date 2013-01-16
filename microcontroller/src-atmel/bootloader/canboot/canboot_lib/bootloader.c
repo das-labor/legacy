@@ -34,7 +34,7 @@ typedef struct
 
 
 //unsigned char Device_info_msg[] __attribute__ ((section (".progdata"))) =
-unsigned char Device_info_msg[] PROGMEM =
+const unsigned char Device_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
@@ -45,7 +45,7 @@ unsigned char Device_info_msg[] PROGMEM =
 };
 
 //unsigned char Flash_info_msg[] __attribute__ ((section (".progdata"))) =
-unsigned char Flash_info_msg[] PROGMEM =
+const unsigned char Flash_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
