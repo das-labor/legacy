@@ -309,10 +309,10 @@ void can_init()
 	// configure IRQ
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
 	mcp_write(CANINTE, (1<<RX0IE) | (1<<TX0IE));
-	
+
 #if defined (ENABLE_CAN_INT)
 	ENABLE_CAN_INT();
-#elif defined (__AVR_ATmega8__)
+#elif defined (__AVR_ATmega8__) || defined (__AVR_ATmega32__)
 	//this turns on INT0
 	MCUCR |= (1 << MCP_INT_FLAG);
 	GIMSK |= (1 << MCP_INT_MASK);
@@ -320,7 +320,7 @@ void can_init()
     EICRA |= (1 << MCP_INT_FLAG);
     EIMSK |= (1 << MCP_INT_MASK);
 #else
-	#error Interrup REG for Part not defined
+	#error Interrupt REG for Part not defined
 #endif
 
 #else  //CAN_INTERRUPT
