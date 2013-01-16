@@ -27,24 +27,24 @@
 typedef struct
 {
 	can_message msg;
-	volatile unsigned char flags;
+	volatile uint8_t flags;
 } can_message_x;
 
 
 /* MCP */
-static unsigned char mcp_status();
-static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val);
+static uint8_t mcp_status();
+static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val);
 static void mcp_reset();
 
-void mcp_write(unsigned char reg, unsigned char data);
-unsigned char mcp_read(unsigned char reg);
+void mcp_write(uint8_t reg, uint8_t data);
+uint8_t mcp_read(uint8_t reg);
 
 
 // Functions
 
-static unsigned char mcp_status()
+static uint8_t mcp_status()
 {
-	unsigned char d;
+	uint8_t d;
 	CLEAR_CS();
 	spi_send(READ_STATUS);
 	d = spi_send(0);
@@ -52,7 +52,7 @@ static unsigned char mcp_status()
 	return d;
 }
 
-static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val)
+static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val)
 {
 	CLEAR_CS();
 	spi_send(BIT_MODIFY);
@@ -65,8 +65,8 @@ static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val)
 //load a message to mcp2515 and start transmission
 void message_load(can_message_x * msg)
 {
-	unsigned char x;
-	
+	uint8_t x;
+
 	CLEAR_CS();
 	spi_send(LOAD_TX_BUFFER);
 
@@ -76,14 +76,14 @@ void message_load(can_message_x * msg)
 	spi_send((uint8_t)(msg->msg.id>>8));
 	spi_send((uint8_t)(msg->msg.id));
 #else
-	spi_send( ((unsigned char)(msg->msg.port_src << 2)) | (msg->msg.port_dst >> 4 ) );
-	spi_send( (unsigned char)((msg->msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (msg->msg.port_dst & 0x03) );
+	spi_send( ((uint8_t)(msg->msg.port_src << 2)) | (msg->msg.port_dst >> 4 ) );
+	spi_send( (uint8_t)((msg->msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (msg->msg.port_dst & 0x03) );
 	spi_send(msg->msg.addr_src);
 	spi_send(msg->msg.addr_dst);
 #endif
 	
 	spi_send(msg->msg.dlc);
-	for(x=0;x<msg->msg.dlc;x++){
+	for (x = 0; x < msg->msg.dlc; x++) {
 		spi_send(msg->msg.data[x]);
 	}
 	SET_CS();
@@ -95,8 +95,8 @@ void message_load(can_message_x * msg)
 //get a message from mcp2515 and disable RX interrupt Condition
 void message_fetch(can_message_x * msg)
 {
-	unsigned char tmp1, tmp2, tmp3;
-	unsigned char x;
+	uint8_t tmp1, tmp2, tmp3;
+	uint8_t x;
 
 	CLEAR_CS();
 	spi_send(READ_RX_BUFFER);
@@ -112,8 +112,8 @@ void message_fetch(can_message_x * msg)
 	tmp1 = spi_send(0);
 	msg->msg.port_src = tmp1 >> 2;
 	tmp2 = spi_send(0);
-	tmp3 = (unsigned char)((unsigned char)(tmp2 >> 3) & 0x0C);
-	msg->msg.port_dst = ((unsigned char)(tmp1 <<4 ) & 0x30) | tmp3 | (unsigned char)(tmp2 & 0x03);
+	tmp3 = (uint8_t)((uint8_t)(tmp2 >> 3) & 0x0C);
+	msg->msg.port_dst = ((uint8_t)(tmp1 <<4 ) & 0x30) | tmp3 | (uint8_t)(tmp2 & 0x03);
 	msg->msg.addr_src = spi_send(0);
 	msg->msg.addr_dst = spi_send(0);
 #endif
@@ -129,14 +129,14 @@ void message_fetch(can_message_x * msg)
 }
 #ifdef CAN_INTERRUPT
 
-static can_message_x RX_BUFFER[CAN_RX_BUFFER_SIZE], TX_BUFFER[CAN_TX_BUFFER_SIZE];
-unsigned char RX_HEAD=0;volatile unsigned char RX_TAIL=0;
-unsigned char TX_HEAD= 0;volatile unsigned char TX_TAIL=0;
-static volatile unsigned char TX_INT;
+static can_message_x rx_buffer[CAN_RX_BUFFER_SIZE], tx_buffer[CAN_TX_BUFFER_SIZE];
+uint8_t rx_head = 0; volatile uint8_t rx_tail = 0;
+uint8_t tx_head = 0; volatile uint8_t tx_tail = 0;
+static volatile uint8_t tx_int;
 
 ISR (MCP_INT_VEC)
 {
-	unsigned char status = mcp_status();
+	uint8_t status = mcp_status();
 
 	if (status & 0x01) // Message in RX0
 	{
@@ -178,7 +178,6 @@ ISR (MCP_INT_VEC)
 		}
 	}
 #endif // CAN_HANDLEERROR
-
 }
 
 #endif // CAN_INTERRUPT
@@ -191,7 +190,7 @@ static void mcp_reset()
 	SET_CS();
 }
 
-void mcp_write(unsigned char reg, unsigned char data)
+void mcp_write(uint8_t reg, uint8_t data)
 {
 	CLEAR_CS();
 	spi_send(WRITE);
@@ -200,9 +199,9 @@ void mcp_write(unsigned char reg, unsigned char data)
 	SET_CS();
 }
 
-unsigned char mcp_read(unsigned char reg)
+uint8_t mcp_read(uint8_t reg)
 {
-	unsigned char d;
+	uint8_t d;
 	CLEAR_CS();
 	spi_send(READ);
 	spi_send(reg);
@@ -215,10 +214,10 @@ unsigned char mcp_read(unsigned char reg)
 /* Management */
 void can_setmode(can_mode_t mode)
 {
-	unsigned char val = mode << 5;  
+	uint8_t val = mode << 5;
 	val |= 0x04;  // CLKEN
 
-	mcp_write( CANCTRL, val );
+	mcp_write(CANCTRL, val);
 }
 
 
@@ -232,9 +231,9 @@ void can_setfilter()
 	mcp_write(RXB0CTRL, (1<<RXM1) | (1<<RXM0));
 }
 
-void can_setled(unsigned char led, unsigned char state)
+void can_setled(uint8_t led, uint8_t state)
 {
-	mcp_bitmod(BFPCTRL, 0x10<<led, state?0xff:0);
+	mcp_bitmod(BFPCTRL, 0x10 << led, state ? 0xff : 0);
 }
 
 /*******************************************************************/
@@ -256,7 +255,7 @@ void can_init()
 #endif
 
 #ifdef CAN_INTERRUPT
-	unsigned char x;
+	uint8_t x;
 	for (x = 0; x < CAN_RX_BUFFER_SIZE; x++)
 	{
 		rx_buffer[x].flags = 0;
@@ -269,20 +268,20 @@ void can_init()
 
 #ifdef CAN_HANDLEERROR
 	can_error = 0;
-#endif	
-	
+#endif
+
 	_delay_ms(10);
-	
+
 	mcp_reset();
-	
+
 	_delay_ms(10);
-	
+
 	mcp_write(BFPCTRL, 0x0C);//RXBF Pins to Output
-	
+
 	// 0x01 : 125kbit/8MHz
 	// 0x03 : 125kbit/16MHz
 	// 0x04 : 125kbit/20MHz
-	
+
 #if F_MCP == 16000000
 #define CNF1_T 0x03
 #elif F_MCP == 8000000
@@ -321,7 +320,7 @@ void can_init()
 #else  //!CAN_INTERRUPT
 	// configure IRQ
 	// this only configures the INT Output of the mcp2515, not the int on the Atmel
-	mcp_write(CANINTE, (1<<RX0IE) ); //only turn RX int on
+	mcp_write(CANINTE, (1 << RX0IE)); //only turn RX int on
 #endif //CAN_INTERRUPT
 }
 
@@ -409,7 +408,7 @@ can_message *can_get_nb()
 		return 0;
 	} else
 	{
-		unsigned char status = mcp_status();
+		uint8_t status = mcp_status();
 
 		if (status & 0x01)
 		{
