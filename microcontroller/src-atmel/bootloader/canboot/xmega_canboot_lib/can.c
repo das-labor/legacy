@@ -68,18 +68,13 @@ void mcp_write_b(pgm_p_t stream)
 	}
 }
 
-//unsigned char mcp_txreq_str[] __attribute__ ((section (".progdata"))) = {
-unsigned char mcp_txreq_str[] PROGMEM = {
-	2, TXB0CTRL, _BV(TXREQ), 0, 0
-};
 
 //load a message to mcp2515 and start transmission
 void can_transmit()
 {
 	uint8_t x;
 	spi_assert_ss();
-	spi_data(WRITE);
-	spi_data(TXB0SIDH);
+	spi_data(LOAD_TX_BUFFER);
 
 	spi_data(((unsigned char)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
 	spi_data((unsigned char)((Tx_msg.port_dst & 0x0C) << 3) | (1 << EXIDE) | (Tx_msg.port_dst & 0x03));
@@ -91,7 +86,9 @@ void can_transmit()
 		spi_data(Tx_msg.data[x]);
 	spi_release_ss();
 
-	mcp_write_b((pgm_p_t) mcp_txreq_str);
+	spi_assert_ss();
+	spi_data(RTS + 1); //base addr + TXB0
+	spi_release_ss();
 }
 
 
@@ -102,8 +99,7 @@ static inline void message_fetch()
 	unsigned char x;
 
 	spi_assert_ss();
-	spi_data(READ);
-	spi_data(RXB0SIDH);
+	spi_data(READ_RX_BUFFER);
 	tmp1 = spi_data(0);
 	Rx_msg.port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
@@ -112,7 +108,7 @@ static inline void message_fetch()
 
 	Rx_msg.addr_src = spi_data(0);
 	Rx_msg.addr_dst = spi_data(0);
-	Rx_msg.dlc = spi_data(0) & 0x0F;	
+	Rx_msg.dlc = spi_data(0) & 0x0F;
 	for (x = 0; x < Rx_msg.dlc; x++)
 		Rx_msg.data[x] = spi_data(0);
 	spi_release_ss();
@@ -147,11 +143,11 @@ static inline void message_fetch()
 #define CNF1_T 0x04
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz
-#endif 
+#endif
 
 
 //unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) = {
-unsigned char mcp_config_str1[] PROGMEM = {
+const unsigned char mcp_config_str1[] PROGMEM = {
 	2, BFPCTRL, 0x0C,		//RXBF Pins to Output
 	4, CNF3,
 		0x05,			//CNF3
@@ -177,7 +173,7 @@ unsigned char mcp_config_str1[] PROGMEM = {
 	
 	
 //unsigned char mcp_config_str2[] __attribute__ ((section (".progdata"))) = {	
-unsigned char mcp_config_str2[] PROGMEM = {	
+const unsigned char mcp_config_str2[] PROGMEM = {	
 	2, CANCTRL, 0,
 	2, CANINTE, _BV(RX0IE),
 	0
