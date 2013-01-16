@@ -44,7 +44,7 @@ typedef uint8_t can_subchannel_t;
 
 #endif
 
-typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
+typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t ;
 
 
 /*****************************************************************************
