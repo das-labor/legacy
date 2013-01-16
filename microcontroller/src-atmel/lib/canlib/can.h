@@ -17,8 +17,8 @@
 #include <stdint.h>
 #include "../config.h"
 
-typedef unsigned char can_addr;
-typedef unsigned char can_port;
+typedef uint8_t can_addr;
+typedef uint8_t can_port;
 typedef uint16_t can_channel_t;
 typedef uint8_t can_subchannel_t;
 
@@ -38,8 +38,8 @@ typedef uint8_t can_subchannel_t;
 		can_addr      addr_dst;
 		can_port      port_src;
 		can_port      port_dst;
-		unsigned char dlc;
-		unsigned char data[8];
+		uint8_t dlc;
+		uint8_t data[8];
 	} can_message;
 
 #endif
@@ -66,7 +66,7 @@ typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t ;
  * Global variables
  */
 #ifdef CAN_HANDLEERROR
-  extern unsigned char can_error;
+  extern uint8_t can_error;
 #endif
 
 
@@ -77,14 +77,14 @@ typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t ;
 void can_init();
 void can_setfilter();
 void can_setmode(can_mode_t);
-void can_setled(unsigned char led, unsigned char state);
+void can_setled(uint8_t led, uint8_t state);
 
 
 /*****************************************************************************
  * Sending
  */
 
-can_message * can_buffer_get();
+can_message *can_buffer_get();
 void can_transmit(can_message *msg);
 
 
@@ -94,6 +94,6 @@ void can_transmit(can_message *msg);
 
 can_message *can_get();
 can_message *can_get_nb();
-void can_free(can_message * msg);
+void can_free(can_message *msg);
 
 #endif // _CAN_H
