@@ -104,12 +104,12 @@ void message_fetch(can_message_x * msg)
 	CLEAR_CS();
 	spi_send(READ);
 	spi_send(RXB0SIDH);
-	
-#ifdef CAN_RAW	
+
+#ifdef CAN_RAW
 	tmp1 = spi_send(0);
 	tmp2 = spi_send(0);
 	tmp3 = spi_send(0);
-	
+
 	msg->msg.id = ((uint32_t)tmp1<<21) | ((uint32_t)((uint8_t)tmp2&0xE0)<<13) 
 			| ((uint32_t)((uint8_t)tmp2&0x03)<<16) | ((uint16_t)tmp3<<8) | spi_send(0);
 #else
@@ -155,7 +155,9 @@ ISR (MCP_INT_VEC)
 			//just clear the Interrupt condition, and lose the message
 			mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
 		}
-	} else if ( status & 0x08 ) {	// TX1 empty
+	}
+
+	if ( status & 0x08 ) {	// TX0 empty
 		if (((can_message_x*)&TX_BUFFER[TX_TAIL])->flags & 0x01)
 		{
 			((can_message_x*)&TX_BUFFER[TX_TAIL])->flags &= ~0x01;
@@ -167,9 +169,10 @@ ISR (MCP_INT_VEC)
 			TX_INT = 0;
 		}
 		mcp_bitmod(CANINTF, (1<<TX0IF), 0x00);
-	} else
-	{
+	}
 #ifdef CAN_HANDLEERROR
+	if( status & ~0x09 )
+	{
 		status = mcp_read(EFLG);
 
 		if (status)
@@ -178,8 +181,9 @@ ISR (MCP_INT_VEC)
 
 			mcp_write(EFLG, 0);
 		}
-#endif // CAN_HANDLEERROR
 	}
+#endif // CAN_HANDLEERROR
+
 }
 
 #endif
