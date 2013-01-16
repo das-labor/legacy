@@ -83,18 +83,13 @@ void mcp_write_b(pgm_p_t stream)
 	}
 }
 
-//unsigned char mcp_txreq_str[] __attribute__ ((section (".progdata"))) = {
-unsigned char mcp_txreq_str[] PROGMEM = {
-	2, TXB0CTRL, _BV(TXREQ), 0, 0
-};
 
 //load a message to mcp2515 and start transmission
 void can_transmit()
 {
 	uint8_t x;
 	spi_assert_ss();
-	spi_data(WRITE);
-	spi_data(TXB0SIDH);
+	spi_data(LOAD_TX_BUFFER);
 
 	spi_data(((unsigned char)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
 	spi_data((unsigned char)((Tx_msg.port_dst & 0x0C) << 3) | (1 << EXIDE) | (Tx_msg.port_dst & 0x03));
@@ -106,7 +101,9 @@ void can_transmit()
 		spi_data(Tx_msg.data[x]);
 	spi_release_ss();
 
-	mcp_write_b((pgm_p_t) mcp_txreq_str);
+	spi_assert_ss();
+	spi_data(RTS + 1); //base addr + TXB0
+	spi_release_ss();
 }
 
 
@@ -117,8 +114,7 @@ static inline void message_fetch()
 	unsigned char x;
 
 	spi_assert_ss();
-	spi_data(READ);
-	spi_data(RXB0SIDH);
+	spi_data(READ_RX_BUFFER);
 	tmp1 = spi_data(0);
 	Rx_msg.port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
