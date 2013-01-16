@@ -127,7 +127,7 @@ static inline void message_fetch()
 
 	Rx_msg.addr_src = spi_data(0);
 	Rx_msg.addr_dst = spi_data(0);
-	Rx_msg.dlc = spi_data(0) & 0x0F;	
+	Rx_msg.dlc = spi_data(0) & 0x0F;
 	for (x = 0; x < Rx_msg.dlc; x++)
 		Rx_msg.data[x] = spi_data(0);
 	spi_release_ss();
@@ -162,11 +162,11 @@ static inline void message_fetch()
 #define CNF1_T 0x04
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz
-#endif 
+#endif
 
 
 //unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) = {
-unsigned char mcp_config_str1[] PROGMEM = {
+const unsigned char mcp_config_str1[] PROGMEM = {
 	2, BFPCTRL, 0x0C,		//RXBF Pins to Output
 	4, CNF3,
 		0x05,			//CNF3
@@ -192,7 +192,7 @@ unsigned char mcp_config_str1[] PROGMEM = {
 	
 	
 //unsigned char mcp_config_str2[] __attribute__ ((section (".progdata"))) = {	
-unsigned char mcp_config_str2[] PROGMEM = {	
+const unsigned char mcp_config_str2[] PROGMEM = {	
 	2, CANCTRL, 0,
 	2, CANINTE, _BV(RX0IE),
 	0
