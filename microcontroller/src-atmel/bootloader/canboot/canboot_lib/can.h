@@ -18,19 +18,19 @@
  * Types
  */
 
-typedef unsigned char can_addr;
-typedef unsigned char can_port;
+typedef uint8_t can_addr;
+typedef uint8_t can_port;
 
 typedef struct{
 	can_addr      addr_src;
 	can_addr      addr_dst;
 	can_port      port_src;
 	can_port      port_dst;
-	unsigned char dlc;
-	unsigned char data[8];
+	uint8_t dlc;
+	uint8_t data[8];
 }can_message;
 
-typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t ;
+typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t;
 
 extern can_message Rx_msg, Tx_msg;
 
@@ -39,7 +39,7 @@ extern can_message Rx_msg, Tx_msg;
  * MCP
  */
 
-void mcp_write(unsigned char reg, unsigned char data) BOOTLOADER_SECTION;
+void mcp_write(uint8_t reg, uint8_t data) BOOTLOADER_SECTION;
 
 /*****************************************************************************
  * Management
@@ -62,7 +62,7 @@ void can_transmit()BOOTLOADER_SECTION;
  * Receiving
  */
 
-unsigned char can_get_nb()BOOTLOADER_SECTION;
+uint8_t can_get_nb()BOOTLOADER_SECTION;
 
 // this is only needed for Interrupt driven Version
 #ifndef CAN_INTERRUPT

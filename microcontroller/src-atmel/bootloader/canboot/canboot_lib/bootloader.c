@@ -16,44 +16,44 @@
 #include "util.h"
 
 
-unsigned char Station_id;
+uint8_t Station_id;
 
 
 typedef struct
 {
-	unsigned char cmd;
-	unsigned int index;
-	unsigned int size;
-	unsigned int address;
+	uint8_t cmd;
+	uint16_t index;
+	uint16_t size;
+	uint16_t address;
 } sdo_message;
 
 typedef struct
 {
-	unsigned int data[4];
+	uint16_t data[4];
 } sdo_data_message;
 
 
-//unsigned char Device_info_msg[] __attribute__ ((section (".progdata"))) =
-const unsigned char Device_info_msg[] PROGMEM =
+//uint8_t Device_info_msg[] __attribute__ ((section (".progdata"))) =
+const uint8_t Device_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
-	(unsigned char)(SPM_PAGESIZE),
-	(unsigned char)(SPM_PAGESIZE >> 8),
+	(uint8_t)(SPM_PAGESIZE),
+	(uint8_t)(SPM_PAGESIZE >> 8),
 	(FLASHEND + 1ul) / 1024ul, //changed this from Atmega number to real Flash-size in kB
 	0
 };
 
-//unsigned char Flash_info_msg[] __attribute__ ((section (".progdata"))) =
-const unsigned char Flash_info_msg[] PROGMEM =
+//uint8_t Flash_info_msg[] __attribute__ ((section (".progdata"))) =
+const uint8_t Flash_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
 #if (FLASHEND >= 0xffff)
 	0xff,0xff //dirty hack : return 65535 bytes instead of 65536 because we used to small sized integer...
 #else
-	(unsigned char)((unsigned char)FLASHEND + 1),
-	((unsigned int)FLASHEND + 1) >> 8
+	(uint8_t)((uint8_t)FLASHEND + 1),
+	((uint16_t)FLASHEND + 1) >> 8
 #endif
 };
 
@@ -62,7 +62,7 @@ const unsigned char Flash_info_msg[] PROGMEM =
 void bootloader(void) {
 	uint16_t Address;
 	uint16_t Size;
-	unsigned char x;
+	uint8_t x;
 	
 	asm volatile(
 		"eor r1,r1    \n\t"
@@ -97,9 +97,9 @@ void bootloader(void) {
 	
 	can_transmit();
 	
-	unsigned char count = 20;
+	uint8_t count = 20;
 	#if defined(TOGGLE_MCP_LED)
-		unsigned char toggle = 0x1C;
+		uint8_t toggle = 0x1C;
 	#elif defined(TOGGLE_PORT_LED)
 		DDR_LED |= (1<<BIT_LED);
 	#endif

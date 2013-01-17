@@ -17,9 +17,9 @@ typedef uint16_t pgm_p_t;
 #endif
 
 /* MCP */
-void mcp_write(unsigned char reg, unsigned char data) BOOTLOADER_SECTION;
+void mcp_write(uint8_t reg, uint8_t data) BOOTLOADER_SECTION;
 void mcp_write_b(pgm_p_t stream) BOOTLOADER_SECTION;
-unsigned char mcp_read(unsigned char reg) BOOTLOADER_SECTION;
+uint8_t mcp_read(uint8_t reg) BOOTLOADER_SECTION;
 
 
 // Functions
@@ -27,16 +27,16 @@ unsigned char mcp_read(unsigned char reg) BOOTLOADER_SECTION;
 #define spi_release_ss() SPI_PORT |= _BV(SPI_PIN_SS)
 #define spi_assert_ss() SPI_PORT &= ~_BV(SPI_PIN_SS)
 
-unsigned char spi_data(unsigned char c)  __attribute__ ((noinline)) __attribute__ ((section (".bootloader")));
+uint8_t spi_data(uint8_t c)  __attribute__ ((noinline)) __attribute__ ((section (".bootloader")));
 
-unsigned char spi_data(unsigned char c)
+uint8_t spi_data(uint8_t c)
 {
 	SPDR = c;
 	while (!(SPSR & _BV(SPIF)));
 	return(SPDR);
 }
 
-inline static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned char val)
+inline static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val)
 {
 	spi_assert_ss();
 	spi_data(BIT_MODIFY);
@@ -46,9 +46,9 @@ inline static void mcp_bitmod(unsigned char reg, unsigned char mask, unsigned ch
 	spi_release_ss();
 }
 
-unsigned char mcp_read(unsigned char reg)
+uint8_t mcp_read(uint8_t reg)
 {
-	unsigned char d;
+	uint8_t d;
 	spi_assert_ss();
 	spi_data(READ);
 	spi_data(reg);
@@ -57,7 +57,7 @@ unsigned char mcp_read(unsigned char reg)
 	return d;
 }
 
-void mcp_write(unsigned char reg, unsigned char data)
+void mcp_write(uint8_t reg, uint8_t data)
 {
 	spi_assert_ss();
 	spi_data(WRITE);
@@ -68,7 +68,7 @@ void mcp_write(unsigned char reg, unsigned char data)
 
 void mcp_write_b(pgm_p_t stream)
 {
-	unsigned char len;
+	uint8_t len;
 	
 	while ((len = pgm_read_byte(stream++)))
 	{
@@ -91,8 +91,8 @@ void can_transmit()
 	spi_assert_ss();
 	spi_data(LOAD_TX_BUFFER);
 
-	spi_data(((unsigned char)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
-	spi_data((unsigned char)((Tx_msg.port_dst & 0x0C) << 3) | (1 << EXIDE) | (Tx_msg.port_dst & 0x03));
+	spi_data(((uint8_t)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
+	spi_data((uint8_t)((Tx_msg.port_dst & 0x0C) << 3) | (1 << EXIDE) | (Tx_msg.port_dst & 0x03));
 	spi_data(Tx_msg.addr_src);
 	spi_data(Tx_msg.addr_dst);
 	spi_data(Tx_msg.dlc);
@@ -110,16 +110,16 @@ void can_transmit()
 //get a message from mcp2515 and disable RX interrupt Condition
 static inline void message_fetch()
 {
-	unsigned char tmp1, tmp2, tmp3;
-	unsigned char x;
+	uint8_t tmp1, tmp2, tmp3;
+	uint8_t x;
 
 	spi_assert_ss();
 	spi_data(READ_RX_BUFFER);
 	tmp1 = spi_data(0);
 	Rx_msg.port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
-	tmp3 = (unsigned char)((unsigned char)(tmp2 >> 3) & 0x0C);
-	Rx_msg.port_dst = ((unsigned char)(tmp1 << 4 ) & 0x30) | tmp3 | (unsigned char)(tmp2 & 0x03);
+	tmp3 = (uint8_t)((uint8_t)(tmp2 >> 3) & 0x0C);
+	Rx_msg.port_dst = ((uint8_t)(tmp1 << 4 ) & 0x30) | tmp3 | (uint8_t)(tmp2 & 0x03);
 
 	Rx_msg.addr_src = spi_data(0);
 	Rx_msg.addr_dst = spi_data(0);
@@ -161,8 +161,8 @@ static inline void message_fetch()
 #endif
 
 
-//unsigned char mcp_config_str1[] __attribute__ ((section (".progdata"))) = {
-const unsigned char mcp_config_str1[] PROGMEM = {
+//uint8_t mcp_config_str1[] __attribute__ ((section (".progdata"))) = {
+const uint8_t mcp_config_str1[] PROGMEM = {
 	2, BFPCTRL, 0x0C,		//RXBF Pins to Output
 	4, CNF3,
 		0x05,			//CNF3
@@ -187,17 +187,17 @@ const unsigned char mcp_config_str1[] PROGMEM = {
 };
 	
 	
-//unsigned char mcp_config_str2[] __attribute__ ((section (".progdata"))) = {	
-const unsigned char mcp_config_str2[] PROGMEM = {	
+//uint8_t mcp_config_str2[] __attribute__ ((section (".progdata"))) = {
+const uint8_t mcp_config_str2[] PROGMEM = {
 	2, CANCTRL, 0,
 	2, CANINTE, _BV(RX0IE),
 	0
 };
 
 void can_init()
-{	
+{
 	//PORTB |= (1<<SPI_PIN_MISO); //MISO pullup for debugging
-		
+
 	//set output SPI pins to output
 	#ifdef SPI_PIN_SS_AVR
 		SPI_DDR = _BV(SPI_PIN_MOSI) | _BV(SPI_PIN_SCK) | _BV(SPI_PIN_SS) | _BV(SPI_PIN_SS_AVR);
@@ -224,7 +224,7 @@ void can_init()
 }
 
 
-unsigned char can_get_nb()
+uint8_t can_get_nb()
 {
 	//check the pin, that the MCP's Interrup output connects to
 	if (SPI_REG_PIN_MCP_INT & _BV(SPI_PIN_MCP_INT))
