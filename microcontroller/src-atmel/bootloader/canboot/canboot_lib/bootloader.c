@@ -61,7 +61,6 @@ const uint8_t Flash_info_msg[] PROGMEM =
 
 void bootloader(void) {
 	uint16_t Address;
-	uint16_t Size;
 	uint8_t x;
 	
 	asm volatile(
@@ -152,7 +151,6 @@ void bootloader(void) {
 			} else if (msg->cmd == SDO_CMD_WRITE_BLK) {
 				if (msg->index == 0xFF01) {
 					Address = msg->address;
-					Size = msg->size;
 					Tx_msg.dlc = 1;
 					Tx_msg.data[0] = SDO_CMD_WRITE_BLK_ACK;
 					can_transmit();
@@ -176,7 +174,8 @@ void bootloader(void) {
 			goto sdo_server;
 		} else {
 			for (x = 0; x < 4; x++) {
-				boot_page_fill(Address, ((sdo_data_message*)Rx_msg.data)->data[x]);
+				sdo_data_message* tmp = (sdo_data_message*) Rx_msg.data;
+				boot_page_fill(Address, tmp->data[x]);
 				Address += 2;
 			}
 
