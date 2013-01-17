@@ -50,11 +50,12 @@ static struct t_pin_parameter {
 
 
 void send_stat(uint8_t pos) {
-	static can_message msg = {0x03, 0x00, 0x01, 0x01, 2, {0}};
-	msg.data[0] = stat_inputs.status_input;
-	msg.data[1] = pos;
-	msg.addr_src = myaddr;
-	can_transmit(&msg);
+	can_message *msg = can_buffer_get();
+	//msg = {0x03, 0x00, 0x01, 0x01, 2, {0}};
+	msg->data[0] = stat_inputs.status_input;
+	msg->data[1] = pos;
+	msg->addr_src = myaddr;
+	can_transmit(msg);
 }
 
 
@@ -181,19 +182,20 @@ void get_inputs() {
 uint8_t lamploungepwm[8];
 
 typedef struct {
-        uint8_t counter;
-        uint8_t last_held;
-        uint8_t dim_dir;
-        uint8_t bright;
-        uint8_t room;
-        void    (*sw_funct) ();
-        void    (*dim_funct) ();
+	uint8_t counter;
+	uint8_t last_held;
+	uint8_t dim_dir;
+	uint8_t bright;
+	uint8_t room;
+	void    (*sw_funct) ();
+	void    (*dim_funct) ();
 } taster_status;
 
 void virt_pwm_set_all(taster_status *tst, uint8_t min, uint8_t max)
 {
 	uint8_t x;
-	if(tst->room == 0){
+	if (tst->room == 0)
+	{
 		for (x = 0; x < 4; x++)
 		{
 			if (outputdata.pwmval[x] < min)
@@ -206,10 +208,10 @@ void virt_pwm_set_all(taster_status *tst, uint8_t min, uint8_t max)
 	{
 		for (x = 0; x < 8; x++)
 		{
-                        if (lamploungepwm[x] < min)
-                                set_bright(ROOM_LOUNGE, x, min);
-                        if (lamploungepwm[x] > max)
-                                set_bright(ROOM_LOUNGE, x, max);
+			if (lamploungepwm[x] < min)
+				set_bright(ROOM_LOUNGE, x, min);
+			if (lamploungepwm[x] > max)
+				set_bright(ROOM_LOUNGE, x, max);
 		}
 	}
 }
@@ -217,7 +219,7 @@ void virt_pwm_set_all(taster_status *tst, uint8_t min, uint8_t max)
 uint8_t pwm_get_min(taster_status *tst)
 {
 	uint8_t min = 255;
-	if(tst->room == 0)
+	if (tst->room == 0)
 	{
 		for (uint8_t x = 0; x < 4; x++)
 		{
@@ -227,12 +229,11 @@ uint8_t pwm_get_min(taster_status *tst)
 	}
 	else
 	{
-   	        for (uint8_t x = 0; x < 4; x++)
-                {
-                        if (lamploungepwm[x] < min)
-                                min = lamploungepwm[x];
-                }
-
+		for (uint8_t x = 0; x < 4; x++)
+			{
+				if (lamploungepwm[x] < min)
+					min = lamploungepwm[x];
+			}
 	}
 	return min;
 }
@@ -240,8 +241,8 @@ uint8_t pwm_get_min(taster_status *tst)
 uint8_t pwm_get_max(taster_status *tst)
 {
 	uint8_t max = 0;
-        if(tst->room == 0)
-        {
+	if(tst->room == 0)
+	{
 
 		for (uint8_t x = 0; x < 4; x++)
 		{
@@ -251,19 +252,18 @@ uint8_t pwm_get_max(taster_status *tst)
 	}
 	else
 	{
-                for (uint8_t x = 0; x < 4; x++)
-                {
-                        if (lamploungepwm[x] > max)
-                                max = lamploungepwm[x];
-                }
-
+		for (uint8_t x = 0; x < 4; x++)
+		{
+			if (lamploungepwm[x] > max)
+				max = lamploungepwm[x];
+		}
 	}
 	return max;
 }
 
 void lamp_dim(taster_status *tst) {
 	uint8_t val;
-        if(!tst->room){
+	if(!tst->room){
 		if (!((outputdata.ports >> SWL_VORTRAG) & 0x01))
 		{
 			set_lamp_all(ROOM_VORTRAG, 1);
@@ -272,11 +272,11 @@ void lamp_dim(taster_status *tst) {
 	}
 	else
 	{
-                if (!((outputdata.ports >> SWL_LOUNGE) & 0x01))
-                {
-                        set_lamp_all(ROOM_LOUNGE, 1);
-                        virt_pwm_set_all(tst, 0, 0);
-                }
+		if (!((outputdata.ports >> SWL_LOUNGE) & 0x01))
+		{
+			set_lamp_all(ROOM_LOUNGE, 1);
+			virt_pwm_set_all(tst, 0, 0);
+		}
 
 	}
 

@@ -163,11 +163,11 @@ void can_handler()
 			}
 		}
 		else if (rx_msg->port_dst == 3)
-                {
-                	if(rx_msg->addr_src == 0x61) /* lounge lamp 1 */
+		{
+			if (rx_msg->addr_src == 0x61) /* lounge lamp 1 */
 				set_lounge_lamp_1(rx_msg->data[0]);
 
-                        if(rx_msg->addr_src == 0x60) /* lounge lamp 2 */
+			if (rx_msg->addr_src == 0x60) /* lounge lamp 2 */
 				set_lounge_lamp_2(rx_msg->data[0]);
 
 		}
@@ -175,21 +175,25 @@ void can_handler()
 		if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01) {
 			// = rx_msg->data[1];
 		}
+		can_free(rx_msg);
 	}
 }
 
 void send_status(uint8_t addr)
 {
-	static can_message msg = {0x00, 0x00, 0x03, 0x03, 6, {0}};
-	msg.data[0] = get_channel_status();
-	msg.data[1] = get_channel_brightness(0); /* SWL_TAFEL */
-	msg.data[2] = get_channel_brightness(1); /* SWL_BEAMER */
-	msg.data[3] = get_channel_brightness(2); /* SWL_SCHRANK */
-	msg.data[4] = get_channel_brightness(3); /* SWL_FLIPPER */
-	msg.data[5] = get_channel_brightness(4); /* SWL_KUECHE */
-	msg.addr_src = myaddr;
-	msg.addr_dst = addr;
-	can_transmit(&msg);
+	can_message *msg = can_buffer_get();
+	msg->data[0] = get_channel_status();
+	msg->data[1] = get_channel_brightness(0); /* SWL_TAFEL */
+	msg->data[2] = get_channel_brightness(1); /* SWL_BEAMER */
+	msg->data[3] = get_channel_brightness(2); /* SWL_SCHRANK */
+	msg->data[4] = get_channel_brightness(3); /* SWL_FLIPPER */
+	msg->data[5] = get_channel_brightness(4); /* SWL_KUECHE */
+	msg->addr_src = myaddr;
+	msg->addr_dst = addr;
+	msg->port_dst = 3;
+	msg->port_src = 3;
+	msg->dlc = 6;
+	can_transmit(msg);
 }
 
 void read_can_addr()
