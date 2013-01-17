@@ -28,7 +28,7 @@ ISR(TIMER1_COMPA_vect)
 
 void init(void)
 {
-	TCCR1B |=  _BV(WGM12) | 3; // CTC, clk/64
+	TCCR1B |= _BV(WGM12) | _BV(CS10) | _BV(CS11); // CTC, clk/64
 
 	//1000 Hz
 	OCR1A = 250; // pwm timer compare target
@@ -83,7 +83,6 @@ void init(void)
 
 int main(void)
 {
-
 	//system initialization
 	init();
 

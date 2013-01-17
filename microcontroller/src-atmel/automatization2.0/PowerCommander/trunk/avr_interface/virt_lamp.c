@@ -141,14 +141,30 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 	}
 	else if (room == ROOM_LOUNGE)
 	{
-		static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
-		msg.data[0] = 3; /* switch lamp all */
-		msg.data[1] = 0;
-		msg.data[2] = enable;
-		msg.addr_src = myaddr;
-		can_transmit(&msg);	/* send packet to can_dimmer */
-		msg.addr_dst = 0x61;
-		can_transmit(&msg);	/* send packet to can_dimmer */
+		{
+			can_message *msg = can_buffer_get();
+			msg->data[0] = 3; /* switch lamp all */
+			msg->data[1] = 0;
+			msg->data[2] = enable;
+			msg->addr_src = myaddr;
+			msg->addr_dst = 0x60;
+			msg->port_dst = 2;
+			msg->port_src = 2;
+			msg->dlc = 3;
+			can_transmit(msg);	/* send packet to can_dimmer */
+		}
+		{
+			can_message *msg = can_buffer_get();
+			msg->data[0] = 3; /* switch lamp all */
+			msg->data[1] = 0;
+			msg->data[2] = enable;
+			msg->addr_src = myaddr;
+			msg->port_dst = 2;
+			msg->port_src = 2;
+			msg->dlc = 3;
+			msg->addr_dst = 0x61;
+			can_transmit(msg);	/* send packet to can_dimmer */
+		}
 	}
 	else if (room == ROOM_KUECHE)
 	{
