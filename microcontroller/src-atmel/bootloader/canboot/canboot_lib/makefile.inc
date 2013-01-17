@@ -1,6 +1,6 @@
 PRG            = bootloader
 SRC            = canboot_lib/bootloader.c canboot_lib/util.c canboot_lib/can.c canboot_lib/main.c
-OPTIMIZE       = -Os -fshort-enums  -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
+OPTIMIZE       = -Os -fshort-enums -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
 
 FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -V -U bootloader.hex
 FUSECMD        = avrdude -p $(MCU_TARGET) -c usbasp -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m -U efuse:w:$(EFUSE):m
@@ -17,7 +17,7 @@ SIZE	       = avr-size
 
 # Override is only needed by avr-lib build system.
 
-override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS)
+override CFLAGS        = -g -Wall -pedantic $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -std=gnu99
 override LDFLAGS       = -T ./canboot_lib/avr5.x -Wl,-Map,$(PRG).map,--section-start=.bootloader=$(BOOTLOADER_START),--relax,--gc-sections,--print-gc-sections
 
 OBJCOPY        = avr-objcopy
