@@ -1,6 +1,6 @@
 #include <avr/boot.h>
 
-extern unsigned char Station_id;
+extern uint8_t Station_id;
 
 
 
