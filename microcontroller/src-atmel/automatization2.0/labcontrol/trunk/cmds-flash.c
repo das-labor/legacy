@@ -406,9 +406,9 @@ void cmd_flash(int argc, char *argv[])
 		msg = (pdo_message *)can_get();
 
 
-		if ((msg != NULL) && msg->port_dst == PORT_MGT &&  
-		    msg->cmd      == FKT_MGT_AWAKE && 
-		    msg->addr_src == addr)
+		if ((msg != NULL) && (msg->port_dst == PORT_MGT) &&  
+		    (msg->cmd      == FKT_MGT_AWAKE) && 
+		    (msg->addr_src == addr))
 		{
 			break;
 		}
