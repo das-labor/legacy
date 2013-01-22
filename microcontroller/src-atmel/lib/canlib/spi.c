@@ -30,17 +30,16 @@ void spi_init()
 #ifdef XMEGA
 	/* configure MOSI, SCK, lines as outputs */
 	AVR_SPI_PORT.OUTSET = _BV(AVR_MOSI_BIT) | _BV(AVR_SCK_BIT) | _BV(AVR_SS_BIT); // mosi, sck, avr-ss to output
-	
-	XMEGA_SPI.CTRL = SPI_ENABLE_bm | SPI_MASTER_bm ;
 
-#else	
+	XMEGA_SPI.CTRL = SPI_ENABLE_bm | SPI_MASTER_bm;	//divide clock by 4
+
+#else
 	/* configure MOSI, SCK, lines as outputs */
 	DDRB |= _BV(AVR_MOSI_BIT) | _BV(AVR_SCK_BIT) | _BV(AVR_SS_BIT); // mosi, sck, avr-ss to output
 
-	SPCR = _BV(MSTR) | _BV(SPE); // Master Mode,  Enable SPI
+	SPCR = _BV(MSTR) | _BV(SPE); // Master Mode, Enable SPI
 	SPSR = _BV(SPI2X); // Double speed on
 #endif
-
 }
 
 
@@ -50,7 +49,7 @@ uint8_t spi_send(uint8_t data)
 #ifdef XMEGA
 	XMEGA_SPI.DATA = data;
 	while (!((XMEGA_SPI.STATUS) & SPI_IF_bm));
-	return(XMEGA_SPI.DATA);
+	return (XMEGA_SPI.DATA);
 #else
 	SPDR = data;
 	while (!(SPSR & _BV(SPIF)));
