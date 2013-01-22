@@ -84,7 +84,7 @@ static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val)
 }
 
 //load a message to mcp2515 and start transmission
-void message_load(can_message_x * msg)
+void message_load(can_message_x *msg)
 {
 	uint8_t x;
 
@@ -119,7 +119,7 @@ void message_load(can_message_x * msg)
 }
 
 //get a message from mcp2515 and disable RX interrupt Condition
-void message_fetch(can_message_x * msg)
+void message_fetch(can_message_x *msg)
 {
 	uint8_t tmp1, tmp2, tmp3;
 	uint8_t x;
@@ -326,9 +326,10 @@ void can_init()
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz
 #endif
-	mcp_write( CNF1, 0x40 | CNF1_T );
-	mcp_write( CNF2, 0xf1 );
-	mcp_write( CNF3, 0x05 );
+	mcp_write( CNF1, 0x40 | CNF1_T ); // SJW: Synchronization Jump Width Length bits - 1 ms / TQ = 0,5 ms
+	mcp_write( CNF2, 0xf1 ); // Length of PS2 determined by PHSEG, Bus line is sampled three times at the sample point, PS1 Length - 3,5 ms, Propagation Segment Length - 1 ms
+	mcp_write( CNF3, 0x05 ); // (PHSEG2 + 1) x TQ  PS2 Lenght - 3 ms
+	// bittime = t1 + propseg + ps1 + ps2 = 8 -  1 / 8 = 0,125
 
 	can_setfilter();
 	can_setmode(NORMAL);
@@ -336,7 +337,7 @@ void can_init()
 #ifdef CAN_INTERRUPT
 
 	// configure IRQ
-	// this only configures the INT Output of the mcp2515, not the int on the Atmel
+	// this only configures the INT Output of the mcp2515, not the int on the AVR
 	mcp_write(CANINTE, (1<<RX0IE) | (1<<TX0IE));
 
 	ENABLE_CAN_INT();//makro in which user can implement enabling of AVR-interrupt
@@ -448,7 +449,7 @@ can_message *can_get_nb()
 	}
 }
 
-can_message * can_get()
+can_message *can_get()
 {
 	//wait while the MCP doesn't generate an RX Interrupt
 #ifdef XMEGA
@@ -461,17 +462,17 @@ can_message * can_get()
 }
 
 	//only for compatibility with Interrupt driven Version
-can_message * can_buffer_get()
+can_message *can_buffer_get()
 {
 	return &(tx_message.msg);
 }
 
-void can_transmit(can_message * msg)
+void can_transmit(can_message *msg)
 {
-	message_load((can_message_x*)msg);
+	message_load((can_message_x *) msg);
 }
 
-void can_free(can_message * msg)
+void can_free(can_message *msg)
 {
 }
 

@@ -40,7 +40,7 @@ typedef struct{
 /****************************************************************************
  * Known ports
  */
- 
+
 typedef enum {
 	PORT_MGT	= 0x30,
 	PORT_LAMPE	= 0x20,
@@ -63,7 +63,7 @@ typedef enum {
 	FKT_MGT_RESET	= 0x02,
 	FKT_MGT_AWAKE	= 0x03
 } lap_mgt_fkts;
-		
+
 typedef enum { FKT_LAMPE_SET=0x00, FKT_LAMPE_SETMASK=0x01, 
 		FKT_LAMPE_SETDELAY=0x02, FKT_LAMPE_ADD=0x03 }			lap_lampe_fkts;
 
@@ -90,7 +90,7 @@ typedef enum { FKT_MOOD_INFO=0x00, FKT_MOOD_GET=0x01, FKT_MOOD_SET=0x02, FKT_MOO
 #define SDO_TYPE_UINT16_RO 	 0x04
 #define SDO_TYPE_UINT16_RW 	 0x05
 #define SDO_TYPE_UINT32_RO 	 0x08
-#define SDO_TYPE_UINT32_RW  	 0x09
+#define SDO_TYPE_UINT32_RW	 0x09
 #define SDO_TYPE_STRING_RO	 0x80
 #define SDO_TYPE_STRING_RW	 0x81
 #define SDO_TYPE_STRING_WO	 0x82
@@ -116,22 +116,6 @@ unsigned char *sdo_readbuf(sdo_message *first_message,
 unsigned char sdo_sendbuf(sdo_message *fst_msg, unsigned char *buf, unsigned char len);
 unsigned char sdo_sendbuf_nb(sdo_message *fst_msg, unsigned char *buf, unsigned char len);
 
-/////////////////////////////////////////////////////////////////////////////
-/* Usage
 
-while(1) {
-	lap_message msg = lap_rcvpacket();
-	switch( msg->fkt_id ) {
-	case FKT_BLA:
-		unsigned char length = data[0]
-
-		data
-
-		char *buf = lap_read(msg, length);
-		if ( !buf ) continue;
-
-		// interpret buffer 
-}
-*/
 
 #endif // _LAP_H
