@@ -396,7 +396,9 @@ void can_transmit(can_message *msg2)
 		{
 			((can_message_x *) &tx_buffer[tx_tail])->flags &= ~0x01;
 			tx_int = 1;
+			DISABLE_CAN_INT();
 			message_load(&tx_buffer[tx_tail]);
+			ENABLE_CAN_INT();
 			if (++tx_tail == CAN_TX_BUFFER_SIZE) tx_tail = 0;
 		}
 	}
