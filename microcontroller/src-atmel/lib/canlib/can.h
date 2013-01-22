@@ -44,7 +44,7 @@ typedef uint8_t can_subchannel_t;
 
 #endif
 
-typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t ;
+typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t;
 
 
 /*****************************************************************************
@@ -57,8 +57,8 @@ typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t ;
   #ifndef MCP_INT_MASK
     #define MCP_INT_MASK INT0
   #endif
-  #ifndef MCP_INT_FLAG
-    #define MCP_INT_FLAG ISC01
+  #ifndef MCP_INT_CTL
+    #define MCP_INT_CTL ISC01
   #endif
 #endif
 
