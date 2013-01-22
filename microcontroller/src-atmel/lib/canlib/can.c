@@ -89,7 +89,12 @@ void message_load(can_message_x * msg)
 	uint8_t x;
 
 	CLEAR_CS();
+#ifdef MCP2510
+	spi_send(WRITE);
+	spi_send(TXB0SIDH);
+#else
 	spi_send(LOAD_TX_BUFFER);
+#endif
 
 #ifdef CAN_RAW
 	spi_send((uint8_t)((uint32_t)msg->msg.id>>21));
@@ -120,7 +125,12 @@ void message_fetch(can_message_x * msg)
 	uint8_t x;
 
 	CLEAR_CS();
+#ifdef MCP2510
+	spi_send(READ);
+	spi_send(RXB0SIDH);
+#else
 	spi_send(READ_RX_BUFFER);
+#endif
 
 #ifdef CAN_RAW
 	tmp1 = spi_send(0);
