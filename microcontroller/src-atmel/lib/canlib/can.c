@@ -157,48 +157,52 @@ static volatile uint8_t tx_int;
 
 ISR (MCP_INT_VEC)
 {
-	uint8_t status = mcp_status();
+	uint8_t status;
+	do {
+		status = mcp_status();
 
-	if (status & 0x01) // Message in RX0
-	{
-		if (!(((can_message_x *)&rx_buffer[rx_head])->flags & 0x01))
+		if (status & 0x01) // Message in RX0
 		{
-			message_fetch(&rx_buffer[rx_head]);
-			rx_buffer[rx_head].flags |= 0x01;//mark buffer as used
-			if (++rx_head == CAN_RX_BUFFER_SIZE) rx_head = 0;
-		} else
-		{
-			//buffer overflow
-			//just clear the Interrupt condition, and lose the message
-			mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
+			if (!(((can_message_x *)&rx_buffer[rx_head])->flags & 0x01))
+			{
+				message_fetch(&rx_buffer[rx_head]);
+				rx_buffer[rx_head].flags |= 0x01;//mark buffer as used
+				if (++rx_head == CAN_RX_BUFFER_SIZE) rx_head = 0;
+			} else
+			{
+				//buffer overflow
+				//just clear the Interrupt condition, and lose the message
+				mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
+			}
 		}
-
-	} if (status & 0x08) {	// TX0 empty
-		if (((can_message_x *) &tx_buffer[tx_tail])->flags & 0x01)
-		{
-			((can_message_x *) &tx_buffer[tx_tail])->flags &= ~0x01;
-			tx_int = 1;
-			message_load(&tx_buffer[tx_tail]);
-			if (++tx_tail == CAN_TX_BUFFER_SIZE) tx_tail = 0;
-		} else
-		{
-			tx_int = 0;
+		if (status & 0x08) {	// TX0 empty
+			if (((can_message_x *) &tx_buffer[tx_tail])->flags & 0x01)
+			{
+				((can_message_x *) &tx_buffer[tx_tail])->flags &= ~0x01;
+				tx_int = 1;
+				message_load(&tx_buffer[tx_tail]);
+				if (++tx_tail == CAN_TX_BUFFER_SIZE) tx_tail = 0;
+			} else
+			{
+				tx_int = 0;
+			}
+			mcp_bitmod(CANINTF, (1<<TX0IF), 0x00);
 		}
-		mcp_bitmod(CANINTF, (1<<TX0IF), 0x00);
-	}
 #ifdef CAN_HANDLEERROR
-	if (status & ~0x09)
-	{
-		status = mcp_read(EFLG);
+		if (status & ~0x09)
+		{
+			status = mcp_read(EFLG);
 
-		if (status)
-		{ // we've got a error condition
-			can_error = status;
+			if (status)
+			{ // we've got a error condition
+				can_error = status;
 
-			mcp_write(EFLG, 0);
+				mcp_write(EFLG, 0);
+			}
 		}
-	}
 #endif // CAN_HANDLEERROR
+
+	} while (status);
 }
 
 #endif // CAN_INTERRUPT
