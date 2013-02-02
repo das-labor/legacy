@@ -220,7 +220,7 @@ uint8_t char_width(char ch) {
 }
 
 
-int16_t get_string_width(const char *str) {
+int16_t g_get_string_width(const char *str) {
 	char c;
 	int16_t width = 0;
 	while ((c = *str++) != 0) {
@@ -250,7 +250,7 @@ void g_draw_string_in_rect(rectangle_t *r, const char *str) {
 
 		if (*str == '\b') { //center
 			str++;
-			int16_t swidth = get_string_width(str);
+			int16_t swidth = g_get_string_width(str);
 			int16_t rwidth = r->w - 4;
 			text_x += (rwidth - swidth) / 2;
 		}
