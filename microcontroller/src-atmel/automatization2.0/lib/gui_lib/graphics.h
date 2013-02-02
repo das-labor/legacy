@@ -24,7 +24,7 @@ void g_clear_screen();
 
 void g_draw_rectangle(rectangle_t *r);
 void g_fill_rectangle(rectangle_t *r);
-int16_t get_string_width(const char *str);
+int16_t g_get_string_width(const char *str);
 void g_draw_string_in_rect(rectangle_t *r, const char *str);
 void g_draw_string_in_rect_vert(rectangle_t *r, const char *str);
 
