@@ -300,7 +300,7 @@ void g_draw_string_in_rect_vert(rectangle_t *r, const char *str) {
 }
 
 
-void g_draw_string(unsigned short x, unsigned short y, const char *str) {
+void g_draw_string(uint16_t x, uint16_t y, const char *str) {
 	char c;
 
 	text_x = x;
