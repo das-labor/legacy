@@ -14,6 +14,10 @@ void g_draw_char(char c) ;
 void g_draw_string(uint16_t x, uint16_t y, const char *str);
 
 
+//draw color should not be written to. It is only meant to be used in
+//own reimplementations of graphics functions to find the current color.
+extern uint8_t draw_color;
+
 void g_set_draw_color(uint8_t color);
 void g_set_draw_font(font *new_font);
 void g_clear_screen();

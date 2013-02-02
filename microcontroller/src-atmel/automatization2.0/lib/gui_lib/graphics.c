@@ -1,10 +1,11 @@
 #include <stdint.h>
+#include "../config.h"
 #include "graphics.h"
 #include "display.h"
 #include "fonts/font_uni53.h"
 
 //color in which new pixels are drawn
-static uint8_t draw_color;
+uint8_t draw_color;
 
 static font *draw_font = &font_uni53;
 
@@ -37,6 +38,7 @@ void g_clear_screen() {
 }
 
 
+#ifndef GRAPHICS_NO_DRAW_HORIZONTAL_LINE
 /**
  * Draws a horizontal line, left to right, at the specified coordinates and of
  * the specified length.
@@ -50,7 +52,7 @@ void g_draw_horizontal_line(unsigned short x, unsigned short y, unsigned short l
 	for (i = x; i <= x + length - 1; i++)
 		g_draw_pixel(i, y);
 }
-
+#endif
 
 /**
  * Draws a vertical line, top to bottom, at the specified coordinates and of
@@ -108,7 +110,7 @@ void g_draw_rectangle(rectangle_t *r) {
 	g_draw_horizontal_line(x, y + height - 1, width);
 }
 
-
+#ifndef GRAPHICS_NO_FILL_RECTANGLE
 void g_fill_rectangle(rectangle_t *r) {
 	uint16_t x = r->x;
 	uint16_t y = r->y;
@@ -120,7 +122,7 @@ void g_fill_rectangle(rectangle_t *r) {
 		y++;
 	}
 }
-
+#endif
 
 uint16_t text_x, text_y;
 
@@ -320,7 +322,7 @@ void g_draw_cross(uint16_t x, uint16_t y) {
 //	g_draw_pixel(x, y);
 }
 
-
+#ifndef GRAPHICS_NO_DRAW_ICON
 void g_draw_icon(uint16_t x, uint16_t y, icon_t *i) {
 	uint16_t w;
 	uint16_t h;
@@ -346,6 +348,30 @@ void g_draw_icon(uint16_t x, uint16_t y, icon_t *i) {
 			msk <<= 1;
 		}
 		y++;
+	}
+}
+#endif
+
+void g_fill_circle(uint16_t x, uint16_t y, uint8_t r) {
+	uint8_t xc, yc;
+	uint16_t r2 = r*r -r/2;
+	for (yc = 0; yc <=r; yc++) {
+		for (xc = 0; xc <=yc; xc++) {
+			if (((xc * xc) + (yc * yc)) <= r2) {
+				g_draw_pixel(x+xc, y+yc);
+				g_draw_pixel(x+yc, y+xc);
+
+				g_draw_pixel(x+xc, y-yc);
+				g_draw_pixel(x+yc, y-xc);
+
+				g_draw_pixel(x-xc, y+yc);
+				g_draw_pixel(x-yc, y+xc);
+
+				g_draw_pixel(x-xc, y-yc);
+				g_draw_pixel(x-yc, y-xc);
+			}
+		
+		}
 	}
 }
 
