@@ -24,23 +24,25 @@
 	#define CLEAR_CS() MCP_CS_PORT &= ~_BV(MCP_CS_BIT)
 #endif
 
-#ifndef ENABLE_CAN_INT //makro in which user can implement enabling of AVR-interrupt - enable int and set control mask
-	#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
-		#define	ENABLE_CAN_INT()   GIMSK |= _BV(MCP_INT_MASK); MCUCR |= _BV(MCP_INT_CTL)
-	#elif defined (__AVR_ATmega168__)
-		#define	ENABLE_CAN_INT()   EIMSK |= _BV(MCP_INT_MASK); EICRA |= _BV(MCP_INT_CTL)
-	#else
-		#error Interrupt Enable for Part not defined
+#ifdef CAN_INTERRUPT
+	#ifndef ENABLE_CAN_INT //makro in which user can implement enabling of AVR-interrupt - enable int and set control mask
+		#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
+			#define	ENABLE_CAN_INT()   GIMSK |= _BV(MCP_INT_MASK); MCUCR |= _BV(MCP_INT_CTL)
+		#elif defined (__AVR_ATmega168__)
+			#define	ENABLE_CAN_INT()   EIMSK |= _BV(MCP_INT_MASK); EICRA |= _BV(MCP_INT_CTL)
+		#else
+			#error Interrupt Enable for Part not defined
+		#endif
 	#endif
-#endif
-
-#ifndef DISABLE_CAN_INT //makro in which user can implement disabling of AVR-interrupt
-	#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
-		#define	DISABLE_CAN_INT()   GIMSK &= ~_BV(MCP_INT_MASK);
-	#elif defined (__AVR_ATmega168__)
-		#define	DISABLE_CAN_INT()   EIMSK &= ~_BV(MCP_INT_MASK);
-	#else
-		#error Interrupt Disable for Part not defined
+	
+	#ifndef DISABLE_CAN_INT //makro in which user can implement disabling of AVR-interrupt
+		#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
+			#define	DISABLE_CAN_INT()   GIMSK &= ~_BV(MCP_INT_MASK);
+		#elif defined (__AVR_ATmega168__)
+			#define	DISABLE_CAN_INT()   EIMSK &= ~_BV(MCP_INT_MASK);
+		#else
+			#error Interrupt Disable for Part not defined
+		#endif
 	#endif
 #endif
 
