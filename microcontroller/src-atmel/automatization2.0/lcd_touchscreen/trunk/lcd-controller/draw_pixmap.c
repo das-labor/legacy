@@ -1,13 +1,11 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 
-//define BIG DISPLAY in here
-#include "../include/personal_config.h"
 #include "config.h"
 
 #include "lcd_hardware.h"
-#include "../include/icon.h"
-#include "graphics.h"
+//#include "../include/icon.h"
+#include "gui_lib/graphics.h"
 
 #ifdef DATABUS_REVERSED
 	uint8_t lsl_table[] =  {(1<<7), (1<<6), (1<<5), (1<<4), (1<<3), (1<<2), (1<<1), (1<<0)};
@@ -23,7 +21,7 @@
  * @param y The y coordinante of the pixel.
  * @param state PIXEL_ON to set the pixel, otherwise pixel will be cleared.
  */
-void lcd_graphics_plot_pixel(unsigned short x, unsigned short y, unsigned char state) {
+void display_set_pixel(unsigned short x, unsigned short y, unsigned char state) {
 	if (state) {
 		pixmap[y * (X_SIZE / INTERFACE_BITS) + (x / INTERFACE_BITS)] |= lsl_table[(x % INTERFACE_BITS) + (INTERFACE_BITS == 4?4:0)];
 	} else {
@@ -35,7 +33,7 @@ void lcd_graphics_plot_pixel(unsigned short x, unsigned short y, unsigned char s
 /**
  * Clears the LCD screen
  */
-void g_clear_screen(void) {
+void display_clear_screen(void) {
 	uint16_t i;
 	/* Draw empty bytes to ocucpy the entire screen */
 	volatile uint8_t * p = pixmap;
@@ -75,7 +73,6 @@ void g_copy_logo(void * logo, uint8_t x_bytes, uint8_t y_size, uint16_t xc, uint
 	}
 }
 
-extern uint8_t draw_color;
 void g_draw_icon(uint16_t x, uint16_t y, icon_t * i){
 	uint16_t w;
 	uint16_t h;
@@ -95,7 +92,7 @@ void g_draw_icon(uint16_t x, uint16_t y, icon_t * i){
 				msk = 0x01;
 			}
 			if(d & msk){
-				lcd_graphics_plot_pixel(xi,y,draw_color);
+				display_set_pixel(xi,y,draw_color);
 			}
 			xi++;
 			msk <<= 1;
@@ -142,7 +139,7 @@ void g_draw_horizontal_line(unsigned short x, unsigned short y, unsigned short l
 void g_fill_rectangle(rectangle_t *r) {
 	uint16_t x = r->x;
 	uint16_t y = r->y;
-	uint16_t w = r->w - 1;
+	uint16_t w = r->w;
 	uint16_t h = r->h;
 	
 	uint16_t saddr = y * (X_SIZE / INTERFACE_BITS) + (x / INTERFACE_BITS);

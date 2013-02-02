@@ -1,3 +1,7 @@
+
+//define BIG DISPLAY in here
+#include "../include/personal_config.h"
+
 #define PIN_DATA        PINB
 #define DDR_DATA        DDRB
 #define PORT_DATA       PORTB
@@ -70,4 +74,5 @@
 
 #define GRAPHICS_NO_DRAW_HORIZONTAL_LINE
 #define GRAPHICS_NO_FILL_RECTANGLE
+#define GRAPHICS_NO_DRAW_ICON
 
