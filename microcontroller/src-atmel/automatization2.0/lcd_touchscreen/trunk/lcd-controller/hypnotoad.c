@@ -1,6 +1,8 @@
 
 
-#include "graphics.h"
+#include <stdint.h>
+
+#include "gui_lib/graphics.h"
 #include "draw_pixmap.h"
 #include "util/delay.h"
 #include "config.h"

@@ -1,7 +1,7 @@
 #ifndef _H_DRAW_PIXMAP
 #define _H_DRAW_PIXMAP
 
-#include "../include/icon.h"
+#include "gui_lib/icon.h"
 
 void g_clear_screen(void);
 void lcd_graphics_plot_pixel(unsigned short x, unsigned short y, unsigned char state);
