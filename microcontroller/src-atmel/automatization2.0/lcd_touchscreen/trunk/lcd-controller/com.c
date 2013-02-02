@@ -1,6 +1,6 @@
 #include <avr/io.h>
 
-#include "graphics.h"
+#include "gui_lib/graphics.h"
 #include "draw_pixmap.h"
 #include "../include/dc_commands.h"
 #include "config.h"

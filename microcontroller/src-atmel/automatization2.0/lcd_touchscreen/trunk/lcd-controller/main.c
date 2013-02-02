@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#include "graphics.h"
+#include "gui_lib/graphics.h"
 #include "com.h"
 #include "lcd_hardware.h"
 #include "draw_pixmap.h"
