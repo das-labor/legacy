@@ -15,6 +15,7 @@
 #define DC_DRAW_ICON                       0x08 //(x,y,size,icon_t)
 #define DC_DRAW_PIXEL                      0x09 //(x,y)
 #define DC_DRAW_STRING                     0x0A //(x,y,string)
-
+#define DC_GET_STRING_WIDTH                0x0B //(string)
+#define DC_GET_LAST_TEXT_HEIGHT            0x0C //(void)
 #endif // _H_DC_COMMANDS
 

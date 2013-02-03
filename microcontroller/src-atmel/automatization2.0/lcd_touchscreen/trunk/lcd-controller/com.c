@@ -42,7 +42,7 @@ static uint8_t read_byte() {
 			ACK_PULL();
 			WAIT_ATN_HIGH();
 			ACK_RELEASE();
-			WAIT_ACK_HIGH();
+			_delay_us(1); //wait for ack line to settle
 			return b;
 		}
 		if(ACK_IS_LOW()){//master requests byte
@@ -54,8 +54,7 @@ static uint8_t read_byte() {
 			DDR_DATA = 0;
 			PORT_DATA = 0xff;
 			ATN_RELEASE();
-			WAIT_ATN_HIGH();
-			_delay_us(1);
+			_delay_us(1); //wait for atn line to settle
 		}
 	}
 }
@@ -95,7 +94,7 @@ void handle_com() {
 	char buf[128];
 	
 	
-	if (TEST_ATN() == 0) {
+	if(ACK_IS_LOW() || ATN_IS_LOW()){
 	
 		cmd = read_byte();
 		switch (cmd) {

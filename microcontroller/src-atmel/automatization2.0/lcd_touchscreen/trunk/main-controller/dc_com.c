@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <util/delay.h>
 
 #include "dc_com.h"
 #include "../include/dc_commands.h"
@@ -18,6 +19,9 @@
 #define WAIT_ATN_LOW()     {while (PIN_HANDSHAKE & _BV(BIT_ATN));}
 #define WAIT_ATN_HIGH()    {while ((PIN_HANDSHAKE & _BV(BIT_ATN)) == 0);}
 
+#define ATN_IS_LOW()   ((PIN_HANDSHAKE & _BV(BIT_ATN))==0)
+#define ACK_IS_LOW()   ((PIN_HANDSHAKE & _BV(BIT_ACK))==0)
+
 
 void dc_byte_put(uint8_t b) {
 	PORT_DC_DATA = b;
@@ -27,6 +31,28 @@ void dc_byte_put(uint8_t b) {
 	WAIT_ACK_LOW();
 	ATN_RELEASE();
 	WAIT_ACK_HIGH();
+	WAIT_ATN_HIGH();
+}
+
+uint8_t dc_byte_get(){
+	uint8_t b;
+	WAIT_ACK_HIGH();
+	DDR_DC_DATA = 0;
+	PORT_DC_DATA = 0xff;
+	ACK_PULL();
+	WAIT_ATN_LOW();
+	b = PIN_DC_DATA;
+	ACK_RELEASE();
+	WAIT_ATN_HIGH();
+	DDR_DC_DATA = 0xff;
+	return b;
+}
+
+int16_t dc_int16_get(){
+	uint16_t i;
+	i =  dc_byte_get();
+	i |= (uint16_t) dc_byte_get() << 8;
+	return ((int16_t) i);
 }
 
 void init_dc_com() {
@@ -145,8 +171,13 @@ void g_draw_pixel(uint16_t x, uint16_t y) {
 }
 
 int g_get_last_text_height() {
-#warning "g_get_last_text_height() is not implemented"
-	return 23;
+	dc_byte_put(DC_GET_LAST_TEXT_HEIGHT);
+	return dc_int16_get();
+	return 10;
 }
 
-
+int16_t get_string_width(const char *str) {
+	dc_byte_put(DC_GET_STRING_WIDTH);
+	transmit_to_dc_string(str);
+	return dc_int16_get();
+}

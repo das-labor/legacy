@@ -47,7 +47,8 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 				dir_data += strlen(txt) + 1;
 				uint16_t idx = *(uint16_t*)dir_data;
 				dir_data += 2;
-				lap_button_t * b = new_lap_button(txt, idx);
+				lap_button_t * b = new_lap_button(idx);
+				b->text = txt; 
 				b->box.w = 32;
 				b->box.h = 30;
 				gui_container_add(akt_container,(gui_element_t *) b);

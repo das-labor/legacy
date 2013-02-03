@@ -4,7 +4,7 @@ OBJ = main.o dc_com.o adc.o backlight.o touchscreen.o \
       menu_browser.o main_window.o calibrate_touch.o \
       lap_button.o \
       can/spi.o can/can.o can_handler.o netvar/netvar.o \
-      gui_lib/gui.o  gui_lib/rectangle.o gui_lib/gui_container.o gui_lib/gui_button.o \
+      gui_lib/rectangle.o gui_lib/gui_container.o gui_lib/gui_button.o \
       gui_lib/icons/icons.o gui_lib/gui_slider.o \
       util_lib/list.o
 
