@@ -56,6 +56,7 @@
 
 
 #define DDR_DC_DATA  DDRA
+#define PIN_DC_DATA  PINA
 #define PORT_DC_DATA PORTA
 
 
