@@ -84,7 +84,7 @@ void gui_slider_draw(gui_element_t *self, uint8_t redraw) {
 	text_height = g_get_last_text_height();
 
 	if (s->orientation == ORIENTATION_HORIZONTAL) {
-		uint8_t strwidth = get_string_width("000");
+		uint8_t strwidth = g_get_string_width("000");
 		r.y += 2;
 		r.h -= 4;
 		r.x += strwidth + 2;
@@ -133,9 +133,13 @@ void gui_slider_set_value(gui_slider_t *self, int16_t val) {
 
 void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
 	gui_slider_t *s = (gui_slider_t*)self;
-	last_touched_gui_element = self;
+	
+	if (t.flags & TOUCH_FLAG_DOWN) {
+		//only take focus on press
+		last_touched_gui_element = self;
+	}
 
-	if (!(t.flags & TOUCH_FLAG_UP)) {
+	if ((last_touched_gui_element == self) && !(t.flags & TOUCH_FLAG_UP)) {
 		int range_size, offset;
 		if (s->orientation == ORIENTATION_HORIZONTAL) {
 			range_size = s->range_rectangle.w - SLIDER_SIZE;
