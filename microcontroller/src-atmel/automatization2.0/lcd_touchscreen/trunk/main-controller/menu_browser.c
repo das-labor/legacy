@@ -76,6 +76,18 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 				b->max_value = 255;
 				b->value = 30;
 			} break;
+			case H_SLIDER: {
+				gui_slider_t * b = new_gui_slider();
+				b->orientation = ORIENTATION_HORIZONTAL;
+				b->box.w = 80;
+				b->box.h = 32;
+				b->text = (char *) dir_data;
+				dir_data += strlen((char *) dir_data) + 1;
+				gui_container_add(akt_container,(gui_element_t *) b);
+				b->min_value = 0;
+				b->max_value = 255;
+				b->value = 30;
+			} break;
 			case END_CONTAINER: {
 				gui_container_t * new_container = akt_container;
 				akt_container = container_stack[--stack_pointer];

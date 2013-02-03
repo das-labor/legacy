@@ -35,6 +35,7 @@ lap_button_t *new_lap_button(uint16_t idx) {
 	b->state = 0;
 	b->frame_size = 0x80;
 	b->text = 0;
+	b->toggle_mode = 1;
 	b->click_handler = lap_button_click_handler;
 
 	b->nv = netvar_register(idx, 0, 1);

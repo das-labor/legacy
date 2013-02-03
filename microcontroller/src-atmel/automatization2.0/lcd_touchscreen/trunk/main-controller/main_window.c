@@ -21,6 +21,7 @@ uint8_t test_dir[] = {
 
 	END_CONTAINER,
 
+
 	V_CONTAINER,
 		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
 		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
@@ -37,15 +38,12 @@ uint8_t test_dir[] = {
 		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x10,
 	END_CONTAINER,
 	V_CONTAINER,
-		V_SLIDER, 'H','a','l','l','o',0,
+		H_SLIDER, 'H','a','l','l','o',0,
+		H_SLIDER, 'H','a','l','l','o',0,
 	END_CONTAINER,
 
 	0
 };
-
-
-
-
 
 
 extern icon_t room_icon;
