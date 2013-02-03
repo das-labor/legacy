@@ -7,6 +7,7 @@
 #define GUI_BUTTON    0x20
 #define CAN_BUTTON    0x21
 #define V_SLIDER      0x30
+#define H_SLIDER      0x31
 
 
 void menu_browser_set_dir (uint8_t * dir_data);

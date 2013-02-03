@@ -176,7 +176,7 @@ int g_get_last_text_height() {
 	return 10;
 }
 
-int16_t get_string_width(const char *str) {
+int16_t g_get_string_width(const char *str) {
 	dc_byte_put(DC_GET_STRING_WIDTH);
 	transmit_to_dc_string(str);
 	return dc_int16_get();
