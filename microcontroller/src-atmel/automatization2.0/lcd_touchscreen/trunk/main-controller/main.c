@@ -115,6 +115,7 @@ int main(void) {
 			sei();
 
 			handle_touchscreen();
+			handle_status();
 			can_handler();
 			netvar_handle_events();
 		}
