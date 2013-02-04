@@ -69,8 +69,8 @@ uint16_t read_adc(){
 	return last_adc_val;
 }
 
-void init_acomp(){
-	ACSR = _BV(ACIC);
+void init_timer1(){
+	ACSR = _BV(ACIC);//analog comparator controlls input capture
 }
 
 #define LED_DDR DDRA
@@ -83,7 +83,7 @@ int main(){
 	DDRB |= _BV(PB2); //set pwm pin to output	
 	LED_DDR |= _BV(LED_BIT);
 	
-	init_acomp();
+	init_timer1();
 	
 	while(1){
 		if(ACSR & _BV(ACO)){
