@@ -148,6 +148,7 @@ void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
 			range_size = s->range_rectangle.h - SLIDER_SIZE;
 			offset = s->range_rectangle.y + s->range_rectangle.h - 2 - t.y;
 		}
+		if(offset < 0) offset = 0;
 		int val = s->min_value + (uint32_t)(s->max_value - s->min_value) * offset / range_size;
 
 		gui_slider_set_value(s, val);
