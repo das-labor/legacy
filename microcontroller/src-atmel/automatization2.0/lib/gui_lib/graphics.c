@@ -54,6 +54,7 @@ void g_draw_horizontal_line(unsigned short x, unsigned short y, unsigned short l
 }
 #endif
 
+#ifndef GRAPHICS_NO_DRAW_VERTICAL_LINE
 /**
  * Draws a vertical line, top to bottom, at the specified coordinates and of
  * the specified length.
@@ -66,6 +67,8 @@ void g_draw_vertical_line(unsigned short x, unsigned short y, unsigned short len
 	for (i = y; i < y + length; i++)
 		g_draw_pixel(x, i);
 }
+#endif
+
 
 
 void g_draw_line(unsigned short x0, unsigned short y0, unsigned short x1, unsigned short y1) {
