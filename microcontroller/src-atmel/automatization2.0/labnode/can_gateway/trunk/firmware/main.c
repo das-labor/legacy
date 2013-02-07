@@ -346,7 +346,7 @@ int main(){
 
 	sei();
 
-	can_setmode(normal);
+	can_setmode(NORMAL);
 
 	PORT_LED &= ~(1<<BIT_LED); //LED off after init
 
