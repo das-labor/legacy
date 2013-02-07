@@ -168,7 +168,7 @@ void handle_status(){
 	if(ticks == 100){
 		ticks = 0;
 		sprintf(status_string, "mem free: %d", mem_available());
-		status_label->draw(status_label, 0);
+		status_label->draw((gui_element_t*)status_label, 0);
 	}
 
 }
