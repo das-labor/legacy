@@ -36,6 +36,11 @@
 
 //ADMUX default value
 //select AREF voltage reference, right-adjust conversion results
+//REFS1 REFS0
+//    0     0  AREF, Internal Vref turned off
+//    0     1  AVCC with external capacitor at AREF pin
+//    1     0  Reserved
+//    1     1  Internal 2.56V Voltage Reference with external capacitor at AREF pin
 #define ADMUX_REFS (_BV(REFS0))
 
 //ADC channels
