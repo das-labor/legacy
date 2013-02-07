@@ -2,6 +2,7 @@
 #include <avr/interrupt.h>
 #include "touchscreen.h"
 #include "adc.h"
+#include "backlight.h"
 
 //define BIG DISPLAY in here
 #include "../include/personal_config.h"
@@ -121,15 +122,12 @@ void update_touchscreen() {
 	}
 }
 
-uint16_t adc_backlight;
-
 ISR(ADC_vect) {
 	static uint8_t state;
 	if (state == 0) {
 		//read for backlight completed. conversion for touchscreen is going.
 		state = 1;
-		adc_backlight = ADC;
-		backlight();
+		backlight_pi_controller_update(ADC);
 		//select AVCC reference and backlight channel again for next conversion
 		ADMUX = (1<<REFS0) | ADC_CHANNEL_BACKLIGHT;
 	} else {

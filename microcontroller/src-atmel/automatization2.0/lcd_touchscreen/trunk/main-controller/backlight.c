@@ -10,12 +10,12 @@ uint8_t backlight_brightnes = 32;
 
 #define PWM_MAX 1024l
 
-void backlight() {
+void backlight_pi_controller_update(uint16_t adc) {
 	int16_t ist, soll, diff, p, out;
 	static int32_t i = 0;
 
 	soll = backlight_brightnes * 4;
-	ist = adc_backlight;
+	ist = adc;
 
 	diff = soll - ist;
 	
