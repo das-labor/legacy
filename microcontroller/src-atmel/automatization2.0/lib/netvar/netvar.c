@@ -26,11 +26,11 @@ typedef struct {
 	 netvar_desc * nd;
 } netvar_dir_element_t;
 
-netvar_dir_element_t netvar_dir[40];
+static netvar_dir_element_t netvar_dir[40];
 
-uint8_t netvar_dir_size;
+static uint8_t netvar_dir_size;
 
-uint8_t find_netvar_position(uint16_t idx, uint8_t sidx) {
+static uint8_t find_netvar_position(uint16_t idx, uint8_t sidx) {
 	uint8_t a, b, m;
 	uint16_t m_idx;
 	uint8_t m_sidx;
@@ -73,7 +73,7 @@ netvar_desc * get_netvar_by_idx(uint16_t idx, uint8_t sidx) {
 	}
 }
 
-void netvar_insert(uint8_t pos, uint16_t idx, uint8_t sidx, netvar_desc * nd) {
+static void netvar_insert(uint8_t pos, uint16_t idx, uint8_t sidx, netvar_desc * nd) {
 	uint8_t i;
 	for (i = netvar_dir_size;i > pos; i--) {
 		memcpy(&netvar_dir[i], &netvar_dir[i-1], sizeof(netvar_dir_element_t));
@@ -142,7 +142,7 @@ void netvar_add_handler(netvar_desc * nd, void (*fkt)(netvar_desc *, void *), vo
 }
 
 //calls handlers on nd if any
-void nd_call_handlers(netvar_desc * nd) {
+static void nd_call_handlers(netvar_desc * nd) {
 	if (nd->handlers) {
 		//printf("calling handlers for %d, %X\r\n", i, nd->handlers);
 		list_iterator_t it;
@@ -164,18 +164,19 @@ typedef struct {
 //the event data for the new events is therewhile stored in the single buffered event_data_table,
 //as we don't need the event data anymore since it has been copied to all netvars before
 //the new events are processed.
-netvar_desc *         event_nd_table[2][32];
+static netvar_desc *         event_nd_table[2][32];
 
-netvar_data_store_t   event_data_table[32];
+static netvar_data_store_t   event_data_table[32];
 
 //selects which of the two nd buffer stores the new events
-uint8_t in_buffer_select;
+static uint8_t in_buffer_select;
 
 //new event index for stroing events.
-uint8_t event_table_index;
+static uint8_t event_table_index;
 
-
-void netvar_store_event(netvar_desc * nd, void * data) {
+//buffer event in event table being filled and buffer data
+//to data table
+static void netvar_store_event(netvar_desc * nd, void * data) {
 	event_nd_table[in_buffer_select][event_table_index] = nd;
 	memcpy(event_data_table[event_table_index].data, data, 5);
 	event_table_index++;
@@ -191,7 +192,8 @@ netvar_desc * in_fifo_nd[IN_FIFO_SIZE];
 
 
 
-
+//called to store incoming netvar data from CAN for netvars
+//that we have registered 
 void in_fifo_store(netvar_desc * nd, void * data) {
 	in_fifo_nd[in_fifo_head] = nd;
 	memcpy(in_fifo_data[in_fifo_head].data, data, 5);
@@ -212,10 +214,10 @@ netvar_desc * akt_bulk_nd;
 uint16_t      akt_bulk_size;
 uint16_t      akt_bulk_received;
 
-char * bulk_data;
+uint8_t * bulk_data;
 
 
-//called when netvar on bulk port is received
+//called from can handler when netvar on bulk port is received
 void netvar_bulk_received(can_message * msg) {
 	if (bulk_state == BS_RECEIVE) {
 		if (msg->addr_src == akt_bulk_addr) {
@@ -234,7 +236,7 @@ void netvar_bulk_received(can_message * msg) {
 
 //called from netvar received if nd indicates bulk netvar.
 //set the bulk receiver up to receive the data from that address
-void netvar_bulk_begin(netvar_desc * nd, uint8_t src_addr, uint16_t size) {
+static void netvar_bulk_begin(netvar_desc * nd, uint8_t src_addr, uint16_t size) {
 	if (bulk_state == BS_RECEIVE) {
 		//drop ongoing transmission if any
 		free(bulk_data);
@@ -262,6 +264,10 @@ void netvar_received(can_message * msg) {
 	
 	if (nd) {
 		//found
+		
+		//up to 5 bytes are transferred in one packet.
+		//if the netvar description says it is larger than 5 bytes
+		//then it is a bulk netvar.
 		if (nd->size > 5) {
 			uint16_t size = (((uint16_t)msg->data[4])<<8) | msg->data[3];
 			netvar_bulk_begin(nd, msg->addr_src, size);
@@ -281,7 +287,7 @@ uint8_t netvar_read(netvar_desc * nd, void * data) {
 	return 0;
 }
 
-void netvar_transmit(netvar_desc * nd) {
+static void netvar_transmit(netvar_desc * nd) {
 	static can_message msg = {0, 0, PORT_NETVAR, PORT_NETVAR, 1, {0,0,0,0,0,0,0,0}};
 	uint16_t idx;
 	uint8_t sidx;
@@ -300,8 +306,6 @@ void netvar_transmit(netvar_desc * nd) {
 	can_transmit(&msg);
 }
 
-
-extern void lap_button_nv_handler(void);
 
 void netvar_handle_events() {
 	uint8_t i;
