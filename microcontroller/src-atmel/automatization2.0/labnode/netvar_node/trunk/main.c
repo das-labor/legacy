@@ -8,6 +8,8 @@
 #include "can_handler.h"
 
 #include "netvar/netvar.h"
+#include "netvar/netvar_lamp.h"
+
 
 
 volatile uint8_t ticks_in_ms;
@@ -38,17 +40,13 @@ void init() {
 	read_can_addr();
 }
 
-void nv_handler(netvar_desc *nd, void *ref) {
-	//lap_button_t *s = (lap_button_t*) ref;
-	
-	if(nd->data[0]){
-		PORTB |= _BV(PB0); // LED on
-	
+void set_led(void * num_led, uint8_t val){
+	if(val){
+		PORTB |= _BV(0);
 	}else{
-		PORTB &= ~_BV(PB0); // LED off
+		PORTB &= ~_BV(0);
 	}
 }
-
 
 int main(void) {
 	DDRB |= _BV(PB0); // LED out
@@ -63,8 +61,7 @@ int main(void) {
 
 	can_setled(0, 1);
 	
-	netvar_desc * nd = netvar_register(0x1111, 0, 1);
-	netvar_add_handler(nd, nv_handler, 0);
+	new_netvar_lamp(0x1111, 0x00, set_led, 0); 
 	
 	while (1) {
 		if (ticks_in_ms >= 10) {
