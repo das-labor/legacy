@@ -161,18 +161,18 @@ void can_handler()
 						break;
 				}
 			}
-		}
-		else if (rx_msg->port_dst == 3)
-		{
-			if (rx_msg->addr_src == 0x61) /* lounge lamp 1 */
-				set_lounge_lamp_1(rx_msg->data[0]);
+			else if (rx_msg->port_dst == 3)
+			{
+				if (rx_msg->addr_src == 0x61) /* lounge lamp 1 */
+					set_lounge_lamp_1(rx_msg->data[0]);
 
-			if (rx_msg->addr_src == 0x60) /* lounge lamp 2 */
-				set_lounge_lamp_2(rx_msg->data[0]);
+				if (rx_msg->addr_src == 0x60) /* lounge lamp 2 */
+					set_lounge_lamp_2(rx_msg->data[0]);
 
+			}
 		}
 		// sleepmode zustand abfangen
-		if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01) {
+		else if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01) {
 			// = rx_msg->data[1];
 		}
 		can_free(rx_msg);
