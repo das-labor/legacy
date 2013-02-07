@@ -22,12 +22,12 @@ uint8_t lounge_lamp_status_1, lounge_lamp_status_2;
 void init_lamp_control()
 {
 	lounge_lamp_status_1 = lounge_lamp_status_2 = 0;
-        static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
-        msg.data[0] = 2; // get lamp status
-        msg.addr_src = myaddr;
-        can_transmit(&msg);     // send packet to can_dimmer
-        msg.addr_dst = 0x61;
-        can_transmit(&msg);     // send packet to can_dimmer
+	static can_message msg = {0x03, 0x60, 0x02, 0x02, 3, {0}};
+	msg.data[0] = 2; // get lamp status
+	msg.addr_src = myaddr;
+	can_transmit(&msg);     // send packet to can_dimmer
+	msg.addr_dst = 0x61;
+	can_transmit(&msg);     // send packet to can_dimmer
 }
 
 void set_lounge_lamp_1(uint8_t val)
@@ -38,9 +38,9 @@ void set_lounge_lamp_1(uint8_t val)
 
 void set_lounge_lamp_2(uint8_t val)
 {
-        lounge_lamp_status_2 = val;
+	lounge_lamp_status_2 = val;
 	relais_control();
-} 
+}
 
 /*
 * enable or disable lamps
@@ -299,10 +299,10 @@ uint8_t get_channel_brightness(uint8_t index)
 */
 
 static void relais_control() {
-	if(lounge_lamp_status_1 || lounge_lamp_status_2) /* one or more lamps in lounge are on */
-                outputdata.ports |= _BV(SWL_LOUNGE);
+	if (lounge_lamp_status_1 || lounge_lamp_status_2) /* one or more lamps in lounge are on */
+		outputdata.ports |= _BV(SWL_LOUNGE);
 	else
-                outputdata.ports |= _BV(SWL_LOUNGE);
+		outputdata.ports &= ~_BV(SWL_LOUNGE);
 
 	if (outputdata.ports & _BV(SWL_TAFEL) || outputdata.ports & _BV(SWL_BEAMER) || outputdata.ports & _BV(SWL_SCHRANK) || outputdata.ports & _BV(SWL_FLIPPER))	/* one ore more are on */
 		outputdata.ports |= _BV(SWL_VORTRAG);
