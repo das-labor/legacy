@@ -17,8 +17,11 @@
 	#include "can_pc/lap.h"
 #endif
 
+#define CAN_HANDLER_C
+
 #include "can_handler.h"
 #include "netvar/netvar.h"
+
 
 uint8_t myaddr;
 
