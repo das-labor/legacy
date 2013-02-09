@@ -27,9 +27,9 @@
 #ifdef CAN_INTERRUPT
 	#ifndef ENABLE_CAN_INT //makro in which user can implement enabling of AVR-interrupt - enable int and set control mask
 		#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
-			#define	ENABLE_CAN_INT()   GIMSK |= _BV(MCP_INT_MASK); MCUCR |= _BV(MCP_INT_CTL)
+			#define	ENABLE_CAN_INT()   GIMSK |= _BV(MCP_INT_MASK)
 		#elif defined (__AVR_ATmega168__)
-			#define	ENABLE_CAN_INT()   EIMSK |= _BV(MCP_INT_MASK); EICRA |= _BV(MCP_INT_CTL)
+			#define	ENABLE_CAN_INT()   EIMSK |= _BV(MCP_INT_MASK)
 		#else
 			#error Interrupt Enable for Part not defined
 		#endif
@@ -37,12 +37,26 @@
 	
 	#ifndef DISABLE_CAN_INT //makro in which user can implement disabling of AVR-interrupt
 		#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
-			#define	DISABLE_CAN_INT()   GIMSK &= ~_BV(MCP_INT_MASK);
+			#define	DISABLE_CAN_INT()   GIMSK &= ~_BV(MCP_INT_MASK)
 		#elif defined (__AVR_ATmega168__)
-			#define	DISABLE_CAN_INT()   EIMSK &= ~_BV(MCP_INT_MASK);
+			#define	DISABLE_CAN_INT()   EIMSK &= ~_BV(MCP_INT_MASK)
 		#else
 			#error Interrupt Disable for Part not defined
 		#endif
+	#endif
+
+	#ifndef SETUP_CAN_INT //makro in which user can implement setting up the interrupt to falling edge trigger
+		#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
+			#define	SETUP_CAN_INT()   MCUCR |= _BV(MCP_INT_CTL)
+		#elif defined (__AVR_ATmega168__)
+			#define	SETUP_CAN_INT()   EICRA |= _BV(MCP_INT_CTL)
+		#else
+			#error Interrupt Enable for Part not defined
+		#endif
+	#endif
+	
+	#ifndef MCP_INT_VEC
+		#error MCP_INT_VEC undefined. please define it in config.h like this: #define MCP_INT_VET  INT0_vect
 	#endif
 #endif
 
@@ -342,6 +356,7 @@ void can_init()
 	// this only configures the INT Output of the mcp2515, not the int on the AVR
 	mcp_write(CANINTE, (1<<RX0IE) | (1<<TX0IE));
 
+	SETUP_CAN_INT();//makro in which user can implement setting up the AVR-interrupt to trigger on falling edge
 	ENABLE_CAN_INT();//makro in which user can implement enabling of AVR-interrupt
 
 #else  //!CAN_INTERRUPT

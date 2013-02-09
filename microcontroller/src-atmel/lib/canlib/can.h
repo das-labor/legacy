@@ -50,7 +50,19 @@ typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t;
 /*****************************************************************************
  * Interrupt settings
  */
-#ifdef CAN_INTERRUPT
+ 
+/*
+  left as comment for reference only.
+  if you are now getting these constants as undefined, please set them in your config.h !
+  or use the even newer Makros like this in your config file:
+  #define   ENABLE_CAN_INT()    GIMSK |= _BV(INT0)
+  #define   DISABLE_CAN_INT()   GIMSK &= ~_BV(INT0)
+  #define   SETUP_CAN_INT()     MCUCR |= _BV(ISC01)
+  
+  The interrupt is supposed to use falling edge trigger.
+  
+  here are the previous default values:
+  
   #ifndef MCP_INT_VEC
     #define MCP_INT_VEC INT0_vect
   #endif
@@ -60,7 +72,8 @@ typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t;
   #ifndef MCP_INT_CTL
     #define MCP_INT_CTL ISC01
   #endif
-#endif
+
+*/
 
 /*****************************************************************************
  * Global variables
