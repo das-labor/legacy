@@ -1,9 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#include "config.h"
-#include "can_handler.h"
-
+#include "../config.h"
 
 /*
 
@@ -53,25 +51,25 @@ ISR(TIMER1_CAPT_vect) {
 }
 
 volatile uint8_t update_in_progress;
-uint8_t dim_max[NUM_CHANNELS];
+uint8_t dim_max[NUM_DIMMER_CHANNELS];
 
-uint16_t dim_vals_sorted[NUM_CHANNELS];
-uint8_t channels_sorted[NUM_CHANNELS];
+uint16_t dim_vals_sorted[NUM_DIMMER_CHANNELS];
+uint8_t channels_sorted[NUM_DIMMER_CHANNELS];
 
 
 ISR(TIMER1_COMPB_vect) {
 	static uint8_t state;
 	static uint8_t next;
 
-	static uint8_t channels[NUM_CHANNELS];
-	static uint16_t dim_vals[NUM_CHANNELS];
+	static uint8_t channels[NUM_DIMMER_CHANNELS];
+	static uint16_t dim_vals[NUM_DIMMER_CHANNELS];
 
 	if (state == 0) { //state = 0 means the timer is at MAX_VAL
 		if (!update_in_progress) {
 			//transfer the control information from main programm to interrupt
 			//if it is not being updated from the main programm at the moment.
 			uint8_t x;
-			for (x = 0; x < NUM_CHANNELS; x++) {
+			for (x = 0; x < NUM_DIMMER_CHANNELS; x++) {
 				channels[x] = channels_sorted[x];
 				dim_vals[x] = dim_vals_sorted[x];
 			}
@@ -100,7 +98,7 @@ ISR(TIMER1_COMPB_vect) {
 			case 3: PORTC |= _BV(PC5); break;
 		}
 		next++;
-		if ((next != NUM_CHANNELS) && (dim_vals[next] != MAX_VAL)) {
+		if ((next != NUM_DIMMER_CHANNELS) && (dim_vals[next] != MAX_VAL)) {
 			OCR1B = dim_vals[next];
 			if (TCNT1 >= OCR1B){   //if allready time for next
 				TIFR = _BV(OCF1B); //reset flag in case it was set allready
@@ -117,7 +115,7 @@ ISR(TIMER1_COMPB_vect) {
 
 void dimmer_init() {
 	uint8_t x;
-	for (x = 0; x < NUM_CHANNELS; x++) {
+	for (x = 0; x < NUM_DIMMER_CHANNELS; x++) {
 		channels_sorted[x] = x;
 		dim_vals_sorted[x] = MAX_VAL;
 	}
@@ -138,7 +136,7 @@ void dimmer_init() {
 }
 
 
-void set_dimmer(uint8_t channel, uint8_t bright) {
+void set_dimmer(void* ch, uint8_t bright) {
 	//this is the API to the dimmer module.
 	//it calculates the dim_vals for the respective brightnes
 	//and applys the dim_max flag for channels at maximum brightnes (255)
@@ -149,7 +147,7 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 	//  254        4         0
 	//  255        2         1
 
-	if (channel == 3) bright = (bright > 128) ? 255:0;//only allow full or no brighnes for evg on channel 3
+	uint8_t channel = (uint8_t) ch;
 
 	uint16_t dimval = 512 - bright * 2;
 	if (bright == 0) dimval = MAX_VAL;
@@ -169,9 +167,9 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 
 	uint8_t x;
 	//remove channel from list
-	for (x = 0; x < NUM_CHANNELS; x++) {
+	for (x = 0; x < NUM_DIMMER_CHANNELS; x++) {
 		if (channels_sorted[x] == channel) {
-			for (; x < NUM_CHANNELS - 1; x++) {
+			for (; x < NUM_DIMMER_CHANNELS - 1; x++) {
 				channels_sorted[x] = channels_sorted[x+1];
 				dim_vals_sorted[x] = dim_vals_sorted[x+1];
 			}
@@ -179,13 +177,13 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 		}
 	}
 
-	dim_vals_sorted[NUM_CHANNELS - 1] = MAX_VAL+1;
+	dim_vals_sorted[NUM_DIMMER_CHANNELS - 1] = MAX_VAL+1;
 
 	//insert channel into table
-	for (x = 0; x < NUM_CHANNELS; x++) {
+	for (x = 0; x < NUM_DIMMER_CHANNELS; x++) {
 		if (dimval < dim_vals_sorted[x]) {
 			uint8_t y;
-			for (y = NUM_CHANNELS - 1; y > x; y--) {
+			for (y = NUM_DIMMER_CHANNELS - 1; y > x; y--) {
 				dim_vals_sorted[y] = dim_vals_sorted[y - 1];
 				channels_sorted[y] = channels_sorted[y - 1];
 			}

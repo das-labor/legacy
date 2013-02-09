@@ -9,7 +9,8 @@
 
 #include "netvar/netvar.h"
 #include "netvar/netvar_lamp.h"
-
+#include "dimmer/dimmer.h"
+#include "lamp_controller.h"
 
 
 volatile uint8_t ticks_in_ms;
@@ -56,12 +57,21 @@ int main(void) {
 
 	init();
 	init_timer();
+	dimmer_init();
 
 	sei();
 
 	can_setled(0, 1);
 	
-	new_netvar_lamp(0x1111, 0x00, set_led, 0); 
+	new_netvar_lamp(0x0000, 0x00, set_led,    (void*)0);
+
+	new_netvar_lamp(0x0100, 0x50, set_dimmer, (void*)0);
+	new_netvar_lamp(0x0100, 0x51, set_dimmer, (void*)1);
+	new_netvar_lamp(0x0100, 0x52, set_dimmer, (void*)2);
+	new_netvar_lamp(0x0100, 0x53, set_dimmer, (void*)3);
+	
+	new_lamp_controller(0x0100, 4);
+	
 	
 	while (1) {
 		if (ticks_in_ms >= 10) {

@@ -2,7 +2,7 @@
 #define _DIMMER_H
 
 extern void dimmer_init();
-extern void set_dimmer(uint8_t channel, uint8_t bright);
+void set_dimmer(void* ch, uint8_t bright);
 
 #endif // _CAN_HANDLER
 
