@@ -66,7 +66,7 @@ static uint8_t find_netvar_position(uint16_t idx, uint8_t sidx) {
 
 netvar_desc * get_netvar_by_idx(uint16_t idx, uint8_t sidx) {
 	uint8_t i = find_netvar_position(idx, sidx);
-	if ((netvar_dir[i].idx == idx) && (netvar_dir[i].sidx == sidx) ) {
+	if ( (i < netvar_dir_size) && (netvar_dir[i].idx == idx) && (netvar_dir[i].sidx == sidx) ) {
 		return netvar_dir[i].nd;
 	} else {
 		return 0;
@@ -118,7 +118,7 @@ netvar_desc * netvar_register(uint16_t idx, uint8_t sidx, uint8_t size) {
 	netvar_desc * nd;
 
 	uint8_t i = find_netvar_position(idx, sidx);
-	if ((netvar_dir[i].idx == idx) && (netvar_dir[i].sidx == sidx)) {
+	if ( (i < netvar_dir_size) && (netvar_dir[i].idx == idx) && (netvar_dir[i].sidx == sidx) ) {
 		//netvar allready registered
 		return netvar_dir[i].nd;
 	} else {
