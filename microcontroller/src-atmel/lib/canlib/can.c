@@ -177,7 +177,7 @@ void message_fetch(can_message_x *msg)
 #ifdef CAN_INTERRUPT
 
 static can_message_x rx_buffer[CAN_RX_BUFFER_SIZE], tx_buffer[CAN_TX_BUFFER_SIZE];
-uint8_t rx_head = 0; volatile uint8_t rx_tail = 0;
+volatile uint8_t rx_head = 0; volatile uint8_t rx_tail = 0;
 uint8_t tx_head = 0; volatile uint8_t tx_tail = 0;
 static volatile uint8_t tx_int;
 
@@ -189,7 +189,8 @@ ISR (MCP_INT_VEC)
 
 		if (status & 0x01) // Message in RX0
 		{
-			if (!(((can_message_x *)&rx_buffer[rx_head])->flags & 0x01))
+			if (    (((rx_head + 1) % CAN_RX_BUFFER_SIZE) != rx_tail)         //avoid overflow
+			    && !(((can_message_x *)&rx_buffer[rx_head])->flags & 0x01)  ) //don't overwrite message that is still in use
 			{
 				message_fetch(&rx_buffer[rx_head]);
 				rx_buffer[rx_head].flags |= 0x01;//mark buffer as used
