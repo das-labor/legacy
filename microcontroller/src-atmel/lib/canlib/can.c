@@ -471,6 +471,13 @@ can_message *can_buffer_get()
 
 void can_transmit(can_message *msg)
 {
+	static uint8_t not_first;
+	if(!not_first){
+		not_first = 1; //first call: no message to wait for
+	} else {
+		while ((mcp_status() & 0x08) == 0); //wait until last packet transmitted
+		mcp_bitmod(CANINTF, (1<<TX0IF), 0x00);//clear interrupt
+	}
 	message_load((can_message_x *) msg);
 }
 
