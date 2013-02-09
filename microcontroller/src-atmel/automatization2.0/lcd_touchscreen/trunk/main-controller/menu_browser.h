@@ -6,6 +6,7 @@
 #define END_CONTAINER 0x1f
 #define GUI_BUTTON    0x20
 #define CAN_BUTTON    0x21
+#define CAN_V_SLIDER  0x22
 #define V_SLIDER      0x30
 #define H_SLIDER      0x31
 

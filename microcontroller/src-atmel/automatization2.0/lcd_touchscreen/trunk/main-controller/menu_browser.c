@@ -10,6 +10,7 @@
 #include "menu_browser.h"
 #include "netvar/netvar.h"
 #include "lap_button.h"
+#include "lap_slider.h"
 
 
 typedef struct {
@@ -47,10 +48,28 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 				dir_data += strlen(txt) + 1;
 				uint16_t idx = *(uint16_t*)dir_data;
 				dir_data += 2;
-				lap_button_t * b = new_lap_button(idx);
+				uint8_t sidx = *(uint8_t*)dir_data;
+				dir_data += 1;
+				lap_button_t * b = new_lap_button(idx, sidx);
 				b->text = txt; 
 				b->box.w = 32;
 				b->box.h = 30;
+				gui_container_add(akt_container,(gui_element_t *) b);
+			} break;
+			case CAN_V_SLIDER: {
+				char * txt = (char *) dir_data;
+				dir_data += strlen(txt) + 1;
+				uint16_t idx = *(uint16_t*)dir_data;
+				dir_data += 2;
+				uint8_t sidx = *(uint8_t*)dir_data;
+				dir_data += 1;
+				lap_slider_t * b = new_lap_slider(idx, sidx);
+				b->text = txt; 
+				b->box.w = 32;
+				b->box.h = 80;
+				b->min_value = 0;
+				b->max_value = 255;
+				b->value = 30;
 				gui_container_add(akt_container,(gui_element_t *) b);
 			} break;
 			case V_CONTAINER: {
