@@ -12,6 +12,7 @@
 #define SPI_PIN_MCP_INT      PB2
 
 #define CAN_INTERRUPT
+#define CAN_INT_NOBLOCK
 
 #define   ENABLE_CAN_INT()    GIMSK |= _BV(INT2)
 #define   DISABLE_CAN_INT()   GIMSK &= ~_BV(INT2)
