@@ -9,9 +9,19 @@
 #define MCP_CS_BIT   PB4
 #define MCP_CS_PORT  PORTB
 
-#define SPI_REG_PIN_MCP_INT  PINE
-#define SPI_PIN_MCP_INT      PE7
-//#define CAN_INTERRUPT
+#define SPI_REG_PIN_MCP_INT PINE
+#define SPI_PIN_MCP_INT     PE7
+
+#define CAN_INTERRUPT
+
+#define   ENABLE_CAN_INT()    EIMSK |= _BV(INT7)
+#define   DISABLE_CAN_INT()   EIMSK &= ~_BV(INT7)
+#define   SETUP_CAN_INT()     EICRB |= _BV(ISC71)
+#define   MCP_INT_VEC         INT7_vect
+
+
+#define CAN_RX_BUFFER_SIZE 16
+#define CAN_TX_BUFFER_SIZE 16
 
 #define CAN_HANDLER_C
 
