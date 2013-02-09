@@ -15,5 +15,8 @@
 
 #define F_MCP F_CPU
 
+//dimmer
+#define NUM_DIMMER_CHANNELS 4
+
 #endif // ifndef CONFIG_H
 
