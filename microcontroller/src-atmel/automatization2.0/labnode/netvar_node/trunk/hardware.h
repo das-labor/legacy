@@ -1,0 +1,2 @@
+
+void hardware_reset();
