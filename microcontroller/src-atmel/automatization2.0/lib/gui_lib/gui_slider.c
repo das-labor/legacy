@@ -116,7 +116,7 @@ void gui_slider_set_on_screen(gui_element_t *self, uint8_t state) {
 }
 
 
-void gui_slider_set_value(gui_slider_t *self, int16_t val) {
+void gui_slider_set_value(gui_slider_t *self, int16_t val, uint8_t do_call_value_changed) {
 	gui_slider_t *s = (gui_slider_t*)self;
 
 	if (val > s->max_value) val = s->max_value;
@@ -126,7 +126,7 @@ void gui_slider_set_value(gui_slider_t *self, int16_t val) {
 		s->value = val;
 		s->draw((gui_element_t *)self, 1);
 
-		if (s->value_changed) {
+		if (do_call_value_changed && s->value_changed) {
 			s->value_changed((gui_element_t *)self, s->value);
 		}
 	}
@@ -153,7 +153,7 @@ void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
 		if(offset < 0) offset = 0;
 		int val = s->min_value + (uint32_t)(s->max_value - s->min_value) * offset / range_size;
 
-		gui_slider_set_value(s, val);
+		gui_slider_set_value(s, val, 1);
 	}
 }
 
