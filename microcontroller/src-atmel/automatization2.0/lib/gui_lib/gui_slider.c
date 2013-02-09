@@ -18,7 +18,7 @@ static rectangle_t calculate_slider_rectangle(gui_slider_t *s) {
 	else
 		range_size = s->range_rectangle.h - SLIDER_SIZE;
 
-	int pos = (s->value - s->min_value) * range_size / (s->max_value - s->min_value);
+	int pos = (int32_t)(s->value - s->min_value) * range_size / (s->max_value - s->min_value);
 
 	if (s->orientation == ORIENTATION_HORIZONTAL) {
 		r.y = s->range_rectangle.y;
