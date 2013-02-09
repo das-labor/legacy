@@ -13,6 +13,13 @@
 #include "lap_slider.h"
 
 
+#define BUTTON_WIDTH  46
+#define BUTTON_HEIGHT 54
+
+#define V_SLIDER_WIDTH  46
+#define V_SLIDER_HEIGHT 200
+
+
 typedef struct {
 	gui_container_t * main_container;
 	//gui_container_t * element_container;
@@ -37,8 +44,8 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 		switch (b) {
 			case GUI_BUTTON: {
 				gui_button_t * b = new_gui_button();
-				b->box.w = 32;
-				b->box.h = 30;
+				b->box.w = BUTTON_WIDTH;
+				b->box.h = BUTTON_HEIGHT;
 				b->text = (char *) dir_data;
 				dir_data += strlen((char *) dir_data) + 1;
 				gui_container_add(akt_container,(gui_element_t *) b);
@@ -52,8 +59,8 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 				dir_data += 1;
 				lap_button_t * b = new_lap_button(idx, sidx);
 				b->text = txt; 
-				b->box.w = 32;
-				b->box.h = 30;
+				b->box.w = BUTTON_WIDTH;
+				b->box.h = BUTTON_HEIGHT;
 				gui_container_add(akt_container,(gui_element_t *) b);
 			} break;
 			case CAN_V_SLIDER: {
@@ -65,8 +72,8 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 				dir_data += 1;
 				lap_slider_t * b = new_lap_slider(idx, sidx);
 				b->text = txt; 
-				b->box.w = 32;
-				b->box.h = 80;
+				b->box.w = V_SLIDER_WIDTH;
+				b->box.h = V_SLIDER_HEIGHT;
 				b->min_value = 0;
 				b->max_value = 255;
 				b->value = 30;
@@ -86,8 +93,8 @@ void parse_dir_to_main_container (uint8_t * dir_data) {
 			} break;
 			case V_SLIDER: {
 				gui_slider_t * b = new_gui_slider();
-				b->box.w = 32;
-				b->box.h = 80;
+				b->box.w = V_SLIDER_WIDTH;
+				b->box.h = V_SLIDER_HEIGHT;
 				b->text = (char *) dir_data;
 				dir_data += strlen((char *) dir_data) + 1;
 				gui_container_add(akt_container,(gui_element_t *) b);
