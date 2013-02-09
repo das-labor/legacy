@@ -38,7 +38,7 @@ static uint8_t find_netvar_position(uint16_t idx, uint8_t sidx) {
 	if (netvar_dir_size == 0) return 0;
 
 	a = 0;
-	b = netvar_dir_size - 1;
+	b = netvar_dir_size;
 
 	//binary search
 	while (a != b) {
