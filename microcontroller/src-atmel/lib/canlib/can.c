@@ -181,8 +181,15 @@ volatile uint8_t rx_head = 0; volatile uint8_t rx_tail = 0;
 uint8_t tx_head = 0; volatile uint8_t tx_tail = 0;
 static volatile uint8_t tx_int;
 
+#ifdef CAN_INT_NOBLOCK
+ISR (MCP_INT_VEC, ISR_NOBLOCK)
+#else
 ISR (MCP_INT_VEC)
+#endif
 {
+	#ifdef CAN_INT_NOBLOCK
+		DISABLE_CAN_INT(); //if global interrupts are enabled during handler, disable our own interrupt so it doesn't nest
+	#endif
 	uint8_t status;
 	do {
 		status = mcp_status();
@@ -230,6 +237,11 @@ ISR (MCP_INT_VEC)
 #endif // CAN_HANDLEERROR
 
 	} while (status);
+	
+	#ifdef CAN_INT_NOBLOCK
+		cli();
+		ENABLE_CAN_INT(); //if global interrupts are enabled during handler, enable our own interrupt here again, but with globals off
+	#endif
 }
 
 #endif // CAN_INTERRUPT
