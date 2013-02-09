@@ -1,12 +1,12 @@
 
-DEFS = -DF_CPU=16000000l
+DEFS = -DF_CPU=16000000l -DAVR
 OBJ = main.o dc_com.o adc.o backlight.o touchscreen.o \
       menu_browser.o main_window.o calibrate_touch.o \
       lap_button.o lap_slider.o \
-      can/spi.o can/can.o can_handler.o netvar/netvar.o \
+      can/spi.o can/can.o netvar/can_handler.o netvar/netvar.o \
       gui_lib/rectangle.o gui_lib/gui_container.o gui_lib/gui_button.o \
       gui_lib/icons/icons.o gui_lib/gui_slider.o \
-      util_lib/list.o
+      util_lib/list.o hardware.o
 
 
 # Default values
@@ -14,8 +14,8 @@ OUT           ?= image
 MCU_TARGET    ?= atmega128
 MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall -pedantic
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=gnu99
+WARNINGS      ?= -Wall
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=gnu99 -I.
 LDFLAGS        = -Wl,-Map,$(OUT).map
 CANADDR       ?= 0xff
 
@@ -24,7 +24,7 @@ OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c usbasp -p m128 -V -U flash:w:$(OUT).hex
 RESETCMD      ?= avrdude -c usbasp -p m128
-LAPFLASHCMD   ?= lapcontrol
+LAPCONTROL    ?= lapcontrol
 
 
 LAUNCH_BOOTLOADER = launch-bootloader
@@ -50,8 +50,10 @@ reset:
 	
 
 canflash: $(OUT).hex
-	$(LAPFLASHCMD) flash $(CANADDR) $(OUT).hex
+	$(LAPCONTROL) flash $(CANADDR) $(OUT).hex
 
+canreset:
+	$(LAPCONTROL) reset $(CANADDR)
 
 sflash: $(OUT).hex
 	$(LAUNCH_BOOTLOADER) $(SERIAL) $(BAUDRATE)
