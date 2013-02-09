@@ -58,6 +58,8 @@ void gui_slider_draw(gui_element_t *self, uint8_t redraw) {
 		g_draw_rectangle(&s->box);
 	}
 
+	g_set_draw_color(1);
+		
 	rectangle_t r = s->box;
 
 	if (s->icon) {
