@@ -10,82 +10,54 @@
 #include "menu_browser.h"
 
 uint8_t test_dir[] = {
-/*
-	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
-	END_CONTAINER,
-
-	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
-
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
-		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
-
-	END_CONTAINER,
-*/
-
-	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x10, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x12, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x13, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x14, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x15, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x16, 0x11, 0x00,
-	END_CONTAINER,
-
-	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x10, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x12, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x13, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x14, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x15, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x16, 0x11, 0x00,
-	END_CONTAINER,
-
-	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x10, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x12, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x13, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x14, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x15, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x16, 0x11, 0x00,
-	END_CONTAINER,
-
-	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x10, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x12, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x13, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x14, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x15, 0x11, 0x00,
-		CAN_BUTTON, 'H','a','l','l','o',0,     0x16, 0x11, 0x00,
-	END_CONTAINER,
-
-
-	CAN_V_SLIDER, 'H','a','l','l','o',0,     0x11, 0x11, 0x00,
-
-	
-
 
 /*
 	V_CONTAINER,
-		CAN_BUTTON, 'H','a','l','l','o',0, 0x10, 0x11,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x11,
-		CAN_BUTTON, 'H','a','l','l','o',0, 0x11, 0x11,
-		CAN_BUTTON, 'H','a','l','l','o','1',0, 0x11, 0x10,
+		CAN_BUTTON, 'H','a','l','l','o',0,     0x10, 0x11, 0x00,
+		CAN_BUTTON, 'H','a','l','l','o',0,     0x11, 0x11, 0x00,
+		CAN_BUTTON, 'H','a','l','l','o',0,     0x12, 0x11, 0x00,
+		CAN_BUTTON, 'H','a','l','l','o',0,     0x12, 0x11, 0x00,
+		CAN_BUTTON, 'H','a','l','l','o',0,     0x11, 0x11, 0x00,
+		CAN_BUTTON, 'H','a','l','l','o',0,     0x14, 0x11, 0x00,
+		CAN_BUTTON, 'H','a','l','l','o',0,     0x15, 0x11, 0x00,
 	END_CONTAINER,
 */
+
+/*
+
+	V_CONTAINER,
+		GUI_BUTTON, 'H','a','l','l','o','1','2','3',0,
+		GUI_BUTTON, 'H','a','l','l','o','1','2','3',0,
+		GUI_BUTTON, 'H','a','l','l','o','1','2','3',0,
+		GUI_BUTTON, 'H','a','l','l','o','1','2','3',0,
+		GUI_BUTTON, 'H','a','l','l','o','1','2','3',0,
+		GUI_BUTTON, 'H','a','l','l','o','1','2','3',0,
+		GUI_BUTTON, 'H','a','l','l','o','1','2','3',0,
+	END_CONTAINER,
+*/
+
+
+	CAN_V_SLIDER, 'L','a','m','p',' ','0',0,                         0x00, 0x01, 0x00,
+	CAN_V_SLIDER, 'L','a','m','p',' ','1',0,                         0x00, 0x01, 0x01,
+	CAN_V_SLIDER, 'L','a','m','p',' ','2',0,                         0x00, 0x01, 0x02,
+	CAN_V_SLIDER, 'L','a','m','p',' ','3',0,                         0x00, 0x01, 0x03,
+	CAN_V_SLIDER, 'L','a','m','p',' ','M','a','s','t','e','r',0,     0x00, 0x01, 0x0f,
+	CAN_V_SLIDER, 'L','a','m','p',' ','0',0,                         0x00, 0x01, 0x00,
+
+	V_CONTAINER,
+		CAN_BUTTON, 'L','E','D',0,               0x00, 0x00, 0x00,
+	END_CONTAINER,
+
+
+
+/*
 
 	V_CONTAINER,
 		H_SLIDER, 'H','a','l','l','o',0,
 		H_SLIDER, 'H','a','l','l','o',0,
 	END_CONTAINER,
 
+*/	
 
 	0
 };
@@ -107,14 +79,14 @@ uint16_t mem_available(){
 	uint16_t max = 4096;
 	uint16_t val = 0;
 	
-	while((max - min) > 2){
-		val = (min+max)/2;
+	while(max > min){
+		val = (min+max+1)/2;
 		void * x = malloc(val);
 		if(x){
 			free(x);
 			min = val;
 		}else{
-			max = val;
+			max = val-1;
 		}
 	
 	}

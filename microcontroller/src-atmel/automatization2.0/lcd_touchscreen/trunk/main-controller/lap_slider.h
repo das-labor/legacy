@@ -17,7 +17,8 @@ typedef struct {
 	rectangle_t range_rectangle;
 	// -------------------- inherited from gui_slider_t until here -------------
 	
-	netvar_desc *nv;
+	netvar_desc *in_nv;
+	netvar_desc *out_nv;
 } lap_slider_t;
 
 lap_slider_t *new_lap_slider(uint16_t idx, uint8_t sidx);

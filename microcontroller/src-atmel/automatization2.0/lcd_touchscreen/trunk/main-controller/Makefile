@@ -17,14 +17,14 @@ OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -pedantic
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=gnu99
 LDFLAGS        = -Wl,-Map,$(OUT).map
-CANADDR       ?= XXX
+CANADDR       ?= 0xff
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c usbasp -p m128 -V -U flash:w:$(OUT).hex
 RESETCMD      ?= avrdude -c usbasp -p m128
-LAPFLASHCMD   ?= lapcontrol -s rl
+LAPFLASHCMD   ?= lapcontrol
 
 
 LAUNCH_BOOTLOADER = launch-bootloader
