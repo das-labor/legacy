@@ -24,6 +24,6 @@ typedef struct {
 void lap_button_click_handler(gui_element_t *self);
 void lap_button_delete (gui_element_t *self);
 //constructor
-lap_button_t *new_lap_button(uint16_t idx);
+lap_button_t *new_lap_button(uint16_t idx, uint8_t sidx);
 
 #endif //_LAP_BUTTON_H

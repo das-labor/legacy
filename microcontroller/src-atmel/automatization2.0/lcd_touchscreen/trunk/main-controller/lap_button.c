@@ -23,7 +23,7 @@ void lap_button_delete (gui_element_t *self) {
 
 
 //constructor
-lap_button_t *new_lap_button(uint16_t idx) {
+lap_button_t *new_lap_button(uint16_t idx, uint8_t sidx) {
 	lap_button_t *b = malloc(sizeof(lap_button_t));
 	b->draw = gui_button_draw;
 	b->set_on_screen = gui_button_set_on_screen;
@@ -38,8 +38,9 @@ lap_button_t *new_lap_button(uint16_t idx) {
 	b->toggle_mode = 1;
 	b->click_handler = lap_button_click_handler;
 
-	b->nv = netvar_register(idx, 0, 1);
+	b->nv = netvar_register(idx, sidx, 1);
 	netvar_add_handler(b->nv, lap_button_nv_handler, b);
+	
 
 	return b;
 }
