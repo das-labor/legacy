@@ -5,7 +5,7 @@
 
 #include "can/can.h"
 #include "can/spi.h"
-#include "can_handler.h"
+#include "netvar/can_handler.h"
 
 #include "gui_lib/graphics.h"
 #include "touchscreen.h"
