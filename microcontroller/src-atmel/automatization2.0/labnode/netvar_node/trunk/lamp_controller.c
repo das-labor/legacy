@@ -54,7 +54,6 @@ void lamp_controller_nv_handler(netvar_desc *nd, void *ref) {
 		
 		s->lamp_values[i] = val;
 		netvar_write(s->slider_out_netvars[i], &val); //set all sliders to display new value
-		netvar_write(s->slider_out_netvars[i+1], &val); //set all sliders to display new value
 		
 		//calculate mean brightnes to set master slider to that value
 		uint16_t master_val = 0;
