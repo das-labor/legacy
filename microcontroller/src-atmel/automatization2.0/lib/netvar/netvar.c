@@ -277,11 +277,12 @@ void netvar_received(can_message * msg) {
 	}
 }
 
-
+//user api to write to previously registered netvars
 void netvar_write(netvar_desc * nd, void * data) {
 	netvar_store_event(nd, data);
 }
 
+//user api to read from previously registered netvars
 uint8_t netvar_read(netvar_desc * nd, void * data) {
 	memcpy(data, nd->data, nd->size);
 	return 0;
@@ -309,6 +310,21 @@ static void netvar_transmit(netvar_desc * nd) {
 	can_transmit(msg);
 }
 
+//write to unregistered netvars. This is for elements, that only transmit
+//on specific netvars, but are not interested in receiving data on this netvar.
+void unregistered_netvar_write (uint16_t idx, uint8_t sidx, uint8_t size, void * data) {
+	//search if this netvar is also registered on this device.
+	netvar_desc * nd = get_netvar_by_idx (idx, sidx);
+	
+	if (nd) {
+		//the netvar is registered. default to normal wite function.
+		netvar_write (nd, data);
+	} else {
+		//it is unregistered. transmit it to can immediately
+		netvar_desc  nds = {idx, sidx, size, data, 0, 0}; //temp netvar descriptor
+		netvar_transmit (&nds);
+	}
+}
 
 void netvar_handle_events() {
 	uint8_t i;

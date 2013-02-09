@@ -25,8 +25,14 @@ netvar_desc *netvar_register(uint16_t idx, uint8_t sidx, uint8_t size);
 //adds handler for incoming netvar, which will be called with the user supplied reference as argument.
 void netvar_add_handler(netvar_desc *nd, void (*fkt)(netvar_desc *, void *), void *ref);
 
+//user api to write to previously registered netvars
 void netvar_write(netvar_desc *nd, void *data);
 
+//write to unregistered netvars. This is for elements, that only transmit
+//on specific netvars, but are not interested in receiving data on this netvar.
+void unregistered_netvar_write (uint16_t idx, uint8_t sidx, uint8_t size, void * data);
+
+//user api to read from previously registered netvars
 uint8_t netvar_read(netvar_desc *nd, void *data);
 
 #ifdef CAN_HANDLER_C
