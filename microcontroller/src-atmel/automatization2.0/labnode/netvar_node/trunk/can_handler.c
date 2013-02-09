@@ -1,17 +1,11 @@
 
 #ifdef AVR
-	#include <avr/io.h>
-	#include <avr/wdt.h>
 	#include <avr/eeprom.h>
-	#include <util/delay.h>
 	#include "can/can.h"
 	#include "can/lap.h"
 #else
 	#include <stdint.h>
 	#include <stdio.h>
-	uint8_t dummy;
-	#define TCCR2 printf("reset\r\n"); dummy
-	#define wdt_enable(a)
 	#define eeprom_read_byte(a) 0x88
 	#include "can_pc/can.h"
 	#include "can_pc/lap.h"
@@ -21,13 +15,15 @@
 
 #include "can_handler.h"
 #include "netvar/netvar.h"
+#include "hardware.h"
 
 
 uint8_t myaddr;
 
 void can_handler()
 {
-	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
+	//static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
+	can_message * msg;
 	can_message *rx_msg;
 	if ((rx_msg = can_get_nb()) != 0) //get next canmessage in rx_msg
 	{
@@ -38,13 +34,17 @@ void can_handler()
 				switch (rx_msg->data[0])
 				{
 					case FKT_MGT_RESET:
-						TCCR2 = 0;
-						wdt_enable(0);
-						while (1);
+						hardware_reset();
+						break;
 					case FKT_MGT_PING:
-						msg.addr_src = myaddr;
-						msg.addr_dst = rx_msg->addr_src;
-						can_transmit(&msg);
+						msg = can_buffer_get();
+						msg->addr_src = myaddr;
+						msg->addr_dst = rx_msg->addr_src;
+						msg->port_src = PORT_MGT;
+						msg->port_dst = PORT_MGT;
+						msg->dlc = 1;
+						msg->data[0] = FKT_MGT_PONG;
+						can_transmit(msg);
 						break;
 				}
 			}
@@ -55,6 +55,7 @@ void can_handler()
 			//printf("netvar received\r\n");
 			netvar_received(rx_msg);
 		}
+		can_free(rx_msg);
 	}
 }
 
