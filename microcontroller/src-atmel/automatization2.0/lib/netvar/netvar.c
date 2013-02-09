@@ -288,22 +288,25 @@ uint8_t netvar_read(netvar_desc * nd, void * data) {
 }
 
 static void netvar_transmit(netvar_desc * nd) {
-	static can_message msg = {0, 0, PORT_NETVAR, PORT_NETVAR, 1, {0,0,0,0,0,0,0,0}};
+	//static can_message msg = {0, 0, PORT_NETVAR, PORT_NETVAR, 1, {0,0,0,0,0,0,0,0}};
+	can_message * msg = can_buffer_get();
 	uint16_t idx;
 	uint8_t sidx;
 	
-	msg.addr_src = myaddr;
-	msg.addr_dst = 0;
+	msg->addr_src = myaddr;
+	msg->addr_dst = 0;
+	msg->port_src = PORT_NETVAR;
+	msg->port_dst = PORT_NETVAR;
 	
 	idx = nd->idx;
 	sidx = nd->sidx;
 	
-	msg.data[0] = idx;
-	msg.data[1] = idx>>8;
-	msg.data[2] = sidx;
-	memcpy (&msg.data[3], nd->data, 5);
-	msg.dlc = nd->size + 3;
-	can_transmit(&msg);
+	msg->data[0] = idx;
+	msg->data[1] = idx>>8;
+	msg->data[2] = sidx;
+	memcpy (&msg->data[3], nd->data, 5);
+	msg->dlc = nd->size + 3;
+	can_transmit(msg);
 }
 
 
