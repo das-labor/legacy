@@ -8,7 +8,7 @@
 #include "netvar/can_handler.h"
 
 #include "netvar/netvar.h"
-#include "netvar/netvar_lamp.h"
+#include "netvar/netvar_io.h"
 #include "dimmer/dimmer.h"
 #include "lamp_controller.h"
 
@@ -63,12 +63,12 @@ int main(void) {
 
 	can_setled(0, 1);
 	
-	new_netvar_lamp(0x0000, 0x00, set_led,    (void*)0);
+	new_netvar_output_8(0x0000, 0x00, set_led,    (void*)0);
 
-	new_netvar_lamp(0x0100, 0x50, set_dimmer, (void*)0);
-	new_netvar_lamp(0x0100, 0x51, set_dimmer, (void*)1);
-	new_netvar_lamp(0x0100, 0x52, set_dimmer, (void*)2);
-	new_netvar_lamp(0x0100, 0x53, set_dimmer, (void*)3);
+	new_netvar_output_8(0x0100, 0x50, set_dimmer, (void*)0);
+	new_netvar_output_8(0x0100, 0x51, set_dimmer, (void*)1);
+	new_netvar_output_8(0x0100, 0x52, set_dimmer, (void*)2);
+	new_netvar_output_8(0x0100, 0x53, set_dimmer, (void*)3);
 	
 	new_lamp_controller(0x0100, 4);
 	
