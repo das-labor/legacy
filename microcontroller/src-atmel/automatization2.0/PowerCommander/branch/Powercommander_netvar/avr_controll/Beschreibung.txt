@@ -1,0 +1,69 @@
+Lizenz: GPL3+ / TWI lib siehe Header
+
+ATMega168
+
+Steuert Ausgänge:
+6 * Hardware PWM als 0V - 10V Ausgänge für EVGs
+8 * TTL für Relais
+4 * Ausgänge für Optokoppler zur abschaltung der Lapenpaare
+
+
+
+
+I2C Bus für Kommunikation
+Bekommt Zustände für Ports und liefert diese auf Anfrage zurück.
+
+
+Fuses:
+lfuse: 0xee
+hfuse: 0xD4
+efuse: 0xf9
+
+Bootloader:
+none
+
+
+# i2c-protokoll
+die konfiguration was was ist steht in der PowerCommander.h dabei sind alle Schalter (optokoppler und relais) als O_SWxx 
+beschrieben. dann erfolgt eine zuordnung zu benannten objekten wie SWA_STECKDOSEN oder SWL_TAFEL wobei SW fuer switch steht.
+L steht fuer Lampe A fuer anderes. Analog fuer die PWMs. Die Objekte haben nun also eine Klassenid (PWM oder Schalter) und 
+eine Objektid [0 .. (n-1)]  zu jedem switch brauchen wir einen port und einen pin. zu jeder pwm brauchen wir nen port.
+
+Diese zuordnung wird dann in der Matrix abgespeichert.
+
+allgemeine struktur der i2c-nachrichten
+
+* 4Bytes insgesamt
+1 Byte Class  | 1 Byte Object | 1 Byte Funktion | 1 Byte Daten
+
+Klassen:
+ * 0x00 Schalter
+ * 0x01 PWMs
+
+hier nun die Auflistung
+
+0x00 | 0x00 | 0x00 | 0x00    - schlater | schalter 00 | funktion 00 | zusaetzliche daten 
+0x00 | 0x01 | 0x01 | 0x00    - schlater | schalter 01 | funktion 01 | zusaetzliche daten 
+
+die zuordnung welcher schalter was schaltet ist aus der PowerCommander.h zu entnehmen beispiel:
+
+#define O_SW04          (0x04)
+#define O_SW04_PORT     (&(PORTB))
+#define O_SW04_PIN      (PB5)
+#define SWA_STECKDOSEN  (O_SW04)
+
+wenn man also die Steckdosen schalten will, dann muss man 0x00|0x04 ueber die leitung senden
+#define F_SW_OFF      (0x00)
+#define F_SW_ON       (0x01)
+#define F_SW_STATUS   (0x02)
+
+will man nun den Schalter anschalten, dann sendet man
+0x00|0x04|0x01
+
+nun muessen aber noch finale Daten uebertragen werden. Bei den Schaltern ist es egal. Der volle DatenStrom ist dann
+0x00|0x04|0x01|0x00
+
+oder beim einbinden des PowerCommander.h
+
+C_SW|SWA_STECKDOSEN|F_SW_ON|D_NDEF
+
