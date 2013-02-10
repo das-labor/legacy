@@ -1,6 +1,6 @@
 #include "font.h"
 
-unsigned int PROGMEM fontIndex_arial8[] = {
+static const unsigned int PROGMEM fontIndex_arial8[] = {
 				0, /*   */
 				2, /* ! */
 				4, /* " */
@@ -99,7 +99,7 @@ unsigned int PROGMEM fontIndex_arial8[] = {
 				878
 };
 
-unsigned char PROGMEM fontData_arial8[] = {
+static const unsigned char PROGMEM fontData_arial8[] = {
 				0x00, 0x00, /*                  */
 				0xfc, 0x02, /*       # ######   */
 				0x1c, 0x00, /*            ###   */

@@ -102,7 +102,7 @@ static const unsigned int PROGMEM fontIndex_uni53[] = {                         
                                     395
 };
 
-static unsigned char PROGMEM fontData_uni53[] = {
+static const unsigned char PROGMEM fontData_uni53[] = {
                                 0x00, /*          */
                                 0x00, /*          */
                                 0x2e, /*   # ###  */
@@ -485,19 +485,19 @@ static unsigned char PROGMEM fontData_uni53[] = {
                                 0x3c, /*   ####   */
                                 0x02, /*       #  */
                                 0x2a, /*   # # #  */
-                                0x14, /*    # #   */                                
-                                0x19, /*    ##  # */  
+                                0x14, /*    # #   */
+                                0x19, /*    ##  # */
                                 0x24, /*   #  #   */
                                 0x24, /*   #  #   */
-                                0x39, /*   ###  # */ 
-                                0x19, /*    ##  # */  
+                                0x39, /*   ###  # */
+                                0x19, /*    ##  # */
                                 0x24, /*   #  #   */
                                 0x24, /*   #  #   */
-                                0x19, /*    ##  # */   
-                                0x1d, /*    ### # */   
+                                0x19, /*    ##  # */
+                                0x1d, /*    ### # */
                                 0x20, /*   #      */
                                 0x20, /*   #      */
-                                0x3d, /*   #### # */                                                       
+                                0x3d, /*   #### # */
 };
 
 font font_uni53 = {8, fontIndex_uni53, fontData_uni53, ' ', '~', '.', 1};
