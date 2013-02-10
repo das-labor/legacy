@@ -8,8 +8,8 @@ MCU_TARGET    ?= atmega162
 MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS)
-LDFLAGS        = -Wl,-Map,$(OUT).map
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=gnu99 -ffunction-sections -fdata-sections
+LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
 CANADDR       ?= XXX
 
 # External Tools
@@ -82,7 +82,7 @@ srec: $(OUT).srec
 
 %.bin: %.elf
 	$(OBJCOPY) -j .text -j .data -O binary $< $@
-	
+
 %.o: %.S
 	avr-gcc -c $(CFLAGS) -o $@ $< 
 
