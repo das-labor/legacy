@@ -2,7 +2,7 @@
 
 #include "twi_master/twi_master.h"
 #include "../include/PowerCommander.h"
-#include "i2c_funktionen.h"
+#include "i2c_com.h"
 
 t_outputdata outputdata;
 

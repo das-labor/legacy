@@ -31,5 +31,15 @@
 
 #define TESTBOARD
 
+#define NUM_INPUTS 7
+
+#define HAUPTSCHALTER	(_BV(PA0))
+#define POWER_OK	(_BV(PC2))
+#define TASTER_LOUNGE	(_BV(PB2))
+#define TASTER_VORTRAG	(_BV(PD3))
+#define RCD_SERVER	(_BV(PD6))
+#define RCD_POWER	(_BV(PD7))
+#define RCD_LICHT	(_BV(PA1))
+
 
 #endif // ifndef CONFIG_H
