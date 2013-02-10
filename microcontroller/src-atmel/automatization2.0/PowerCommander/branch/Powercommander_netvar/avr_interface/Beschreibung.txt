@@ -1,0 +1,29 @@
+Lizenz: GPL3+
+
+ATMega32
+
+Eingänge:
+
+RCD Steckdosen
+RCD Licht
+24V OK
+
+
+I2C Bus für Kommunikation mit Ausführungs Controller
+
+EIA232 für Kommunikation mit Display
+
+SPI: mcp 2510 CAN Bus für Labor anbindung
+
+
+Fuses:
+lfuse:0x00
+hfuse:0xd0
+
+
+
+Bootloader:
+canboot32
+
+eeprom:
+0x02
