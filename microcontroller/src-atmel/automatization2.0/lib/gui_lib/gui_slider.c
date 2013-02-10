@@ -49,7 +49,7 @@ static void clear_inner_rectangle(rectangle_t r) {
 
 
 void gui_slider_draw(gui_element_t *self, uint8_t redraw) {
-	gui_slider_t *s = (gui_slider_t*)self;
+	gui_slider_t *s = (gui_slider_t *) self;
 
 	if (!redraw) {
 		g_set_draw_color(0);
@@ -117,7 +117,7 @@ void gui_slider_set_on_screen(gui_element_t *self, uint8_t state) {
 
 
 void gui_slider_set_value(gui_slider_t *self, int16_t val, uint8_t do_call_value_changed) {
-	gui_slider_t *s = (gui_slider_t*)self;
+	gui_slider_t *s = (gui_slider_t *) self;
 
 	if (val > s->max_value) val = s->max_value;
 	if (val < s->min_value) val = s->min_value;
@@ -134,7 +134,7 @@ void gui_slider_set_value(gui_slider_t *self, int16_t val, uint8_t do_call_value
 
 
 void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
-	gui_slider_t *s = (gui_slider_t*)self;
+	gui_slider_t *s = (gui_slider_t *) self;
 	
 	if (t.flags & TOUCH_FLAG_DOWN) {
 		//only take focus on press
@@ -150,7 +150,7 @@ void gui_slider_touch_handler(gui_element_t *self, touch_event_t t) {
 			range_size = s->range_rectangle.h - SLIDER_SIZE;
 			offset = s->range_rectangle.y + s->range_rectangle.h - 2 - t.y;
 		}
-		if(offset < 0) offset = 0;
+		if (offset < 0) offset = 0;
 		int val = s->min_value + (uint32_t)(s->max_value - s->min_value) * offset / range_size;
 
 		gui_slider_set_value(s, val, 1);

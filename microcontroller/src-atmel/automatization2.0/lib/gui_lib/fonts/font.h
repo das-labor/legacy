@@ -9,7 +9,7 @@
 	#define pgm_read_byte(a) ((uint8_t)*(a))
 #endif
 
-typedef struct{
+typedef struct {
 	unsigned char fontHeight;
 	const unsigned int* fontIndex;
 	const unsigned char* fontData;
