@@ -1,6 +1,6 @@
 #include "font.h"
 
-static unsigned int PROGMEM fontIndex_uni53[] = {                                    0, /*   */
+static const unsigned int PROGMEM fontIndex_uni53[] = {                                    0, /*   */
                                     1, /* ! */
                                     3, /* " */
                                     6, /* # */
