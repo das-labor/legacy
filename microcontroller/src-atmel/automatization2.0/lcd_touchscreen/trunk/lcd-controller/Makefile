@@ -1,5 +1,5 @@
 DEFS = -DF_CPU=16000000l
-OBJ = main.o laborlogo.o gui_lib/graphics.o fonts/font_uni53.o lcd_hardware.o com.o draw_pixmap.o hypnotoad.c hypnotoad_data.c
+OBJ = main.o laborlogo.o gui_lib/graphics.o fonts/font_uni53.o lcd_hardware.o com.o draw_pixmap.o hypnotoad.o hypnotoad_data.o
 
 
 # Default values
