@@ -22,7 +22,6 @@ pixel read_touch_screen_coordinates() {
 	pixel p;
 	p = read_touch_raw();
 
-
 	if (p.x == -1) {
 		return p;
 	}

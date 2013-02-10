@@ -9,6 +9,7 @@
 #include "touchscreen.h"
 #include "menu_browser.h"
 
+
 uint8_t test_dir[] = {
 
 /*
@@ -56,7 +57,9 @@ uint8_t test_dir[] = {
 		H_SLIDER, 'H','a','l','l','o',0,
 		H_SLIDER, 'H','a','l','l','o',0,
 	END_CONTAINER,
-
+	V_CONTAINER,
+		CAN_V_SLIDER, 'H','a','l','l','o',0,
+	END_CONTAINER,
 */	
 
 	0
@@ -67,11 +70,11 @@ extern icon_t room_icon;
 extern icon_t escape_icon;
 extern icon_t main_icon;
 
-gui_container_t * bar;
-gui_button_t * escape_button;
-gui_button_t * room_button;
-gui_button_t * main_button;
-gui_button_t * status_label;
+gui_container_t *bar;
+gui_button_t *escape_button;
+gui_button_t *room_button;
+gui_button_t *main_button;
+gui_button_t *status_label;
 
 
 uint16_t mem_available(){
@@ -105,19 +108,19 @@ void navigation_bar_init() {
 	bar->box.w = 320;
 	bar->box.h = 30;
 	bar->frame_size = 0x80;
-	
+
 	escape_button = new_gui_button();
 	escape_button->box.w = 32;
 	escape_button->box.h = 30;
 	escape_button->text = "esc";
 	escape_button->icon = &escape_icon;
-	
+
 	room_button = new_gui_button();
 	room_button->box.w = 32;
 	room_button->box.h = 30;
 	room_button->text = "room";
 	room_button->icon = &room_icon;
-	
+
 	main_button = new_gui_button();
 	main_button->box.w = 32;
 	main_button->box.h = 30;
@@ -131,25 +134,23 @@ void navigation_bar_init() {
 	status_label->box.h = 30;
 	status_label->text = status_string;
 
-	
 	gui_container_add(bar, (gui_element_t *) escape_button);
 	gui_container_add(bar, (gui_element_t *) room_button);
 	gui_container_add(bar, (gui_element_t *) main_button);
 	gui_container_add(bar, (gui_element_t *) status_label);
 }
 
-void handle_status(){
+void handle_status() {
 	static uint8_t ticks;
 	ticks++;
-	if(ticks == 100){
+	if (ticks == 100) {
 		ticks = 0;
 		sprintf(status_string, "mem free: %d", mem_available());
 		status_label->draw((gui_element_t*)status_label, 0);
 	}
-
 }
 
-void navigation_bar_draw () {
+void navigation_bar_draw() {
 	bar->draw((gui_element_t *)bar, 0);
 }
 
@@ -157,16 +158,13 @@ void navigation_bar_draw () {
 void init_main_window() {
 	navigation_bar_init();
 	navigation_bar_draw();
-
 	menu_browser_init();
-
 	menu_browser_set_dir(test_dir);
-
 	menu_browser_draw();
 }
 
 
-void handle_touch (touch_event_t t) {
+void handle_touch(touch_event_t t) {
 	bar->touch_handler( (gui_element_t *) bar, t);
 	menu_browser_touch_handler(t);
 }

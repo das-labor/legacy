@@ -17,7 +17,7 @@ void lap_button_nv_handler(netvar_desc *nd, void *ref) {
 	s->draw((gui_element_t *)s, 0);
 }
 
-void lap_button_delete (gui_element_t *self) {
+void lap_button_delete(gui_element_t *self) {
 	free(self);
 }
 
@@ -40,7 +40,6 @@ lap_button_t *new_lap_button(uint16_t idx, uint8_t sidx) {
 
 	b->nv = netvar_register(idx, sidx, 1);
 	netvar_add_handler(b->nv, lap_button_nv_handler, b);
-	
 
 	return b;
 }

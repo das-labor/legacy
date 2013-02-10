@@ -1,6 +1,7 @@
 
 #include <avr/interrupt.h>
 #include "touchscreen.h"
+#include "backlight.h"
 #include "adc.h"
 #include "backlight.h"
 
@@ -129,7 +130,7 @@ ISR(ADC_vect) {
 		state = 1;
 		backlight_pi_controller_update(ADC);
 		//select AVCC reference and backlight channel again for next conversion
-		ADMUX = (1<<REFS0) | ADC_CHANNEL_BACKLIGHT;
+		ADMUX = (1 << REFS0) | ADC_CHANNEL_BACKLIGHT;
 	} else {
 		state = 0;
 		//read for touchscreen completed.

@@ -14,9 +14,10 @@ OUT           ?= image
 MCU_TARGET    ?= atmega128
 MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=gnu99 -I.
-LDFLAGS        = -Wl,-Map,$(OUT).map
+WARNINGS      ?= -Wall -pedantic
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=gnu99 -I. -ffunction-sections -fdata-sections
+LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
+
 CANADDR       ?= 0xff
 
 # External Tools
@@ -46,8 +47,8 @@ flash: $(OUT).hex
 	$(FLASHCMD)
 
 reset:
-	$(RESETCMD)	
-	
+	$(RESETCMD)
+
 
 canflash: $(OUT).hex
 	$(LAPCONTROL) flash $(CANADDR) $(OUT).hex
@@ -91,7 +92,7 @@ srec: $(OUT).srec
 
 %.bin: %.elf
 	$(OBJCOPY) -j .text -j .data -O binary $< $@
-	
+
 %.o: %.S
 	avr-gcc -c $(CFLAGS) -o $@ $< 
 
