@@ -8,13 +8,13 @@
 
 #include "twi_master/twi_master.h"
 #include "can/can.h"
-#include "can_handler.h"
+#include "netvar/can_handler.h"
 #include "can/spi.h"
 #include "can/lap.h"
 #include "switch.h"
-#include "i2c_funktionen.h"
-#include "statusled.h"
-#include "virt_lamp.h"
+#include "i2c_com.h"
+#include "netvar/netvar.h"
+#include "netvar/netvar_io.h"
 
 volatile uint8_t tickscounter;
 
@@ -95,6 +95,7 @@ int main(void)
 		if (tickscounter >= 20) {
 			tickscounter = 0;
 			switch_handler();
+			netvar_handle_events();
 		}
 		wdt_reset();
 	}
