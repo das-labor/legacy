@@ -2,11 +2,7 @@
 #define POWERCOMMANDER_SWITCH_H
 
 
-extern void switch_handler();
-extern void switch_timer_init();
-
-extern void tog_dimdir_vortrag();
-extern void dim_vortrag();
-extern void toggle_vortrag();
+extern void get_inputs();
+extern void switch_netvars_init();
 
 #endif

@@ -15,6 +15,7 @@
 #include "i2c_com.h"
 #include "netvar/netvar.h"
 #include "netvar/netvar_io.h"
+#include "hauptschalter.h"
 
 volatile uint8_t tickscounter;
 
@@ -72,9 +73,6 @@ void init(void)
 
 	read_can_addr();
 
-	// init lamp matrix
-	init_lamp_control();
-
 	//turn on interrupts
 	sei();
 
@@ -85,6 +83,7 @@ int main(void)
 {
 	//system initialization
 	init();
+	switch_netvars_init();
 
 	//the main loop continuously handles can messages
 	while (1)
@@ -94,10 +93,11 @@ int main(void)
 		/* execute every 20 ms */
 		if (tickscounter >= 20) {
 			tickscounter = 0;
-			switch_handler();
+			get_inputs();
 			netvar_handle_events();
+			handle_main_switch_timeout();
 		}
 		wdt_reset();
 	}
-	return 1;
+	return 0;
 }
