@@ -12,10 +12,10 @@ pixel read_mean() {
 	pixel p;
 	uint16_t mean_x = 0;
 	uint16_t mean_y = 0;
-	
+
 	uint16_t bar = 0;
-	rectangle_t progress_bar = {40,100,160,40};
-	
+	rectangle_t progress_bar = {40, 100, 160, 40};
+
 	g_draw_rectangle(&progress_bar);
 
 	while (1) {
@@ -53,7 +53,7 @@ pixel read_mean() {
 	g_set_draw_color(0);
 	g_fill_rectangle(&progress_bar);
 
-	return(rp);
+	return rp;
 }
 
 
@@ -61,17 +61,17 @@ pixel read_mean() {
 #define NUM_CALIB_POINTS 4
 
 pixel calib_points[] = {
-	{10     ,10},
-	{320-10 ,10},
-	{10     ,240-10},
-	{320-10 ,240-10}
+	{10       , 10},
+	{320 - 10 , 10},
+	{10       , 240 - 10},
+	{320 - 10 , 240 - 10}
 };
 
 rectangle_t text_boxes[] = {
-	{5,15,100,20},
-	{220,15,100,20},
-	{5,240-30,100,20},
-	{220,240-30,100,20}
+	{5  , 15      , 100, 20},
+	{220, 15      , 100, 20},
+	{5  , 240 - 30, 100, 20},
+	{220, 240 - 30, 100, 20}
 };
 
 
@@ -82,7 +82,7 @@ pixel calibrate_point(uint8_t i) {
 	box.y = calib_points[i].y - 5;
 	box.w = 10;
 	box.h = 10;
-	
+
 
 	g_draw_rectangle(&box);
 	pixel p = read_mean();
@@ -117,9 +117,9 @@ void test_touchscreen() {
 
 		if ((p1.x == -1 )&& (p.x != -1)) {
 			g_clear_screen();
-			
-			g_draw_rectangle(&(rectangle_t){10,10,50,20});
-			g_draw_string_in_rect(&(rectangle_t){10,10,50,20}, "Exit");
+
+			g_draw_rectangle(&(rectangle_t) {10, 10, 50, 20});
+			g_draw_string_in_rect(&(rectangle_t) {10, 10, 50, 20}, "Exit");
 
 			if (p.x < 60 && p.x > 10 && p.y < 30 && p.y > 10) {
 				break;
@@ -184,15 +184,15 @@ void calibrate_touch() {
 	calibration_values.yg = yg;
 	
 	eeprom_write_block(&calibration_values,
-			  (void *)EEPROM_TOUCHCAL_DATA_OFFSET,
+			  (void *) EEPROM_TOUCHCAL_DATA_OFFSET,
 		           sizeof(calibration_values_t));
 	
 	char textbuf[100];
 	sprintf(textbuf,"xg:%d  xz:%d", xg, xz);
-	g_draw_string_in_rect(&(rectangle_t){200,200,100,100}, textbuf);
+	g_draw_string_in_rect(&(rectangle_t) {200, 200, 100, 100}, textbuf);
 
 	sprintf(textbuf,"yg:%d  yz:%d", yg, yz);
-	g_draw_string_in_rect(&(rectangle_t){200,180,100,100}, textbuf);
+	g_draw_string_in_rect(&(rectangle_t) {200, 180, 100, 100}, textbuf);
 
 
 /*
