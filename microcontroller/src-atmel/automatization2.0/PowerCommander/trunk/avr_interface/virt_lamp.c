@@ -1,11 +1,10 @@
-
 #include "config.h"
-
 #include "can/can.h"
 #include "can_handler.h"
+#include "../include/PowerCommander.h"
 #include "i2c_funktionen.h"
 #include "virt_lamp.h"
-#include "../include/PowerCommander.h"
+
 
 static void relais_control(void);
 

@@ -1,16 +1,13 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
-#include <util/delay.h>
 
 #include "config.h"
 #include "../include/PowerCommander.h"
-
 #include "twi_master/twi_master.h"
-#include "can/can.h"
 #include "can_handler.h"
 #include "can/spi.h"
-#include "can/lap.h"
+#include "can/can.h"
 #include "switch.h"
 #include "i2c_funktionen.h"
 #include "statusled.h"
