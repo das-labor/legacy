@@ -1,14 +1,10 @@
 #include <avr/io.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
 
 #include "config.h"
-
-#include "twi_master/twi_master.h"
 #include "can/can.h"
 #include "can_handler.h"
-#include "i2c_funktionen.h"
 #include "../include/PowerCommander.h"
+#include "i2c_funktionen.h"
 #include "statusled.h"
 #include "virt_lamp.h"
 
@@ -25,27 +21,17 @@ union {
 	uint8_t status_input;
 } stat_inputs;
 
-#define HAUPTSCHALTER	(_BV(PA0))
-#define POWER_OK		(_BV(PC2))
-#define TASTER_LOUNGE	(_BV(PB2))
-#define TASTER_VORTRAG	(_BV(PD3))
-#define RCD_SERVER		(_BV(PD6))
-#define RCD_POWER		(_BV(PD7))
-#define RCD_LICHT		(_BV(PA1))
-
-#define NUM_INPUTS 7
-
 static struct t_pin_parameter {
 	volatile uint8_t *pin;
 	uint8_t bit;
 } pin_matrix[] = {
-	{ (&(PINA)) , HAUPTSCHALTER},
-	{ (&(PINB)) , TASTER_LOUNGE},
-	{ (&(PIND)) , TASTER_VORTRAG},
-	{ (&(PINC)) , POWER_OK},
-	{ (&(PIND)) , RCD_SERVER},
-	{ (&(PIND)) , RCD_POWER},
-	{ (&(PINA)) , RCD_LICHT}
+	{ (&(PINA)), HAUPTSCHALTER},
+	{ (&(PINB)), TASTER_LOUNGE},
+	{ (&(PIND)), TASTER_VORTRAG},
+	{ (&(PINC)), POWER_OK},
+	{ (&(PIND)), RCD_SERVER},
+	{ (&(PIND)), RCD_POWER},
+	{ (&(PINA)), RCD_LICHT}
 };
 
 
@@ -58,13 +44,6 @@ void send_stat(uint8_t pos) {
 	can_transmit(msg);
 }
 
-
-/*
-static struct t_i2c_cmd_matrix {
-	uint16_t ports;
-	uint8_t tue_etwas;
-} i2c_cmd_matrix[] = {{0, }, {0, }, {0, }, {0, }, {0, }, {0, }};*/
-
 static uint8_t timeout_cnt;
 void start_main_switch_timeout(void) {
 	/* 5 seconds timeout */
@@ -72,42 +51,31 @@ void start_main_switch_timeout(void) {
 }
 
 void handle_main_switch_timeout(void) {
-	if (timeout_cnt > 0)
-	{
+	if (timeout_cnt > 0) {
 		timeout_cnt--;
-		if (!timeout_cnt)
-		{
+		if (!timeout_cnt) {
 			/* turn of lights, preset default dim level */
-			set_lamp_all(ROOM_VORTRAG,0);
-			set_lamp_all(ROOM_LOUNGE,0);
-			set_lamp_all(ROOM_KUECHE,0);
+			set_lamp_all(ROOM_VORTRAG, 0);
+			set_lamp_all(ROOM_LOUNGE, 0);
+			set_lamp_all(ROOM_KUECHE, 0);
 			/* no need to handle other relays, they are controlled by set_lamp... */
-			outputdata.ports &= ~(1<<SWA_HS)|(1<<SWA_KLO)|(1<<SWA_STECKDOSEN|1<<SWA_BEAMER);
+			outputdata.ports &= ~((1<<SWA_HS) | (1<<SWA_KLO) | (1<<SWA_STECKDOSEN) | (1<<SWA_BEAMER));
 			twi_send();
 		}
 	}
 }
 
 void exec(uint8_t index) {
-	//if (i2c_cmd_matrix[index].tue_etwas) {
-	//	uint8_t i;
-	//	outputdata.ports = i2c_cmd_matrix[index].ports;
-		/*for (i = 0; i <= (i2c_cmd_matrix[index]).i; i++) {
-			outputdata.pwm = i2c_cmd_matrix[index]->objectlist[i];
-		}*/
-	//	twi_send();
-	//}
 	if (index == 0) {
 		if (stat_inputs.inputs.hauptschalter == 1) {
 			timeout_cnt = 0;
-			outputdata.ports |= (1<<SWA_HS)|(1<<SWA_KLO)|(1<<SWA_STECKDOSEN);
+			outputdata.ports |= (1<<SWA_HS) | (1<<SWA_KLO) | (1<<SWA_STECKDOSEN);
 			twi_send();
 		}
-		else
-		{
-			set_bright_all(ROOM_VORTRAG,178);
-			set_bright_all(ROOM_KUECHE,178);
-			set_bright_all(ROOM_LOUNGE,178);
+		else {
+			set_bright_all(ROOM_VORTRAG, 178);
+			set_bright_all(ROOM_KUECHE, 178);
+			set_bright_all(ROOM_LOUNGE, 178);
 			/* start timeout, shutdown after 5 seconds */
 			start_main_switch_timeout();
 		}
@@ -125,32 +93,26 @@ void exec(uint8_t index) {
 * Blue blinking : Error, rcd licht failed
 */
 void update_rgb_led() {
-	if (!stat_inputs.inputs.power_ok) /* Error case */
-	{
+	if (!stat_inputs.inputs.power_ok) { /* Error case */
 		set_led( (rgb){ .r = 1, .g = 1, .b = 1 , .fade=0 , .blink=1} );
 		return;
 	}
-	if (stat_inputs.inputs.rcd_server) /* Error case */
-	{
+	if (stat_inputs.inputs.rcd_server) { /* Error case */
 		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=1} );
 		return;
 	}
-	if (stat_inputs.inputs.rcd_power) /* Error case */
-	{
+	if (stat_inputs.inputs.rcd_power) { /* Error case */
 		set_led( (rgb){ .r = 1, .g = 0, .b = 0 , .fade=0 , .blink=1} );
 		return;
 	}
-	if (stat_inputs.inputs.rcd_licht) /* Error case */
-	{
+	if (stat_inputs.inputs.rcd_licht) { /* Error case */
 		set_led( (rgb){ .r = 0, .g = 0, .b = 1 , .fade=0 , .blink=1} );
 		return;
 	}
-	if (stat_inputs.inputs.hauptschalter) /* Switch on */
-	{
+	if (stat_inputs.inputs.hauptschalter) { /* Switch on */
 		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=0} );
 	}
-	else
-	{
+	else {
 		set_led( (rgb){ .r = 0, .g = 0, .b = 1 , .fade=0 , .blink=0} );
 	}
 }
@@ -263,7 +225,7 @@ uint8_t pwm_get_max(taster_status *tst)
 
 void lamp_dim(taster_status *tst) {
 	uint8_t val;
-	if(!tst->room){
+	if (!tst->room) {
 		if (!((outputdata.ports >> SWL_VORTRAG) & 0x01))
 		{
 			set_lamp_all(ROOM_VORTRAG, 1);
@@ -277,7 +239,6 @@ void lamp_dim(taster_status *tst) {
 			set_lamp_all(ROOM_LOUNGE, 1);
 			virt_pwm_set_all(tst, 0, 0);
 		}
-
 	}
 
 	if (tst->dim_dir)
@@ -307,10 +268,10 @@ void lamp_dim(taster_status *tst) {
 
 
 void toggle_vortrag() {
-	set_lamp_all(ROOM_VORTRAG, (outputdata.ports >> SWL_VORTRAG) & 0x01?0:1);
+	set_lamp_all(ROOM_VORTRAG, (outputdata.ports >> SWL_VORTRAG) & 0x01 ? 0 : 1);
 }
 void toggle_lounge() {
-	set_lamp_all(ROOM_LOUNGE, (outputdata.ports >> SWL_LOUNGE) & 0x01?0:1);
+	set_lamp_all(ROOM_LOUNGE, (outputdata.ports >> SWL_LOUNGE) & 0x01 ? 0 : 1);
 }
 
 
