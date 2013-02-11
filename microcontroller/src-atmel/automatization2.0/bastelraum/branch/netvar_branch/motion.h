@@ -1,0 +1,30 @@
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/eeprom.h>
+#include <avr/pgmspace.h>
+#include "config.h"
+#include "io.h"
+#include "can/can.h"
+#include "can_handler.h"
+#include "can/lap.h"
+#pragma once
+
+/* treshold value for motion detection (~3mV) */
+#define MOTION_TRESHOLD 20
+
+/* how many ticks to ignore in an interval of 2 minutes */
+#define MOTION_NUM_IGNORE 4
+
+uint8_t motion_get (void);
+void motion_init (void);
+void motion_tick (void);
+
+/* predefined ADC initialization values for motion detectors */
+#define NUM_DETECTORS 2
+
+/* pre-defined bits for ADMUX: 1.1V reference voltage */
+#define ADMUX_PREDEF (_BV(REFS1))
+
+#define M_IDLE_TRESHOLD 4   /* warning after n * 2 minutes */
+#define M_OFF_TRESHOLD 1    /* shut off power n * 2 minutes after idle limit is reached */
+#define M_WARN_LENGTH 10    /* length of warning period:  n * 0.5s -> 5s */
