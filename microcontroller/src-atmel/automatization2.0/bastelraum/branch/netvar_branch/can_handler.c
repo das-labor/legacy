@@ -2,20 +2,14 @@
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 
+#include "config.h"
 #include "can/can.h"
 #include "can_handler.h"
 #include "can/lap.h"
-#include "twi_master/twi_master.h"
 #include "io.h"
-
 #include "Bastelcmd.h"
-#include "config.h"
-#include "io.h"
-
 
 uint8_t myaddr;
-void twi_get(uint8_t *p);
-uint8_t status[10][10];
 
 void can_handler()
 {
@@ -36,7 +30,6 @@ void can_handler()
 						while (1);
 			
 					case FKT_MGT_PING:
-
 						msg.addr_src = myaddr;
 						msg.addr_dst = rx_msg->addr_src;
 						can_transmit(&msg);
@@ -55,7 +48,6 @@ void can_handler()
 						change_shift_reg(sreg);
 						break;
 					case C_PWM:
-						PORTB |= _BV(PB0); //XXX
 						pwm_set(pwm_matrix[rx_msg->data[1]].port, rx_msg->data[2]);
 						break;
 
@@ -67,7 +59,6 @@ void can_handler()
 						send_status();
 						break;
 				}
-				//state_to_output();
 			}
 		}
 	}
