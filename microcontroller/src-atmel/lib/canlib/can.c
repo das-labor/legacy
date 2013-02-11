@@ -18,7 +18,7 @@
 
 #ifdef XMEGA
 	#define SET_CS()   MCP_CS_PORT.OUTSET = _BV(MCP_CS_BIT)
-	#define CLEAR_CS() MCP_CS_PORT.OUTCLR = _BV(MCP_CS_BIT)	
+	#define CLEAR_CS() MCP_CS_PORT.OUTCLR = _BV(MCP_CS_BIT)
 #else
 	#define SET_CS()   MCP_CS_PORT |= _BV(MCP_CS_BIT)
 	#define CLEAR_CS() MCP_CS_PORT &= ~_BV(MCP_CS_BIT)
@@ -28,7 +28,7 @@
 	#ifndef ENABLE_CAN_INT //makro in which user can implement enabling of AVR-interrupt - enable int and set control mask
 		#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
 			#define	ENABLE_CAN_INT()   GIMSK |= _BV(MCP_INT_MASK)
-		#elif defined (__AVR_ATmega168__)
+		#elif defined (__AVR_ATmega168__) || (__AVR_ATmega644__)
 			#define	ENABLE_CAN_INT()   EIMSK |= _BV(MCP_INT_MASK)
 		#else
 			#error Interrupt Enable for Part not defined
@@ -38,7 +38,7 @@
 	#ifndef DISABLE_CAN_INT //makro in which user can implement disabling of AVR-interrupt
 		#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
 			#define	DISABLE_CAN_INT()   GIMSK &= ~_BV(MCP_INT_MASK)
-		#elif defined (__AVR_ATmega168__)
+		#elif defined (__AVR_ATmega168__) || (__AVR_ATmega644__)
 			#define	DISABLE_CAN_INT()   EIMSK &= ~_BV(MCP_INT_MASK)
 		#else
 			#error Interrupt Disable for Part not defined
@@ -48,7 +48,7 @@
 	#ifndef SETUP_CAN_INT //makro in which user can implement setting up the interrupt to falling edge trigger
 		#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
 			#define	SETUP_CAN_INT()   MCUCR |= _BV(MCP_INT_CTL)
-		#elif defined (__AVR_ATmega168__)
+		#elif defined (__AVR_ATmega168__) || (__AVR_ATmega644__)
 			#define	SETUP_CAN_INT()   EICRA |= _BV(MCP_INT_CTL)
 		#else
 			#error Interrupt Enable for Part not defined
@@ -56,10 +56,11 @@
 	#endif
 	
 	#ifndef MCP_INT_VEC
-		#error MCP_INT_VEC undefined. please define it in config.h like this: #define MCP_INT_VET  INT0_vect
+		#error MCP_INT_VEC undefined. please define it in config.h like this: #define MCP_INT_VEC INT0_vect
 	#endif
 #endif
 
+typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t;
 
 typedef struct
 {
@@ -113,13 +114,13 @@ void message_load(can_message_x *msg)
 #endif
 
 #ifdef CAN_RAW
-	spi_send((uint8_t)((uint32_t)msg->msg.id>>21));
-	spi_send( ((uint8_t)((uint32_t)msg->msg.id>>13) & 0xE0) | (1<<EXIDE) | ((uint8_t)((uint32_t)msg->msg.id>>16)&0x03) );
+	spi_send((uint8_t) ((uint32_t) msg->msg.id >> 21));
+	spi_send(((uint8_t) ((uint32_t) msg->msg.id >> 13) & 0xE0) | (1 << EXIDE) | ((uint8_t) ((uint32_t) msg->msg.id >> 16) & 0x03));
 	spi_send((uint8_t)(msg->msg.id>>8));
 	spi_send((uint8_t)(msg->msg.id));
 #else
-	spi_send( ((uint8_t)(msg->msg.port_src << 2)) | (msg->msg.port_dst >> 4 ) );
-	spi_send( (uint8_t)((msg->msg.port_dst & 0x0C) << 3) | (1<<EXIDE) | (msg->msg.port_dst & 0x03) );
+	spi_send(((uint8_t) (msg->msg.port_src << 2)) | (msg->msg.port_dst >> 4));
+	spi_send((uint8_t) ((msg->msg.port_dst & 0x0C) << 3) | (1 << EXIDE) | (msg->msg.port_dst & 0x03));
 	spi_send(msg->msg.addr_src);
 	spi_send(msg->msg.addr_dst);
 #endif
@@ -153,18 +154,17 @@ void message_fetch(can_message_x *msg)
 	tmp2 = spi_send(0);
 	tmp3 = spi_send(0);
 
-	msg->msg.id = ((uint32_t)tmp1<<21) | ((uint32_t)((uint8_t)tmp2&0xE0)<<13) 
-			| ((uint32_t)((uint8_t)tmp2&0x03)<<16) | ((uint16_t)tmp3<<8) | spi_send(0);
+	msg->msg.id = ((uint32_t)tmp1 << 21) | ((uint32_t) ((uint8_t) tmp2 & 0xE0) << 13) 
+			| ((uint32_t) ((uint8_t) tmp2 & 0x03) << 16) | ((uint16_t) tmp3 << 8) | spi_send(0);
 #else
 	tmp1 = spi_send(0);
 	msg->msg.port_src = tmp1 >> 2;
 	tmp2 = spi_send(0);
-	tmp3 = (uint8_t)((uint8_t)(tmp2 >> 3) & 0x0C);
-	msg->msg.port_dst = ((uint8_t)(tmp1 <<4 ) & 0x30) | tmp3 | (uint8_t)(tmp2 & 0x03);
+	tmp3 = (uint8_t) ((uint8_t) (tmp2 >> 3) & 0x0C);
+	msg->msg.port_dst = ((uint8_t) (tmp1 << 4 ) & 0x30) | tmp3 | (uint8_t) (tmp2 & 0x03);
 	msg->msg.addr_src = spi_send(0);
 	msg->msg.addr_dst = spi_send(0);
 #endif
-	
 	msg->msg.dlc = spi_send(0) & 0x0F;
 	for (x = 0; x < msg->msg.dlc; x++)
 	{
@@ -197,7 +197,7 @@ ISR (MCP_INT_VEC)
 		if (status & 0x01) // Message in RX0
 		{
 			if (    (((rx_head + 1) % CAN_RX_BUFFER_SIZE) != rx_tail)         //avoid overflow
-			    && !(((can_message_x *)&rx_buffer[rx_head])->flags & 0x01)  ) //don't overwrite message that is still in use
+			    && !(((can_message_x *) &rx_buffer[rx_head])->flags & 0x01)  ) //don't overwrite message that is still in use
 			{
 				message_fetch(&rx_buffer[rx_head]);
 				rx_buffer[rx_head].flags |= 0x01;//mark buffer as used
@@ -367,7 +367,7 @@ void can_init()
 
 	// configure IRQ
 	// this only configures the INT Output of the mcp2515, not the int on the AVR
-	mcp_write(CANINTE, (1<<RX0IE) | (1<<TX0IE));
+	mcp_write(CANINTE, (1 << RX0IE) | (1 << TX0IE));
 
 	SETUP_CAN_INT();//makro in which user can implement setting up the AVR-interrupt to trigger on falling edge
 	ENABLE_CAN_INT();//makro in which user can implement enabling of AVR-interrupt

@@ -17,12 +17,9 @@
 #include <stdint.h>
 #include "../config.h"
 
-typedef uint8_t can_addr;
-typedef uint8_t can_port;
-typedef uint16_t can_channel_t;
-typedef uint8_t can_subchannel_t;
-
 #ifdef CAN_RAW
+	typedef uint16_t can_channel_t;
+	typedef uint8_t can_subchannel_t;
 
 	typedef struct
 	{
@@ -32,6 +29,8 @@ typedef uint8_t can_subchannel_t;
 	} can_message;
 
 #else
+	typedef uint8_t can_addr;
+	typedef uint8_t can_port;
 
 	typedef struct {
 		can_addr      addr_src;
@@ -43,8 +42,6 @@ typedef uint8_t can_subchannel_t;
 	} can_message;
 
 #endif
-
-typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t;
 
 
 /*****************************************************************************
@@ -87,26 +84,26 @@ typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t;
  * Management
  */
 
-void can_init();
-void can_setfilter();
-void can_setmode(can_mode_t);
-void can_setled(uint8_t led, uint8_t state);
+extern void can_init();
+extern void can_setfilter();
+extern void can_setmode(can_mode_t);
+extern void can_setled(uint8_t led, uint8_t state);
 
 
 /*****************************************************************************
  * Sending
  */
 
-can_message *can_buffer_get();
-void can_transmit(can_message *msg);
+extern can_message *can_buffer_get();
+extern void can_transmit(can_message *msg);
 
 
 /*****************************************************************************
  * Receiving
  */
 
-can_message *can_get();
-can_message *can_get_nb();
-void can_free(can_message *msg);
+extern can_message *can_get();
+extern can_message *can_get_nb();
+extern void can_free(can_message *msg);
 
 #endif // _CAN_H
