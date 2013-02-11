@@ -3,7 +3,6 @@
 #include <util/delay.h>
 
 #include "config.h"
-#include "can_handler.h"
 
 /*
 
