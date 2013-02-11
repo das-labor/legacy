@@ -1,17 +1,14 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
 
 #include "config.h"
 
-#include "twi_master/twi_master.h"
 #include "can/can.h"
-#include "can_handler.h"
+#include "netvar/can_handler.h"
 #include "can/spi.h"
-#include "can/lap.h"
 #include "io.h"
 #include "motion.h"
+#include "netvar/netvar.h"
 
 void init(void)
 {
@@ -42,7 +39,7 @@ void init(void)
 
 	//turn on interrupts
 	sei();
-	wdt_enable(5); // 500ms
+	wdt_enable(WDTO_250MS); // 250 ms
 }
 
 int main(void)
@@ -54,11 +51,11 @@ int main(void)
 	while (1)
 	{
 		can_handler();
-
+		netvar_handle_events();
 		switch_handler();
-		wdt_reset();
 		motion_tick();
+		wdt_reset();
 	}
 	return 1;
-};
+}
 

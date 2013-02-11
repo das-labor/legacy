@@ -1,5 +1,5 @@
 #include "motion.h"
-const uint8_t motion_admux[NUM_DETECTORS] =
+static const uint8_t motion_admux[NUM_DETECTORS] =
 {
 	(0x00 | ADMUX_PREDEF),
 	(0x01 | ADMUX_PREDEF)
@@ -19,13 +19,13 @@ volatile static uint8_t mux_chan = 0;
 /* number of idle periods counted */
 volatile static uint8_t motion_idlecount = 0;
 
-void timer0_init ()
+void timer0_init()
 {
 	TCCR0B = (_BV(CS00) | _BV(CS02)); /* clk/1024 */
 	TIMSK0 = _BV(TOIE0); /* overflow int. */
 }
 
-void motion_init ()
+void motion_init()
 {
 	timer0_init();
 }
@@ -113,7 +113,7 @@ void motion_tick ()
 	{
 		/* restore old sreg state */
 		sreg ^= 0xff;
-		change_shift_reg (sreg);
+		change_shift_reg(sreg);
 		warnperiod = 0;
 	}
 
@@ -129,8 +129,7 @@ void motion_tick ()
 	if (motion_idlecount == M_IDLE_TRESHOLD + M_OFF_TRESHOLD)
 	{
 		sreg = 0;
-		change_shift_reg (sreg);
-		send_status();
+		change_shift_reg(sreg);
 		motion_idlecount = M_IDLE_TRESHOLD + M_OFF_TRESHOLD + 1; /* anti-overflow... */
 	} else if (motion_idlecount == M_IDLE_TRESHOLD)
 	{
