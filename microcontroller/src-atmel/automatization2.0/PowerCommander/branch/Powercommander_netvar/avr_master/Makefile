@@ -16,14 +16,14 @@ LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c avrisp2 -P usb -p $(MCU_TARGET) -U $(OUT).hex
-CANFLASHCMD    = lapcontrol -s kvm flash 2 $(OUT).hex
+CANFLASHCMD    = lapcontrol -s kvm flash 0x02 $(OUT).hex
 
 #############################################################################
 # Rules
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o twi_master/*.o
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o twi_master/*.o netvar/*.o util_lib/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex

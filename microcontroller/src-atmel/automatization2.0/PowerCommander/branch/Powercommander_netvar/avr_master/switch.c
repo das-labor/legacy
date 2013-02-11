@@ -27,7 +27,7 @@ static netvar_desc *out_netvars[NUM_INPUTS];
 *  on change: call send_stat() and call exec()
 */
 
-static void get_inputs() {
+void get_inputs() {
 	uint8_t i;
 	for (i = 0; i < NUM_INPUTS; i++) {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((status_input >> i) & 1) == 0)) {
