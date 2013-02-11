@@ -28,10 +28,10 @@ static struct t_pin_parameter {
 	{ (&(PINA)), HAUPTSCHALTER},
 	{ (&(PINB)), TASTER_LOUNGE},
 	{ (&(PIND)), TASTER_VORTRAG},
-	{ (&(PINC)), POWER_OK},
-	{ (&(PIND)), RCD_SERVER},
-	{ (&(PIND)), RCD_POWER},
-	{ (&(PINA)), RCD_LICHT}
+	{ (&(PIND)), POWER_OK},
+	{ (&(PINA)), RCD_SERVER},
+	{ (&(PINC)), RCD_POWER},
+	{ (&(PIND)), RCD_LICHT}
 };
 
 
@@ -94,26 +94,26 @@ void exec(uint8_t index) {
 */
 void update_rgb_led() {
 	if (!stat_inputs.inputs.power_ok) { /* Error case */
-		set_led( (rgb){ .r = 1, .g = 1, .b = 1 , .fade=0 , .blink=1} );
+		set_led( (rgb){ .r = 1, .g = 1, .b = 1, .fade = 0, .blink = 1} );
 		return;
 	}
 	if (stat_inputs.inputs.rcd_server) { /* Error case */
-		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=1} );
+		set_led( (rgb){ .r = 0, .g = 1, .b = 0, .fade = 0, .blink = 1} );
 		return;
 	}
 	if (stat_inputs.inputs.rcd_power) { /* Error case */
-		set_led( (rgb){ .r = 1, .g = 0, .b = 0 , .fade=0 , .blink=1} );
+		set_led( (rgb){ .r = 1, .g = 0, .b = 0, .fade = 0, .blink = 1} );
 		return;
 	}
 	if (stat_inputs.inputs.rcd_licht) { /* Error case */
-		set_led( (rgb){ .r = 0, .g = 0, .b = 1 , .fade=0 , .blink=1} );
+		set_led( (rgb){ .r = 0, .g = 0, .b = 1, .fade = 0, .blink = 1} );
 		return;
 	}
 	if (stat_inputs.inputs.hauptschalter) { /* Switch on */
-		set_led( (rgb){ .r = 0, .g = 1, .b = 0 , .fade=0 , .blink=0} );
+		set_led( (rgb){ .r = 0, .g = 1, .b = 0, .fade = 0, .blink = 0} );
 	}
 	else {
-		set_led( (rgb){ .r = 0, .g = 0, .b = 1 , .fade=0 , .blink=0} );
+		set_led( (rgb){ .r = 0, .g = 0, .b = 1, .fade = 0, .blink = 0} );
 	}
 }
 
