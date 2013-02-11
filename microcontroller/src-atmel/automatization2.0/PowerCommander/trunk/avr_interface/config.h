@@ -23,7 +23,7 @@
 
 // TWI_ADDRESS
 
-#define TESTBOARD
+//#define TESTBOARD
 
 #ifdef TESTBOARD
 #define LED_ROT   _BV(PA3)
@@ -38,12 +38,12 @@
 #define PORT_LED   PORTA
 
 #define HAUPTSCHALTER	(_BV(PA0))
-#define POWER_OK	(_BV(PC2))
+#define POWER_OK	(_BV(PD7))
 #define TASTER_LOUNGE	(_BV(PB2))
 #define TASTER_VORTRAG	(_BV(PD3))
-#define RCD_SERVER	(_BV(PD6))
-#define RCD_POWER	(_BV(PD7))
-#define RCD_LICHT	(_BV(PA1))
+#define RCD_SERVER	(_BV(PA1))
+#define RCD_POWER	(_BV(PC2))
+#define RCD_LICHT	(_BV(PD6))
 
 #define NUM_INPUTS 7
 
