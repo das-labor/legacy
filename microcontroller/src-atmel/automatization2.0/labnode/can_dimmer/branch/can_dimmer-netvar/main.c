@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <util/delay.h>
 #include <avr/wdt.h>
 
 #include "config.h"
@@ -8,9 +7,9 @@
 #include "dimmer.h"
 
 #include "can/can.h"
-#include "can_handler.h"
+#include "netvar/can_handler.h"
 #include "can/spi.h"
-#include "can/lap.h"
+#include "netvar/netvar.h"
 
 
 static uint16_t time_cnt;
@@ -26,8 +25,8 @@ ISR(TIMER0_OVF_vect) {
 void start_counter(uint16_t countdown)
 {
 	TCCR0 = _BV(CS02)|_BV(CS00);	//1:1024 prescaler
-	TCNT0=0;
-	time_cnt=countdown;
+	TCNT0 = 0;
+	time_cnt = countdown;
 }
 
 uint8_t get_counter_status(void)
@@ -86,6 +85,7 @@ int main(void)
 	while (1)
 	{
 		can_handler();
+		netvar_handle_events();
 		wdt_reset();
 	}
 }
