@@ -79,6 +79,11 @@ void bootloader(void) {
 	_WD_CONTROL_REG = 0;
 #endif
 
+#ifdef CALL_USER_INIT
+	//user can define own hardware setup function to be run on start
+	user_init();
+#endif
+
 	//don't use library function to read eeprom
 	//because it wouldn't end up in bootloader section
 	EEAR = EEPR_ADDR_NODE;
@@ -121,6 +126,11 @@ void bootloader(void) {
 	
 	sdo_server:
 	
+#ifdef CALL_USER_BOOTLOADER_ENTRY
+	//user can do things like displaying status on bootloader entry
+	user_bootloader_entry();
+#endif
+
 	while (1) {
 		if (Rx_msg.port_dst == PORT_SDO_CMD) {
 			sdo_message * msg = (sdo_message*)Rx_msg.data;

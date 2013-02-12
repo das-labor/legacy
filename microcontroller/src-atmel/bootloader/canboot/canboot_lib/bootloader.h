@@ -30,3 +30,9 @@ extern uint8_t Station_id;
 
 void bootloader(void) BOOTLOADER_SECTION __attribute__ ((naked));
 
+//user can define own hardware setup function to be run on start
+void user_init() BOOTLOADER_SECTION;
+
+//user can do things like displaying status on bootloader entry
+void user_bootloader_entry(void) BOOTLOADER_SECTION;
+
