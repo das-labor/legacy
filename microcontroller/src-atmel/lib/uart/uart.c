@@ -8,14 +8,29 @@
 #include "uart.h"
 
 #if defined(__AVR_ATmega128__)
-	#define UCSRB UCSR0B
-	#define UCSRC UCSR0C
-	#define UDR UDR0
-	#define UBRRH UBRR0H
-	#define UBRRL UBRR0L
-	#define URSEL UMSEL
-	#define UART_UDRE_VECTOR SIG_UART_DATA
-	#define UART_RECV_VECTOR SIG_UART_RECV
+	#ifndef USE_UART_1
+		//UART 0 is default
+		#define UCSRA UCSR0A
+		#define UCSRB UCSR0B
+		#define UCSRC UCSR0C
+		#define UDR UDR0
+		#define UBRRH UBRR0H
+		#define UBRRL UBRR0L
+		#define URSEL UMSEL
+		#define UART_UDRE_VECTOR USART0_UDRE_vect
+		#define UART_RECV_VECTOR USART0_RX_vect
+	#else
+		//UART 1
+		#define UCSRA UCSR1A
+		#define UCSRB UCSR1B
+		#define UCSRC UCSR1C
+		#define UDR UDR1
+		#define UBRRH UBRR1H
+		#define UBRRL UBRR1L
+		#define URSEL UMSEL
+		#define UART_UDRE_VECTOR USART1_UDRE_vect
+		#define UART_RECV_VECTOR USART1_RX_vect
+	#endif
 #elif defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega162__) | defined(__AVR_ATmega644__) | defined(__AVR_ATmega644P__)
 	#define UCSRB UCSR0B
 	#define UCSRC UCSR0C
