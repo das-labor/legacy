@@ -79,6 +79,7 @@
   extern uint8_t can_error;
 #endif
 
+typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t;
 
 /*****************************************************************************
  * Management
