@@ -43,8 +43,22 @@ void init_dc_com() {
 }
 */
 
-void user_init(){
 
+void init_backlight(){
+	
+	//TCCR1A = (1<<COM1A1) | (1<<WGM10);
+	//TCCR1B = (1<<WGM12) | 1;           // fast pwm 8 bit, clk/1
+	
+	TCCR1A = (1<<COM1A1) | (1<<WGM10) | (1<<WGM11);
+	TCCR1B = (1<<WGM12) | 1;           // fast pwm 10 bit, clk/1
+	
+	DDRB |= (1<<PB5);
+}
+
+void user_init(){
+	init_backlight();
+	
+	OCR1A = 0xc0;//default ccfl pwm
 }
 
 
