@@ -20,26 +20,29 @@
 
 #define F_MCP F_CPU
 
+#define TESTBOARD
 
-// TWI_ADDRESS
-#include "../include/PowerCommander.h"
-
-
+#ifdef TESTBOARD
 #define LED_ROT   _BV(PA3)
 #define LED_GRUEN _BV(PA2)
 #define LED_BLAU  _BV(PA4)
+#else
+#define LED_ROT   _BV(PA2)
+#define LED_GRUEN _BV(PA3)
+#define LED_BLAU  _BV(PA4)
+#endif
 
-#define TESTBOARD
+#define PORT_LED   PORTA
 
 #define NUM_INPUTS 7
 
-#define HAUPTSCHALTER	(_BV(PA0))
-#define POWER_OK	(_BV(PC2))
-#define TASTER_LOUNGE	(_BV(PB2))
-#define TASTER_VORTRAG	(_BV(PD3))
-#define RCD_SERVER	(_BV(PD6))
-#define RCD_POWER	(_BV(PD7))
-#define RCD_LICHT	(_BV(PA1))
+#define HAUPTSCHALTER  (_BV(PA0))
+#define POWER_OK       (_BV(PD7))
+#define TASTER_LOUNGE  (_BV(PB2))
+#define TASTER_VORTRAG (_BV(PD3))
+#define RCD_SERVER     (_BV(PA1))
+#define RCD_POWER      (_BV(PC2))
+#define RCD_LICHT      (_BV(PD6))
 
 
 #endif // ifndef CONFIG_H
