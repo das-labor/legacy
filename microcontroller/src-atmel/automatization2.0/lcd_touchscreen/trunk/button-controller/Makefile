@@ -1,5 +1,5 @@
 DEFS = -DF_CPU=8000000l
-OBJ = main.o
+OBJ = main.o uart/uart.o
 
 
 # Default values
@@ -15,7 +15,8 @@ CANADDR       ?= XXX
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -B 100 -U flash:w:$(OUT).hex
+FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:$(OUT).hex
+FUSECMD        = avrdude -c usbasp -p $(MCU_TARGET) -B 100 -U lfuse:w:0xe4:m -U hfuse:w:0x99:m -U efuse:w:0xff:m
 
 LAPFLASHCMD   ?= lapcontrol -s rl
 
@@ -31,12 +32,15 @@ BAUDRATE = 115200
 all: $(OUT).elf lst text
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec uart/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
 	$(ERASECMD)
 	$(FLASHCMD)
+
+fuse:
+	$(FUSECMD)
 
 reset:
 	$(RESETCMD)
