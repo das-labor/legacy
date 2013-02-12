@@ -37,6 +37,6 @@
 //#define TURN_OFF_WATCHDOG
 
 #define  CALL_USER_INIT
-#define  CALL_USER_BOOTLOADER_ENTRY
+//#define  CALL_USER_BOOTLOADER_ENTRY
 
 #endif
