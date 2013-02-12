@@ -13,10 +13,10 @@ static struct t_pin_parameter {
 	{ (&(PINA)), HAUPTSCHALTER},
 	{ (&(PINB)), TASTER_LOUNGE},
 	{ (&(PIND)), TASTER_VORTRAG},
-	{ (&(PINC)), POWER_OK},
-	{ (&(PIND)), RCD_SERVER},
-	{ (&(PIND)), RCD_POWER},
-	{ (&(PINA)), RCD_LICHT}
+	{ (&(PIND)), POWER_OK},
+	{ (&(PINA)), RCD_SERVER},
+	{ (&(PINC)), RCD_POWER},
+	{ (&(PIND)), RCD_LICHT}
 };
 
 
