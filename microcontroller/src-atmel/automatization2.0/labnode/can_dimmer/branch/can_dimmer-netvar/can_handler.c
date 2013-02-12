@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
-#include <avr/pgmspace.h> 
+#include <avr/pgmspace.h>
 
 #include "can/can.h"
 #include "can_handler.h"
