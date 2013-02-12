@@ -51,6 +51,8 @@ void init() {
 	//initialize can communication
 	can_init();
 	read_can_addr();
+	
+	uart_init();
 }
 
 

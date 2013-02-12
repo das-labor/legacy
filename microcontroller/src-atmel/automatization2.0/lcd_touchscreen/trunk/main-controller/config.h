@@ -76,5 +76,9 @@
 #define PORT_DC_DATA PORTA
 
 
+//Uart for communication with buttons
+#define UART_BAUD_RATE 19200
+#define USE_UART_1
+
 #endif // ifndef _H_CONFIG
 

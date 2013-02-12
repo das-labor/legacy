@@ -144,8 +144,11 @@ void handle_status() {
 	static uint8_t ticks;
 	ticks++;
 	if (ticks == 100) {
+		char c;
+		uart_getc_nb(&c);
+		uart_putc(c);
 		ticks = 0;
-		sprintf(status_string, "mem free: %d", mem_available());
+		sprintf(status_string, "mem free: %d %c", mem_available(), c);
 		status_label->draw((gui_element_t*)status_label, 0);
 	}
 }
