@@ -1,5 +1,6 @@
 DEFS = -DF_CPU=16000000l
-OBJ = main.o laborlogo.o gui_lib/graphics.o fonts/font_uni53.o lcd_hardware.o com.o draw_pixmap.o hypnotoad.o hypnotoad_data.o
+OBJ = main.o laborlogo.o gui_lib/graphics.o gui_lib/fonts/font_uni53.o lcd_hardware.o \
+      com.o draw_pixmap.o hypnotoad.o hypnotoad_data.o
 
 
 # Default values
@@ -32,7 +33,7 @@ BAUDRATE = 115200
 all: $(OUT).elf lst text
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec gui_lib/*.o gui_lib/fonts/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
