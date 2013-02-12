@@ -36,7 +36,7 @@
 	#define DDR_POWER DDRE
 	#define PORT_POWER PORTE
 	#define BIT_POWER PE0
-#else
+#elif defined(HW_REV_1) || defined(HW_REV_1_1)
 	#define PORT_CONTROL PORTD
 	#define DDR_CONTROL DDRD
 	
@@ -54,6 +54,11 @@
 	#define DDR_POWER DDRE
 	#define PORT_POWER PORTE
 	#define BIT_POWER PE0
+#else
+	#error please define your hardware revision!
+	//HW_REV_1    Old board with 4 bit Bus LED-lit display
+	//HW_REV_1_1  Old board with 8 bit Bus CCFL-lit display
+	//HW_REV_2    New board with 8 bit Bus CCFL-lit display
 #endif
 
 
@@ -64,9 +69,9 @@
 #define LCD_HEIGHT Y_SIZE
 
 
-#ifdef BIG_DISPLAY
+#if defined(HW_REV_1_1) || defined(HW_REV_2)
 	#define INTERFACE_BITS 8
-#else
+#elif defined(HW_REV_1)
 	#define INTERFACE_BITS 4
 #endif
 
@@ -75,4 +80,3 @@
 #define GRAPHICS_NO_DRAW_HORIZONTAL_LINE
 #define GRAPHICS_NO_FILL_RECTANGLE
 #define GRAPHICS_NO_DRAW_ICON
-

@@ -34,8 +34,9 @@
 #define PORT_TOUCH PORTF
 #define DDR_TOUCH DDRF
 
+#include "../include/personal_config.h"
 
-#ifdef BIG_DISPLAY
+#if defined(HW_REV_1_1) || defined(HW_REV_2)
 	#define MSK_YL  _BV(PF3)
 	#define MSK_XH  _BV(PF2)
 	#define MSK_YH  _BV(PF1)
@@ -43,7 +44,7 @@
 	
 	#define TOUCH_Y_CHANNEL PF1 //Must be YH pin
 	#define TOUCH_X_CHANNEL PF2 //Must be XH pin
-#else
+#elif defined(HW_REV_1)
 	#define MSK_YL  _BV(PF0)
 	#define MSK_XH  _BV(PF1)
 	#define MSK_YH  _BV(PF2)
@@ -51,6 +52,11 @@
 	
 	#define TOUCH_Y_CHANNEL PF2
 	#define TOUCH_X_CHANNEL PF1
+#else
+	#error please define your hardware revision!
+	//HW_REV_1    Old board with 4 bit Bus LED-lit display
+	//HW_REV_1_1  Old board with 8 bit Bus CCFL-lit display
+	//HW_REV_2    New board with 8 bit Bus CCFL-lit display
 #endif
 
 

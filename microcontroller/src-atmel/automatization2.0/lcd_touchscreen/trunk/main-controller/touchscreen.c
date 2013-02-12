@@ -5,9 +5,6 @@
 #include "touchscreen.h"
 #include "dc_com.h"
 
-//define BIG DISPLAY in here
-#include "../include/personal_config.h"
-
 #include "config.h"
 #include "adc.h"
 

@@ -5,8 +5,6 @@
 #include "adc.h"
 #include "backlight.h"
 
-//define BIG DISPLAY in here
-#include "../include/personal_config.h"
 #include "config.h"
 
 
