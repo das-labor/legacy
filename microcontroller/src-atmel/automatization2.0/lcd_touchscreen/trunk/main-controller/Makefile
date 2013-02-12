@@ -18,7 +18,7 @@ WARNINGS      ?= -Wall -pedantic
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=gnu99 -I. -ffunction-sections -fdata-sections
 LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
 
-CANADDR       ?= 0xff
+CANADDR       ?= 0xd0
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
