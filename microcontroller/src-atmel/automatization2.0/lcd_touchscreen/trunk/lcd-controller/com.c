@@ -28,6 +28,8 @@ void init_com() {
 }
 
 
+uint8_t activate_hypnotoad_flag = 1;
+
 #define TX_DATA_SIZE 2
 
 uint8_t tx_data_idx;
@@ -87,7 +89,6 @@ static void return_int16(int16_t i){
 	tx_data[1] = ((uint16_t)i) >> 8;
 	tx_data_idx = 0;
 }
-
 
 void handle_com() {
 	uint8_t cmd;
@@ -182,7 +183,10 @@ void handle_com() {
 					return_int16(g_get_last_text_height());
 					break;
 				}
-			
+			case DC_SHOW_HYPNOTOAD:
+				{
+					activate_hypnotoad_flag = 1;
+				}
 		}
 	}
 }

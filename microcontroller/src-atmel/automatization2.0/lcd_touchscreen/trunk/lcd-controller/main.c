@@ -29,10 +29,13 @@ int main() {
 	sei();
 	
 	lcd_on();
-	
-	hypnotoad();
 
 	while (1) {
+		if (activate_hypnotoad_flag) {
+			activate_hypnotoad_flag = 0;
+			g_clear_screen();
+			hypnotoad();
+		}
 		handle_com();
 	}
 }
