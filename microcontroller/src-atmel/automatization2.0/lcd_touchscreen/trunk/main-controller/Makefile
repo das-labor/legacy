@@ -6,7 +6,7 @@ OBJ = main.o dc_com.o adc.o backlight.o touchscreen.o \
       can/spi.o can/can.o netvar/can_handler.o netvar/netvar.o \
       gui_lib/rectangle.o gui_lib/gui_container.o gui_lib/gui_button.o \
       gui_lib/icons/icons.o gui_lib/gui_slider.o \
-      util_lib/list.o hardware.o
+      util_lib/list.o hardware.o uart/uart.o
 
 
 # Default values
@@ -18,7 +18,7 @@ WARNINGS      ?= -Wall -pedantic
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=gnu99 -I. -ffunction-sections -fdata-sections
 LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
 
-CANADDR       ?= 0xd0
+CANADDR       ?= 0xff
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
