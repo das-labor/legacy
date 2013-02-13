@@ -16,12 +16,13 @@
 #include "netvar/netvar.h"
 #include "netvar/netvar_io.h"
 #include "hauptschalter.h"
+#include "statusled.h"
 
 volatile uint8_t tickscounter;
 
 ISR(TIMER1_COMPA_vect)
 {
-	//976,5625 Hz
+	//1000 Hz
 
 	// ueberlaeufe sind ok!
 	tickscounter++;
@@ -30,10 +31,8 @@ ISR(TIMER1_COMPA_vect)
 void init(void)
 {
 	TCCR1B |= _BV(WGM12) | _BV(CS10) | _BV(CS11); // CTC, clk/64
-
 	//1000 Hz
 	OCR1A = 250; // pwm timer compare target
-
 	TIMSK |= _BV(OCIE1A); // Enable Timer1 Overflow Interrupt
 
 //	MCUCR |= _BV(SE); // Enable "sleep" mode (low power when idle)
@@ -57,9 +56,14 @@ void init(void)
 /*
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
 */
+
 	if (!TWIM_Init())
 	{
-		while (1);
+		set_led(LED_RED_BLUE);
+		while (1){
+			rgb_led_animation();
+			_delay_ms(20);
+		}
 	}
 
 	// get output states
@@ -76,7 +80,7 @@ void init(void)
 	//turn on interrupts
 	sei();
 
-	wdt_enable(WDTO_250MS); // 250 ms
+	//wdt_enable(WDTO_250MS); // 250 ms
 }
 
 int main(void)
@@ -96,6 +100,7 @@ int main(void)
 			get_inputs();
 			netvar_handle_events();
 			handle_main_switch_timeout();
+			rgb_led_animation();
 		}
 		wdt_reset();
 	}
