@@ -5,7 +5,7 @@ ATMega168
 Steuert Ausgänge:
 6 * Hardware PWM als 0V - 10V Ausgänge für EVGs
 8 * TTL für Relais
-4 * Ausgänge für Optokoppler zur abschaltung der Lapenpaare
+4 * Ausgänge für Optokoppler zur Abschaltung der Lampenpaare
 
 
 
