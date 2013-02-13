@@ -17,9 +17,10 @@ void handle_main_switch_timeout(void) {
 		timeout_cnt--;
 		if (!timeout_cnt)
 		{
-			/* no need to handle other relays, they are controlled by set_lamp... */
-			outputdata.ports &= ~((1<<SWA_HS) | (1<<SWA_KLO) | (1<<SWA_STECKDOSEN) | (1<<SWA_BEAMER));
-			twi_send();
+			//alle power relais aus
+			set_output(SWA_HS,          0);
+			set_output(SWA_KLO,         0);
+			set_output(SWA_STECKDOSEN,  0);
 		}
 	}
 }
@@ -27,8 +28,11 @@ void handle_main_switch_timeout(void) {
 void hauptschalter_update(uint8_t stat) {
 	if (stat) { //schalter angeschaltet
 		timeout_cnt = 0; //timer stoppen
-		outputdata.ports |= (1<<SWA_HS) | (1<<SWA_KLO) | (1<<SWA_STECKDOSEN); //alle power relais an
-		twi_send();
+		
+		//alle power relais an
+		set_output(SWA_HS,          1);
+		set_output(SWA_KLO,         1);
+		set_output(SWA_STECKDOSEN,  1);		
 	}
 	else
 	{
@@ -36,4 +40,3 @@ void hauptschalter_update(uint8_t stat) {
 		start_main_switch_timeout();
 	}
 }
-

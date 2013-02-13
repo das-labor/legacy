@@ -1,9 +1,12 @@
 #ifndef _I2C_COM_H
 #define _I2C_COM_H
 
-extern t_outputdata outputdata;
+extern void sync_output_cache();
+extern void update_slave_outputs ();
 
-extern void sync_stat_cache();
-extern void twi_send();
+extern void set_output (uint8_t num, uint8_t val);
+
+void set_pwm (uint8_t num, uint8_t val);
+
 
 #endif // _I2C_COM

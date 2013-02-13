@@ -67,7 +67,7 @@ void init(void)
 	}
 
 	// get output states
-	sync_stat_cache();
+	sync_output_cache();
 
 	//initialize spi port
 	spi_init();
@@ -100,6 +100,7 @@ int main(void)
 			get_inputs();
 			netvar_handle_events();
 			handle_main_switch_timeout();
+			update_slave_outputs();
 			rgb_led_animation();
 		}
 		wdt_reset();
