@@ -42,7 +42,7 @@ void update_slave_outputs () {
 		// at least one output is different
 		twi_send();
 	
-		memcpy(&next_outputdata, &current_outputdata, sizeof (t_outputdata));
+		memcpy( &current_outputdata, &next_outputdata, sizeof (t_outputdata));
 	}
 }
 

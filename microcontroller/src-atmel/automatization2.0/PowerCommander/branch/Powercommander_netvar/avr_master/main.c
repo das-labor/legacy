@@ -17,6 +17,8 @@
 #include "netvar/netvar_io.h"
 #include "hauptschalter.h"
 #include "statusled.h"
+#include "lamp_out.h"
+
 
 volatile uint8_t tickscounter;
 
@@ -88,6 +90,7 @@ int main(void)
 	//system initialization
 	init();
 	switch_netvars_init();
+	lamp_out_init();
 
 	//the main loop continuously handles can messages
 	while (1)
