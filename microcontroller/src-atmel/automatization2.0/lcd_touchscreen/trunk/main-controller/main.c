@@ -101,8 +101,9 @@ int main(void) {
 	g_set_draw_color(1);
 	g_clear_screen();
 
-
+	#ifndef FORCE_CALIBRATE_TOUCHSCREEN
 	if (read_calibration_data_from_eeprom())
+	#endif
 		calibrate_touch();
 
 
