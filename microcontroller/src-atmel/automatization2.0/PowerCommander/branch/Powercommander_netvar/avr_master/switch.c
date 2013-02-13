@@ -59,7 +59,7 @@ static void input_changed_event (uint8_t num, uint8_t val) {
 	netvar_write(out_netvars[num], &val);
 }
 
-#define DEBOUNCE_CYCLES 20
+#define DEBOUNCE_CYCLES 2
 
 /*
 *  debounce monitored inputs, invert them if wanted, and check for changes
@@ -82,7 +82,7 @@ void get_inputs() {
 			pin_matrix[i].debounce_count--;
 			if (pin_matrix[i].debounce_count < 0) {
 				pin_matrix[i].debounce_count = 0;
-				if (pin_matrix[i].state == pin_matrix[i].inverted ^ 1) {
+				if (pin_matrix[i].state == (pin_matrix[i].inverted ^ 1)) {
 					pin_matrix[i].state = pin_matrix[i].inverted;
 					input_changed_event(i, pin_matrix[i].state);
 				}
