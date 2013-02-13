@@ -1,4 +1,6 @@
-OBJ = main.o can/can.o can/spi.o netvar/netvar.o netvar/netvar_io.o netvar/can_handler.o twi_master/twi_master.o switch.o i2c_com.o hardware.o util_lib/list.o hauptschalter.o
+OBJ = main.o can/can.o can/spi.o netvar/netvar.o netvar/netvar_io.o netvar/can_handler.o \
+      twi_master/twi_master.o switch.o i2c_com.o hardware.o util_lib/list.o hauptschalter.o \
+      statusled.o
 
 # Default values
 OUT           ?= image
@@ -8,7 +10,8 @@ MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline -Wextra
 DEFS          ?= -DF_CPU=16000000UL
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
+#CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
 

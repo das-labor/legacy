@@ -36,13 +36,22 @@
 
 #define NUM_INPUTS 7
 
-#define HAUPTSCHALTER  (_BV(PA0))
-#define POWER_OK       (_BV(PD7))
-#define TASTER_LOUNGE  (_BV(PB2))
-#define TASTER_VORTRAG (_BV(PD3))
-#define RCD_SERVER     (_BV(PA1))
-#define RCD_POWER      (_BV(PC2))
-#define RCD_LICHT      (_BV(PD6))
+#define BV_HAUPTSCHALTER  (_BV(PA0)) //1 = an, 0 = aus
+#define BV_TASTER_LOUNGE  (_BV(PB2)) //0 = gedrückt
+#define BV_TASTER_VORTRAG (_BV(PD3)) //0 = gedrückt
+#define BV_POWER_OK       (_BV(PD7)) //1 = 24V ok, 0 = nicht ok
+#define BV_RCD_SERVER     (_BV(PA1)) //0 = rcd an, 1 = rcd gefallen
+#define BV_RCD_POWER      (_BV(PC2)) //0 = rcd an, 1 = rcd gefallen
+#define BV_RCD_LICHT      (_BV(PD6)) //0 = rcd an, 1 = rcd gefallen
+
+#define PIN_HAUPTSCHALTER  (PINA)
+#define PIN_TASTER_LOUNGE  (PINB)
+#define PIN_TASTER_VORTRAG (PIND)
+#define PIN_POWER_OK       (PIND)
+#define PIN_RCD_SERVER     (PINA)
+#define PIN_RCD_POWER      (PINC)
+#define PIN_RCD_LICHT      (PIND)
+
 
 
 #endif // ifndef CONFIG_H
