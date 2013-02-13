@@ -1,4 +1,4 @@
-OBJ = main.o twi_slave/twi_slave.o fkt.o pc_init.o
+OBJ = main.o twi_slave/twi_slave.o fkt.o
 
 # Default values
 OUT           ?= image

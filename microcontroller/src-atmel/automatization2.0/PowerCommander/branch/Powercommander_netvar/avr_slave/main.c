@@ -14,8 +14,16 @@
 #include <avr/sleep.h>
 
 #include "twi_slave/twi_slave.h"
-#include "pc_init.h"
 #include "fkt.h"
+
+static void init_modi()
+{
+	/*
+		 Disable Analog Comparator (power save)
+	*/
+	ACSR = _BV(ACD);
+	wdt_enable(WDTO_250MS); // 2000 ms
+}
 
 int main(void)
 {
@@ -23,8 +31,7 @@ int main(void)
 
 
 	init_modi();
-	init_io_ports();
-	init_timer();
+	init_outputs();
 	set_outputs();
 
 	/*
