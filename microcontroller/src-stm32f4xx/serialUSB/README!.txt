@@ -1,6 +1,3 @@
-you need the STM32F4 library and source in ../../
-you need the arm-none-eabi-gcc compiler
-
 to compile type:
 make
 
