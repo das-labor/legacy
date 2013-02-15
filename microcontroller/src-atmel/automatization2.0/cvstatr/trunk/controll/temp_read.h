@@ -2,7 +2,7 @@
 #define _TEMP_READ_H
 
 
-void temp_sensor_read();
+extern void temp_sensor_read();
 
 #endif // _TEMP_READ
 
