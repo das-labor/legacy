@@ -1,40 +1,39 @@
 ################ can address and port
 MY_CANADDR=0x23
-MY_CANPORT=0x0f
 
-OBJ            = kuechenCAN.o spi.o can.o twi_master.o twi_mthread.o can_thread.o
+OBJ            = main.o can/spi.o can/can.o twi_master/twi_master.o netvar/netvar.o netvar/can_handler.o hardware.o i2c_temp.o temp_read.o
 
 # Default values
-OUT           ?= main
+OUT           ?= image
 MCU_TARGET    ?= atmega8
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall -Winline
-SVN_REVISION  ?= `svn --trust-server-cert --non-interactive info | grep "Revision:" | cut -d : -f 2 | tr -d '\n '`
-ID_STRING     ?=  \"`pwd | awk -F / '{print $$NF}' | cut -c 1-20 | tr -d '\n '`\"
-DEFS          ?= -DF_CPU=18432000 -DFW_SVNREVISION=$(SVN_REVISION) -DFW_IDSTRING=$(ID_STRING)
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
+WARNINGS      ?= -Wall -Winline -Wextra
+DEFS          ?= -DF_CPU=16000000UL
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
 ASFLAGS	      += -mmcu=avr5
-LDFLAGS        = -Wl,-Map,$(OUT).map
+LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:$(OUT).hex
-ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
+FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U $(OUT).hex
+CANFLASHCMD    = lapcontrol -s kvm flash $(MY_CANADDR) $(OUT).hex
 
 #############################################################################
 # Rules
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec canlib/*.o uart/*.o
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec  can/*.o netvar/*.o util_lib/*.o twi_master/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
-	$(ERASECMD)
 	$(FLASHCMD)
+
+canflash: $(OUT).hex
+	$(CANFLASHCMD)
 
 #############################################################################
 # Building Rules

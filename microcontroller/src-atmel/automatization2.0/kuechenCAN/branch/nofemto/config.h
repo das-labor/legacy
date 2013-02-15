@@ -1,21 +1,32 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
-#define TWI_BITRATE 100000
-#define TWI_MTHREAD
-#define TWI_SLAVE (15)
+
+// SS Pin muss Ausgang sein wenn nicht als SC verwendet
 
 #define MC_MOSI    PB3
-#define MC_CLK     PB5
+#define MC_SCK     PB5
 
-#define MCP_CS        PB2
-#define MCP_CMD_PORT  PORTB
+#define MCP_CS_BIT    PB2
+#define MCP_CS_PORT   PORTB
 
 #define SPI_REG_PIN_MCP_INT  PIND
 #define SPI_PIN_MCP_INT      PD2
 
+//#define CAN_INTERRUPT
+//#define CAN_INT_NOBLOCK
+
+#define   ENABLE_CAN_INT()    EIMSK |= _BV(INT2)
+#define   DISABLE_CAN_INT()   EIMSK &= ~_BV(INT2)
+#define   SETUP_CAN_INT()     EICRA &= ~_BV(ISC21)
+#define   MCP_INT_VEC         INT2_vect
+
+#define CAN_TX_BUFFER_SIZE 4
+#define CAN_RX_BUFFER_SIZE 4
+
 #define F_MCP F_CPU
 
+// RGB LED Taster Küchenlicht
 #define R_LED _BV(PC1)
 #define G_LED _BV(PC2)
 #define B_LED _BV(PC3)
@@ -30,13 +41,11 @@
 /*
  * button thresholds
  */
-#define HOLD_THRESHOLD 18
-#define CLICK_THRESHOLD 1
+#define HOLD_THRESHOLD 24
+#define CLICK_THRESHOLD 3
 
-
-#if CANADDR <=0x03
-#error "you have to define a can-address which will not interfere with critical LABOR-Hardware"
-#endif
+/* eeprom settings */
+#define EEP_MY_ADDR 0x00
 
 #endif //_CONFIG_H
 
