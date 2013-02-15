@@ -1,18 +1,4 @@
-//#include <util/delay.h>
-#include "spi.h"
-#include "can.h"
-#include "twi_master.h"
-#include "i2ctempsens.h"
-#include "kuechenCAN.h"
 
-#define R_LED _BV(PC1)
-#define G_LED _BV(PC2)
-#define B_LED _BV(PC3)
-
-
-/*
-	XXX Powercommander.h
-*/
 #define C_SW  (0x00)
 #define C_PWM (0x01)
 #define O_SW00 (0x00)
@@ -130,7 +116,7 @@ void app_run(void)
 #if 0
 //this is the deactivated panic button, it does not work with the current version
 void appLoop_alarmt(void)
-{ 
+{
 	while(true)
 		{
 			if(lastpanic==1)
@@ -145,7 +131,7 @@ void appLoop_alarmt(void)
 }
 
 void appLoop_alarm(void)
-{ 
+{
 	while(true)
 		{
 			if(lastpanic==1)
@@ -167,7 +153,7 @@ void appLoop_alarm(void)
 
 
 void update_leds(void)
-{ 
+{
 	if((rgbled_stat & R_LED) !=0)
 	{
 		PORTC |= R_LED;
@@ -206,58 +192,4 @@ void update_leds(void)
 		PORTD &= ~_BV(PD7);
 	}
 }
-
-
-void io_init()
-{
-	rgbled_stat=R_LED;
-	
-	//Kuechenlicht
-	DDRC |=  R_LED | G_LED | B_LED; // output led taster
-	
-	// led power on!
-	PORTC &= ~(G_LED | R_LED);
-	PORTC |= B_LED;
-	// button
-	DDRB &= ~_BV(PB1);      // in
-	PORTB |= _BV(PB1);      // pullup on
-
-	// XXX PC5 and PC4 are i2c for temp sense
-
-	// Alarmbutton
-	DDRD |= _BV(PD5) | _BV(PD6) | _BV(PD7);         // output
-	
-	// led power on!
-	PORTD &= ~(_BV(PD5) | _BV(PD6) | _BV(PD7));     // off
-
-	//Button
-	DDRC &= ~_BV(PC0);      // in
-	PORTC |= _BV(PC0);      // pullup on
-}
-
-
-void init(void)
-{ 
-	spi_init();
-	can_init();
-	TWIM_Init();
-	init_sensor();
-	io_init();
-}
-
-
-void main()
-{
-	init();
-	sei();
-	
-	while(true)
-	{
-		update_leds();
-		twi_mhandler();
-		can_handler();
-		app_run();
-	}
-}
-
 

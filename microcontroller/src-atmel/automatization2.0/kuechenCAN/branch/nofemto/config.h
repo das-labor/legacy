@@ -1,8 +1,8 @@
-#ifndef CONFIG_H_
-#define CONFIG_H_
+#ifndef _CONFIG_H
+#define _CONFIG_H
 
 #define TWI_BITRATE 100000
-#define TWI_MTHREAD 
+#define TWI_MTHREAD
 #define TWI_SLAVE (15)
 
 #define MC_MOSI    PB3
@@ -16,22 +16,27 @@
 
 #define F_MCP F_CPU
 
-#define MEGA8
+#define R_LED _BV(PC1)
+#define G_LED _BV(PC2)
+#define B_LED _BV(PC3)
 
-#ifdef MEGA8
-#	define SPI_PORT PORTB
-#	define SPI_DDR DDRB
-#	define SPI_PIN_SCK PB5
-#	define SPI_PIN_MOSI PB3
-#else
-#	define SPI_PORT PORTB
-#	define SPI_DDR DDRB
-#	define SPI_PIN_SCK PB7
-#	define SPI_PIN_MOSI PB5
-#endif
+/*
+ * can ports
+ */
+#define LIGHTCANPORT 0x04
+#define ALARMCANPORT 0x00
+#define I2CTEMPCANPORT (0x10)
+
+/*
+ * button thresholds
+ */
+#define HOLD_THRESHOLD 18
+#define CLICK_THRESHOLD 1
+
 
 #if CANADDR <=0x03
 #error "you have to define a can-address which will not interfere with critical LABOR-Hardware"
 #endif
 
-#endif /*CONFIG_H_*/
+#endif //_CONFIG_H
+
