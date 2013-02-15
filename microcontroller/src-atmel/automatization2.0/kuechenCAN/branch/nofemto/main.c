@@ -1,22 +1,22 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
+#include <avr/interrupt.h>
 
 #include "config.h"
 
+#include "twi_master/twi_master.h"
 #include "can/can.h"
-#include "netvar/can_handler.h"
 #include "can/spi.h"
-#include "io.h"
+#include "netvar/can_handler.h"
 #include "netvar/netvar.h"
+#include "i2c_temp.h"
+#include "temp_read.h"
 
 
 volatile uint8_t tickscounter;
 
 ISR(TIMER1_OVF_vect)
 {
-	//1 Hz
-	
-	// ueberlaeufe sind ok!	
 	tickscounter++;
 }
 
@@ -53,7 +53,7 @@ static void init(void)
 	}
 
 	// Init twi Tempearture Sensor
-	init_sensor(0x96); // XXX was ist 96
+	//init_sensor(0x96); // XXX was ist 96
 
 	// initialize spi port
 	spi_init();
@@ -76,9 +76,9 @@ void main()
 	while (1)
 	{
 		can_handler();
-		switch_handler();
 		if (tickscounter > 9) {
-			temp_sensor_read();
+			//switch_handler();
+			//temp_sensor_read();
 			tickscounter = 0;
 		}
 		wdt_reset();
