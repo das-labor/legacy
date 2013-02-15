@@ -2,9 +2,8 @@
 #define _I2C_TEMP_H
 
 
-void init_sensor(uint8_t addr);
-void get_temp(uint8_t *p, uint8_t addr);
-void get_reg(uint8_t *p);
+extern void init_sensor(uint8_t addr);
+extern void get_temp(uint8_t *p, uint8_t addr);
 
 /* Initiates temperature conversions. If the part is in one-shot mode (1SHOT = 1), only one conversion is
  * performed. In continuous mode (1SHOT = 0), continuous temperature conversions are performed until a

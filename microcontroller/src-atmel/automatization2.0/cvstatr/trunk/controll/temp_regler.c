@@ -1,7 +1,4 @@
-/* -*- Mode: C; tab-width: 2 -*- */
-
 #include "twi_master/twi_master.h"
-
 #include "temp_regler.h"
 
 #define VENTIL_STEP  0

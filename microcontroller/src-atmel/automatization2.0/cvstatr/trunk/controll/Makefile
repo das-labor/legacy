@@ -7,15 +7,15 @@ MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline
 DEFS          ?= -DF_CPU=16000000UL
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
 ASFLAGS	      += -mmcu=avr5
-LDFLAGS        = -Wl,-Map,$(OUT).map
+LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:image.hex
-ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
+FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U $(OUT).hex
+CANFLASHCMD    = lapcontrol -s kvm flash 0x10 $(OUT).hex
 
 #############################################################################
 # Rules
@@ -26,16 +26,18 @@ clean:
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
-	$(ERASECMD)
 	$(FLASHCMD)
 
+canflash: $(OUT).hex
+	$(CANFLASHCMD)
+
 #############################################################################
-# Building Rules 
+# Building Rules
 $(OUT).elf: $(OBJ)
 	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.c
-	$(MCU_CC) $(CFLAGS) -c $< -o $@ 
+	$(MCU_CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.S
 	$(MCU_AS) $(ASFLAGS) -o $@ $<
