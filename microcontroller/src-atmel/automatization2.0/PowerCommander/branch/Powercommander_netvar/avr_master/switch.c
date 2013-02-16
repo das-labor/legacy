@@ -53,7 +53,7 @@ void switch_netvars_init() {
 }
 
 static void input_changed_event (uint8_t num, uint8_t val) {
-	if (num == 0) {
+	if (num == MX_HAUPTSCHALTER) {
 		hauptschalter_update(val);
 	}
 	netvar_write(out_netvars[num], &val);
