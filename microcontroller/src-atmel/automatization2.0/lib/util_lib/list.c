@@ -43,6 +43,7 @@ void list_append(list_t * l, void * child) {
 }
 
 void list_foreach_begin(list_iterator_t * it, list_t * l){
+	l = l; //don't warn about unused list parameter
 	*it = 0;
 }
 
