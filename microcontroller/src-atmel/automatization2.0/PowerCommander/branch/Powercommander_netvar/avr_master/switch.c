@@ -36,7 +36,7 @@ static struct t_pin_parameter {
 #define MX_POWER_OK       3
 #define MX_RCD_SERVER     4
 #define MX_RCD_POWER      5
-#define MX_RCD_LICHT      5
+#define MX_RCD_LICHT      6
 
 
 
