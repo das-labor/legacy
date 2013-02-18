@@ -1,0 +1,36 @@
+# Project: VGAtoIQBaseband
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = glInfo.o main.o Timer.o $(RES)
+LINKOBJ  = glInfo.o main.o Timer.o $(RES)
+LIBS =  -L"D:/song/Dev-Cpp/lib" -L"D:/song/MinGW/lib" -lglut32 -lglu32 -lopengl32 -lwinmm -lgdi32  
+INCS =  -I"D:/song/Dev-Cpp/include"  -I"D:/song/MinGW/include" 
+CXXINCS =  -I"D:/song/Dev-Cpp/include"  -I"D:/song/MinGW/include" 
+BIN  = ../bin/pboUnpack.exe
+CXXFLAGS = $(CXXINCS) -Wall   -fexpensive-optimizations -O3
+CFLAGS = $(INCS)   -fexpensive-optimizations -O3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../bin/pboUnpack.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "..\bin\pboUnpack.exe" $(LIBS)
+
+glInfo.o: glInfo.cpp
+	$(CPP) -c glInfo.cpp -o glInfo.o $(CXXFLAGS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+Timer.o: Timer.cpp
+	$(CPP) -c Timer.cpp -o Timer.o $(CXXFLAGS)
