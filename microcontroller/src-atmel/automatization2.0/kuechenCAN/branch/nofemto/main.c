@@ -10,10 +10,9 @@
 #include "netvar/can_handler.h"
 #include "netvar/netvar.h"
 #include "i2c_temp.h"
-#include "temp_read.h"
+#include "io.h"
 
-
-volatile uint8_t tickscounter;
+static volatile uint8_t tickscounter;
 
 ISR(TIMER1_OVF_vect)
 {
@@ -53,7 +52,7 @@ static void init(void)
 	}
 
 	// Init twi Tempearture Sensor
-	//init_sensor(0x96); // XXX was ist 96
+	init_sensor(0x96); // XXX was ist 96
 
 	// initialize spi port
 	spi_init();
@@ -69,9 +68,11 @@ static void init(void)
 }
 
 
-void main()
+int main(void)
 {
 	init();
+	switch_netvars_init();
+	lamp_out_init();
 
 	while (1)
 	{
@@ -79,6 +80,7 @@ void main()
 		if (tickscounter > 9) {
 			//switch_handler();
 			//temp_sensor_read();
+			netvar_handle_events();
 			tickscounter = 0;
 		}
 		wdt_reset();

@@ -32,5 +32,7 @@ extern void get_temp(uint8_t *p, uint8_t addr);
  */
 #define SOFTWARE_POR		0x54
 
+#define I2CDEFAULTCONFIG	0b10001100
+
 #endif // _I2C_TEMP
 

@@ -1,7 +1,7 @@
 ################ can address and port
 MY_CANADDR=0x23
 
-OBJ            = main.o can/spi.o can/can.o twi_master/twi_master.o netvar/netvar.o netvar/can_handler.o hardware.o i2c_temp.o temp_read.o
+OBJ            = main.o can/spi.o can/can.o twi_master/twi_master.o netvar/netvar.o netvar/netvar_io.o netvar/can_handler.o hardware.o i2c_temp.o util_lib/list.o io.o
 
 # Default values
 OUT           ?= image
@@ -26,7 +26,7 @@ CANFLASHCMD    = lapcontrol -s kvm flash $(MY_CANADDR) $(OUT).hex
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec  can/*.o netvar/*.o util_lib/*.o twi_master/*.o
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o netvar/*.o util_lib/*.o twi_master/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
