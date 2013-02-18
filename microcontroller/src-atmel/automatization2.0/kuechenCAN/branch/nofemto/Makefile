@@ -1,7 +1,7 @@
 ################ can address and port
 MY_CANADDR=0x23
 
-OBJ            = main.o can/spi.o can/can.o twi_master/twi_master.o netvar/netvar.o netvar/netvar_io.o netvar/can_handler.o hardware.o i2c_temp.o util_lib/list.o io.o
+OBJ            = main.o can/spi.o can/can.o twi_master/twi_master.o netvar/netvar.o netvar/netvar_io.o netvar/can_handler.o hardware.o ds1631.o util_lib/list.o io.o
 
 # Default values
 OUT           ?= image
