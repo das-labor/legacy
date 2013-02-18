@@ -1,3 +1,8 @@
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+#include "config.h"
+#include "io.h"
 #include "motion.h"
 static const uint8_t motion_admux[NUM_DETECTORS] =
 {

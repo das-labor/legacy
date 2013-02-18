@@ -1,12 +1,4 @@
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/eeprom.h>
-#include <avr/pgmspace.h>
-#include "config.h"
-#include "io.h"
-#include "can/can.h"
-#include "can_handler.h"
-#include "can/lap.h"
+
 #pragma once
 
 /* treshold value for motion detection (~3mV) */
