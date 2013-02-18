@@ -5,9 +5,6 @@
 
 // SS Pin muss Ausgang sein wenn nicht als SC verwendet
 
-#define MC_MOSI    PB5
-#define MC_SCK     PB7
-
 #define MCP_CS_BIT    PB4
 #define MCP_CS_PORT   PORTB
 
@@ -27,18 +24,23 @@
 
 #define F_MCP F_CPU
 
-// Ausgänge
+// Ausgänge Schieberegister
 #define SREG_PORT	PORTC
 #define SREG_CK		_BV(PC4)
 #define SREG_DATA	_BV(PC5)
 #define SREG_STROBE	_BV(PA5)
 
+// Hardware PWM Ausgänge
+#define O_PWM00_REG (&(OCR2A))
+#define O_PWM01_REG (&(OCR2B))
+#define O_PWM02_REG (&(OCR1AL))
+#define O_PWM03_REG (&(OCR1BL))
 
-#define O_PWM00_PORT (&(OCR2A))
-#define O_PWM01_PORT (&(OCR2B))
-#define O_PWM02_PORT (&(OCR1AL))
-#define O_PWM03_PORT (&(OCR1BL))
-
+#define NUM_INPUTS 2
+#define I_PIN_0 PINA
+#define I_BV_0  _BV(PA7)
+#define I_PIN_1 PINA
+#define I_BV_1  _BV(PA4)
 
 /* eeprom settings */
 #define EEP_MY_ADDR 0x00

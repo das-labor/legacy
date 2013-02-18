@@ -10,6 +10,12 @@
 #include "motion.h"
 #include "netvar/netvar.h"
 
+volatile uint16_t tickscounter = 0;
+ISR(TIMER2_OVF_vect)
+{
+	tickscounter++;
+}
+
 void init(void)
 {
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
@@ -17,7 +23,7 @@ void init(void)
 //	MCUCR |= _BV(SE); // Enable "sleep" mode (low power when idle)
 
 	motion_init();
-//	DDRA &= ~(_BV(PA4)); // Eingänge Türkontakt
+	DDRA &= ~(_BV(PA4)); // Eingänge Türkontakt
 
 
 	DDRB |= _BV(PB0); // LED out
@@ -46,16 +52,22 @@ int main(void)
 {
 	//system initialization
 	init();
+	switch_netvars_init();
+	lamp_out_init();
 
 	//the main loop continuously handles can messages
 	while (1)
 	{
 		can_handler();
-		netvar_handle_events();
-		switch_handler();
-		motion_tick();
+
+		if (tickscounter > 20)
+		{
+			tickscounter = 0;
+			netvar_handle_events();
+			switch_handler();
+			motion_tick();
+		}
 		wdt_reset();
 	}
-	return 1;
 }
 
