@@ -8,16 +8,16 @@ static const uint8_t motion_admux[NUM_DETECTORS] =
 /* motion tick counter for the current 60s
  * note: ticks from *all* motion detectors are commulated in this value.
  */
-volatile static uint8_t motion_ticks = 0;
+static volatile uint8_t motion_ticks = 0;
 
 /* counter */
-volatile static uint8_t hscount = 0;
+static volatile uint8_t hscount = 0;
 
 /* current motion detector channel */
-volatile static uint8_t mux_chan = 0;
+static volatile uint8_t mux_chan = 0;
 
 /* number of idle periods counted */
-volatile static uint8_t motion_idlecount = 0;
+static volatile uint8_t motion_idlecount = 0;
 
 void timer0_init()
 {
@@ -57,7 +57,7 @@ ISR(ADC_vect)
 	}
 
 	/* ... after 8 samples ... */
-	adc_disable();
+	adc_disable ();
 
 	if (c8[mux_chan] + MOTION_TRESHOLD < l8[mux_chan] || c8[mux_chan] - MOTION_TRESHOLD > l8[mux_chan])
 	{
@@ -73,7 +73,7 @@ ISR(ADC_vect)
 
 /* initialize the ADC, enable the interrupt, select mux channel
  */
-void adc_init ()
+void adc_init()
 {
 	mux_chan++;
 	if (mux_chan >= NUM_DETECTORS)
@@ -98,28 +98,27 @@ ISR(TIMER0_OVF_vect)
 	c = 0;
 
 	/* enable the adc, start 8 sample runs */
-	adc_init();
+	adc_init ();
 	hscount++;
 }
 
 
 /* handler to be executed from main() */
-void motion_tick ()
+void motion_tick()
 {
-//	static uint8_t sreg_old;
 	static uint8_t warnperiod = 0;
 
 	if (warnperiod && hscount > M_WARN_LENGTH)
 	{
 		/* restore old sreg state */
-		sreg ^= 0xff;
-		change_shift_reg(sreg);
+		//sreg ^= 0xff;
+		//change_shift_reg (sreg);
 		warnperiod = 0;
 	}
 
 	if (hscount < 240) /* 240 * 0.5s -> 2 minutes */
 		return;
-	
+
 	motion_idlecount++;
 	if (motion_ticks >= MOTION_NUM_IGNORE)
 	{
@@ -128,13 +127,13 @@ void motion_tick ()
 
 	if (motion_idlecount == M_IDLE_TRESHOLD + M_OFF_TRESHOLD)
 	{
-		sreg = 0;
-		change_shift_reg(sreg);
+		//sreg = 0;
+		//change_shift_reg (sreg);
 		motion_idlecount = M_IDLE_TRESHOLD + M_OFF_TRESHOLD + 1; /* anti-overflow... */
 	} else if (motion_idlecount == M_IDLE_TRESHOLD)
 	{
-		sreg ^= 0xff;
-		change_shift_reg (sreg);
+		//sreg ^= 0xff;
+		//change_shift_reg (sreg);
 		warnperiod = 1;
 	}
 
