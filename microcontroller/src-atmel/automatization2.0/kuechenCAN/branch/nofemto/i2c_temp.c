@@ -7,34 +7,22 @@
 
 void init_sensor(uint8_t addr)
 {
-	if (!TWIM_Start(addr + TW_WRITE))
-	{
-		TWIM_Stop();
-	}
-	else
+	if (TWIM_Start(addr + TW_WRITE))
 	{
 		TWIM_Write(SOFTWARE_POR);
-		TWIM_Stop();
 	}
-	if (!TWIM_Start(addr + TW_WRITE))
-	{
-		TWIM_Stop();
-	}
-	else
+	TWIM_Stop();
+	if (TWIM_Start(addr + TW_WRITE))
 	{
 		TWIM_Write(ACCESS_CONFIG);
-		TWIM_Write(0b10001100); // XXX nicht soo toll
-		TWIM_Stop();
+		TWIM_Write(I2CDEFAULTCONFIG); // XXX nicht soo toll
 	}
-	if (!TWIM_Start(addr + TW_WRITE))
-	{
-		TWIM_Stop();
-	}
-	else
+	TWIM_Stop();
+	if (TWIM_Start(addr + TW_WRITE))
 	{
 		TWIM_Write(START_CONVERT);
-		TWIM_Stop();
 	}
+	TWIM_Stop();
 }
 
 void get_temp(uint8_t *p, uint8_t addr)

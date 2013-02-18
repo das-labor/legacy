@@ -4,9 +4,6 @@
 
 // SS Pin muss Ausgang sein wenn nicht als SC verwendet
 
-#define MC_MOSI    PB3
-#define MC_SCK     PB5
-
 #define MCP_CS_BIT    PB2
 #define MCP_CS_PORT   PORTB
 
@@ -16,10 +13,10 @@
 //#define CAN_INTERRUPT
 //#define CAN_INT_NOBLOCK
 
-#define   ENABLE_CAN_INT()    EIMSK |= _BV(INT2)
-#define   DISABLE_CAN_INT()   EIMSK &= ~_BV(INT2)
-#define   SETUP_CAN_INT()     EICRA &= ~_BV(ISC21)
-#define   MCP_INT_VEC         INT2_vect
+//#define   ENABLE_CAN_INT()    EIMSK |= _BV(INT0)
+//#define   DISABLE_CAN_INT()   EIMSK &= ~_BV(INT0)
+//#define   SETUP_CAN_INT()     EICRA &= ~_BV(ISC01)
+#define   MCP_INT_VEC         INT0_vect
 
 #define CAN_TX_BUFFER_SIZE 4
 #define CAN_RX_BUFFER_SIZE 4
@@ -31,18 +28,12 @@
 #define G_LED _BV(PC2)
 #define B_LED _BV(PC3)
 
-/*
- * can ports
- */
-#define LIGHTCANPORT 0x04
-#define ALARMCANPORT 0x00
-#define I2CTEMPCANPORT (0x10)
+#define NUM_INPUTS 2
+#define I_PIN_0 PINB
+#define I_BV_0  _BV(PB1)
+#define I_PIN_1 PINC
+#define I_BV_1  _BV(PC0)
 
-/*
- * button thresholds
- */
-#define HOLD_THRESHOLD 24
-#define CLICK_THRESHOLD 3
 
 /* eeprom settings */
 #define EEP_MY_ADDR 0x00
