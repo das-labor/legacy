@@ -3,13 +3,12 @@
 #include <avr/interrupt.h>
 
 #include "config.h"
-
 #include "twi_master/twi_master.h"
-#include "can/can.h"
 #include "can/spi.h"
+#include "can/can.h"
 #include "netvar/can_handler.h"
 #include "netvar/netvar.h"
-#include "i2c_temp.h"
+#include "ds1631.h"
 #include "io.h"
 
 static volatile uint8_t tickscounter;
@@ -52,7 +51,7 @@ static void init(void)
 	}
 
 	// Init twi Tempearture Sensor
-	init_sensor(0x96); // XXX was ist 96
+	init_ds1631(I2C_ADRESSE_DS1631);
 
 	// initialize spi port
 	spi_init();

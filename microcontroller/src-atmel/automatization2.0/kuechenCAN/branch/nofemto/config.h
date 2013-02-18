@@ -34,6 +34,7 @@
 #define I_PIN_1 PINC
 #define I_BV_1  _BV(PC0)
 
+#define I2C_ADRESSE_DS1631 0x9e
 
 /* eeprom settings */
 #define EEP_MY_ADDR 0x00
