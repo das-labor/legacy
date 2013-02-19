@@ -98,7 +98,7 @@ int textFileWrite(char *fn, char *s)
 
 //Got this from http://www.lighthouse3d.com/opengl/glsl/index.php?oglinfo
 // it prints out shader info (debugging!)
-void printShaderInfoLog(GLuint obj)
+void printShaderInfoLog(GLuint obj, bool beVerbose)
 {
     int infologLength = 0;
     int charsWritten  = 0;
@@ -108,16 +108,18 @@ void printShaderInfoLog(GLuint obj)
     {
         infoLog = (char *)malloc(infologLength);
         glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
+        if( beVerbose )
 		cout << "printShaderInfoLog:" << infoLog << endl;
         free(infoLog);
 	}else{
+	if( beVerbose )
 		cout << "Shader Info Log: OK" << endl;
 	}
 }
 
 //Got this from http://www.lighthouse3d.com/opengl/glsl/index.php?oglinfo
 // it prints out shader info (debugging!)
-void printProgramInfoLog(GLuint obj)
+void printProgramInfoLog(GLuint obj, bool beVerbose)
 {
     int infologLength = 0;
     int charsWritten  = 0;
@@ -127,9 +129,11 @@ void printProgramInfoLog(GLuint obj)
     {
         infoLog = (char *)malloc(infologLength);
         glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
+        if( beVerbose )
 		cout << "printProgramInfoLog: " << infoLog << endl;
         free(infoLog);
     }else{
+    	    if( beVerbose )
 		cout << "Program Info Log: OK" << endl;
 	}
 }
@@ -139,7 +143,7 @@ GLuint f,p;			//Handlers for our vertex, geometry, and fragment shaders
 //int gw,gh;				//Keep track of window width and height
 
 //Setup shaders
-void setShaders(float width, float height) 
+void setShaders(float width, float height, bool beVerbose) 
 {
 	//a few strings
 	// will hold onto the file read in!
@@ -157,9 +161,11 @@ void setShaders(float width, float height)
 
 	//First, create our shaders 
 	f = glCreateShader(GL_FRAGMENT_SHADER);
-
+	
+        char filename[] = "fragment.glsl";
+        
 	//Read in the programs
-	fs = textFileRead("fragment.glsl");
+	fs = textFileRead(&filename[0]);
 
 	//Setup a few constant pointers for below
 	const char * ff = fs;
@@ -182,6 +188,6 @@ void setShaders(float width, float height)
         myLoc = glGetUniformLocation(p, "height");
         glUniform1f( myLoc, height );
 
-	printShaderInfoLog(f);
-	printProgramInfoLog(p);
+	printShaderInfoLog(f, beVerbose);
+	printProgramInfoLog(p, beVerbose);
 }
