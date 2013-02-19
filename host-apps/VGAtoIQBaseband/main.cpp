@@ -94,7 +94,7 @@ bool fragmentisSupported;
 bool beVerbose;
 int pboMode = 0;
 int drawMode = 0;
-int cutofleft = 1;
+int cutofright = 1;
 int cutofbottom = 2;
 Timer timer, t1, t2;
 float copyTime, updateTime;
@@ -141,10 +141,10 @@ int main(int argc, char **argv)
         if( strcmp(argv[i],"-nofilter")==0 )
         	fragmentisSupported = false;
     
-        if( strcmp(argv[i],"-cutofleft")==0 ){
+        if( strcmp(argv[i],"-cutofright")==0 ){
         	if(argc > (i+1)){
         	    if(!(argv[i+1][0] == '-')){
-        	        cutofleft=atoi(argv[i+1]);
+        	        cutofright=atoi(argv[i+1]);
         	        i++;
         	    }
         	}
@@ -200,14 +200,14 @@ int main(int argc, char **argv)
            glMapBufferARB && glUnmapBufferARB && glDeleteBuffersARB && glGetBufferParameterivARB)
         {
             pboisSupported = true;
-            pboMode = 1;    // using 1 PBO
+            pboMode = 2;    // using 2 PBO
             //cout << "Video card supports GL_ARB_pixel_buffer_object." << endl;
         }
         else
         {
             pboisSupported = false;
             pboMode = 0;    // without PBO
-            if(beVerbose)
+            if( beVerbose )
             	    cout << "Video card does NOT support GL_ARB_pixel_buffer_object." << endl;
         }
     }
@@ -220,7 +220,7 @@ int main(int argc, char **argv)
     else
     {
         fragmentisSupported = false;
-        if(beVerbose)
+        if( beVerbose )
         	cout << "Video card does NOT support GL_ARB_fragment_shader." << endl;
     }
     
@@ -230,14 +230,14 @@ int main(int argc, char **argv)
     {
 
         pboisSupported = true;
-        pboMode = 1;
+        pboMode = 2;
         //cout << "Video card supports GL_ARB_pixel_buffer_object." << endl;
     }
     else
     {
         pboisSupported = false;
         pboMode = 0;
-        if(beVerbose)
+        if( beVerbose )
         	cout << "Video card does NOT support GL_ARB_pixel_buffer_object." << endl;
     }
 
@@ -249,7 +249,7 @@ int main(int argc, char **argv)
     else
     {
         fragmentisSupported = false;
-        if(beVerbose)
+        if( beVerbose )
         	cout << "Video card does NOT support GL_ARB_fragment_shader." << endl;
     }
     
@@ -267,7 +267,7 @@ int main(int argc, char **argv)
         glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
     }
     
-    if(fragmentisSupported)
+    if( fragmentisSupported )
     	    setShaders( SCREEN_WIDTH,  SCREEN_HEIGHT , beVerbose);
     
     // start timer, the elapsed time will be used for updateVertices()
@@ -614,8 +614,8 @@ void displayCB()
     glNormal3f(0, 0, 1);
 
     glTexCoord2f(0.0f, 0.0f);   glVertex3f(-1.0f, -1.0f - 2.0f/SCREEN_HEIGHT * cutofbottom, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);   glVertex3f( 1.0f + 2.0f/SCREEN_WIDTH * cutofleft, -1.0f - 2.0f/SCREEN_HEIGHT * cutofbottom, 0.0f);
-    glTexCoord2f(1.0f, 1.0f);   glVertex3f( 1.0f + 2.0f/SCREEN_WIDTH * cutofleft,  1.0f, 0.0f);
+    glTexCoord2f(1.0f, 0.0f);   glVertex3f( 1.0f + 2.0f/SCREEN_WIDTH * cutofright, -1.0f - 2.0f/SCREEN_HEIGHT * cutofbottom, 0.0f);
+    glTexCoord2f(1.0f, 1.0f);   glVertex3f( 1.0f + 2.0f/SCREEN_WIDTH * cutofright,  1.0f, 0.0f);
     glTexCoord2f(0.0f, 1.0f);   glVertex3f(-1.0f,  1.0f, 0.0f);
 
     glEnd();
