@@ -51,8 +51,6 @@ void reshapeCB(int w, int h);
 void timerCB(int millisec);
 void idleCB();
 void keyboardCB(unsigned char key, int x, int y);
-void mouseCB(int button, int stat, int x, int y);
-void mouseMotionCB(int x, int y);
 
 // CALLBACK function when exit() called ///////////////////////////////////////
 void exitCB();
@@ -88,14 +86,12 @@ GLubyte* imageData = 0;             // pointer to texture buffer
 int screenWidth;
 int screenHeight;
 int enableconvolutional;
-bool mouseLeftDown;
-bool mouseRightDown;
-float mouseX, mouseY;
 float cameraAngleX;
 float cameraAngleY;
 float cameraDistance;
 bool pboisSupported;
 bool fragmentisSupported;
+bool beVerbose;
 int pboMode = 0;
 int drawMode = 0;
 int cutofleft = 1;
@@ -140,6 +136,35 @@ int main(int argc, char **argv)
     initGLUT(argc, argv);
     initGL();
 
+    for(int i=1; i < argc; i++)
+    {
+        if( strcmp(argv[i],"-nofilter")==0 )
+        	fragmentisSupported = false;
+    
+        if( strcmp(argv[i],"-cutofleft")==0 ){
+        	if(argc > (i+1)){
+        	    if(!(argv[i+1][0] == '-')){
+        	        cutofleft=atoi(argv[i+1]);
+        	        i++;
+        	    }
+        	}
+        }
+        
+        if( strcmp(argv[i],"-cutofbottom")==0 ){
+        	if(argc > (i+1)){
+        	    if(!(argv[i+1][0] == '-')){
+        	        cutofbottom=atoi(argv[i+1]);
+        	        i++;
+        	    }
+        	}
+        }
+        
+        if( strcmp(argv[i],"-v")==0 || strcmp(argv[i],"-verbose")==0){
+        	beVerbose = true;
+        }
+        
+    }
+    
     // get OpenGL info
     glInfo glInfo;
     glInfo.getInfo();
@@ -182,7 +207,8 @@ int main(int argc, char **argv)
         {
             pboisSupported = false;
             pboMode = 0;    // without PBO
-            cout << "Video card does NOT support GL_ARB_pixel_buffer_object." << endl;
+            if(beVerbose)
+            	    cout << "Video card does NOT support GL_ARB_pixel_buffer_object." << endl;
         }
     }
     
@@ -194,7 +220,8 @@ int main(int argc, char **argv)
     else
     {
         fragmentisSupported = false;
-        cout << "Video card does NOT support GL_ARB_fragment_shader." << endl;
+        if(beVerbose)
+        	cout << "Video card does NOT support GL_ARB_fragment_shader." << endl;
     }
     
 #else // for linux, do not need to get function pointers, it is up-to-date
@@ -210,7 +237,8 @@ int main(int argc, char **argv)
     {
         pboisSupported = false;
         pboMode = 0;
-        cout << "Video card does NOT support GL_ARB_pixel_buffer_object." << endl;
+        if(beVerbose)
+        	cout << "Video card does NOT support GL_ARB_pixel_buffer_object." << endl;
     }
 
     if(glInfo.isExtensionSupported("GL_ARB_fragment_shader"))
@@ -221,7 +249,8 @@ int main(int argc, char **argv)
     else
     {
         fragmentisSupported = false;
-        cout << "Video card does NOT support GL_ARB_fragment_shader." << endl;
+        if(beVerbose)
+        	cout << "Video card does NOT support GL_ARB_fragment_shader." << endl;
     }
     
 #endif
@@ -237,32 +266,9 @@ int main(int argc, char **argv)
         glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB, DATA_SIZE, 0, GL_STREAM_DRAW_ARB);
         glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
     }
-
-    for(int i=1; i < argc; i++)
-    {
-        if( strcmp(argv[i],"-nofilter")==0 )
-        	fragmentisSupported = false;
     
-        if( strcmp(argv[i],"-cutofleft")==0 ){
-        	if(argc > (i+1)){
-        	    if(!(argv[i+1][0] == '-')){
-        	        cutofleft=atoi(argv[i+1]);
-        	        i++;
-        	    }
-        	}
-        }
-        
-        if( strcmp(argv[i],"-cutofbottom")==0 ){
-        	if(argc > (i+1)){
-        	    if(!(argv[i+1][0] == '-')){
-        	        cutofbottom=atoi(argv[i+1]);
-        	        i++;
-        	    }
-        	}
-        }
-    }
     if(fragmentisSupported)
-    	    setShaders( SCREEN_WIDTH,  SCREEN_HEIGHT );
+    	    setShaders( SCREEN_WIDTH,  SCREEN_HEIGHT , beVerbose);
     
     // start timer, the elapsed time will be used for updateVertices()
     timer.start();
@@ -334,14 +340,13 @@ bool initSharedMem()
     screenWidth = SCREEN_WIDTH;
     screenHeight = SCREEN_HEIGHT;
 
-    mouseLeftDown = mouseRightDown = false;
-    mouseX = mouseY = 0;
-
     cameraAngleX = cameraAngleY = 0;
     cameraDistance = CAMERA_DISTANCE;
 
     drawMode = 0; // 0:fill, 1: wireframe, 2:points
-
+    
+    beVerbose = false;
+    
     // allocate texture buffer
     imageData = new GLubyte[DATA_SIZE];
     memset(imageData, 0, DATA_SIZE);
@@ -388,8 +393,6 @@ void setCamera(float posX, float posY, float posZ, float targetX, float targetY,
 ///////////////////////////////////////////////////////////////////////////////
 void updatePixels(GLubyte* dst, int size)
 {
-    static int color = 0, colorB = 0;
-
     if(!dst)
         return;
 
@@ -621,8 +624,6 @@ void displayCB()
     glBindTexture(GL_TEXTURE_2D, 0);
 
     // draw info messages
-    //showInfo();
-    //showTransferRate();
     printTransferRate();
 
     glPopMatrix();
@@ -658,35 +659,6 @@ void keyboardCB(unsigned char key, int x, int y)
     {
     case 27: // ESCAPE
         exit(0);
-        break;
-
-    case ' ':
-        if(pboisSupported)
-            pboMode = ++pboMode % 3;
-        cout << "PBO mode: " << pboMode << endl;
-         break;
-
-    case 'd': // switch rendering modes (fill -> wire -> point)
-    case 'D':
-        drawMode = ++drawMode % 3;
-        if(drawMode == 0)        // fill mode
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glEnable(GL_DEPTH_TEST);
-            glEnable(GL_CULL_FACE);
-        }
-        else if(drawMode == 1)  // wireframe mode
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            glDisable(GL_DEPTH_TEST);
-            glDisable(GL_CULL_FACE);
-        }
-        else                    // point mode
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-            glDisable(GL_DEPTH_TEST);
-            glDisable(GL_CULL_FACE);
-        }
         break;
 
     default:
