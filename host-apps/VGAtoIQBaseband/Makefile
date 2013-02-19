@@ -29,7 +29,7 @@ LIB_RELEASE = $(LIB)
 LDFLAGS_RELEASE = $(LDFLAGS) -s
 OBJDIR_RELEASE = obj
 DEP_RELEASE = 
-OUT_RELEASE = ../vgatoiqbaseband
+OUT_RELEASE = vgatoiqbaseband
 
 OBJ_RELEASE = $(OBJDIR_RELEASE)/glInfo.o $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Timer.o $(OBJDIR_RELEASE)/shader.o
 
