@@ -3,11 +3,6 @@
 
 // SPI
 
-// SS Pin muss Ausgang sein wenn nicht als SC verwendet
-
-#define MC_MOSI    PB5
-#define MC_SCK     PB7
-
 #define MCP_CS_BIT    PB4
 #define MCP_CS_PORT   PORTB
 
