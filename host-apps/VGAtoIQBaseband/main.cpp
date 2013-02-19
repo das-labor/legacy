@@ -104,6 +104,7 @@ Timer timer, t1, t2;
 float copyTime, updateTime;
 GLint       program = 0;
 GLint timeParam;
+
 // function pointers for PBO Extension
 // Windows needs to get function pointers from ICD OpenGL drivers,
 // because opengl32.dll does not support extensions higher than v1.1.
@@ -155,6 +156,7 @@ int main(int argc, char **argv)
     glBindTexture(GL_TEXTURE_2D, 0);
 
 #ifdef _WIN32
+
     // check PBO is supported by your video card
     if(glInfo.isExtensionSupported("GL_ARB_pixel_buffer_object"))
     {
@@ -194,7 +196,9 @@ int main(int argc, char **argv)
         fragmentisSupported = false;
         cout << "Video card does NOT support GL_ARB_fragment_shader." << endl;
     }
+    
 #else // for linux, do not need to get function pointers, it is up-to-date
+
     if(glInfo.isExtensionSupported("GL_ARB_pixel_buffer_object"))
     {
 
@@ -219,9 +223,10 @@ int main(int argc, char **argv)
         fragmentisSupported = false;
         cout << "Video card does NOT support GL_ARB_fragment_shader." << endl;
     }
+    
 #endif
 
-    if(pboisSupported)
+    if( pboisSupported )
     {
         // create 2 pixel buffer objects, you need to delete them when program exits.
         // glBufferDataARB with NULL pointer reserves only memory space.
@@ -235,10 +240,10 @@ int main(int argc, char **argv)
 
     for(int i=1; i < argc; i++)
     {
-        if(strcmp(argv[i],"-filter")==0 && fragmentisSupported)
-            setShaders( SCREEN_WIDTH,  SCREEN_HEIGHT);
+        if( strcmp(argv[i],"-nofilter")==0 )
+        	fragmentisSupported = false;
     
-        if(strcmp(argv[i],"-cutofleft")==0){
+        if( strcmp(argv[i],"-cutofleft")==0 ){
         	if(argc > (i+1)){
         	    if(!(argv[i+1][0] == '-')){
         	        cutofleft=atoi(argv[i+1]);
@@ -246,7 +251,8 @@ int main(int argc, char **argv)
         	    }
         	}
         }
-        if(strcmp(argv[i],"-cutofbottom")==0){
+        
+        if( strcmp(argv[i],"-cutofbottom")==0 ){
         	if(argc > (i+1)){
         	    if(!(argv[i+1][0] == '-')){
         	        cutofbottom=atoi(argv[i+1]);
@@ -254,9 +260,10 @@ int main(int argc, char **argv)
         	    }
         	}
         }
-
     }
-
+    if(fragmentisSupported)
+    	    setShaders( SCREEN_WIDTH,  SCREEN_HEIGHT );
+    
     // start timer, the elapsed time will be used for updateVertices()
     timer.start();
 
