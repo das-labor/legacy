@@ -1,7 +1,35 @@
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/delay.h>
 #include "uart/uart.h"
+
+
+#define LED_COMMON_PORT PORTB
+#define LED_COMMON_BIT PB6
+
+
+static uint8_t leds;
+
+ISR(TIMER0_COMPA_vect){
+	static uint8_t toggle;
+	toggle ^= 1;
+	if(toggle){
+		LED_COMMON_PORT |= _BV(LED_COMMON_BIT);
+	}else{
+		LED_COMMON_PORT &= ~_BV(LED_COMMON_BIT);
+	}
+}
+
+
+
+void timer_0_init(){
+	TCCR0A = _BV(WGM01); //CTC
+	TCCR0B = 2;//clk/8
+	OCR0A = 250; //4000Hz interrupt
+	TIMSK |= _BV(OCIE0A);
+}
+
 
 
 void set_leds (uint8_t msk) {
@@ -43,7 +71,6 @@ void handle_buttons () {
 
 void handle_leds () {
 	char c;
-	static uint8_t leds;
 	if ( uart_getc_nb(&c) ) {
 		uint8_t num;
 		if (c < 'a') {
@@ -60,12 +87,16 @@ void handle_leds () {
 int main(){
 	
 	DDRD = 0x40;
-	DDRB = 0x1F;
+	DDRB = 0x5F;
 	
 	PORTA = 0x03;
 	PORTD = 0x3C;
 	
 	uart_init();
+
+	timer_0_init();
+	
+	sei();
 	
 	while (1) {
 		handle_buttons();
