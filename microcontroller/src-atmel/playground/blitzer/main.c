@@ -83,8 +83,8 @@ int main(){
 	DDRB |= _BV(PB2); //set pwm pin to output	
 	LED_DDR |= _BV(LED_BIT);
 	
-	init_timer1();
-	
+	//init_timer1();
+	/*
 	while(1){
 		if(ACSR & _BV(ACO)){
 			LED_PORT |= _BV(LED_BIT);
@@ -92,9 +92,7 @@ int main(){
 			LED_PORT &= ~_BV(LED_BIT);
 		}
 	}
-	
-	
-	
+	*/
 	
 	init_pwm();
 
