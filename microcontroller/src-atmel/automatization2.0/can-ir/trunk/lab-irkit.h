@@ -73,12 +73,9 @@
 #define FREQGEN_ON() TCNT1 = 0; TCCR1A = _BV(COM1A0);
 
 //function prototypes
-void ir_timer0Init(void);
-void ir_freqInit(void);
-void ir_disable(void);
-uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime, uint16_t zeroOfftime, uint32_t bitCode, uint8_t codeLen);
-void ir_sendCode(uint16_t *code, uint8_t codeLen);
-void ir_init(void);
+extern uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime, uint16_t zeroOfftime, uint32_t bitCode, uint8_t codeLen);
+extern void ir_sendCode(uint16_t *code, uint8_t codeLen);
+extern void ir_init(void);
 
 //work in progress
 /*typedef struct {
@@ -94,7 +91,7 @@ uint16_t zeroOfftime;
 //destCode is the destination array
 //bitCode is the input code
 //codeLen is the bit count
-static inline uint8_t ir_genENEC(uint16_t *destCode, uint32_t bitCode, uint8_t codeLen)
+static uint8_t ir_genENEC(uint16_t *destCode, uint32_t bitCode, uint8_t codeLen)
 {
 	//create nec preamble
 	destCode[0] = PNEC_AGC_ON;

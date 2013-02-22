@@ -49,7 +49,7 @@ uint16_t teufelCodes[] =
 	//rear
 	0b010001001000,
 	//side
-	0b010001000100,	
+	0b010001000100,
 	//sub
 	0b010010010000,
 	//center
@@ -78,7 +78,7 @@ void can_handler()
 				case FKT_MGT_RESET:
 					TCCR2 = 0;
 					wdt_enable(0);
-					while(1);
+					while (1);
 		
 				case FKT_MGT_PING:
 
@@ -154,7 +154,7 @@ void can_handler()
 
 				default:
 					break;
-			}		
+			}
 		}
 	}
 }
@@ -167,29 +167,26 @@ void init()
 
 	//debug LED output
 	DDRD |= _BV(PD7);
-	
-	// Must be output else SPI will fail
-//	DDRB |= _BV(PB2);
 
 	//initialize ir subsystem
 	ir_init();
 
 	//initialize spi port
 	spi_init();
-	
+
 	myaddr = eeprom_read_byte(0x00);
 	//initialize can communication
 	can_init();
-	
+
 	//turn on interrupts
 	sei();
 }
-	 
+
 int main(void)
 {	
 	//system initialization
 	init();
-		
+
 	//the main loop continuously handles can messages
 	while (1)
 	{	
@@ -197,3 +194,4 @@ int main(void)
 		PORTD &= ~_BV(PD7);
 	}
 }
+
