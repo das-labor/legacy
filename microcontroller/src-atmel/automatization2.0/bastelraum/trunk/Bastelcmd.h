@@ -1,24 +1,27 @@
-#define C_SW 0
-#define C_PWM	1
-#define C_SET_MOTION_T 2
-#define C_GET_STATE 3
+#define PORT_BASTEL     1
 
-#define F_REG_DRUCKER_1 1
-#define F_REG_DRUCKER_2 2
-#define F_REG_HELMER_1 3
-#define F_REG_HELMER_2 4
-#define F_REG_FENSTER 5
-#define F_REG_BANNER    6
-#define F_REG_ORGATISCH 7
+#define C_SW            0
+#define C_PWM           1
+#define C_SET_MOTION_T  2
+#define C_GET_STATE     3
 
+typedef enum {
+	F_REG_UNUSED,
+	F_REG_BTISCHR_1,
+	F_REG_BTISCHR_2,
+	F_REG_BTISCHL_1,
+	F_REG_BTISCHL_2,
+	F_REG_FENSTER,
+	F_REG_MITTE,
+	F_REG_NISCHE,
+	F_REG_COUNT
+} t_sreg_funct_def;
 
-#define F_PWM_FENSTER 0
-#define F_PWM_BANNER  1
-#define F_PWM_ORGATISCH 3
+typedef enum { 
+	F_PWM_FENSTER,
+	F_PWM_UNUSED,
+	F_PWM_MITTE,
+	F_PWM_NISCHE,
+	F_PWM_COUNT
+} f_pwm_funct_def;
 
-
-/* 
-   Aktionen als defines
-*/
-#define F_SW_OFF      (0x00)
-#define F_SW_ON       (0x01)

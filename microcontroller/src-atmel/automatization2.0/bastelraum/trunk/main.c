@@ -1,34 +1,28 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
-#include <util/delay.h>
 
 #include "config.h"
-
-#include "twi_master/twi_master.h"
 #include "can/can.h"
 #include "can_handler.h"
 #include "can/spi.h"
-#include "can/lap.h"
 #include "io.h"
 #include "motion.h"
 
-void init(void)
+
+static volatile uint16_t tickscounter = 0;
+ISR(TIMER2_OVF_vect)
+{
+	tickscounter++;
+}
+
+static void init(void)
 {
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
-//	MCUCR |= _BV(SE); // Enable "sleep" mode (low power when idle)
-
 	motion_init();
-//	DDRA &= ~(_BV(PA4)); // Eingänge Türkontakt
 
-
-	DDRB |= _BV(PB0); // LED out
-
-	// this stuff is now handled by timer2 (see io.c)
-	// -> timer0 is used by the motion detectors (see motion.c)
-	// TCCR0B = _BV(CS01) | _BV(CS00); /* clk / 64 */
-	// TIMSK0 = _BV(TOIE0); 
+	DDRB |= _BV(PB0); // lapnode red LED out
 
 	init_io();
 
@@ -42,7 +36,7 @@ void init(void)
 
 	//turn on interrupts
 	sei();
-	wdt_enable(5); // 500ms
+	wdt_enable(WDTO_250MS); // 250 ms
 }
 
 int main(void)
@@ -54,11 +48,14 @@ int main(void)
 	while (1)
 	{
 		can_handler();
-
-		switch_handler();
+		// alle 32 ticks ... 0.032 sekunden
+		if (tickscounter > 20)
+		{
+			tickscounter = 0;
+			switch_handler();
+			motion_tick();
+		}
 		wdt_reset();
-		motion_tick();
 	}
-	return 1;
-};
+}
 
