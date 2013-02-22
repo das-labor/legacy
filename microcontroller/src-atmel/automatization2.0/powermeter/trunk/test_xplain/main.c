@@ -39,7 +39,7 @@ void usart_init() {
 }
 
 void usart_setSpeed(uint32_t speed) {
-	uint8_t bsel = (F_CPU / (8 * speed)-1);
+	uint8_t bsel = (F_CPU / (8 * speed) - 1);
 	USARTD0.BAUDCTRLA = bsel & 0xff;
 	USARTD0.BAUDCTRLB = (USARTD0.BAUDCTRLB & 0xf0) + ((bsel >> 8) & 0x0f);
 }
@@ -48,8 +48,8 @@ uint8_t usart_canSend() {
 	return USARTD0.STATUS & USART_TXCIF_bm;
 }
 
-int uart_putc(char byte, FILE * fp) {
-        USARTD0.DATA = byte;
+int uart_putc(char byte, FILE *fp) {
+	USARTD0.DATA = byte;
 	while((USARTD0.STATUS & USART_TXCIF_bm) == 0);
 	USARTD0.STATUS = USART_TXCIF_bm;
 	return 0;	
@@ -83,24 +83,22 @@ int main(void)
 	printf("%d\r\n", offset);
 	
 	while (1) {
-	        int x;
-	        int32_t akk;
-	        for(x=0;x<10000;x++){
-	                int16_t adcSample, adcSample1;
-                	while (!ADC_Ch_Conversion_Complete(&ADCA.CH0));
-                	adcSample = ADC_ResultCh_GetWord_Signed(&ADCA.CH0, offset);
-                	while (!ADC_Ch_Conversion_Complete(&ADCA.CH1));
-                	adcSample1 = ADC_ResultCh_GetWord_Signed(&ADCA.CH1, offset);
+		int x;
+		int32_t akk;
+		for (x = 0; x < 10000; x++) {
+			int16_t adcSample, adcSample1;
+			while (!ADC_Ch_Conversion_Complete(&ADCA.CH0));
+			adcSample = ADC_ResultCh_GetWord_Signed(&ADCA.CH0, offset);
+			while (!ADC_Ch_Conversion_Complete(&ADCA.CH1));
+			adcSample1 = ADC_ResultCh_GetWord_Signed(&ADCA.CH1, offset);
 
-                	akk += (int32_t)adcSample * adcSample1;
-                }	
-        	
-        	
-        	akk = akk / 26580;
-        	
-        	printf("%d\r\n", akk);
-        	
+			akk += (int32_t) adcSample * adcSample1;
+		}
+
+
+		akk = akk / 26580;
+
+		printf("%d\r\n", akk);
 	}
-
 }
 

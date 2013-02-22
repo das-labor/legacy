@@ -44,11 +44,14 @@
 //for interrupt driven version
 //active pull up
 //trigger on falling edge
-#define ENABLE_CAN_INT() PORTD.PIN1CTRL = PORT_OPC_TOTEM_gc | PORT_ISC_LEVEL_gc; PORTD.INTCTRL = (PORTD.INTCTRL & (~(PORT_INT1LVL_gm | PORT_INT0LVL_gm))) | PORT_INT1LVL_OFF_gc | PORT_INT0LVL_MED_gc; PORTD.INT0MASK=(1<<1);
+#define ENABLE_CAN_INT() PORTD.INT0MASK = (1<<1);
+
+#define DISABLE_CAN_INT() PORTD.INT0MASK = 0;
 
 #define MCP_INT_VEC PORTD_INT0_vect
+#define SETUP_CAN_INT() PORTD.PIN1CTRL = PORT_OPC_TOTEM_gc | PORT_ISC_LEVEL_gc; PORTD.INTCTRL = (PORTD.INTCTRL & (~(PORT_INT1LVL_gm | PORT_INT0LVL_gm))) | PORT_INT1LVL_OFF_gc | PORT_INT0LVL_MED_gc;
 
- 
+
 #define XMEGA_SPI      SPID
 #define AVR_SPI_PORT  PORTD
 #define AVR_SS_BIT        4

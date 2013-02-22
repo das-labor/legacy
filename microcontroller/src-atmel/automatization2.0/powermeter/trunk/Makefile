@@ -1,4 +1,4 @@
-OBJ = main.o tc_driver.o powermeter_driver.o rtc_driver.o dma_driver.o event_system_driver.o error_handler.o ursartC1_driver.o adc_driver.o can/can.o can/spi.o can_handler.o led_driver.o netvar/netvar.o util_lib/list.o
+OBJ = main.o tc_driver.o powermeter_driver.o rtc_driver.o dma_driver.o event_system_driver.o error_handler.o ursartC1_driver.o adc_driver.o can/can.o can/spi.o can_handler.o led_driver.o
 
 # Default values
 OUT           ?= image
@@ -6,8 +6,8 @@ MCU_TARGET    ?= atxmega192a3
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -O2
-WARNINGS      ?= -Wall -Winline
-DEFS          ?= -DF_CPU=32000000
+WARNINGS      ?= -Wall -Winline -Wextra
+DEFS          ?= -DF_CPU=32000000UL
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=c99 -ffunction-sections -fdata-sections
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax
@@ -15,8 +15,8 @@ LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-#FLASHCMD      ?= avrdude -c avrisp2 -P usb -p $(MCU_TARGET) -e -U flash:w:image.hex
-FLASHCMD       = lapcontrol -s kvm flash 5 image.hex
+FLASHCMD      ?= avrdude -c avrisp2 -P usb -p $(MCU_TARGET) -U $(OUT).hex
+CANFLASHCMD    = lapcontrol -s kvm flash 0x05 $(OUT).hex
 
 #############################################################################
 # Rules
@@ -31,12 +31,12 @@ flash: $(OUT).hex
 	$(FLASHCMD)
 
 #############################################################################
-# Building Rules 
+# Building Rules
 $(OUT).elf: $(OBJ)
 	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.c
-	$(MCU_CC) $(CFLAGS) -c $< -o $@ 
+	$(MCU_CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.S
 	$(MCU_AS) $(ASFLAGS) -o $@ $<
