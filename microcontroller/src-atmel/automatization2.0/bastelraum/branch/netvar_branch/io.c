@@ -136,12 +136,16 @@ static void lamp_out(void *num, uint8_t val) {
 			break;
 		case LAMP_OUT_BTISCHL_1:
 			set_output(F_REG_BTISCHL_1, val);
+			break;
 		case LAMP_OUT_BTISCHL_2:
 			set_output(F_REG_BTISCHL_2, val);
+			break;
 		case LAMP_OUT_BTISCHR_1:
 			set_output(F_REG_BTISCHR_1, val);
+			break;
 		case LAMP_OUT_BTISCHR_2:
 			set_output(F_REG_BTISCHR_2, val);
+			break;
 	}
 }
 
@@ -165,7 +169,7 @@ void lamp_out_init() {
 }
 
 
-static void input_changed_event (uint8_t num, uint8_t val) {
+static void input_changed_event(uint8_t num, uint8_t val) {
 
 	netvar_write(out_netvars[num], &val);
 }

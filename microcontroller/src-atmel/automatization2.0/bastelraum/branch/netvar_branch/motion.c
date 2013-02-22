@@ -24,7 +24,7 @@ static volatile uint8_t mux_chan = 0;
 /* number of idle periods counted */
 static volatile uint8_t motion_idlecount = 0;
 
-void timer0_init()
+static void timer0_init()
 {
 	TCCR0B = (_BV(CS00) | _BV(CS02)); /* clk/1024 */
 	TIMSK0 = _BV(TOIE0); /* overflow int. */
@@ -35,7 +35,7 @@ void motion_init()
 	timer0_init();
 }
 
-void adc_disable()
+static void adc_disable()
 {
 	ADCSRA &= ~(_BV(ADEN));
 }
@@ -62,7 +62,7 @@ ISR(ADC_vect)
 	}
 
 	/* ... after 8 samples ... */
-	adc_disable ();
+	adc_disable();
 
 	if (c8[mux_chan] + MOTION_TRESHOLD < l8[mux_chan] || c8[mux_chan] - MOTION_TRESHOLD > l8[mux_chan])
 	{
@@ -78,7 +78,7 @@ ISR(ADC_vect)
 
 /* initialize the ADC, enable the interrupt, select mux channel
  */
-void adc_init()
+static void adc_init()
 {
 	mux_chan++;
 	if (mux_chan >= NUM_DETECTORS)
@@ -95,15 +95,15 @@ void adc_init()
 ISR(TIMER0_OVF_vect)
 {
 	static uint8_t c = 0;
-	
+
 	c++;
 	if (c < 38) /* ~ 0.5s (76.3 overflows per second) */
 		return;
-	
+
 	c = 0;
 
 	/* enable the adc, start 8 sample runs */
-	adc_init ();
+	adc_init();
 	hscount++;
 }
 

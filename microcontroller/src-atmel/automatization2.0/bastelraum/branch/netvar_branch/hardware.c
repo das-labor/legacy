@@ -1,5 +1,3 @@
-
-#include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 
@@ -8,3 +6,4 @@ void hardware_reset() {
 	wdt_enable(0);
 	while (1);
 }
+
