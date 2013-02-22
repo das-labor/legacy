@@ -1,2 +1,2 @@
 
-void hardware_reset();
+void hardware_reset(void);

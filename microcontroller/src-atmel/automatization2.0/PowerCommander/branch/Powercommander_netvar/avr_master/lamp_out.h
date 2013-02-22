@@ -1,2 +1,3 @@
 
-void lamp_out_init ();
+void lamp_out_init(void);
+

@@ -5,12 +5,10 @@
 
 #include "config.h"
 #include "../include/PowerCommander.h"
-
 #include "twi_master/twi_master.h"
+#include "can/spi.h"
 #include "can/can.h"
 #include "netvar/can_handler.h"
-#include "can/spi.h"
-#include "can/lap.h"
 #include "switch.h"
 #include "i2c_com.h"
 #include "netvar/netvar.h"
@@ -20,7 +18,7 @@
 #include "lamp_out.h"
 
 
-volatile uint8_t tickscounter;
+static volatile uint8_t tickscounter;
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -30,7 +28,7 @@ ISR(TIMER1_COMPA_vect)
 	tickscounter++;
 }
 
-void init(void)
+static void init(void)
 {
 	TCCR1B |= _BV(WGM12) | _BV(CS10) | _BV(CS11); // CTC, clk/64
 	//1000 Hz
@@ -62,7 +60,7 @@ void init(void)
 	if (!TWIM_Init())
 	{
 		set_led(LED_RED_BLUE);
-		while (1){
+		while (1) {
 			rgb_led_animation();
 			_delay_ms(20);
 		}
@@ -108,5 +106,4 @@ int main(void)
 		}
 		wdt_reset();
 	}
-	return 0;
 }

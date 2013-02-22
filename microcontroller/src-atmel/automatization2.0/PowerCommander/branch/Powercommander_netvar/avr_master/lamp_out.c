@@ -1,6 +1,5 @@
-
-
 #include <stdint.h>
+
 #include "netvar/netvar.h"
 #include "netvar/netvar_io.h"
 #include "i2c_com.h"
@@ -11,7 +10,7 @@
 #define LAMP_OUT_SCHRANK 2
 #define LAMP_OUT_FLIPPER 3
 
-static void lamp_out(void * num, uint8_t val) {
+static void lamp_out(void *num, uint8_t val) {
 	uint8_t i = (uint8_t) (uint16_t) num;
 	switch (i) {
 		case LAMP_OUT_TAFEL:
@@ -35,9 +34,10 @@ static void lamp_out(void * num, uint8_t val) {
 
 #define NV_IDX_LAMP_CONTROLLER_VORTRAG 0x0100
 
-void lamp_out_init () {
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x50, lamp_out, (void*)LAMP_OUT_TAFEL);
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x51, lamp_out, (void*)LAMP_OUT_BEAMER);
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x52, lamp_out, (void*)LAMP_OUT_SCHRANK);
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x53, lamp_out, (void*)LAMP_OUT_FLIPPER);
+void lamp_out_init() {
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x50, lamp_out, (void *) LAMP_OUT_TAFEL);
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x51, lamp_out, (void *) LAMP_OUT_BEAMER);
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x52, lamp_out, (void *) LAMP_OUT_SCHRANK);
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x53, lamp_out, (void *) LAMP_OUT_FLIPPER);
 }
+
