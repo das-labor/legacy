@@ -3,8 +3,6 @@
 
 
 // SPI
-
-// SS Pin muss Ausgang sein wenn nicht als CS verwendet
 #define MCP_CS_BIT   PB4
 #define MCP_CS_PORT  PORTB
 
@@ -21,8 +19,6 @@
 #define F_MCP F_CPU
 
 
-// TWI_ADDRESS
-
 //#define TESTBOARD
 
 #ifdef TESTBOARD
@@ -37,14 +33,15 @@
 
 #define PORT_LED   PORTA
 
-#define HAUPTSCHALTER	(_BV(PA0))
-#define POWER_OK	(_BV(PD7))
-#define TASTER_LOUNGE	(_BV(PB2))
-#define TASTER_VORTRAG	(_BV(PD3))
-#define RCD_SERVER	(_BV(PA1))
-#define RCD_POWER	(_BV(PC2))
-#define RCD_LICHT	(_BV(PD6))
-
 #define NUM_INPUTS 7
+
+#define HAUPTSCHALTER  (_BV(PA0))
+#define POWER_OK       (_BV(PD7))
+#define TASTER_LOUNGE  (_BV(PB2))
+#define TASTER_VORTRAG (_BV(PD3))
+#define RCD_SERVER     (_BV(PA1))
+#define RCD_POWER      (_BV(PC2))
+#define RCD_LICHT      (_BV(PD6))
+
 
 #endif // ifndef CONFIG_H

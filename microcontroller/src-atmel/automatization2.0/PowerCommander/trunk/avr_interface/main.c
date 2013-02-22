@@ -13,7 +13,7 @@
 #include "statusled.h"
 #include "virt_lamp.h"
 
-volatile uint8_t tickscounter;
+static volatile uint8_t tickscounter;
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -23,7 +23,7 @@ ISR(TIMER1_COMPA_vect)
 	tickscounter++;
 }
 
-void init(void)
+static void init(void)
 {
 	TCCR1B |= _BV(WGM12) | _BV(CS10) | _BV(CS11); // CTC, clk/64
 
@@ -95,5 +95,4 @@ int main(void)
 		}
 		wdt_reset();
 	}
-	return 1;
 }

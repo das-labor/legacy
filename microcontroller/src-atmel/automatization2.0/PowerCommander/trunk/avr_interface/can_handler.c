@@ -12,7 +12,7 @@
 
 uint8_t myaddr;
 
-void send_status(uint8_t addr);
+static void send_status(uint8_t addr);
 
 void can_handler()
 {
@@ -139,14 +139,14 @@ void can_handler()
 				switch (rx_msg->data[0])
 				{
 					case 0: // switch lamp
-						if(rx_msg->data[1] < 4)
+						if (rx_msg->data[1] < 4)
 							set_lamp(ROOM_VORTRAG, rx_msg->data[1], rx_msg->data[2]);
 						else
 							set_lamp(ROOM_KUECHE, 0, rx_msg->data[2]);
 						send_status(rx_msg->addr_src);
 						break;
 					case 1: // set brightness lamp
-						if(rx_msg->data[1] < 4)
+						if (rx_msg->data[1] < 4)
 							set_bright(ROOM_VORTRAG, rx_msg->data[1], rx_msg->data[2]);
 						else
 							set_bright(ROOM_KUECHE, 0, rx_msg->data[2]);
@@ -185,7 +185,7 @@ void can_handler()
 	}
 }
 
-void send_status(uint8_t addr)
+static void send_status(uint8_t addr)
 {
 	can_message *msg = can_buffer_get();
 	msg->data[0] = get_channel_status();
