@@ -6,4 +6,9 @@
 //#define UART_BAUD_RATE B57600
 
 
+#ifndef __CYGWIN__
+	#define SIGINFO_HAS_SI_BAND
+	#define SHOW_UCONTEXT_INFO
+#endif
+
 #endif
