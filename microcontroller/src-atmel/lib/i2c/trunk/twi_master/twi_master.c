@@ -1,6 +1,6 @@
 /*******************************************************
  Author:			Manfred Langemann
- mailto:			Manfred.Langemann ät t-online.de
+ mailto:			Manfred.Langemann Ã¤t t-online.de
  Begin of project:		04.01.2008
  Latest version generated:	04.01.2008
  Filename:			TWI_Master.c
@@ -91,7 +91,7 @@ int main (void)
 /*******************************************************
  Public Function: TWIM_Init
 
- Purpose: Initialise the TWI Master Interface
+ Purpose: Initialize the TWI Master Interface
 
  Input Parameter:
 	- uint16_t	TWI_Bitrate (Hz)

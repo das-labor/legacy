@@ -1,10 +1,10 @@
 /*******************************************************
- Author:					Manfred Langemann
- mailto:					Manfred.Langemann ät t-online.de
- Begin of project:			04.01.2008
+ Author:			Manfred Langemann
+ mailto:			Manfred.Langemann Ã¤t t-online.de
+ Begin of project:		04.01.2008
  Latest version generated:	04.01.2008
- Filename:					TWI_Master.h
- Description:    			TWI Master functions include file
+ Filename:			TWI_Master.h
+ Description:			TWI Master functions include file
 
  ********************************************************/
 #ifndef _TWIM_H
