@@ -29,7 +29,7 @@ void init_modi()
 		 Disable Analog Comparator (power save)
 	*/
 	ACSR = _BV(ACD);
-	wdt_enable(WDTO_2S); // 2000 ms
+	wdt_enable(WDTO_250MS); // 2000 ms
 }
 
 void init_timer()
