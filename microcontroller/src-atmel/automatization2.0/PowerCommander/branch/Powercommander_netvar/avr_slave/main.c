@@ -3,15 +3,9 @@
 
  diese Version nimmt nur i2c nachrichten an und gibt sie direkt
  aus. Es wird nur dieser input verarbeitet, keine taster oder aehnliches
- ferner gibt es ein paar neue schalter, die das licht im vortragsraum
- zeilenweise (flipper, schraenke, beamer,tafel) ein und ausschalten
- lassen
  */
 #include <avr/io.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
 #include <avr/wdt.h>
-#include <avr/sleep.h>
 
 #include "twi_slave/twi_slave.h"
 #include "fkt.h"
@@ -22,7 +16,7 @@ static void init_modi()
 		 Disable Analog Comparator (power save)
 	*/
 	ACSR = _BV(ACD);
-	wdt_enable(WDTO_250MS); // 2000 ms
+	wdt_enable(WDTO_250MS); // 250 ms
 }
 
 int main(void)

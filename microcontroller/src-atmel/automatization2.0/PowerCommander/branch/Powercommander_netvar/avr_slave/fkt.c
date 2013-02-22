@@ -7,7 +7,7 @@
 #include "fkt.h"
 
 
-//Tabellen mit den passenden Registern und Bitmaksen für die Schaltausgänge
+// Tabellen mit den passenden Registern und Bitmaksen für die Schaltausgänge
 static struct t_switch_parameter {
 	volatile uint8_t *port;
 	uint8_t pin;
@@ -63,7 +63,7 @@ static void output_init(uint8_t output)
 	(*sw_matrix[output].port) &= ~(sw_matrix[output].pin); //port off
 
 	//the DDR-Register is one memmory address before port on AVR
-	volatile uint8_t * ddr = sw_matrix[output].port - 1; 
+	volatile uint8_t *ddr = sw_matrix[output].port - 1;
 	*ddr |= sw_matrix[output].pin; //set the ddr
 }
 
@@ -83,25 +83,20 @@ static void init_pwm()
 	TCCR0B |= _BV(CS01) | _BV(CS00);								// clk/64
 
 	TCNT2 = 255;   // pwm timer clear
-	//OCR2A = 255;   // pwm timer compare target
-	//OCR2B = 255;   // pwm timer compare target
 
 	TCNT1 = 255;   // pwm timer clear
-	//OCR1A = 255;   // pwm timer compare target
-	//OCR1B = 255;   // pwm timer compare target
 
 	TCNT0 = 255;   // pwm timer clear
-	//OCR0A = 255;   // pwm timer compare target
-	//OCR0B = 255;   // pwm timer compare target
 
 	DDRB |= _BV(PB1) | _BV(PB2) | _BV(PB3); // Pins mit pwm als ausgänge
 	DDRD |= _BV(PD3) | _BV(PD5) | _BV(PD6); // Pins mit pwm als ausgänge
 }
 
+
 void init_outputs()
 {
 	init_pwm();
-	
+
 	for (uint8_t i = 0; i < NUM_OUTPUTS; i++)
 		output_init(i); //set all the DDRs and clear outputs
 }
