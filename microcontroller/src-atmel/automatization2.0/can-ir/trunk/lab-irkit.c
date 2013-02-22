@@ -46,7 +46,7 @@ volatile uint16_t ir_tickCnt;
 //timer runs with full ioclk (hopefully 16MHz)
 //timer overflow will be every 255 counts,
 //resulting in an interrupt frequency of 62.5KHz
-void ir_timer0Init(void)
+static void ir_timer0Init(void)
 {
 	//reset ir tick counter
 	ir_tickCnt = 0;
@@ -63,18 +63,18 @@ void ir_timer0Init(void)
 //timer1 will be in CTC mode and toggle outputs on compare match,
 //meaning we have to run @ double frequency
 //the timer base frequency will be the full ioclk (hopefully 16MHz)
-void ir_freqInit(void)
+static void ir_freqInit(void)
 {
 	//disable frequency output
 	FREQGEN_OFF();
-	
+
 	//timer1 TOP = 210, we're toggling OC1B at TOP
 	//so this is 38.095KHz
 	OCR1A = 210;
 
 	//toggle OC1A on match  - not needet here only doku
 	//TCCR1A = _BV(COM1A0);
-	
+
 	//reset counter
 	TCNT1 = 0;
 
@@ -87,19 +87,19 @@ void ir_freqInit(void)
 ISR(TIMER0_OVF_vect)
 {	
 	//see if current code index is below length
-	if(ir_curCodeIdx < ir_curCodeLen)
+	if (ir_curCodeIdx < ir_curCodeLen)
 	{
 		//update tick counter
 		ir_tickCnt++;
-		
+
 		//if tick count is reached
-		if(ir_tickCnt >= ir_curCode[ir_curCodeIdx])
+		if (ir_tickCnt >= ir_curCode[ir_curCodeIdx])
 		{
 			//advance to next pulse length
 			ir_curCodeIdx++;
-			
+
 			//see if we have to switch on or off frequency generation
-			if(ir_curCodeIdx & 0x01)
+			if (ir_curCodeIdx & 0x01)
 			{
 				FREQGEN_OFF();
 			}
@@ -107,20 +107,20 @@ ISR(TIMER0_OVF_vect)
 			{
 				FREQGEN_ON();
 			}
-			
+
 			//reset tick counter
 			ir_tickCnt = 0;
-		}				
+		}
 	}
 }
 
 //disable code output
-void ir_disable(void)
+static void ir_disable(void)
 {
 	//disable ir code generator
 	ir_curCodeLen = 0;
 	ir_curCodeIdx = 255;
-	ir_curCode = 0;	
+	ir_curCode = 0;
 }
 
 //this function converts a bit-encoded code into
@@ -138,34 +138,34 @@ void ir_disable(void)
 uint8_t ir_genCode(uint16_t *destCode, uint16_t oneOntime, uint16_t oneOfftime, uint16_t zeroOntime, uint16_t zeroOfftime, uint32_t bitCode, uint8_t codeLen)
 {
 	uint8_t i;
-	
+
 	//failsafe
-	if(codeLen > 32)
+	if (codeLen > 32)
 	{
 		return 0;
 	}
-	
+
 	i = codeLen;
-	
+
 	//convert bitcode
-	while(i--)
+	while (i--)
 	{
-		if(bitCode & 1)
+		if (bitCode & 1)
 		{
 			//encode a one
-			destCode[i*2] = oneOntime;
-			destCode[(i*2)+1] = oneOfftime;
+			destCode[i * 2] = oneOntime;
+			destCode[(i * 2) + 1] = oneOfftime;
 		}
 		else
 		{
 			//encode a zero
-			destCode[i*2] = zeroOntime;
-			destCode[(i*2)+1] = zeroOfftime;
+			destCode[i * 2] = zeroOntime;
+			destCode[(i * 2) + 1] = zeroOfftime;
 		}
-		
+
 		bitCode >>= 1;
 	}
-	
+
 	return (codeLen * 2) - 1;
 }
 
@@ -176,28 +176,28 @@ void ir_sendCode(uint16_t *code, uint8_t codeLen)
 	//this is done by setting the current index to 255
 	//the interrupt will then always skip code sending
 	ir_curCodeIdx = 255;
-	
+
 	//the last code to send may never be a zero
 	//-> it would not make any sense
 	//-> the frequency generation would give a carrier for one timer
 	//   overflow after the last bit has been sent
 	//this makes even numbers the next smaller uneven ones
 	ir_curCodeLen = (codeLen-1) | 0x01;
-	
+
 	//save code pointer
 	ir_curCode = code;
-	
+
 	//reset tick counter
 	ir_tickCnt = 0;
-	
+
 	//reset timer count to be in sync
 	TCNT0 = 0;
-	
+
 	//enable frequency generation
 	//the first pulse will be a few atmega cycles short,
 	//as we're starting after the counter has begun from BOTTOM
 	FREQGEN_ON();
-	
+
 	//enable code sending by setting the index to zero
 	ir_curCodeIdx = 0;
 }
@@ -210,10 +210,10 @@ void ir_init(void)
 
 	//disable ir code generator
 	ir_disable();
-	
+
 	//enable frequency generator
 	ir_freqInit();
-	
+
 	//enable our tick counter / ir code generator
 	ir_timer0Init();
 }
