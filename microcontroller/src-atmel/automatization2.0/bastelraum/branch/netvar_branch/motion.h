@@ -7,9 +7,8 @@
 /* how many ticks to ignore in an interval of 2 minutes */
 #define MOTION_NUM_IGNORE 4
 
-uint8_t motion_get (void);
-void motion_init (void);
-void motion_tick (void);
+extern void motion_init(void);
+extern void motion_tick(void);
 
 /* predefined ADC initialization values for motion detectors */
 #define NUM_DETECTORS 2

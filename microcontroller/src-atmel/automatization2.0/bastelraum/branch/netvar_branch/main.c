@@ -3,36 +3,27 @@
 #include <avr/interrupt.h>
 
 #include "config.h"
-
+#include "can/spi.h"
 #include "can/can.h"
 #include "netvar/can_handler.h"
-#include "can/spi.h"
+#include "netvar/netvar.h"
 #include "io.h"
 #include "motion.h"
-#include "netvar/netvar.h"
 
-volatile uint16_t tickscounter = 0;
+
+static volatile uint16_t tickscounter = 0;
 ISR(TIMER2_OVF_vect)
 {
 	tickscounter++;
 }
 
-void init(void)
+static void init(void)
 {
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
-//	MCUCR |= _BV(SE); // Enable "sleep" mode (low power when idle)
-
 	motion_init();
-	DDRA &= ~(_BV(PA4)); // Eingänge Türkontakt
 
-
-	DDRB |= _BV(PB0); // LED out
-
-	// this stuff is now handled by timer2 (see io.c)
-	// -> timer0 is used by the motion detectors (see motion.c)
-	// TCCR0B = _BV(CS01) | _BV(CS00); /* clk / 64 */
-	// TIMSK0 = _BV(TOIE0); 
+	DDRB |= _BV(PB0); // lapnode red LED out
 
 	init_io();
 
