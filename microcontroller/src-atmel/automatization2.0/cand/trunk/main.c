@@ -7,7 +7,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <linux/limits.h>
+//#include <linux/limits.h>
 #include <time.h>
 #include <locale.h>
 #include <langinfo.h>
@@ -572,7 +572,6 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 {
 	extern FILE *debugFP;
 	extern int debug_time;
-	ucontext_t *context = c;
 	int i;
 
 	debug_time = 1;
@@ -580,6 +579,7 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 		debugFP = stderr;
 	debug(0, "Got SIGSEGV at address: 0x%lx",(long) info->si_addr);
 
+#ifdef SIGINFO_HAS_SI_BAND
 	fprintf(debugFP,
 		"si_signo:  %d\n"
 		"si_code:   %s\n"
@@ -594,23 +594,43 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 		info->si_errno, info->si_pid, info->si_uid, info->si_addr,
 		info->si_status, info->si_band
 	);
-
+#else
 	fprintf(debugFP,
-		"uc_flags:  0x%lx\n"
-		"ss_sp:     %p\n"
-		"ss_size:   %d\n"
-		"ss_flags:  0x%X\n",
-		context->uc_flags,
-		context->uc_stack.ss_sp,
-		context->uc_stack.ss_size,
-		context->uc_stack.ss_flags
+		"si_signo:  %d\n"
+		"si_code:   %s\n"
+		"si_errno:  %d\n"
+		"si_pid:    %d\n"
+		"si_uid:    %d\n"
+		"si_addr:   %p\n"
+		"si_status: %d\n",
+		info->si_signo,
+		(info->si_code == SEGV_MAPERR) ? "SEGV_MAPERR" : "SEGV_ACCERR",
+		info->si_errno, info->si_pid, (int)info->si_uid, info->si_addr,
+		info->si_status
 	);
+#endif
 
-	fprintf(debugFP, "General Registers:\n");
-	for (i = 0; i < 19; i++)
-		fprintf(debugFP, "\t%7s: 0x%x\n", gregs[i], context->uc_mcontext.gregs[i]);
-	//fprintf(debugFP, "\tOLDMASK: 0x%lx\n", context->uc_mcontext.oldmask);
-	//fprintf(debugFP, "\t    CR2: 0x%lx\n", context->uc_mcontext.cr2);
+#ifdef SHOW_UCONTEXT_INFO
+	{
+		ucontext_t *context = c;
+	
+		fprintf(debugFP,
+			"uc_flags:  0x%lx\n"
+			"ss_sp:     %p\n"
+			"ss_size:   %d\n"
+			"ss_flags:  0x%X\n",
+			context->uc_flags,
+			context->uc_stack.ss_sp,
+			context->uc_stack.ss_size,
+			context->uc_stack.ss_flags
+		);
+		fprintf(debugFP, "General Registers:\n");
+		for (i = 0; i < 19; i++)
+			fprintf(debugFP, "\t%7s: 0x%x\n", gregs[i], context->uc_mcontext.gregs[i]);
+		//fprintf(debugFP, "\tOLDMASK: 0x%lx\n", context->uc_mcontext.oldmask);
+		//fprintf(debugFP, "\t    CR2: 0x%lx\n", context->uc_mcontext.cr2);
+	}
+#endif
 
 	exit(EXIT_FAILURE);
 }
