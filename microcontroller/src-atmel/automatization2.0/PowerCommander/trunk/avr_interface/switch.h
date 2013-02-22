@@ -1,5 +1,5 @@
-#ifndef POWERCOMMANDER_SWITCH_H
-#define POWERCOMMANDER_SWITCH_H
+#ifndef _POWERCOMMANDER_SWITCH_H
+#define _POWERCOMMANDER_SWITCH_H
 
 
 extern void switch_handler();
@@ -9,4 +9,5 @@ extern void tog_dimdir_vortrag();
 extern void dim_vortrag();
 extern void toggle_vortrag();
 
-#endif
+#endif // _POWERCOMMANDER_SWITCH_H
+

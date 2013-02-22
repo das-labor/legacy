@@ -1,0 +1,8 @@
+Externe Signale
+Taster küche		Taster treppe		Nacht modus
+0x23				0x25		0x04
+						
+Externe Ausgänge
+labnodes lounge
+0x60 0x61
+

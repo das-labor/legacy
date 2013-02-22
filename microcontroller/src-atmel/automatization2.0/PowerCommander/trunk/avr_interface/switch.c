@@ -35,7 +35,7 @@ static struct t_pin_parameter {
 };
 
 
-void send_stat(uint8_t pos) {
+static void send_stat(uint8_t pos) {
 	can_message *msg = can_buffer_get();
 	//msg = {0x03, 0x00, 0x01, 0x01, 2, {0}};
 	msg->data[0] = stat_inputs.status_input;
@@ -50,7 +50,7 @@ void start_main_switch_timeout(void) {
 	timeout_cnt = 250;
 }
 
-void handle_main_switch_timeout(void) {
+static void handle_main_switch_timeout(void) {
 	if (timeout_cnt > 0) {
 		timeout_cnt--;
 		if (!timeout_cnt) {
@@ -65,7 +65,7 @@ void handle_main_switch_timeout(void) {
 	}
 }
 
-void exec(uint8_t index) {
+static void exec(uint8_t index) {
 	if (index == 0) {
 		if (stat_inputs.inputs.hauptschalter == 1) {
 			timeout_cnt = 0;
@@ -92,7 +92,7 @@ void exec(uint8_t index) {
 * Red blinking  : Error, rcd main failed
 * Blue blinking : Error, rcd licht failed
 */
-void update_rgb_led() {
+static void update_rgb_led() {
 	if (!stat_inputs.inputs.power_ok) { /* Error case */
 		set_led( (rgb){ .r = 1, .g = 1, .b = 1, .fade = 0, .blink = 1} );
 		return;
@@ -123,7 +123,7 @@ void update_rgb_led() {
 *  on change: call send_stat() and call exec()
 */
 
-void get_inputs() {
+static void get_inputs() {
 	uint8_t i;
 	for (i = 0; i < NUM_INPUTS; i++) {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_inputs.status_input >> i) & 1) == 0)) {
@@ -178,7 +178,7 @@ void virt_pwm_set_all(taster_status *tst, uint8_t min, uint8_t max)
 	}
 }
 
-uint8_t pwm_get_min(taster_status *tst)
+static uint8_t pwm_get_min(taster_status *tst)
 {
 	uint8_t min = 255;
 	if (tst->room == 0)
@@ -200,10 +200,10 @@ uint8_t pwm_get_min(taster_status *tst)
 	return min;
 }
 
-uint8_t pwm_get_max(taster_status *tst)
+static uint8_t pwm_get_max(taster_status *tst)
 {
 	uint8_t max = 0;
-	if(tst->room == 0)
+	if (tst->room == 0)
 	{
 
 		for (uint8_t x = 0; x < 4; x++)
@@ -223,7 +223,7 @@ uint8_t pwm_get_max(taster_status *tst)
 	return max;
 }
 
-void lamp_dim(taster_status *tst) {
+static void lamp_dim(taster_status *tst) {
 	uint8_t val;
 	if (!tst->room) {
 		if (!((outputdata.ports >> SWL_VORTRAG) & 0x01))
@@ -266,10 +266,10 @@ void lamp_dim(taster_status *tst) {
 }
 
 
-
 void toggle_vortrag() {
 	set_lamp_all(ROOM_VORTRAG, (outputdata.ports >> SWL_VORTRAG) & 0x01 ? 0 : 1);
 }
+
 void toggle_lounge() {
 	set_lamp_all(ROOM_LOUNGE, (outputdata.ports >> SWL_LOUNGE) & 0x01 ? 0 : 1);
 }
@@ -286,6 +286,7 @@ static taster_status status[NUM_TASTER] = {{0, 0, 0, 0, 0, &toggle_vortrag, &dim
 void dim_vortrag() {
 	lamp_dim(&status[0]);
 }
+
 void dim_lounge() {
 	lamp_dim(&status[1]);
 }
@@ -294,7 +295,7 @@ void tog_dimdir_vortrag() {
 	status[0].dim_dir ^= 1;
 }
 
-void taster() {
+static void taster() {
 	uint8_t i;
 	for (i = 0; i < NUM_TASTER; i++)
 	{

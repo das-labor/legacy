@@ -3,8 +3,8 @@
 
 extern t_outputdata outputdata;
 
-extern void sync_stat_cache();
-extern void twi_send();
+extern void sync_stat_cache(void);
+extern void twi_send(void);
 
 #endif // _I2C_FUNKTIONEN
 
