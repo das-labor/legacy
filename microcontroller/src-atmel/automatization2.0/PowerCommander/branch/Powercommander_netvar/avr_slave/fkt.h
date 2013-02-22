@@ -8,4 +8,4 @@ extern t_outputdata outputdata;
 extern void set_outputs();
 
 // set all the outputs to output and init the PWM timers
-void init_outputs();
+extern void init_outputs();
