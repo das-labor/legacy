@@ -1,10 +1,10 @@
 /*******************************************************
- Author:					Manfred Langemann
- mailto:					Manfred.Langemann ät t-online.de
- Begin of project:			04.01.2008
+ Author:			Manfred Langemann
+ mailto:			Manfred.Langemann ät t-online.de
+ Begin of project:		04.01.2008
  Latest version generated:	04.01.2008
- Filename:					TWI_Master.c
- Description:    			TWI Master functions
+ Filename:			TWI_Master.c
+ Description:			TWI Master functions
 
  Master code adapted form Peter Fleury <pfleury@gmx.ch>
  http://jump.to/fleury
@@ -13,65 +13,65 @@
  --------------------------------------------------------
 
 int main (void)
-	{
-	uint8_t		i=0;
-	uint8_t		j=0;
+{
+	uint8_t		i = 0;
+	uint8_t		j = 0;
 	uint8_t		Data[8];
 	uint8_t		SlaveAddress = 15;
 
 // Clear any interrupt
-	cli ();
+	cli();
 
 // Wait 1 second for POR
-	Delay_ms (1000);
+	Delay_ms(1000);
 
 // Initiate RS232
-	RS232_Init ();
-	printf ("Hello world...\n");
+	RS232_Init();
+	printf("Hello world...\n");
 
 // Initiate TWI Master with bitrate of 100000 Hz
-	TWIM_Init ();
+	TWIM_Init();
 
 // Endless loop
 	while (1)
-		{
+	{
 // Read byte(s) from the slave.
 // It is implicitely assumed, that the slave will send
 // 8 bytes.
-    	if (!TWIM_Start (SlaveAddress, TW_READ))
-			{
-			TWIM_Stop ();
-			printf ("Could not start TWI Bus for READ\n");
-	    	}
+		if (!TWIM_Start(SlaveAddress, TW_READ))
+		{
+			TWIM_Stop();
+			printf("Could not start TWI Bus for READ\n");
+		}
 		else
+		{
+			for (i = 0; i < 7; i++)
 			{
-			for (i=0;i<7;i++)
-				{
-	        	Data[i] = TWIM_ReadAck ();
-				}
-        	Data[7] = TWIM_ReadNack ();
+				Data[i] = TWIM_ReadAck();
+			}
+			Data[7] = TWIM_ReadNack ();
 			printf ("Reading Byte %d: %d\n", i, Data[i]);
 			TWIM_Stop ();
-			}
+		}
 
 // Write byte(s) to the slave.
 // It is implicitely assumed, that the slave will
 // accepts 8 bytes
 
-    	if (!TWIM_Start (SlaveAddress, TW_WRITE))
-			{
-			TWIM_Stop ();
-			printf ("Could not start TWI Bus for WRITE\n");
-	    	}
-		else
-			{
-			for (i=0;i<8;i++)
-				{
-	        	TWIM_Write (j++);
-				printf ("Byte %d sent\n", j);
-				}
-			TWIM_Stop ();
-			}
+	if (!TWIM_Start (SlaveAddress, TW_WRITE))
+	{
+		TWIM_Stop ();
+		printf ("Could not start TWI Bus for WRITE\n");
+	}
+	else
+	{
+		for (i=0;i<8;i++)
+		{
+			TWIM_Write (j++);
+			printf ("Byte %d sent\n", j);
+		}
+		TWIM_Stop ();
+	}
 
 // Do something else
 		i++;
@@ -94,11 +94,11 @@ int main (void)
  Purpose: Initialise the TWI Master Interface
 
  Input Parameter:
- 	- uint16_t	TWI_Bitrate (Hz)
+	- uint16_t	TWI_Bitrate (Hz)
 
  Return Value: uint8_t
- 	- FALSE:	Bitrate too high
- 	- TRUE:		Bitrate OK
+	- FALSE:	Bitrate too high
+	- TRUE:		Bitrate OK
 
 *******************************************************/
 uint8_t TWIM_Init()
@@ -120,14 +120,14 @@ uint8_t TWIM_Init()
  Purpose: Start the TWI Master Interface
 
  Input Parameter:
- 	- uint8_t	Device address + 
- 			Type of required Operation:
+	- uint8_t	Device address + 
+			Type of required Operation:
 				TWIM_READ: Read data from the slave
 				TWIM_WRITE: Write data to the slave
 
  Return Value: uint8_t
-  	- TRUE:		OK, TWI Master accessible
- 	- FALSE:	Error in starting TWI Master
+	- TRUE:		OK, TWI Master accessible
+	- FALSE:	Error in starting TWI Master
 
 *******************************************************/
 uint8_t TWIM_Start(uint8_t address)
@@ -192,16 +192,16 @@ void TWIM_Stop()
  Purpose: Write a byte to the slave
 
  Input Parameter:
- 	- uint8_t	Byte to be sent
+	- uint8_t	Byte to be sent
 
  Return Value: uint8_t
-  	- TRUE:		Error in byte transmission
- 	- FALSE:	OK, Byte sent
+	- TRUE:		Error in byte transmission
+	- FALSE:	OK, Byte sent
 
 *******************************************************/
 uint8_t TWIM_Write(uint8_t byte)
 {
-	uint8_t   twst;
+	uint8_t twst;
 /*
 ** Send data to the previously addressed device
 */
@@ -228,7 +228,7 @@ uint8_t TWIM_Write(uint8_t byte)
  Input Parameter: None
 
  Return Value: uint8_t
-  	- uint8_t	Read byte
+	- uint8_t	Read byte
 
 *******************************************************/
 uint8_t TWIM_ReadAck()
@@ -246,7 +246,7 @@ uint8_t TWIM_ReadAck()
  Input Parameter: None
 
  Return Value: uint8_t
-  	- uint8_t	Read byte
+	- uint8_t	Read byte
 
 *******************************************************/
 uint8_t TWIM_ReadNack()
