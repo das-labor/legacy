@@ -19,7 +19,7 @@ void sync_output_cache()
 		current_outputdata.pwmval[i] = TWIM_ReadNack();
 	}
 	TWIM_Stop();
-	
+
 	memcpy(&next_outputdata, &current_outputdata, sizeof (t_outputdata));
 }
 
@@ -37,23 +37,27 @@ static void twi_send()
 	TWIM_Stop();
 }
 
-void update_slave_outputs () {
-	if ( memcmp(&next_outputdata, &current_outputdata, sizeof (t_outputdata)) ){
+void update_slave_outputs()
+{
+	if ( memcmp(&next_outputdata, &current_outputdata, sizeof (t_outputdata)) )
+	{
 		// at least one output is different
 		twi_send();
-	
+
 		memcpy( &current_outputdata, &next_outputdata, sizeof (t_outputdata));
 	}
 }
 
 //set an output. val = true or false
-void set_output (uint8_t num, uint8_t val) {
+void set_output(uint8_t num, uint8_t val)
+{
 	if (val)
 		next_outputdata.ports |=  (1 << num);
 	else
 		next_outputdata.ports &= ~(1 << num);
 }
 
-void set_pwm (uint8_t num, uint8_t val) {
+void set_pwm(uint8_t num, uint8_t val)
+{
 	next_outputdata.pwmval[num] = val;
 }
