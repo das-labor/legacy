@@ -16,7 +16,6 @@
 #include "rtc_driver.h"
 
 void sync_osc() {
-	
 	/*32 MHz Oszillator starten */
 	OSC.CTRL |= OSC_RC32MEN_bm;
 	
@@ -45,20 +44,19 @@ void start_mcp_clock(){
 #elif F_MCP == 8000000
 	TCD0.CTRLA = 2; //clk/2
 #endif
-	
 }
 
 void Eventsystem_init( void )
 {
 	/* Select multiplexer input. */
 	EVSYS_SetEventSource( 7, EVSYS_CHMUX_TCC1_OVF_gc );	//event Timer1CC1_OVF
-	EVSYS_SetEventSource( 2,  EVSYS_CHMUX_OFF_gc);
- 	EVSYS_SetEventSource( 3,  EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 2, EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 3, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 4, EVSYS_CHMUX_OFF_gc);
- 	EVSYS_SetEventSource( 5, EVSYS_CHMUX_OFF_gc);
- 	EVSYS_SetEventSource( 1,  EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 5, EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 1, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 6, EVSYS_CHMUX_OFF_gc);
-        EVSYS_SetEventSource( 0,  EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 0, EVSYS_CHMUX_OFF_gc);
 //	not neccessary ???
 //	EVSYS_SetEventSource( 0, EVSYS_CHMUX_ADCA_CH2_gc );	//event ADCA_CH2
 //	EVSYS_SetEventSource( 1, EVSYS_CHMUX_ADCB_CH2_gc );	//event ADCB_CH2
@@ -77,7 +75,6 @@ void Interrupt_Init(void)
 
 int main(void)
 {
-
 	LED_initPORTC();  // LED Ports als Ausgang
 	LED_isrunning();	//set green LED
 
@@ -87,16 +84,16 @@ int main(void)
 	can_init();
 	read_can_addr();
 	#if DEBUGMODE
-    	InitializeUSARTC1();	//init USARTC1 (for debuging)	19200 8N1
+	InitializeUSARTC1();	//init USARTC1 (for debuging)	19200 8N1
 	sendUSARTC1_putstr("DEBUG Interface\n\r");
 	#endif
 
 	Eventsystem_init();
 	Interrupt_Init();
 
- 	setERROR(0);
+	setERROR(0);
 	can_send_packet=0;
-	
+
 	powermeter_SetSampleratePerPeriod(200);
 	powermeter_Start();
 
@@ -108,29 +105,29 @@ int main(void)
 		can_handler();
 		powermeter_docalculations();
 #if !laborhack
-		 if(can_send_packet){
-                        can_createDATAPACKET();
-                        can_send_packet=0;
+		if (can_send_packet) {
+			can_createDATAPACKET();
+			can_send_packet = 0;
 		}
 #endif
 		
-		if((RTC.CNT & 0x00ff) >= x)
-			x=RTC.CNT;
+		if ((RTC.CNT & 0x00ff) >= x)
+			x = RTC.CNT;
 		else
 		{		//this is executed 4 times per second
 #if laborhack
-			if(can_send_packet)
-			x=0;
+			if (can_send_packet)
+			x = 0;
 	
-			if(can_send_packet == 2){
-                        	can_createDATAPACKET();
-                        	can_send_packet=0;
-                	}
-			 
-			if(can_send_packet == 1){
-                        can_createDATAPACKET();
-                        can_send_packet=2;
-                }
+			if (can_send_packet == 2 ) {
+				can_createDATAPACKET();
+				can_send_packet=0;
+			}
+
+			if (can_send_packet == 1) {
+				can_createDATAPACKET();
+				can_send_packet = 2;
+			}
 #endif
 			ERROR_blink();
 		}
