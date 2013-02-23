@@ -34,8 +34,6 @@
 
 #define PORT_LED   PORTA
 
-#define NUM_INPUTS 7
-
 #define BV_HAUPTSCHALTER  (_BV(PA0)) //1 = an, 0 = aus
 #define BV_TASTER_LOUNGE  (_BV(PB2)) //0 = gedrückt
 #define BV_TASTER_VORTRAG (_BV(PD3)) //0 = gedrückt
