@@ -22,6 +22,8 @@
 #include "uart-host.h"
 #include "can-uart.h"
 #include "debug.h"
+#include "lib-host/tcp_server.h"
+#include "netvar_server.h"
 
 // Atmel ; LAP includes
 #include "config.h"
@@ -488,9 +490,11 @@ void event_loop()
 			FD_SET(uart_fd, &rset);
 		};
 
-		//add network connections to rset
+		//add cann connections to rset
 		highfd = max(highfd, cann_fdset(&rset));
 
+		//add netvar connections to rset
+		highfd = max(highfd, tcp_server_fdset(netvar_server, &rset));
 
 		debug( 9, "VOR SELECT" );
 		cann_dumpconn();
@@ -550,6 +554,8 @@ void event_loop()
 
 		debug( 9, "AFTER CANN CLOSE" );
 		cann_dumpconn();
+		
+		tcp_server_handle_activity(netvar_server, &rset);
 	}
 }
 
@@ -572,7 +578,6 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 {
 	extern FILE *debugFP;
 	extern int debug_time;
-	int i;
 
 	debug_time = 1;
 	if (debugFP == NULL)
@@ -613,7 +618,8 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 #ifdef SHOW_UCONTEXT_INFO
 	{
 		ucontext_t *context = c;
-	
+		int i;
+
 		fprintf(debugFP,
 			"uc_flags:  0x%lx\n"
 			"ss_sp:     %p\n"
@@ -724,8 +730,8 @@ int main(int argc, char *argv[])
 	debug(0, "Starting Cand");
 
 	if (!serial && !usb_parm) {
-		debug(0, "No interface for CAN-Gateway");
-		exit(EXIT_FAILURE);
+		debug(0, "Warning: No interface for CAN-Gateway");
+		//exit(EXIT_FAILURE);
 	}
 
 	// setup serial communication
@@ -777,6 +783,8 @@ int main(int argc, char *argv[])
 	// setup network socket
 	cann_listen(tcpport);
 	debug(1, "Listenig for network connections on port %s", tcpport);
+
+	init_netvar_server();
 
 	running = 1;
 	atexit(shutdown_all);
