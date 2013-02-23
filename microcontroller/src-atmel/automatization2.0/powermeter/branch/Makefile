@@ -6,17 +6,17 @@ MCU_TARGET    ?= atxmega192a3
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -O2
-WARNINGS      ?= -Wall -Winline -pedantic
+WARNINGS      ?= -Wall -Winline -pedantic -Wextra
 DEFS          ?= -DF_CPU=32000000UL
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=c99 -ffunction-sections -fdata-sections
 ASFLAGS	      += -mmcu=avr5
-LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
+LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c avrisp2 -P usb -p $(MCU_TARGET) -e -U $(OUT).hex
-CANFLASHCMD    = lapcontrol -s kvm flash 5 $(OUT).hex
+FLASHCMD      ?= avrdude -c avrisp2 -P usb -p $(MCU_TARGET) -U $(OUT).hex
+CANFLASHCMD    = lapcontrol -s kvm flash 0x05 $(OUT).hex
 
 #############################################################################
 # Rules

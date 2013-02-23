@@ -25,7 +25,7 @@ void sync_osc()
 	 * gesetzt und 32Mhz können benutzt werden*/
 	while (!(OSC.STATUS & OSC_RC32MRDY_bm));
 
-	/* auto kalibierung ein */
+	/* auto kalibrierung ein */
 	DFLLRC32M.CTRL = DFLL_ENABLE_bm;
 
 	/*I/O Protection*/
@@ -36,7 +36,7 @@ void sync_osc()
 
 void start_mcp_clock()
 {
-	//init the timmer for mcp2515 clock
+	//init the timer for mcp2515 clock
 	PORTD.DIRSET = (1<<2);
 	TCD0.CTRLB = TC0_CCCEN_bm | 3; //single slope pwm, OC0C as output
 	TCD0.PER = 1;
@@ -47,29 +47,28 @@ void start_mcp_clock()
 #elif F_MCP == 8000000
 	TCD0.CTRLA = 2; //clk/2
 #endif
-	
 }
 
 void Eventsystem_init(void)
 {
 	/* Select multiplexer input. */
-	EVSYS_SetEventSource( 0,  EVSYS_CHMUX_OFF_gc);
-	EVSYS_SetEventSource( 1,  EVSYS_CHMUX_OFF_gc);
-	EVSYS_SetEventSource( 2,  EVSYS_CHMUX_OFF_gc);
-	EVSYS_SetEventSource( 3,  EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 0, EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 1, EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 2, EVSYS_CHMUX_OFF_gc);
+	EVSYS_SetEventSource( 3, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 4, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 5, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 6, EVSYS_CHMUX_OFF_gc);
-	EVSYS_SetEventSource( 7, EVSYS_CHMUX_TCC1_OVF_gc );	//event Timer1CC1_OVF
+	EVSYS_SetEventSource( 7, EVSYS_CHMUX_TCC1_OVF_gc);	//event Timer1CC1_OVF
 }
 
 void Interrupt_Init(void)
 {
 	//enable ROUND ROBIN,enable MED_LVL & LOW_LVL interrupts !!!!
-	uint8_t tmp= PMIC_RREN_bm|PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
+	uint8_t tmp = PMIC_RREN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
 	/*I/O Protection*/
 	CCP = CCP_IOREG_gc;
-	PMIC.CTRL = tmp; 
+	PMIC.CTRL = tmp;
 
 	sei();	//global allow interrupts
 }
@@ -89,27 +88,26 @@ int main(void)
 	Interrupt_Init();
 
 	setERROR(0);
-	can_send_packet=0;
+	can_send_packet = 0;
 
 	//init watchdog
 	WDT_EnableAndSetTimeout(WDT_PER_64CLK_gc);
 
-	
 	powermeter_SetSampleratePerPeriod(ADCSAMPLESPERPERIOD);	//configure ADCSAMPLESPERPERIOD in config.h
 	powermeter_Start();
 
-	uint16_t x;
+	uint16_t x = 0;
 	while (1) {
 		can_handler();
 		powermeter_docalculations();
-		if(can_send_packet)
+		if (can_send_packet)
 		{
 			can_createDATAPACKET();
 			can_send_packet = 0;
 		}
 		WDT_Reset();
 		if ((RTC.CNT & 0x00ff) >= x)
-			x=RTC.CNT;
+			x = RTC.CNT;
 		else
 		{		//this is executed 4 times per second
 			ERROR_blink();

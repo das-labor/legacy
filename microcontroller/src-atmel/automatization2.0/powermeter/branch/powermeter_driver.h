@@ -13,7 +13,7 @@ typedef struct
 	int32_t  Ieff;
 	int32_t  P;
 	int32_t  S;
-    uint32_t E;
+	uint32_t E;
 } powermeter_data_t;
 
 typedef struct
@@ -64,7 +64,7 @@ void powermeter_Stop(void);
 
 void powermeter_docalculations();
 
-void powermeter_clearchannel(powermeter_channel_t* channel);
+void powermeter_clearchannel(powermeter_channel_t *channel);
 
 #if 0
 void memsetv(void *p,uint8_t value, uint16_t size);
@@ -82,28 +82,20 @@ uint8_t RTC_getMinutes(void);
 
 uint8_t RTC_getHours(void);
 
-uint8_t RTC_getDays(void);
-
-uint8_t RTC_getYears(void);
-
 void RTC_seconds_int(void);
 
 void RTC_minutes_int(void);
 
 void RTC_hours_int(void);
 
-void RTC_days_int(void);
 
-void RTC_year_int(void);
+void DMA0_init(void *destAddr, uint8_t blockSize,uint8_t count);
 
+void DMA1_init(void *destAddr, uint8_t blockSize,uint8_t count);
 
-void DMA0_init(void * destAddr, uint8_t blockSize,uint8_t count );
+void DMA_memset(void *ptr, uint8_t val, uint16_t size);
 
-void DMA1_init(void * destAddr, uint8_t blockSize,uint8_t count );
-
-void DMA_memset(void * ptr, uint8_t val, uint16_t size);
-
-void DMA_memcpy(void * ptr_dest, void * ptr_src, uint16_t size);
+void DMA_memcpy(void *ptr_dest, void *ptr_src, uint16_t size);
 
 
 

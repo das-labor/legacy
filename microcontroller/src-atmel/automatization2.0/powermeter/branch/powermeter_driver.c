@@ -39,26 +39,26 @@ ISR(DMA_CH0_vect)
 {
 	#if DMARESET
 		DMA_ResetChannel(&DMA.CH0);
-		DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
+		DMA_SetIntLevel(&DMA.CH0, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
 	#else
 		DMA_DisableChannel(&DMA.CH0);
 	#endif
 
 #if DMARESET
 	//set new page
-	if(powermeter.samplebuffer_page){
-		DMA0_init(&powermeter.samplebuffer[0].u[0],sizeof(uint16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
-	}else{
-		DMA0_init(&powermeter.samplebuffer[1].u[0],sizeof(uint16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
+	if (powermeter.samplebuffer_page) {
+		DMA0_init(&powermeter.samplebuffer[0].u[0], sizeof(uint16_t) * 3, powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
+	} else {
+		DMA0_init(&powermeter.samplebuffer[1].u[0], sizeof(uint16_t) * 3, powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
 	}
 #else
-	if(powermeter.samplebuffer_page){
-		DMA.CH0.DESTADDR0 = ((uint16_t)&powermeter.samplebuffer[0].u[0]) & 0xFF;
-		DMA.CH0.DESTADDR1 = (((uint16_t)&powermeter.samplebuffer[0].u[0])>>8) & 0xFF;
+	if (powermeter.samplebuffer_page) {
+		DMA.CH0.DESTADDR0 = ((uint16_t) &powermeter.samplebuffer[0].u[0]) & 0xFF;
+		DMA.CH0.DESTADDR1 = (((uint16_t) &powermeter.samplebuffer[0].u[0]) >> 8) & 0xFF;
 		DMA.CH0.DESTADDR2 = 0;
-	}else{
-		DMA.CH0.DESTADDR0 = ((uint16_t)&powermeter.samplebuffer[1].u[0]) & 0xFF;
-		DMA.CH0.DESTADDR1 = (((uint16_t)&powermeter.samplebuffer[1].u[0])>>8) & 0xFF;
+	} else {
+		DMA.CH0.DESTADDR0 = ((uint16_t) &powermeter.samplebuffer[1].u[0]) & 0xFF;
+		DMA.CH0.DESTADDR1 = (((uint16_t) &powermeter.samplebuffer[1].u[0]) >> 8) & 0xFF;
 		DMA.CH0.DESTADDR2 = 0;
 	}
 	DMA.CH0.REPCNT = powermeter.ADCSamplesPerPeriod;
@@ -74,26 +74,26 @@ ISR(DMA_CH1_vect)
 {
 	#if DMARESET
 		DMA_ResetChannel(&DMA.CH1);
-		DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
+		DMA_SetIntLevel(&DMA.CH1, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);       //enable transfer interrupt, disable err interrupt
 	#else
 		DMA_DisableChannel(&DMA.CH1);
 	#endif
 
 #if DMARESET
 	//set new page
-	if(powermeter.samplebuffer_page){
-		DMA1_init((void*)&powermeter.samplebuffer[0].i1[0],sizeof(uint16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
-	}else{
-		DMA1_init((void*)&powermeter.samplebuffer[1].i1[0],sizeof(uint16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
+	if (powermeter.samplebuffer_page) {
+		DMA1_init((void *) &powermeter.samplebuffer[0].i1[0], sizeof(uint16_t) * 3, powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
+	} else {
+		DMA1_init((void *) &powermeter.samplebuffer[1].i1[0], sizeof(uint16_t) * 3, powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
 	}
 #else
-	if(powermeter.samplebuffer_page){
-		DMA.CH1.DESTADDR0 = ((uint16_t)&powermeter.samplebuffer[0].i1[0]) & 0xFF;
-		DMA.CH1.DESTADDR1 = (((uint16_t)&powermeter.samplebuffer[0].i1[0])>>8) & 0xFF;
+	if (powermeter.samplebuffer_page) {
+		DMA.CH1.DESTADDR0 = ((uint16_t) &powermeter.samplebuffer[0].i1[0]) & 0xFF;
+		DMA.CH1.DESTADDR1 = (((uint16_t) &powermeter.samplebuffer[0].i1[0]) >> 8) & 0xFF;
 		DMA.CH1.DESTADDR2 = 0;
-	}else{
-		DMA.CH1.DESTADDR0 = ((uint16_t)&powermeter.samplebuffer[1].i1[0]) & 0xFF;
-		DMA.CH1.DESTADDR1 = (((uint16_t)&powermeter.samplebuffer[1].i1[0])>>8) & 0xFF;
+	} else {
+		DMA.CH1.DESTADDR0 = ((uint16_t) &powermeter.samplebuffer[1].i1[0]) & 0xFF;
+		DMA.CH1.DESTADDR1 = (((uint16_t) &powermeter.samplebuffer[1].i1[0]) >> 8) & 0xFF;
 		DMA.CH1.DESTADDR2 = 0;
 	}
 	DMA.CH1.REPCNT = powermeter.ADCSamplesPerPeriod;
@@ -106,9 +106,9 @@ ISR(DMA_CH1_vect)
 
 int powermeter_SetSampleratePerPeriod(uint16_t samples)
 {
-	if(samples > POWERMETER_SAMPLEBUFF)
+	if (samples > POWERMETER_SAMPLEBUFF)
 		return -1;
-	if(!samples)
+	if (!samples)
 		return -1;
 
 	//configure Timer1 to generate 50//60 * samples events 
@@ -124,9 +124,9 @@ int powermeter_Start()
 	powermeter_clearchannel(&powermeter.powerdrawPerSecond);
 	powermeter.samplesPerSecondDone = 0;
 
-	if(powermeter.ADCSampleBufferSize > (POWERMETER_SAMPLEBUFF * 3))
+	if (powermeter.ADCSampleBufferSize > (POWERMETER_SAMPLEBUFF * 3))
 		return -1;
-	if(!powermeter.ADCSampleBufferSize)
+	if (!powermeter.ADCSampleBufferSize)
 		return -1;
 
 	powermeter.samplebuffer_page = 0;
@@ -142,13 +142,13 @@ int powermeter_Start()
 	DMA_SetPriority(DMA_PRIMODE_RR0123_gc); //dma mode round robin
 	DMA_DisableChannel(&DMA.CH0);
 	DMA_ResetChannel(&DMA.CH0);
-	DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
-	DMA0_init(&powermeter.samplebuffer[powermeter.samplebuffer_page].u[0],sizeof(int16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
+	DMA_SetIntLevel(&DMA.CH0, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
+	DMA0_init(&powermeter.samplebuffer[powermeter.samplebuffer_page].u[0], sizeof(int16_t) * 3, powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
 
 	DMA_DisableChannel(&DMA.CH1);
 	DMA_ResetChannel(&DMA.CH1);
-	DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
-	DMA1_init(&powermeter.samplebuffer[powermeter.samplebuffer_page].i1[0],sizeof(int16_t)*3,powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
+	DMA_SetIntLevel(&DMA.CH1, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
+	DMA1_init(&powermeter.samplebuffer[powermeter.samplebuffer_page].i1[0], sizeof(int16_t) * 3, powermeter.ADCSamplesPerPeriod);	//set DMA transfer destination
 
 
 	RTC_Init();	//enable 1sec interrupt
@@ -160,13 +160,13 @@ int powermeter_Start()
 
 void powermeter_Stop()
 {
-	TC1_Reset(&TCC1);	//stop trigger for ADC
+	TC1_Reset(&TCC1);		//stop trigger for ADC
 	DMA_DisableChannel(&DMA.CH0);	//stop DMA transfers
-	DMA_ResetChannel(&DMA.CH0);		//stop DMA transfers
+	DMA_ResetChannel(&DMA.CH0);	//stop DMA transfers
 	DMA_DisableChannel(&DMA.CH1);	//stop DMA transfers
-	DMA_ResetChannel(&DMA.CH1);		//stop DMA transf
-	ADC_Disable(&ADCA);			//disable ADC
-	ADC_Disable(&ADCB);			//disable ADC
+	DMA_ResetChannel(&DMA.CH1);	//stop DMA transf
+	ADC_Disable(&ADCA);		//disable ADC
+	ADC_Disable(&ADCB);		//disable ADC
 	LED_isrunning();		//set green LED
 	powermeter.isrunning = 0;
 }
@@ -174,21 +174,21 @@ void powermeter_Stop()
 void powermeter_docalculations()
 {
 	//check if calculations has to be done
-	if(powermeter.startCalculations > 1)
+	if (powermeter.startCalculations > 1)
 	{
 		LED__cyan();	//set LED color cyan
 
 		register int32_t u;
 		register int32_t i;
-		register int16_t * up;		//points to start of array containing the sampled voltages: u1, u2, u3, u1, u2, u3, ....
-		register int16_t * ip;		//points to start of array containing the sampled currents: i1, i2, i3, i1, i2 ,i3, ....
+		register int16_t *up;		//points to start of array containing the sampled voltages: u1, u2, u3, u1, u2, u3, ....
+		register int16_t *ip;		//points to start of array containing the sampled currents: i1, i2, i3, i1, i2 ,i3, ....
 		up = &powermeter.samplebuffer[powermeter.samplebuffer_page].u[0];
 		ip = &powermeter.samplebuffer[powermeter.samplebuffer_page].i1[0];
 		for(uint8_t x = 0;x < powermeter.ADCSamplesPerPeriod;x++)
 		{
 			//load u & i
-			u = (int32_t)(*up)-powermeter.ADCoffset.offsetA;
-			i = (int32_t)(*ip)-powermeter.ADCoffset.offsetB;
+			u = (int32_t) (*up) -powermeter.ADCoffset.offsetA;
+			i = (int32_t) (*ip) -powermeter.ADCoffset.offsetB;
 			up++;//increment pointer
 			ip++;//increment pointer
 
@@ -197,8 +197,8 @@ void powermeter_docalculations()
 			powermeter.powerdraw.c1.P += -u * i;	//calculate P
 
 			//load u & i
-			u = (int32_t)(*up)-powermeter.ADCoffset.offsetA;
-			i = (int32_t)(*ip)-powermeter.ADCoffset.offsetB;
+			u = (int32_t) (*up) -powermeter.ADCoffset.offsetA;
+			i = (int32_t) (*ip) -powermeter.ADCoffset.offsetB;
 
 			up++;//increment pointer
 			ip++;//increment pointer
@@ -207,8 +207,8 @@ void powermeter_docalculations()
 			powermeter.powerdraw.c2.Ieff += i * i;
 			powermeter.powerdraw.c2.P += -u * i;
 			//load u & i
-			u = (int32_t)(*up)-powermeter.ADCoffset.offsetA;
-			i = (int32_t)(*ip)-powermeter.ADCoffset.offsetB;
+			u = (int32_t) (*up) -powermeter.ADCoffset.offsetA;
+			i = (int32_t) (*ip) -powermeter.ADCoffset.offsetB;
 
 			up++;//increment pointer
 			ip++;//increment pointer
@@ -217,49 +217,49 @@ void powermeter_docalculations()
 			powermeter.powerdraw.c3.Ieff += i * i;
 			powermeter.powerdraw.c3.P += -u * i;
 		}
-		
-		DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_OFF_gc,DMA_CH_ERRINTLVL_OFF_gc);
-		DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_OFF_gc,DMA_CH_ERRINTLVL_OFF_gc);
+
+		DMA_SetIntLevel(&DMA.CH0, DMA_CH_TRNINTLVL_OFF_gc, DMA_CH_ERRINTLVL_OFF_gc);
+		DMA_SetIntLevel(&DMA.CH1, DMA_CH_TRNINTLVL_OFF_gc, DMA_CH_ERRINTLVL_OFF_gc);
 
 		//flip page
-		if(powermeter.samplebuffer_page)
-			powermeter.samplebuffer_page=0;
+		if (powermeter.samplebuffer_page)
+			powermeter.samplebuffer_page = 0;
 		else
-			powermeter.samplebuffer_page=1;
+			powermeter.samplebuffer_page = 1;
 
-		if(powermeter.startCalculations > 2)
+		if (powermeter.startCalculations > 2)
 			setERROR(ERROR_SR_TOHIGH);
 		powermeter.startCalculations = 0;
 
-		DMA_SetIntLevel(&DMA.CH0,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);
-		DMA_SetIntLevel(&DMA.CH1,DMA_CH_TRNINTLVL_MED_gc,DMA_CH_ERRINTLVL_OFF_gc);
+		DMA_SetIntLevel(&DMA.CH0, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);
+		DMA_SetIntLevel(&DMA.CH1, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);
 
 		//disable RTC Interrupt, it modifies powermeter.powerdrawPerSecond
-		RTC_SetIntLevels( RTC_OVFINTLVL_OFF_gc, RTC_COMPINTLVL_OFF_gc );
+		RTC_SetIntLevels(RTC_OVFINTLVL_OFF_gc, RTC_COMPINTLVL_OFF_gc);
 
 #if USE_STATIC_ADCSamplesPerPeriod
         // ADCSAMPLESSHIFT is defined in config.h
 		//calculate S
-		powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff>>ADCSAMPLESSHIFT) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >>ADCSAMPLESSHIFT));
-		powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff>>ADCSAMPLESSHIFT) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >>ADCSAMPLESSHIFT));
-		powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff>>ADCSAMPLESSHIFT) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >>ADCSAMPLESSHIFT));
+		powermeter.powerdrawPerSecond.c1.S += ((uint32_t)sqrt(powermeter.powerdraw.c1.Ueff >> ADCSAMPLESSHIFT) * (uint32_t)sqrt(powermeter.powerdraw.c1.Ieff >> ADCSAMPLESSHIFT));
+		powermeter.powerdrawPerSecond.c2.S += ((uint32_t)sqrt(powermeter.powerdraw.c2.Ueff >> ADCSAMPLESSHIFT) * (uint32_t)sqrt(powermeter.powerdraw.c2.Ieff >> ADCSAMPLESSHIFT));
+		powermeter.powerdrawPerSecond.c3.S += ((uint32_t)sqrt(powermeter.powerdraw.c3.Ueff >> ADCSAMPLESSHIFT) * (uint32_t)sqrt(powermeter.powerdraw.c3.Ieff >> ADCSAMPLESSHIFT));
 		//calculate P
-		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >>ADCSAMPLESSHIFT);
-		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >>ADCSAMPLESSHIFT);
-		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >>ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P >> ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P >> ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c3.P += (powermeter.powerdraw.c3.P >> ADCSAMPLESSHIFT);
 		//calculate Ueff
-		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >>ADCSAMPLESSHIFT));
-		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >>ADCSAMPLESSHIFT));
-		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >>ADCSAMPLESSHIFT));
+		powermeter.powerdrawPerSecond.c1.Ueff += (sqrt(powermeter.powerdraw.c1.Ueff >> ADCSAMPLESSHIFT));
+		powermeter.powerdrawPerSecond.c2.Ueff += (sqrt(powermeter.powerdraw.c2.Ueff >> ADCSAMPLESSHIFT));
+		powermeter.powerdrawPerSecond.c3.Ueff += (sqrt(powermeter.powerdraw.c3.Ueff >> ADCSAMPLESSHIFT));
 		//calculate Ieff
-		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >>ADCSAMPLESSHIFT);
-		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >>ADCSAMPLESSHIFT);
-		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >>ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c1.Ieff += sqrt(powermeter.powerdraw.c1.Ieff >> ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c2.Ieff += sqrt(powermeter.powerdraw.c2.Ieff >> ADCSAMPLESSHIFT);
+		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff >> ADCSAMPLESSHIFT);
 #else
 		//calculate S
-		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff )/ powermeter.ADCSamplesPerPeriod);
-		powermeter.powerdrawPerSecond.c2.S += (sqrt(powermeter.powerdraw.c2.Ueff * powermeter.powerdraw.c2.Ieff )/ powermeter.ADCSamplesPerPeriod);
-		powermeter.powerdrawPerSecond.c3.S += (sqrt(powermeter.powerdraw.c3.Ueff * powermeter.powerdraw.c3.Ieff )/ powermeter.ADCSamplesPerPeriod);
+		powermeter.powerdrawPerSecond.c1.S += (sqrt(powermeter.powerdraw.c1.Ueff * powermeter.powerdraw.c1.Ieff) / powermeter.ADCSamplesPerPeriod);
+		powermeter.powerdrawPerSecond.c2.S += (sqrt(powermeter.powerdraw.c2.Ueff * powermeter.powerdraw.c2.Ieff) / powermeter.ADCSamplesPerPeriod);
+		powermeter.powerdrawPerSecond.c3.S += (sqrt(powermeter.powerdraw.c3.Ueff * powermeter.powerdraw.c3.Ieff) / powermeter.ADCSamplesPerPeriod);
 		//calculate P
 		powermeter.powerdrawPerSecond.c1.P += (powermeter.powerdraw.c1.P / powermeter.ADCSamplesPerPeriod);
 		powermeter.powerdrawPerSecond.c2.P += (powermeter.powerdraw.c2.P / powermeter.ADCSamplesPerPeriod);
@@ -274,10 +274,10 @@ void powermeter_docalculations()
 		powermeter.powerdrawPerSecond.c3.Ieff += sqrt(powermeter.powerdraw.c3.Ieff / powermeter.ADCSamplesPerPeriod);
 #endif
 		powermeter.samplesPerSecondDone++;
-		
+
 		//enable RTC Interrupt
-		RTC_SetIntLevels( RTC_OVFINTLVL_LO_gc, RTC_COMPINTLVL_OFF_gc );
-		
+		RTC_SetIntLevels(RTC_OVFINTLVL_LO_gc, RTC_COMPINTLVL_OFF_gc);
+
 		//clear powermeter.powerdraw
 		powermeter_clearchannel(&powermeter.powerdraw);
 
@@ -289,25 +289,25 @@ void powermeter_docalculations()
 void powermeter_copypowerdraw()
 {
 //#if USEDMAMEMCPY
-//	DMA_memcpy(&powermeter.powerdrawLastSecond,&powermeter.powerdrawPerSecond,sizeof(powermeter_channel_t));
+//	DMA_memcpy(&powermeter.powerdrawLastSecond, &powermeter.powerdrawPerSecond, sizeof(powermeter_channel_t));
 //#else
-	if(powermeter.samplesPerSecondDone)
+	if (powermeter.samplesPerSecondDone)
 	{
-		powermeter.powerdrawLastSecond.c1.S = powermeter.powerdrawPerSecond.c1.S/powermeter.samplesPerSecondDone;
-		powermeter.powerdrawLastSecond.c2.S = powermeter.powerdrawPerSecond.c2.S/powermeter.samplesPerSecondDone;
-		powermeter.powerdrawLastSecond.c3.S = powermeter.powerdrawPerSecond.c3.S/powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c1.S = powermeter.powerdrawPerSecond.c1.S / powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c2.S = powermeter.powerdrawPerSecond.c2.S / powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c3.S = powermeter.powerdrawPerSecond.c3.S / powermeter.samplesPerSecondDone;
 
-		powermeter.powerdrawLastSecond.c1.P = powermeter.powerdrawPerSecond.c1.P/powermeter.samplesPerSecondDone;
-		powermeter.powerdrawLastSecond.c2.P = powermeter.powerdrawPerSecond.c2.P/powermeter.samplesPerSecondDone;
-		powermeter.powerdrawLastSecond.c3.P = powermeter.powerdrawPerSecond.c3.P/powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c1.P = powermeter.powerdrawPerSecond.c1.P / powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c2.P = powermeter.powerdrawPerSecond.c2.P / powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c3.P = powermeter.powerdrawPerSecond.c3.P / powermeter.samplesPerSecondDone;
 
-		powermeter.powerdrawLastSecond.c1.Ueff = powermeter.powerdrawPerSecond.c1.Ueff /powermeter.samplesPerSecondDone;
-		powermeter.powerdrawLastSecond.c2.Ueff = powermeter.powerdrawPerSecond.c2.Ueff /powermeter.samplesPerSecondDone;
-		powermeter.powerdrawLastSecond.c3.Ueff = powermeter.powerdrawPerSecond.c3.Ueff /powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c1.Ueff = powermeter.powerdrawPerSecond.c1.Ueff / powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c2.Ueff = powermeter.powerdrawPerSecond.c2.Ueff / powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c3.Ueff = powermeter.powerdrawPerSecond.c3.Ueff / powermeter.samplesPerSecondDone;
 
-		powermeter.powerdrawLastSecond.c1.Ieff = powermeter.powerdrawPerSecond.c1.Ieff /powermeter.samplesPerSecondDone;
-		powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff /powermeter.samplesPerSecondDone;
-		powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff /powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c1.Ieff = powermeter.powerdrawPerSecond.c1.Ieff / powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff / powermeter.samplesPerSecondDone;
+		powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff / powermeter.samplesPerSecondDone;
 
 		powermeter.powerdrawLastSecond.c1.E += powermeter.powerdrawPerSecond.c1.P;
 		powermeter.powerdrawLastSecond.c2.E += powermeter.powerdrawPerSecond.c2.P;
@@ -316,7 +316,7 @@ void powermeter_copypowerdraw()
 //#endif
 }
 
-void powermeter_clearchannel(powermeter_channel_t* channel)
+void powermeter_clearchannel(powermeter_channel_t *channel)
 {
 #if USEDMAMEMSET
 	DMA_memset(channel, 0x00, sizeof(powermeter_channel_t));
@@ -328,61 +328,61 @@ void powermeter_clearchannel(powermeter_channel_t* channel)
 void TC1_init(volatile uint32_t eventsPerSecond)
 {
 
-	if(eventsPerSecond > 0xF42400)		//greater than 16000000Hz ?
+	if (eventsPerSecond > 0xF42400)		//greater than 16000000Hz ?
 		return;
 	TC1_Reset(&TCC1);
-	TC1_SetOverflowIntLevel(&TCC1,TC_OVFINTLVL_LO_gc);
+	TC1_SetOverflowIntLevel(&TCC1, TC_OVFINTLVL_LO_gc);
 	uint16_t TC1_TOP;
-	if((F_CPU/(1*eventsPerSecond))<0xFFFF){
+	if ((F_CPU / (1 * eventsPerSecond)) < 0xFFFF) {
 		TC1_TOP = ((F_CPU / 1) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
-		TC_SetPeriod( &TCC1,TC1_TOP);
+		TC_SetPeriod(&TCC1, TC1_TOP);
 
 		/* Start Timer/Counter. */
-		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV1_gc );
+		TC1_ConfigClockSource(&TCC1, TC_CLKSEL_DIV1_gc);
 		return;
 	}
 
-	if((F_CPU/(2*eventsPerSecond))<0xFFFF){
+	if ((F_CPU / (2 * eventsPerSecond)) < 0xFFFF) {
 		TC1_TOP = ((F_CPU / 2) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
-		TC_SetPeriod( &TCC1,TC1_TOP);
+		TC_SetPeriod(&TCC1, TC1_TOP);
 		/* Start Timer/Counter. */
-		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV2_gc );
+		TC1_ConfigClockSource(&TCC1, TC_CLKSEL_DIV2_gc);
 		return;
 	}
 
-	if((F_CPU/(4*eventsPerSecond))<0xFFFF){
+	if ((F_CPU / (4 * eventsPerSecond)) < 0xFFFF) {
 		TC1_TOP = ((F_CPU / 4) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
-		TC_SetPeriod( &TCC1,TC1_TOP);
+		TC_SetPeriod(&TCC1, TC1_TOP);
 		/* Start Timer/Counter. */
-		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV4_gc );
+		TC1_ConfigClockSource(&TCC1, TC_CLKSEL_DIV4_gc);
 		return;
 	}
 
-	if((F_CPU/(8*eventsPerSecond))<0xFFFF){
+	if ((F_CPU / (8 * eventsPerSecond)) < 0xFFFF) {
 		TC1_TOP = ((F_CPU / 8) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
-		TC_SetPeriod( &TCC1,TC1_TOP);
+		TC_SetPeriod(&TCC1, TC1_TOP);
 		/* Start Timer/Counter. */
-		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV8_gc );
+		TC1_ConfigClockSource(&TCC1, TC_CLKSEL_DIV8_gc);
 		return;
 	}
-	if((F_CPU/(64*eventsPerSecond))<0xFFFF){
+	if ((F_CPU / (64 * eventsPerSecond)) < 0xFFFF) {
 		TC1_TOP = ((F_CPU / 64) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
-		TC_SetPeriod( &TCC1,TC1_TOP);
+		TC_SetPeriod(&TCC1, TC1_TOP);
 		/* Start Timer/Counter. */
-		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV64_gc );
+		TC1_ConfigClockSource(&TCC1, TC_CLKSEL_DIV64_gc);
 		return;
 	}
-		if(F_CPU/(256*eventsPerSecond)<0xFFFF){
+		if (F_CPU / (256 * eventsPerSecond) < 0xFFFF) {
 		TC1_TOP = ((F_CPU / 256) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
-		TC_SetPeriod( &TCC1,TC1_TOP);
+		TC_SetPeriod(&TCC1, TC1_TOP);
 		/* Start Timer/Counter. */
-		TC1_ConfigClockSource( &TCC1, TC_CLKSEL_DIV256_gc );
+		TC1_ConfigClockSource(&TCC1, TC_CLKSEL_DIV256_gc);
 		return;
 	}
 }
@@ -401,7 +401,7 @@ void RTC_Init(void)
 
 	do {
 		/* Wait for the 32kHz oscillator to stabilize. */
-	} while ( ( OSC.STATUS & OSC_RC32KRDY_bm ) == 0);
+	} while ((OSC.STATUS & OSC_RC32KRDY_bm) == 0);
 
 
 	/* Set internal 32kHz oscillator as clock source for RTC. */
@@ -409,15 +409,13 @@ void RTC_Init(void)
 
 	do {
 		/* Wait until RTC is not busy. */
-	} while ( RTC_Busy() );
-
-
+	} while (RTC_Busy());
 
 	/* Configure RTC period to 1 second. */
-	RTC_Initialize( RTC_CYCLES_1S, 0, 0, RTC_PRESCALER_DIV1_gc );
+	RTC_Initialize(RTC_CYCLES_1S, 0, 0, RTC_PRESCALER_DIV1_gc);
 
 	/* Enable overflow interrupt. */
-	RTC_SetIntLevels( RTC_OVFINTLVL_LO_gc, RTC_COMPINTLVL_OFF_gc );
+	RTC_SetIntLevels(RTC_OVFINTLVL_LO_gc, RTC_COMPINTLVL_OFF_gc);
 
 }
 
@@ -426,9 +424,6 @@ typedef struct
 	uint8_t second;		//0-59
 	uint8_t minute;		//0-59
 	uint8_t hour;		//0-23
-	uint8_t day;		//0-31
-	uint8_t month;		//0-12
-	uint16_t year;		//2011-??
 } time_t;
 
 static time_t time;
@@ -452,15 +447,6 @@ uint8_t RTC_getHours(void)
 	return time.hour;
 }
 
-uint8_t RTC_getDays(void)
-{
-	return time.day;
-}
-
-uint8_t RTC_getYears(void)
-{
-	return time.year;
-}
 
 volatile uint8_t can_send_packet;
 void RTC_seconds_int(void)
@@ -481,57 +467,46 @@ void RTC_hours_int(void)
 
 }
 
-void RTC_days_int(void)
+
+void DMA0_init(void *destAddr, uint8_t blockSize, uint8_t count)
 {
-
-}
-
-void RTC_year_int(void)
-{
-
-}
-
-
-
-void DMA0_init(void * destAddr, uint8_t blockSize, uint8_t count)
-{
-	DMA_SetupBlock( &DMA.CH0,					//channel 0
-			&ADCA.CH0RES,				//source-addr
+	DMA_SetupBlock( &DMA.CH0,			//channel 0
+			(void const *) &ADCA.CH0RES,			//source-addr
 			DMA_CH_SRCRELOAD_BLOCK_gc,	//srcDirection reload after each block
 			DMA_CH_SRCDIR_INC_gc,		//srcDirection increment after each byte
-			destAddr,						//set destAddr
-			DMA_CH_DESTRELOAD_NONE_gc,		//reload destAddr after transaction,DMA_CH_DESTRELOAD_TRANSACTION_gc
-			DMA_CH_DESTDIR_INC_gc, 		//destDirection increment destination memory addr
-			blockSize,							//blockSize in bytes >= burstlen
+			destAddr,			//set destAddr
+			DMA_CH_DESTRELOAD_NONE_gc,	//reload destAddr after transaction,DMA_CH_DESTRELOAD_TRANSACTION_gc
+			DMA_CH_DESTDIR_INC_gc,		//destDirection increment destination memory addr
+			blockSize,			//blockSize in bytes >= burstlen
 			DMA_CH_BURSTLEN_2BYTE_gc,	//burstMode 2byte per burst
-			count,							//repeat count times
-			true );						//repeat
+			count,				//repeat count times
+			true );				//repeat
 
 	DMA_SetTriggerSource(&DMA.CH0, DMA_CH_TRIGSRC_ADCA_CH4_gc);	//Trigger on ADCA_CH0 - 3
 	DMA_EnableSingleShot(&DMA.CH0);
 	DMA_EnableChannel(&DMA.CH0);
 }
 
-void DMA1_init(void * destAddr, uint8_t blockSize, uint8_t count)
+void DMA1_init(void *destAddr, uint8_t blockSize, uint8_t count)
 {
-	DMA_SetupBlock( &DMA.CH1,					//channel 1
-			&ADCB.CH0RES,				//source-addr
+	DMA_SetupBlock( &DMA.CH1,			//channel 1
+			(void const *) &ADCB.CH0RES,			//source-addr
 			DMA_CH_SRCRELOAD_BLOCK_gc,	//srcDirection reload after each block
 			DMA_CH_SRCDIR_INC_gc,		//srcDirection increment after each byte
-			destAddr,						//set destAddr
-			DMA_CH_DESTRELOAD_NONE_gc,		//reload destAddr after transaction
+			destAddr,			//set destAddr
+			DMA_CH_DESTRELOAD_NONE_gc,	//reload destAddr after transaction
 			DMA_CH_DESTDIR_INC_gc,		//destDirection increment destination memory addr
-			blockSize,							//blockSize in bytes >= burstlen
+			blockSize,			//blockSize in bytes >= burstlen
 			DMA_CH_BURSTLEN_2BYTE_gc,	//burstMode 2byte per burst
-			count,							//repeat count times
-			true );						//repeat
+			count,				//repeat count times
+			true );				//repeat
 
 	DMA_SetTriggerSource(&DMA.CH1, DMA_CH_TRIGSRC_ADCB_CH4_gc);	//Trigger on ADCB_CH2
 	DMA_EnableSingleShot(&DMA.CH1);
 	DMA_EnableChannel(&DMA.CH1);
 }
 
-void DMA_memset(void * ptr, uint8_t val, uint16_t size)
+void DMA_memset(void *ptr, uint8_t val, uint16_t size)
 {
 	DMA_waitfor_memset_finish
 
@@ -551,7 +526,7 @@ void DMA_memset(void * ptr, uint8_t val, uint16_t size)
 	DMA_StartTransfer(&DMA.CH2);
 }
 
-void DMA_memcpy(void * ptr_dest, void * ptr_src, uint16_t size)
+void DMA_memcpy(void *ptr_dest, void *ptr_src, uint16_t size)
 {
 	DMA_waitfor_memcpy_finish
 
@@ -583,8 +558,7 @@ void ADC_init()
 
 	/* Set sample rate. */
 	//ADC_Prescaler_Config(&ADCA, ADC_PRESCALER_DIV32_gc);	// 1 MSPs
-	ADC_Prescaler_Config(&ADCA,  ADC_PRESCALER_DIV128_gc);	// 250ksps
-	
+	ADC_Prescaler_Config(&ADCA, ADC_PRESCALER_DIV128_gc);	// 250ksps
 
 	/* Set reference voltage on ADC A to external reference pin on PORTA .*/
 	ADC_Reference_Config(&ADCA, ADC_REFSEL_AREFA_gc);
@@ -614,7 +588,7 @@ void ADC_init()
 	ADC_Ch_InputMux_Config(&ADCA.CH2, ADC_CH_MUXPOS_PIN2_gc, ADC_CH_MUXNEG_PIN0_gc);
 
 	/* Configure Event to listen & Action to start on event */
-	ADC_Events_Config(&ADCA, ADC_EVSEL_7_gc,  ADC_EVACT_SWEEP_gc);
+	ADC_Events_Config(&ADCA, ADC_EVSEL_7_gc, ADC_EVACT_SWEEP_gc);
 
 	/* Setup sweep of three virtual channels. */
 	ADC_SweepChannels_Config(&ADCA, ADC_SWEEP_012_gc);
@@ -622,9 +596,9 @@ void ADC_init()
 	//configure DMASEL, this enables DMA_CH_TRIGSRC_ADCA_CH4_gc
 	ADCA.CTRLA |= ADC_DMASEL_CH012_gc;
 
-	/*  ADC_Ch_Interrupts_Config(&ADCA.CH0,ADC_CH_INTMODE_COMPLETE_gc, ADC_CH_INTLVL_LO_gc);
-		Interrupts aren't used atm
-	*/
+	/* ADC_Ch_Interrupts_Config(&ADCA.CH0,ADC_CH_INTMODE_COMPLETE_gc, ADC_CH_INTLVL_LO_gc);
+	   Interrupts aren't used atm
+	 */
 	
 	/* Move stored calibration values to ADC B. */
 	ADC_CalibrationValues_Load(&ADCB);
@@ -657,7 +631,7 @@ void ADC_init()
 	ADC_Disable(&ADCB);
 #else
 	powermeter.ADCoffset.offsetB=0;
-#endif	
+#endif
 	/*Set Positive and Negative Pins for each Channel */
 	ADC_Ch_InputMux_Config(&ADCB.CH0, ADC_CH_MUXPOS_PIN5_gc, ADC_CH_MUXNEG_PIN0_gc);
 	ADC_Ch_InputMux_Config(&ADCB.CH1, ADC_CH_MUXPOS_PIN3_gc, ADC_CH_MUXNEG_PIN0_gc);
@@ -688,7 +662,6 @@ void ADC_init()
 	/* Wait until common mode voltage is stable. Default clk is 2MHz and
 	 * therefore below the maximum frequency to use this function. */
 	ADC_Wait_32MHz(&ADCB);
-
 }
 
 
@@ -696,5 +669,4 @@ ISR(TCC1_OVF_vect)
 {
 	powermeter.timercc1clks++;
 }
-
 
