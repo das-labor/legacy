@@ -65,10 +65,10 @@
  *  module is enabled, it must and will be disabled before being reset.
  *  It will not be enabled afterwards.
  */
-void DMA_Reset( void )                 
-{	                            
+void DMA_Reset( void )
+{
 	DMA.CTRL &= ~DMA_ENABLE_bm;
-	DMA.CTRL |= DMA_RESET_bm;   
+	DMA.CTRL |= DMA_RESET_bm;
 	while (DMA.CTRL & DMA_RESET_bm);	// Wait until reset is completed
 }
 
@@ -313,13 +313,13 @@ void DMA_SetupBlock( volatile DMA_CH_t * channel,
                      uint8_t repeatCount,
                      bool useRepeat )
 {
-	channel->SRCADDR0 = (( (uint32_t) srcAddr) >> 0*8 ) & 0xFF;
-	channel->SRCADDR1 = (( (uint32_t) srcAddr) >> 1*8 ) & 0xFF;
-	channel->SRCADDR2 = (( (uint32_t) srcAddr) >> 2*8 ) & 0xFF;
+	channel->SRCADDR0 = (uint32_t) srcAddr;
+	channel->SRCADDR1 = (uint32_t) srcAddr >> 8;
+	channel->SRCADDR2 = (uint32_t) srcAddr >> 16;
 
-	channel->DESTADDR0 = (( (uint32_t) destAddr) >> 0*8 ) & 0xFF;
-	channel->DESTADDR1 = (( (uint32_t) destAddr) >> 1*8 ) & 0xFF;
-	channel->DESTADDR2 = (( (uint32_t) destAddr) >> 2*8 ) & 0xFF;
+	channel->DESTADDR0 = (uint32_t) destAddr;
+	channel->DESTADDR1 = (uint32_t) destAddr >> 8;
+	channel->DESTADDR2 = (uint32_t) destAddr >> 16;
 
 	channel->ADDRCTRL = (uint8_t) srcReload | srcDirection |
 	                              destReload | destDirection;
