@@ -345,8 +345,8 @@ void powermeter_docalculations()
 			powermeter.powerdraw.c2.Ieff += i * i;
 			powermeter.powerdraw.c2.P += u * i;
 			//load u & i
-			u = (int32_t)(*up) -powermeter.ADCoffset.offsetA;
-			i = (int32_t)(*ip) -powermeter.ADCoffset.offsetB;
+			u = (int32_t) (*up) -powermeter.ADCoffset.offsetA;
+			i = (int32_t) (*ip) -powermeter.ADCoffset.offsetB;
 #endif
 #if DEBUGMODE
 			itoa(*up, &buf[0], 10);
@@ -549,7 +549,7 @@ void TC1_init(volatile uint32_t eventsPerSecond) {
 	if ((F_CPU / (2 * eventsPerSecond)) < 0xFFFF) {
 		TC1_TOP = ((F_CPU / 2) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
-		TC_SetPeriod(&TCC1,TC1_TOP);
+		TC_SetPeriod(&TCC1, TC1_TOP);
 #if DEBUGMODE
 		utoa(TCC1.PER, &buf[0], 10);
 		sendUSARTC1_putstr(&buf[0]);
@@ -696,7 +696,7 @@ void RTC_seconds_int(void)
 	powermeter_copypowerdraw();	//TODO: move to main()
 	powermeter_clearpowerdrawPerSecond();
 	//can transmit
-	can_send_packet=1;
+	can_send_packet = 1;
 }
 
 void RTC_minutes_int(void)
@@ -842,7 +842,6 @@ void ADC_init() {
 
 //	ADC_Ch_Interrupts_Config(&ADCA.CH2, ADC_CH_INTMODE_COMPLETE_gc, ADC_CH_INTLVL_LO_gc);
 //	ADC_Ch_Interrupts_Config(&ADCB.CH2, ADC_CH_INTMODE_COMPLETE_gc, ADC_CH_INTLVL_LO_gc);
-
 
 	/* Enable ADC A .*/
 	ADC_Enable(&ADCA);

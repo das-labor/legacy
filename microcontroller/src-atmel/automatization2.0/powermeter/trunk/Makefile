@@ -10,7 +10,7 @@ WARNINGS      ?= -Wall -Winline -Wextra
 DEFS          ?= -DF_CPU=32000000UL
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=c99 -ffunction-sections -fdata-sections
 ASFLAGS	      += -mmcu=avr5
-LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax
+LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
@@ -27,8 +27,10 @@ clean:
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
-	$(ERASECMD)
 	$(FLASHCMD)
+
+canflash: $(OUT).hex
+	$(CANFLASHCMD)
 
 #############################################################################
 # Building Rules

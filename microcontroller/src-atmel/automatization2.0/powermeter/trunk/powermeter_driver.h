@@ -86,21 +86,13 @@ uint8_t RTC_getMinutes(void);
 
 uint8_t RTC_getHours(void);
 
-uint8_t RTC_getDays(void);
-
-uint8_t RTC_getYears(void);
-
 void RTC_seconds_int(void);
 
 void RTC_minutes_int(void);
 
 void RTC_hours_int(void);
 
-void RTC_days_int(void);
 
-void RTC_year_int(void);
+void DMA0_init(void *destAddr, uint8_t blockSize,uint8_t count);
 
-
-void DMA0_init(void * destAddr, uint8_t blockSize,uint8_t count );
-
-void DMA1_init(void * destAddr, uint8_t blockSize,uint8_t count );
+void DMA1_init(void *destAddr, uint8_t blockSize,uint8_t count);

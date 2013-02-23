@@ -23,7 +23,7 @@ void sync_osc() {
 	 * gesetzt und 32Mhz können benutzt werden*/
 	while (!(OSC.STATUS & OSC_RC32MRDY_bm));
 
-	/* auto kalibierung ein */
+	/* auto kalibrierung ein */
 	DFLLRC32M.CTRL = DFLL_ENABLE_bm;
 
 	/*I/O Protection*/
@@ -32,9 +32,10 @@ void sync_osc() {
 	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;
 }
 
-void start_mcp_clock(){
-	//init the timmer for mcp2515 clock
-	PORTD.DIRSET = (1<<2);
+void start_mcp_clock()
+{
+	//init the timer for mcp2515 clock
+	PORTD.DIRSET = (1 << 2);
 	TCD0.CTRLB = TC0_CCCEN_bm | 3; //single slope pwm, OC0C as output
 	TCD0.PER = 1;
 	TCD0.CCC = 1;
@@ -46,10 +47,10 @@ void start_mcp_clock(){
 #endif
 }
 
-void Eventsystem_init( void )
+void Eventsystem_init(void)
 {
 	/* Select multiplexer input. */
-	EVSYS_SetEventSource( 7, EVSYS_CHMUX_TCC1_OVF_gc );	//event Timer1CC1_OVF
+	EVSYS_SetEventSource( 7, EVSYS_CHMUX_TCC1_OVF_gc);	//event Timer1CC1_OVF
 	EVSYS_SetEventSource( 2, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 3, EVSYS_CHMUX_OFF_gc);
 	EVSYS_SetEventSource( 4, EVSYS_CHMUX_OFF_gc);
@@ -65,10 +66,10 @@ void Eventsystem_init( void )
 void Interrupt_Init(void)
 {
 	//enable ROUND ROBIN,enable MED_LVL & LOW_LVL interrupts !!!!
-	uint8_t tmp= PMIC_RREN_bm|PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
+	uint8_t tmp = PMIC_RREN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
 	/*I/O Protection*/
 	CCP = CCP_IOREG_gc;
-	PMIC.CTRL = tmp; 
+	PMIC.CTRL = tmp;
 
 	sei();	//global allow interrupts
 }
@@ -92,7 +93,7 @@ int main(void)
 	Interrupt_Init();
 
 	setERROR(0);
-	can_send_packet=0;
+	can_send_packet = 0;
 
 	powermeter_SetSampleratePerPeriod(200);
 	powermeter_Start();
@@ -100,7 +101,7 @@ int main(void)
 #if DEBUGMODE
 		sendUSARTC1_putstr("entering main-loop\n\r");
 #endif
-	uint16_t x;
+	uint16_t x = 0;
 	while (1) {
 		can_handler();
 		powermeter_docalculations();
@@ -117,11 +118,11 @@ int main(void)
 		{		//this is executed 4 times per second
 #if laborhack
 			if (can_send_packet)
-			x = 0;
+				x = 0;
 	
 			if (can_send_packet == 2 ) {
 				can_createDATAPACKET();
-				can_send_packet=0;
+				can_send_packet = 0;
 			}
 
 			if (can_send_packet == 1) {
