@@ -5,10 +5,12 @@
 #include "i2c_com.h"
 #include "../include/PowerCommander.h"
 
-#define LAMP_OUT_TAFEL   0
-#define LAMP_OUT_BEAMER  1
-#define LAMP_OUT_SCHRANK 2
-#define LAMP_OUT_FLIPPER 3
+enum {
+	LAMP_OUT_TAFEL,
+	LAMP_OUT_BEAMER,
+	LAMP_OUT_SCHRANK,
+	LAMP_OUT_FLIPPER
+};
 
 static void lamp_out(void *num, uint8_t val) {
 	uint8_t i = (uint8_t) (uint16_t) num;

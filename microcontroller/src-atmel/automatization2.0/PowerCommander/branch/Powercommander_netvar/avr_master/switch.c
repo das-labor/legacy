@@ -30,14 +30,16 @@ static struct t_pin_parameter {
 };
 
 // pin matrix indexes
-#define MX_HAUPTSCHALTER  0
-#define MX_TASTER_LOUNGE  1
-#define MX_TASTER_VORTRAG 2
-#define MX_POWER_OK       3
-#define MX_RCD_SERVER     4
-#define MX_RCD_POWER      5
-#define MX_RCD_LICHT      6
-
+enum {
+	MX_HAUPTSCHALTER,
+	MX_TASTER_LOUNGE,
+	MX_TASTER_VORTRAG,
+	MX_POWER_OK,
+	MX_RCD_SERVER,
+	MX_RCD_POWER,
+	MX_RCD_LICHT,
+	NUM_INPUTS
+};
 
 
 static netvar_desc *out_netvars[NUM_INPUTS];
