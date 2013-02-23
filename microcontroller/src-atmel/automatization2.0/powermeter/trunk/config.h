@@ -8,7 +8,7 @@
 // can.[ch] defines
 #define CAN_INTERRUPT
 
-//this is not the size in bytes, but in amount of packet buffers
+// amount of packet buffers
 #define CAN_TX_BUFFER_SIZE 16
 #define CAN_RX_BUFFER_SIZE 16
 
@@ -23,6 +23,7 @@
 #define ADC_OFFSET_CAL 1
 
 //powermeter samplebuffer size (allows up to POWERMETER_SAMPLEBUFF samples per period)
+//this value must be smaller than 256 ! since DMA controller only supports 255 transfers at once
 #define POWERMETER_SAMPLEBUFF 300		//this will use POWERMETER_SAMPLEBUFF*18 bytes of RAM
 
 #define NET_FREQ 50		//set freq of Powerline
@@ -44,7 +45,7 @@
 //for interrupt driven version
 //active pull up
 //trigger on falling edge
-#define ENABLE_CAN_INT() PORTD.INT0MASK = (1<<1);
+#define ENABLE_CAN_INT() PORTD.INT0MASK = (1 << 1);
 
 #define DISABLE_CAN_INT() PORTD.INT0MASK = 0;
 
