@@ -540,7 +540,7 @@ int main(void) {
 	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, (char*)&adc_last_schedule_time, 1);
 
 	//begin can operations
-	can_setmode(normal);
+	can_setmode(NORMAL);
 	can_setled(0, 1);
 
 	//store system counter

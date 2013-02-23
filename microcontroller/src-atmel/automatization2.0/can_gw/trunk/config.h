@@ -16,8 +16,6 @@
 	#define FW_IDSTRING "unknown"
 #endif
 
-// util.[ch] defines
-// #define F_CPU 16000000         // Oszillator-Frequenz in Hz
 
 // uart.[ch] defines
 #define UART_INTERRUPT
@@ -30,15 +28,11 @@
 
 // can.[ch] defines
 #define CAN_RAW
-//#define CAN_INTERRUPT
 
 #define F_MCP 16000000
 
-#define MCP_CMD_PORT PORTB
-#define MCP_CS       PB2
-
-#define MC_MOSI PB3
-#define MC_CLK  PB5
+#define MCP_CS_PORT PORTB
+#define MCP_CS_BIT    PB2
 
 
 #define SPI_REG_PIN_MCP_INT  PIND
@@ -49,9 +43,9 @@
 #define CAN_RX_BUFFER_SIZE 16	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 16	//only used for Interrupt
 
-#define ENABLE_CAN_INT()   GICR |= (1<<INT0); \
-        MCUCR |=  (1<<ISC01); \
-        GIMSK |= (1<<INT0)
+#define ENABLE_CAN_INT()  GICR |= _BV(INT0)
+#define DISABLE_CAN_INT() GICR &= ~(_BV(INT0))
+#define SETUP_CAN_INT()   MCUCR |= _BV(ISC01)
 
 #define MCP_INT_VEC        INT0_vect
 
