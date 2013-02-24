@@ -22,7 +22,7 @@ void cmd_loopback(int argc, char *argv[])
 		printf("Activating loopack mode\n");
 		can_setmode(loopback);
 	} else {
-		printf("Deativating loopack mode\n");
+		printf("Deactivating loopack mode\n");
 		can_setmode(normal);
 	}
 	return;
