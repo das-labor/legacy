@@ -133,22 +133,15 @@ void customscripts(rs232can_msg *msg)
 	tm = localtime(&mytime);
 
 	char line[300];
-	can_message_raw *in_msg = (can_message_raw*)(msg->data);
-	can_message_match match_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
-	can_message_match dec_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
+	can_message_raw raw_msg;
+	can_message match_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
+	can_message dec_msg;
 
 
 	// decoding in_msg to readable format
-	dec_msg.addr_src = (uint8_t) (in_msg->id >> 8);
-	dec_msg.addr_dst = (uint8_t) (in_msg->id);
-	dec_msg.port_src = (uint8_t) ((in_msg->id >> 23) & 0x3f);
-	dec_msg.port_dst = (uint8_t) (((in_msg->id >> 16) & 0x0f) | ((in_msg->id >> 17) & 0x30));
-	dec_msg.dlc = in_msg->dlc;
-	for (i = 0; i < dec_msg.dlc; i++)
-	{
-		dec_msg.data[i] = in_msg->data[i];
-	}
-
+	can_message_raw_from_rs232can_msg(&raw_msg, msg);
+	can_message_from_can_message_raw(&dec_msg, &raw_msg);
+	
 	// logging to file - 'logfile' is global
 
 	strftime(tmpstr2, 79, "%c", tm);
