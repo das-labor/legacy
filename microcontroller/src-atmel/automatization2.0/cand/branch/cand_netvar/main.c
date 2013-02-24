@@ -268,16 +268,14 @@ void customscripts(rs232can_msg *msg)
 
 }
 
+//send a message to all network clients
 void msg_to_clients(rs232can_msg *msg)
 {
 	cann_conn_t *ac;
-	if (msg->cmd == RS232CAN_PKT)
-		customscripts(msg);
 
 	// foreach client
 	ac = cann_conns_head;
 	while (ac) {
-//XXX		if ( cann_match_filter(ac, msg) )
 		cann_transmit(ac, msg);		//send to each client on the network
 		ac = ac->next;
 	}
@@ -303,7 +301,7 @@ void sprint_atmega8_resetcause(char *buf, unsigned char reset_flags)
 }
 
 
-void process_msg(rs232can_msg *msg)
+void process_msg_from_gateway(rs232can_msg *msg)
 {
 	char buf[sizeof(RESETCAUSE_PORF_STR) + sizeof(RESETCAUSE_EXTRF_STR) + sizeof(RESETCAUSE_BORF_STR) + sizeof(RESETCAUSE_WDRF_STR)];
 	
@@ -311,6 +309,7 @@ void process_msg(rs232can_msg *msg)
 	{
 		case RS232CAN_PKT:
 			msg_to_clients(msg);
+			customscripts(msg);
 			break;
 		case RS232CAN_ERROR:
 			debug(0, "GATEWAY: error");
@@ -342,7 +341,7 @@ void process_msg(rs232can_msg *msg)
 			msg_to_clients(msg);	//pipe reply to network clients
 			break;
 		default:
-			debug(0, "Whats going on? Received unknown type 0x%02x on Uart", msg->cmd);
+			debug(0, "Whats going on? Received unknown type 0x%02x from gateway", msg->cmd);
 			break;
 	}
 }
@@ -365,7 +364,7 @@ void process_uart_msg()
 	}
 
 	debug(8, "Processing message from uart..." );
-	process_msg(msg);
+	process_msg_from_gateway(msg);
 	canu_free(msg);
 	debug(8, "...processing done.");
 }
@@ -392,14 +391,13 @@ void process_client_msg(cann_conn_t *client)
 	if (debug_level >= 3)
 		hexdump((void *)msg, msg->len + 2);
 
-	customscripts(msg);
-
 	switch (msg->cmd) {
 		case RS232CAN_SETFILTER:
 		case RS232CAN_SETMODE:
 			/* XXX */
 			break;
 		case RS232CAN_PKT:
+			customscripts(msg);//log / run scripts
 			// to UART
 			if (serial) canu_transmit(msg);		//send to client on the can
 			if (usb_parm) canusb_transmit(msg); //same via usb
@@ -464,7 +462,7 @@ int poll_usb()
 
 		while ( (p < r) && ((p+packetBuffer[p+1]+2) <= r) ) {
 			debug(11, "p=%x\n", p);
-			process_msg((rs232can_msg *) &packetBuffer[p]);
+			process_msg_from_gateway((rs232can_msg *) &packetBuffer[p]);
 
 			p += packetBuffer[p+1] + 2;
 		}
