@@ -19,6 +19,7 @@
 #include "opendevice.h"
 #include "can.h"
 #include "can-tcp.h"
+#include "lib/can_message_converters.h"
 #include "uart-host.h"
 #include "can-uart.h"
 #include "debug.h"
@@ -425,11 +426,6 @@ void process_client_msg(cann_conn_t *client)
 	debug(3, "...processing done.");
 }
 
-void new_client( cann_conn_t *client )
-{
-	// XXX
-}
-
 int poll_usb()
 {
 	debug( 9, "IN POLL_USB" );
@@ -510,6 +506,10 @@ void event_loop()
 				default:
 					debug_perror(0, "select: help, it's all broken, giving up!");
 					return;
+				case NO_ERROR:
+					debug_perror(0, "select: process was suspended");
+					continue;
+					
 			}
 		}
 		debug(10, "Select returned %d", ret);
