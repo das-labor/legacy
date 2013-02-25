@@ -6,7 +6,7 @@ OBJ = main.o dc_com.o adc.o backlight.o touchscreen.o \
       can/spi.o can/can.o netvar/can_handler.o netvar/netvar.o \
       gui_lib/rectangle.o gui_lib/gui_container.o gui_lib/gui_button.o \
       gui_lib/icons/icons.o gui_lib/gui_slider.o \
-      util_lib/list.o hardware.o uart/uart.o
+      util_lib/list.o hardware.o uart/uart.o buttons.o
 
 
 # Default values

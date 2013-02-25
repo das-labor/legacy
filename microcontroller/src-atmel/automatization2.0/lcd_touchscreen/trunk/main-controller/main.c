@@ -16,6 +16,7 @@
 #include "adc.h"
 #include "netvar/netvar.h"
 #include "dc_com.h"
+#include "buttons.h"
 
 
 volatile uint8_t ticks_in_ms;
@@ -110,6 +111,7 @@ int main(void) {
 	can_setled(0, 1);
 
 	init_main_window();
+	init_buttons();
 
 	while (1) {
 		if (ticks_in_ms >= 10) {
@@ -119,6 +121,7 @@ int main(void) {
 
 			handle_touchscreen();
 			handle_status();
+			update_buttons();
 			can_handler();
 			netvar_handle_events();
 		}
