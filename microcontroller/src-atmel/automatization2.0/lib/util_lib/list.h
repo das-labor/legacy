@@ -28,4 +28,10 @@ typedef uint16_t list_iterator_t;
 void list_foreach_begin(list_iterator_t * it, list_t * l);
 void * list_foreach(list_iterator_t * it, list_t * l);
 
+//remove element from list by index
+void list_remove_at (list_t * l, uint16_t i);
+
+//remove element from list by value
+void list_remove (list_t * l, void * child);
+
 #endif

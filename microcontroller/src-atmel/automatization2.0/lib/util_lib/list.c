@@ -42,6 +42,30 @@ void list_append(list_t * l, void * child) {
 	l->num_childs++;
 }
 
+//remove element from list by index
+void list_remove_at (list_t * l, uint16_t i) {
+	if (i >= l->num_childs) return;//index to large
+	
+	l->num_childs -= 1;
+	for ( ; i < l->num_childs; i++) {
+		//move up all elements
+		l->childs[i] = l->childs[i+1];
+	}
+}
+
+//remove element from list by value
+void list_remove (list_t * l, void * child) {
+	uint16_t i;
+	void * e = 0;
+	for (i = 0; i < l->num_childs; i++) {
+		e = l->childs[i];
+		if (e == child) {
+			//this is the child we want to remove
+			list_remove_at(l, i);
+		}
+	}
+}
+
 void list_foreach_begin(list_iterator_t * it, list_t * l){
 	l = l; //don't warn about unused list parameter
 	*it = 0;

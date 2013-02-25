@@ -19,11 +19,18 @@ typedef struct {
 } handler_descriptor_t;
 
 
+//get the reference for a regsietered netvar by idx. returns 0 if netvar is not registered.
+netvar_desc *get_netvar_by_idx(uint16_t idx, uint8_t sidx);
+
 //register a netvar. returns the same handle if a netvar is registered multiple times.
+//does not change the settings i.e. size of the netvar if it is allready registered
 netvar_desc *netvar_register(uint16_t idx, uint8_t sidx, uint8_t size);
 
 //adds handler for incoming netvar, which will be called with the user supplied reference as argument.
 void netvar_add_handler(netvar_desc *nd, void (*fkt)(netvar_desc *, void *), void *ref);
+
+//removes handler from netvar by value
+void netvar_remove_handler (netvar_desc *nd, void (*fkt)(netvar_desc *, void *), void *ref);
 
 //user api to write to previously registered netvars
 void netvar_write(netvar_desc *nd, void *data);
@@ -34,9 +41,6 @@ void unregistered_netvar_write (uint16_t idx, uint8_t sidx, uint8_t size, void *
 
 //user api to read from previously registered netvars
 uint8_t netvar_read(netvar_desc *nd, void *data);
-
-//get the reference for a netvar by idx
-netvar_desc *get_netvar_by_idx(uint16_t idx, uint8_t sidx);
 
 #ifdef CAN_HANDLER_C
 	//called when can message on netvar port is received
