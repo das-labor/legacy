@@ -11,4 +11,6 @@
 	#define SHOW_UCONTEXT_INFO
 #endif
 
+#define NETVAR_AUTO_REGISTER
+
 #endif
