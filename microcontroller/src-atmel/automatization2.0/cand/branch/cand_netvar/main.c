@@ -304,6 +304,7 @@ void process_msg_from_gateway(rs232can_msg *msg)
 		case RS232CAN_PKT:
 			msg_to_clients(msg);
 			customscripts(msg);
+			netvar_can_handler(msg);
 			break;
 		case RS232CAN_ERROR:
 			debug(0, "GATEWAY: error");
@@ -372,6 +373,12 @@ void canusb_transmit(rs232can_msg *msg)
 
 }
 
+void transmit_message_to_network_and_can(rs232can_msg *msg)
+{
+	if (serial) canu_transmit(msg);		//send to client on the can
+	if (usb_parm) canusb_transmit(msg); //same via usb
+	msg_to_clients(msg);				//send to all network clients
+}
 
 void process_client_msg(cann_conn_t *client)
 {
@@ -396,6 +403,7 @@ void process_client_msg(cann_conn_t *client)
 			if (serial) canu_transmit(msg);		//send to client on the can
 			if (usb_parm) canusb_transmit(msg); //same via usb
 			msg_to_clients(msg);				//send to all network clients
+			netvar_can_handler(msg);
 			break;
 		case RS232CAN_PING_GATEWAY:
 		case RS232CAN_VERSION:
@@ -547,6 +555,7 @@ void event_loop()
 		cann_dumpconn();
 		
 		tcp_server_handle_activity(netvar_server, &rset);
+		netvar_handle_events();
 	}
 }
 

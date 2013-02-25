@@ -4,7 +4,14 @@
 #include <string.h>
 #include <errno.h>
 
+#include "can.h"
+#define CAN_HANDLER_C
+#include "netvar/netvar.h"
+
 #include "lib-host/tcp_server.h"
+#include "lib-host/can-encap.h"
+#include "lib/can_message_converters.h"
+
 #include "debug.h"
 
 tcp_server_t * netvar_server;
@@ -101,6 +108,12 @@ static int receive_handler(int fd, void * ref) {
 		if(strcmp(line, "close") == 0){
 			return 1;
 		}
+		netvar_desc * nd = get_netvar_by_idx(0x100, 0x4f);
+		if(nd){
+			char str[20];
+			sprintf(str, "%d\n", nd->data[0] );
+			send(fd, str, strlen(str), MSG_NOSIGNAL);
+		}
 	}
 	
 	return 0;
@@ -120,4 +133,17 @@ static void * accept_handler(int fd) {
 
 void init_netvar_server() {
 	netvar_server = new_tcp_server( "2343", receive_handler, accept_handler);
+}
+
+void netvar_can_handler(rs232can_msg *msg) {
+	can_message_raw raw_msg;
+	can_message can_msg;
+	
+	//convert to regular can message
+	can_message_raw_from_rs232can_msg(&raw_msg, msg);
+	can_message_from_can_message_raw(&can_msg, &raw_msg);
+	
+	if (can_msg.port_src == 0x37) {
+		netvar_received(&can_msg);
+	}	
 }
