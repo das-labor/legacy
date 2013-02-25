@@ -9,6 +9,5 @@ extern uint8_t get_outputs(void);
 extern void set_pwm(uint8_t port, uint8_t value);
 extern uint8_t get_pwm(uint8_t port);
 
-
 #endif // _IO
 

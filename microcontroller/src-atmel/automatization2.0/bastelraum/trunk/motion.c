@@ -4,6 +4,8 @@
 #include "config.h"
 #include "io.h"
 #include "motion.h"
+#include "Bastelcmd.h"
+
 static const uint8_t motion_admux[NUM_DETECTORS] =
 {
 	(0x00 | ADMUX_PREDEF),
@@ -112,13 +114,13 @@ ISR(TIMER0_OVF_vect)
 void motion_tick()
 {
 	static uint8_t warnperiod = 0;
-
+	static uint8_t old_pwm[3];
 	/* keine bewegung erkannt - warnung zuende */
 	if (warnperiod && hscount > M_WARN_LENGTH)
 	{
-		/* restore old sreg state */
-		//sreg ^= 0xff;
-		//change_shift_reg (sreg);
+		set_pwm(F_PWM_FENSTER, old_pwm[0]);
+		set_pwm(F_PWM_MITTE, old_pwm[1]);
+		set_pwm(F_PWM_NISCHE, old_pwm[2]);
 		warnperiod = 0;
 	}
 	/* warten bis 2 min um sind */
@@ -134,16 +136,21 @@ void motion_tick()
 	/* abschalten falls idlecount gleich IDLE_TRESHOLD und OFF_TRESHOLD ist */
 	if (motion_idlecount == M_IDLE_TRESHOLD + M_OFF_TRESHOLD)
 	{
-		//sreg = 0;
-		//change_shift_reg (sreg);
+		
 		motion_idlecount = M_IDLE_TRESHOLD + M_OFF_TRESHOLD + 1; /* anti-overflow... */
 	}
 	/* keine bewegung erkannt licht zur warnung abdimmen */
 	else if (motion_idlecount == M_IDLE_TRESHOLD)
 	{
-		//sreg ^= 0xff;
-		//change_shift_reg (sreg);
-		warnperiod = 1;
+		if (get_outputs()) {
+			old_pwm[0] = get_pwm(F_PWM_FENSTER);
+			old_pwm[1] = get_pwm(F_PWM_MITTE);
+			old_pwm[2] = get_pwm(F_PWM_NISCHE);
+			set_pwm(F_PWM_FENSTER, 10);
+			set_pwm(F_PWM_MITTE, 10);
+			set_pwm(F_PWM_NISCHE, 10);
+			warnperiod = 1;
+		}
 	}
 
 	motion_ticks = 0;
