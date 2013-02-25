@@ -136,7 +136,13 @@ void motion_tick()
 	/* abschalten falls idlecount gleich IDLE_TRESHOLD und OFF_TRESHOLD ist */
 	if (motion_idlecount == M_IDLE_TRESHOLD + M_OFF_TRESHOLD)
 	{
-		
+		set_output(F_REG_BTISCHR_1, 0);
+		set_output(F_REG_BTISCHR_2, 0);
+		set_output(F_REG_BTISCHL_1, 0);
+		set_output(F_REG_BTISCHL_2, 0);
+		set_output(F_REG_FENSTER, 0);
+		set_output(F_REG_MITTE, 0);
+		set_output(F_REG_NISCHE, 0);
 		motion_idlecount = M_IDLE_TRESHOLD + M_OFF_TRESHOLD + 1; /* anti-overflow... */
 	}
 	/* keine bewegung erkannt licht zur warnung abdimmen */
