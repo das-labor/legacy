@@ -16,7 +16,6 @@ static void send_status(uint8_t addr);
 
 void can_handler()
 {
-	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 	can_message *rx_msg;
 	if ((rx_msg = can_get_nb()) != 0)			//get next canmessage in rx_msg
 	{
@@ -31,15 +30,23 @@ void can_handler()
 						wdt_enable(0);
 						while (1);
 					case FKT_MGT_PING:
-						msg.addr_src = myaddr;
-						msg.addr_dst = rx_msg->addr_src;
-						can_transmit(&msg);
+						{
+							can_message *tx_msg = can_buffer_get();
+							tx_msg->port_src = PORT_MGT;
+							tx_msg->port_dst = PORT_MGT;
+							tx_msg->addr_src = myaddr;
+							tx_msg->addr_dst = rx_msg->addr_src;
+							tx_msg->dlc = 1;
+							tx_msg->data[0] = FKT_MGT_PONG;
+							can_transmit(tx_msg);
+						}
 						break;
 				}
 			}
 			else if (rx_msg->port_dst == 1) // old proto
 			{
-				switch (rx_msg->data[0]) {
+				switch (rx_msg->data[0])
+				{
 					case C_SW: // SET LAMP
 						if (rx_msg->data[2] < F_SW_STATUS)
 						{
