@@ -142,6 +142,22 @@ void netvar_add_handler(netvar_desc *nd, void (*fkt)(netvar_desc *, void *), voi
 	list_append(nd->handlers, hd);
 }
 
+//removes handler from netvar by value
+void netvar_remove_handler (netvar_desc *nd, void (*fkt)(netvar_desc *, void *), void *ref) {
+	if (nd->handlers) {
+		list_iterator_t it;
+		list_foreach_begin(&it, nd->handlers);
+		handler_descriptor_t *hd;
+		while (((hd = list_foreach(&it, nd->handlers)) != 0)) {
+			if ((hd->fkt == fkt) && (hd->ref == ref)){
+				list_remove(nd->handlers, hd);
+				free(hd);
+				break;
+			}
+		}
+	}
+}
+
 //calls handlers on nd if any
 static void nd_call_handlers(netvar_desc *nd) {
 	if (nd->handlers) {
