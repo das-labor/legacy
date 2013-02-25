@@ -35,6 +35,9 @@ void unregistered_netvar_write (uint16_t idx, uint8_t sidx, uint8_t size, void *
 //user api to read from previously registered netvars
 uint8_t netvar_read(netvar_desc *nd, void *data);
 
+//get the reference for a netvar by idx
+netvar_desc *get_netvar_by_idx(uint16_t idx, uint8_t sidx);
+
 #ifdef CAN_HANDLER_C
 	//called when can message on netvar port is received
 	void netvar_received(can_message * msg);
