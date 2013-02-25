@@ -7,7 +7,7 @@
 
 void lap_button_click_handler(gui_element_t *self) {
 	lap_button_t *s = (lap_button_t*)self;
-	netvar_write(s->nv, &s->state);
+	netvar_write(s->tx_nv, &s->state);
 }
 
 void lap_button_nv_handler(netvar_desc *nd, void *ref) {
@@ -38,8 +38,10 @@ lap_button_t *new_lap_button(uint16_t idx, uint8_t sidx) {
 	b->toggle_mode = 1;
 	b->click_handler = lap_button_click_handler;
 
-	b->nv = netvar_register(idx, sidx, 1);
-	netvar_add_handler(b->nv, lap_button_nv_handler, b);
+	b->tx_nv = netvar_register(idx, 0x20 + sidx, 1);
+	
+	b->rx_nv = netvar_register(idx, 0x30 + sidx, 1);
+	netvar_add_handler(b->rx_nv, lap_button_nv_handler, b);
 
 	return b;
 }

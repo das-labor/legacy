@@ -18,7 +18,8 @@ typedef struct {
 	void(*click_handler)(gui_element_t *);
 	// -------------------- inherited from gui_button_t until here -------------
 
-	netvar_desc *nv;
+	netvar_desc *tx_nv;
+	netvar_desc *rx_nv;
 } lap_button_t;
 
 void lap_button_click_handler(gui_element_t *self);
