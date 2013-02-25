@@ -8,8 +8,8 @@
 	#include <stdlib.h>
 	#include "../can/can.h"
 #else
-	#include "../can_pc/can.h"
 	#include <malloc.h>
+	#include "../can.h"
 #endif
 
 #include "../util_lib/list.h"
@@ -275,6 +275,12 @@ void netvar_received(can_message *msg) {
 		} else {
 			in_fifo_store(nd, &msg->data[3]);
 		}
+	} else {
+		//not found
+		#ifdef NETVAR_AUTO_REGISTER
+			//register it automatically
+			netvar_register(idx, sidx, msg->dlc - 3);
+		#endif
 	}
 }
 
