@@ -14,7 +14,7 @@
 
 #include "debug.h"
 
-tcp_server_t * netvar_server;
+tcp_server_t *netvar_server;
 
 #define LINE_BUFFER_SIZE 256
 
@@ -31,8 +31,8 @@ typedef struct {
 } netvar_client_t;
 
 
-char * read_line(line_buffer_t * buf, int fd){
-	char * d = buf->data;
+char *read_line(line_buffer_t *buf, int fd) {
+	char *d = buf->data;
 
 	int h, t, i;
 begin:
@@ -62,11 +62,11 @@ begin:
 			d[h] = d[i];
 		}
 		//adjust indexes
-		buf->tail -= buf->head; 
+		buf->tail -= buf->head;
 		buf->head = 0;
 	}
 
-	if(buf->tail == LINE_BUFFER_SIZE - 1){
+	if (buf->tail == LINE_BUFFER_SIZE - 1) {
 		//buffer is full and no newline yet - reset and return error
 		buf->head = 0;
 		buf->tail = 0;
@@ -83,10 +83,9 @@ begin:
 		else
 			return (char *) 0xFFFFFFFF;
 	};
-	
+
 	buf->tail += i;//set tail to new end of buffer
 	goto begin; //and try finding new strings in the data received
-
 }
 
 int send_string (int fd, char * str) {
@@ -118,7 +117,7 @@ static int receive_handler(int fd, void * ref) {
 		
 		if (line == (char *) 0xFFFFFFFF) {
 			debug_perror(1, "Error readig fd %d", fd);
-			return 1;//close connection
+			goto network_error; //close connection
 		}
 		
 		if (line) {
@@ -277,5 +276,5 @@ void netvar_can_handler(rs232can_msg *msg) {
 	
 	if (can_msg.port_src == 0x37) {
 		netvar_received(&can_msg);
-	}	
+	}
 }
