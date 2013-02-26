@@ -29,6 +29,7 @@
 
 #include "glext.h"
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <cstdlib>
@@ -43,7 +44,7 @@ using std::stringstream;
 using std::cout;
 using std::endl;
 using std::ends;
-
+using std::ifstream;
 
 // GLUT CALLBACK functions ////////////////////////////////////////////////////
 void displayCB();
@@ -92,10 +93,13 @@ float cameraDistance;
 bool pboisSupported;
 bool fragmentisSupported;
 bool beVerbose;
+bool testpattern;
 int pboMode = 0;
 int drawMode = 0;
 int cutofright = 1;
 int cutofbottom = 2;
+ifstream filestr;
+
 Timer timer, t1, t2;
 float copyTime, updateTime;
 GLint       program = 0;
@@ -127,6 +131,13 @@ PFNGLUNMAPBUFFERARBPROC pglUnmapBufferARB = 0;                   // unmap VBO pr
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+    int i;
+    
+    if( argc < 2 ){
+    	    cout << "No inputfile given." << endl;
+    	    return -1;
+    }
+    
     initSharedMem();
 
     // register exit callback
@@ -135,12 +146,14 @@ int main(int argc, char **argv)
     // init GLUT and GL
     initGLUT(argc, argv);
     initGL();
-
-    for(int i=1; i < argc; i++)
-    {
-        if( strcmp(argv[i],"-nofilter")==0 )
-        	fragmentisSupported = false;
     
+    // get OpenGL info
+    glInfo glInfo;
+    glInfo.getInfo();
+    //glInfo.printSelf();
+    
+    for(i=1; i < argc; i++)
+    {
         if( strcmp(argv[i],"-cutofright")==0 ){
         	if(argc > (i+1)){
         	    if(!(argv[i+1][0] == '-')){
@@ -165,11 +178,6 @@ int main(int argc, char **argv)
         
     }
     
-    // get OpenGL info
-    glInfo glInfo;
-    glInfo.getInfo();
-    //glInfo.printSelf();
-
     // init 2 texture objects
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
@@ -267,6 +275,25 @@ int main(int argc, char **argv)
         glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
     }
     
+    for(i=1; i < argc; i++)
+    {
+        if( strcmp(argv[i],"-nofilter")==0 )
+        	fragmentisSupported = false;
+        
+        if( strcmp(argv[i],"-t")==0 )
+        	testpattern = true; 
+    }
+    
+    if( !testpattern )
+    {
+    	    filestr.open (argv[1], ifstream::binary);
+    	    if ( filestr.fail() ){
+    	    	    cout << "Error opening file." << endl;
+    	    	    clearSharedMem();
+    	    	    return -1;
+    	    }
+    }
+
     if( fragmentisSupported )
     	    setShaders( SCREEN_WIDTH,  SCREEN_HEIGHT , beVerbose);
     
@@ -346,6 +373,7 @@ bool initSharedMem()
     drawMode = 0; // 0:fill, 1: wireframe, 2:points
     
     beVerbose = false;
+    testpattern = false;
     
     // allocate texture buffer
     imageData = new GLubyte[DATA_SIZE];
@@ -369,9 +397,14 @@ void clearSharedMem()
     glDeleteTextures(1, &textureId);
 
     // clean up PBOs
-    if(pboisSupported)
+    if( pboisSupported )
     {
         glDeleteBuffersARB(2, pboIds);
+    }
+    
+    if( !testpattern )
+    {
+    	    filestr.close();
     }
 }
 
@@ -395,37 +428,54 @@ void updatePixels(GLubyte* dst, int size)
 {
     if(!dst)
         return;
-
-    float* ptr = (float*)dst;
-
-    // copy 4 bytes at once
-    for(int i = 0; i < IMAGE_HEIGHT; ++i)
+    
+    if( !testpattern )
     {
-        for(int j = 0; j < IMAGE_WIDTH; ++j)
-        {
-    #if 1
-            //if(i == 0 || j == 0|| i == (IMAGE_HEIGHT -1)||j == (IMAGE_WIDTH-1))
-            if(j == IMAGE_WIDTH-1)
-            {
-               *ptr = float(1.0f);
-               ++ptr;
-               *ptr = float(1.0f);
-            }
-            else
-            {
-               *ptr = float(0);
-               ++ptr;
-               *ptr = float(0);
-            }
-            ++ptr;
+    	    char* ptr = (char*)dst;
+    	    /*do{
+    	    	    if(  filestr.eof() )
+    	    	    	    ptr += filestr.gcount();
+    	    	    filestr.clear();
+    	    	    filestr.read (ptr,DATA_SIZE);
+    	    	    if( filestr.bad() )
+    	    	    {
+    	    	    	    cout << "Error reading from file" << endl;
+    	    	    	    return;
+    	    	    }
+    	    }while( filestr.eof() )*/
+    	    filestr.read (ptr,DATA_SIZE);
+    }
+    else
+    {
+    	    float* ptr = (float*)dst;
+    	    for(int i = 0; i < IMAGE_HEIGHT; ++i)
+    	    {
+    	    	    for(int j = 0; j < IMAGE_WIDTH; ++j)
+    	    	    {
+    	    	    	    #if 1
+    	    	    	    //if(i == 0 || j == 0|| i == (IMAGE_HEIGHT -1)||j == (IMAGE_WIDTH-1))
+    	    	    	    if(j == IMAGE_WIDTH-1)
+    	    	    	    {
+    	    	    	    	    *ptr = float(1.0f);
+    	    	    	    	    ++ptr;
+    	    	    	    	    *ptr = float(1.0f);
+    	    	    	    }
+    	    	    	    else
+    	    	    	    {
+    	    	    	    	    *ptr = float(0);
+    	    	    	    	    ++ptr;
+    	    	    	    	    *ptr = float(0);
+    	    	    	    }
+    	    	    	    ++ptr;
        
-   #else
-              *ptr = float(color/10000000.0f);
-               ++ptr;
-              *ptr = float(colorB/10000000.0f);  
-               ++ptr;    
-   #endif
-     } 
+    	    	    	    #else
+    	    	    	    *ptr = float(color/10000000.0f);
+    	    	    	    ++ptr;
+    	    	    	    *ptr = float(colorB/10000000.0f);  
+    	    	    	    ++ptr;    
+    	    	    	    #endif
+    	    	    } 
+   	    }
     }
 
 }
