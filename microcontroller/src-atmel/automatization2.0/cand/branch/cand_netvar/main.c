@@ -203,12 +203,12 @@ void customscripts(rs232can_msg *msg)
 			while (fgets(line, 300, scriptFP) != NULL)
 			{
 			// read instructions
-				memset(tmpstr,0,80);
-				memset(tmpstr2,0,80);
+				memset(tmpstr, 0, 80);
+				memset(tmpstr2, 0, 80);
 
 				result = sscanf(line,"0x%hhx:0x%hhx 0x%hhx:0x%hhx 0x%hhx -> %s",
-					 &(match_msg.addr_src),&(match_msg.port_src),
-					 &(match_msg.addr_dst),&(match_msg.port_dst),
+					 &(match_msg.addr_src), &(match_msg.port_src),
+					 &(match_msg.addr_dst), &(match_msg.port_dst),
 					 &(match_msg.dlc),
 					 tmpstr2);
 				memset(line,0,300);
@@ -240,19 +240,19 @@ void customscripts(rs232can_msg *msg)
 						}
 						else
 						{
-							snprintf(as_args[0],5,"0x%.2x",dec_msg.dlc);
-							snprintf(as_args[1],5,"0x%.2x",dec_msg.data[0]);
-							snprintf(as_args[2],5,"0x%.2x",dec_msg.data[1]);
-							snprintf(as_args[3],5,"0x%.2x",dec_msg.data[2]);
-							snprintf(as_args[4],5,"0x%.2x",dec_msg.data[3]);
-							snprintf(as_args[5],5,"0x%.2x",dec_msg.data[4]);
-							snprintf(as_args[6],5,"0x%.2x",dec_msg.data[5]);
-							snprintf(as_args[7],5,"0x%.2x",dec_msg.data[6]);
-							snprintf(as_args[8],5,"0x%.2x",dec_msg.data[7]);
-							execl(tmpstr2,tmpstr2,
+							snprintf(as_args[0], 5, "0x%.2x", dec_msg.dlc);
+							snprintf(as_args[1], 5, "0x%.2x", dec_msg.data[0]);
+							snprintf(as_args[2], 5, "0x%.2x", dec_msg.data[1]);
+							snprintf(as_args[3], 5, "0x%.2x", dec_msg.data[2]);
+							snprintf(as_args[4], 5, "0x%.2x", dec_msg.data[3]);
+							snprintf(as_args[5], 5, "0x%.2x", dec_msg.data[4]);
+							snprintf(as_args[6], 5, "0x%.2x", dec_msg.data[5]);
+							snprintf(as_args[7], 5, "0x%.2x", dec_msg.data[6]);
+							snprintf(as_args[8], 5, "0x%.2x", dec_msg.data[7]);
+							execl(tmpstr2, tmpstr2,
 							as_args[0],
-							as_args[1],as_args[2],as_args[3],as_args[4],
-							as_args[5],as_args[6],as_args[7],as_args[8],NULL);
+							as_args[1], as_args[2], as_args[3], as_args[4],
+							as_args[5], as_args[6], as_args[7], as_args[8], NULL);
 						}
 					}
 				}
@@ -277,7 +277,7 @@ void msg_to_clients(rs232can_msg *msg)
 }
 
 
-#define MEGA8_RESETCAUSE_PORF 	1
+#define MEGA8_RESETCAUSE_PORF	1
 #define MEGA8_RESETCAUSE_EXTRF	2
 #define MEGA8_RESETCAUSE_BORF	4
 #define MEGA8_RESETCAUSE_WDRF	8
@@ -289,17 +289,17 @@ void msg_to_clients(rs232can_msg *msg)
 void sprint_atmega8_resetcause(char *buf, unsigned char reset_flags)
 {
 	sprintf(buf, "%s%s%s%s",
-		(reset_flags & MEGA8_RESETCAUSE_PORF)?RESETCAUSE_PORF_STR:"",
-		(reset_flags & MEGA8_RESETCAUSE_EXTRF)?RESETCAUSE_EXTRF_STR:"",
-		(reset_flags & MEGA8_RESETCAUSE_BORF)?RESETCAUSE_BORF_STR:"",
-		(reset_flags & MEGA8_RESETCAUSE_WDRF)?RESETCAUSE_WDRF_STR:"");
+		(reset_flags & MEGA8_RESETCAUSE_PORF) ? RESETCAUSE_PORF_STR : "",
+		(reset_flags & MEGA8_RESETCAUSE_EXTRF) ? RESETCAUSE_EXTRF_STR : "",
+		(reset_flags & MEGA8_RESETCAUSE_BORF) ? RESETCAUSE_BORF_STR : "",
+		(reset_flags & MEGA8_RESETCAUSE_WDRF) ? RESETCAUSE_WDRF_STR : "");
 }
 
 
 void process_msg_from_gateway(rs232can_msg *msg)
 {
 	char buf[sizeof(RESETCAUSE_PORF_STR) + sizeof(RESETCAUSE_EXTRF_STR) + sizeof(RESETCAUSE_BORF_STR) + sizeof(RESETCAUSE_WDRF_STR)];
-	
+
 	switch (msg->cmd)
 	{
 		case RS232CAN_PKT:
@@ -450,7 +450,7 @@ int poll_usb()
 
 	if (r > 0) {
 		debug( 8, "RECEIVED DATA FROM USB" );
-		
+
 		if (debug_level >= 8) {
 			hexdump((unsigned char *) packetBuffer, r);
 		}
@@ -554,7 +554,7 @@ void event_loop()
 
 		debug( 9, "AFTER CANN CLOSE" );
 		cann_dumpconn();
-		
+
 		tcp_server_handle_activity(netvar_server, &rset);
 		netvar_handle_events();
 	}
@@ -570,9 +570,10 @@ void shutdown_all()
 		cann_close(NULL);
 		shutdown(listen_socket, SHUT_RDWR);
 		close(listen_socket);
-		debug_close();
+		deinit_netvar_server(netvar_server);
 		if (udhandle)
 			usb_close(udhandle);
+		debug_close();
 	}
 }
 
