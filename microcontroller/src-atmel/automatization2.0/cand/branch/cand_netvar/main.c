@@ -25,6 +25,7 @@
 #include "debug.h"
 #include "lib-host/tcp_server.h"
 #include "netvar_server.h"
+#include "netvar/netvar.h"
 
 // Atmel ; LAP includes
 #include "config.h"
@@ -514,7 +515,7 @@ void event_loop()
 				default:
 					debug_perror(0, "select: help, it's all broken, giving up!");
 					return;
-				case NO_ERROR:
+				case 0: //NO_ERROR
 					debug_perror(0, "select: process was suspended");
 					continue;
 					
@@ -570,6 +571,8 @@ void shutdown_all()
 		shutdown(listen_socket, SHUT_RDWR);
 		close(listen_socket);
 		debug_close();
+		if (udhandle)
+			usb_close(udhandle);
 	}
 }
 
@@ -627,12 +630,12 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 			"ss_flags:  0x%X\n",
 			context->uc_flags,
 			context->uc_stack.ss_sp,
-			context->uc_stack.ss_size,
+			(int) context->uc_stack.ss_size,
 			context->uc_stack.ss_flags
 		);
 		fprintf(debugFP, "General Registers:\n");
 		for (i = 0; i < 19; i++)
-			fprintf(debugFP, "\t%7s: 0x%x\n", gregs[i], context->uc_mcontext.gregs[i]);
+			fprintf(debugFP, "\t%7s: 0x%x\n", gregs[i], (unsigned int) context->uc_mcontext.gregs[i]);
 		//fprintf(debugFP, "\tOLDMASK: 0x%lx\n", context->uc_mcontext.oldmask);
 		//fprintf(debugFP, "\t    CR2: 0x%lx\n", context->uc_mcontext.cr2);
 	}
