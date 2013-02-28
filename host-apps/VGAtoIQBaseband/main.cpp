@@ -87,6 +87,8 @@ void *font = GLUT_BITMAP_8_BY_13;
 GLuint pboIds[2];                   // IDs of PBO
 GLuint textureId;                   // ID of texture
 GLubyte* imageData = 0;             // pointer to texture buffer
+GLubyte* testpatternA = 0;
+GLubyte* testpatternB = 0;
 int screenWidth;
 int screenHeight;
 int enableconvolutional;
@@ -146,14 +148,14 @@ int main(int argc, char **argv)
     atexit(exitCB);
     
     //new_custom_mode(64,1,2);
-    cout << "sizeof primary " << size_of_primary() << endl;
-    char name[255];
+    //cout << "sizeof primary " << size_of_primary() << endl;
+    /*char name[255];
     if(find_VGA_output(&name[0])){
     	        cout << "couldn't find VGA port" << endl;
     	        exit(1);
     	
     }
-
+*/
     // init GLUT and GL
     initGLUT(argc, argv);
     initGL();
@@ -373,6 +375,7 @@ void initGL()
 ///////////////////////////////////////////////////////////////////////////////
 bool initSharedMem()
 {
+    float* ptr;
     enableconvolutional = 0;
 
     screenWidth = SCREEN_WIDTH;
@@ -390,6 +393,43 @@ bool initSharedMem()
     imageData = new GLubyte[DATA_SIZE];
     memset(imageData, 0, DATA_SIZE);
 
+    // allocate texture buffer
+    testpatternA = new GLubyte[DATA_SIZE];
+    
+    ptr = (float*)testpatternA;
+    for(int i = 0; i < IMAGE_HEIGHT; ++i)
+    {
+	    for(int j = 0; j < IMAGE_WIDTH; ++j)
+	    {
+		    if(j == IMAGE_WIDTH/2)
+		    {
+			    *ptr = float(1.0f);
+			    ++ptr;
+			    *ptr = float(1.0f);
+		    }
+		    else
+		    {
+			    *ptr = float(0);
+			    ++ptr;
+			    *ptr = float(0);
+		    }
+		    ++ptr;
+
+	    } 
+    }
+    
+    // allocate texture buffer
+    testpatternB = new GLubyte[DATA_SIZE];
+    
+    ptr = (float*)testpatternB;
+    for(int i = 0; i < IMAGE_HEIGHT * IMAGE_WIDTH; ++i)
+    {
+    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f)*0.5f + 0.25f);
+    	    ++ptr;
+    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f + 3.1415928f/2.0f)*0.25f + 0.5f);
+    	    ++ptr;
+    }
+   	    
     return true;
 }
 
@@ -437,9 +477,10 @@ void setCamera(float posX, float posY, float posZ, float targetX, float targetY,
 ///////////////////////////////////////////////////////////////////////////////
 void updatePixels(GLubyte* dst, int size)
 {
+    static int cnt = 0;
     if(!dst)
         return;
-    
+
     if( !testpattern )
     {
     	    char* ptr = (char*)dst;
@@ -458,35 +499,18 @@ void updatePixels(GLubyte* dst, int size)
     }
     else
     {
-    	    float* ptr = (float*)dst;
-    	    for(int i = 0; i < IMAGE_HEIGHT; ++i)
-    	    {
-    	    	    for(int j = 0; j < IMAGE_WIDTH; ++j)
-    	    	    {
-    	    	    	    #if 1
-    	    	    	    //if(i == 0 || j == 0|| i == (IMAGE_HEIGHT -1)||j == (IMAGE_WIDTH-1))
-    	    	    	    if(j == IMAGE_WIDTH-1)
-    	    	    	    {
-    	    	    	    	    *ptr = float(1.0f);
-    	    	    	    	    ++ptr;
-    	    	    	    	    *ptr = float(1.0f);
-    	    	    	    }
-    	    	    	    else
-    	    	    	    {
-    	    	    	    	    *ptr = float(0);
-    	    	    	    	    ++ptr;
-    	    	    	    	    *ptr = float(0);
-    	    	    	    }
-    	    	    	    ++ptr;
-       
-    	    	    	    #else
-    	    	    	    *ptr = float(color/10000000.0f);
-    	    	    	    ++ptr;
-    	    	    	    *ptr = float(colorB/10000000.0f);  
-    	    	    	    ++ptr;    
-    	    	    	    #endif
-    	    	    } 
-   	    }
+    	   cnt++;
+    	   if(cnt < 300){
+    	   	memcpy(dst,testpatternA,DATA_SIZE);
+    	   }
+    	   else if ( (cnt >= 300) && (cnt < 600))
+    	   {
+    	   	memcpy(dst,testpatternB,DATA_SIZE);   
+    	   }
+    	   else
+    	   {
+    	   	cnt = 0;   
+    	   }
     }
 
 }
