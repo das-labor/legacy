@@ -39,6 +39,9 @@
 
 #include "glInfo.h"                             // glInfo struct
 #include "Timer.h"
+#include "xrandr.h"
+
+
 
 using std::stringstream;
 using std::cout;
@@ -139,9 +142,17 @@ int main(int argc, char **argv)
     }
     
     initSharedMem();
-
     // register exit callback
     atexit(exitCB);
+    
+    //new_custom_mode(64,1,2);
+    cout << "sizeof primary " << size_of_primary() << endl;
+    char name[255];
+    if(find_VGA_output(&name[0])){
+    	        cout << "couldn't find VGA port" << endl;
+    	        exit(1);
+    	
+    }
 
     // init GLUT and GL
     initGLUT(argc, argv);
