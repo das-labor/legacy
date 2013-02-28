@@ -137,6 +137,8 @@ PFNGLUNMAPBUFFERARBPROC pglUnmapBufferARB = 0;                   // unmap VBO pr
 int main(int argc, char **argv)
 {
     int i;
+    int msps = 64;
+    char VGAname[255];
     
     if( argc < 2 ){
     	    cout << "No inputfile given." << endl;
@@ -146,23 +148,6 @@ int main(int argc, char **argv)
     initSharedMem();
     // register exit callback
     atexit(exitCB);
-    
-    //new_custom_mode(64,1,2);
-    //cout << "sizeof primary " << size_of_primary() << endl;
-    char name[255];
-    if(find_VGA_output(&name[0])){
-    	    cout << "couldn't find VGA port" << endl;
-    	    exit(1);	
-    }
-
-    // init GLUT and GL
-    initGLUT(argc, argv);
-    initGL();
-    
-    // get OpenGL info
-    glInfo glInfo;
-    glInfo.getInfo();
-    //glInfo.printSelf();
     
     for(i=1; i < argc; i++)
     {
@@ -188,7 +173,37 @@ int main(int argc, char **argv)
         	beVerbose = true;
         }
         
+        if( strcmp(argv[i],"-pclk")==0 ){
+        	if(argc > (i+1)){
+        	    if(!(argv[i+1][0] == '-')){
+        	        msps=atoi(argv[i+1]);
+        	        i++;
+        	    }
+        	}
+        }    
+        
+        
     }
+
+    if(find_VGA_output(&VGAname[0])){
+    	    cout << "couldn't find VGA port" << endl;
+    	    exit(1);	
+    }
+    if( beVerbose )
+    	    cout << "found port: " << VGAname << endl;
+    
+    add_custom_mode(&VGAname[0], msps, 2, 1 );
+    
+    // init GLUT and GL
+    initGLUT(argc, argv);
+    initGL();
+    
+    // get OpenGL info
+    glInfo glInfo;
+    glInfo.getInfo();
+    //glInfo.printSelf();
+    
+
     
     // init 2 texture objects
     glGenTextures(1, &textureId);
