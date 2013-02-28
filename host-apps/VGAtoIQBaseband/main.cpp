@@ -149,13 +149,12 @@ int main(int argc, char **argv)
     
     //new_custom_mode(64,1,2);
     //cout << "sizeof primary " << size_of_primary() << endl;
-    /*char name[255];
+    char name[255];
     if(find_VGA_output(&name[0])){
-    	        cout << "couldn't find VGA port" << endl;
-    	        exit(1);
-    	
+    	    cout << "couldn't find VGA port" << endl;
+    	    exit(1);	
     }
-*/
+
     // init GLUT and GL
     initGLUT(argc, argv);
     initGL();
@@ -334,14 +333,17 @@ int initGLUT(int argc, char **argv)
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_ALPHA); // display mode
 
     glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);               // window size
-    glutInitWindowPosition(1366, 0);           // window location
+    int x = 0,y = 0;
+    get_VGA_position(&x, &y);
+    
+    glutInitWindowPosition(x, y);           // window location
 
     // finally, create a window with openGL context
     // Window will not displayed until glutMainLoop() is called
     // it returns a unique ID
     int handle = glutCreateWindow(argv[0]);     // param is the title of window
-   // glutFullScreen();
-    glutGameModeString("1400x700:32");
+    glutFullScreen();
+    //glutGameModeString("1400x700:32");
     // register GLUT callback functions
     glutDisplayFunc(displayCB);
     glutIdleFunc(idleCB);                       // redraw only every given millisec

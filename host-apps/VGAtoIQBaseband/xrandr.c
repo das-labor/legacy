@@ -3035,10 +3035,8 @@ new_custom_mode (int pixelclk, int hsync, int vsync)
 
 
 int init_xrandr(void){
-#if HAS_RANDR_1_2
     int		major, minor;
-#endif
-	char          *display_name = NULL;
+    char          *display_name = NULL;
     if(dpy)
     	    return 0;
 
@@ -3063,6 +3061,16 @@ int init_xrandr(void){
 	fprintf (stderr, "RandR extension missing\n");
 	return 1;
     }
+    
+    if (major > 1 || (major == 1 && minor >= 2))
+    {
+        has_1_2 = True;
+    }
+    else
+    {
+    	return 1;	    
+    }
+    
     return 0;
 }
 
@@ -3097,15 +3105,8 @@ add_custom_mode (int pixelclk, int hsync, int vsync)
     set_name (&m->output, "VGA", name_string|name_xid);
     set_name (&m->name, m->mode.name, name_string|name_xid);
 
-  
 #if HAS_RANDR_1_2
-    if (!XRRQueryVersion (dpy, &major, &minor))
-    {
-	fprintf (stderr, "RandR extension missing\n");
-	return 1;
-    }
-	
-    if (major > 1 || (major == 1 && minor >= 2))
+    if (has_1_2)
     {
     	XRRModeInfo *e;
 	output_t	*o;
@@ -3154,6 +3155,7 @@ apply_mode (void)
 	output->relative_to = "LVDS";
 	output->changes |= changes_relation;
 	
+#if HAS_RANDR_1_2	
 	get_screen ();
 	get_crtcs ();
 	get_outputs ();
@@ -3231,10 +3233,11 @@ apply_mode (void)
 	
 	XSync (dpy, False);
 	return 0;
-    
+#endif
+	return 1;
 }
 
-int size_of_primary(void)
+int get_VGA_position(int *x, int *y)
 {
 #if HAS_RANDR_1_2
     output_t	*output = NULL;
@@ -3246,12 +3249,7 @@ int size_of_primary(void)
 	get_screen ();
 	get_crtcs ();
 	get_outputs ();
-/*
-        printf ("Screen %d: minimum %d x %d, current %d x %d, maximum %d x %d\n",
-		screen, minWidth, minHeight,
-		DisplayWidth (dpy, screen), DisplayHeight(dpy, screen),
-		maxWidth, maxHeight);
-*/
+
 	for (output = outputs; output; output = output->next)
 	{
 	    XRROutputInfo   *output_info = output->output_info;
@@ -3259,27 +3257,25 @@ int size_of_primary(void)
 	    XRRCrtcInfo	    *crtc_info = crtc ? crtc->crtc_info : NULL;
 	    XRRModeInfo	    *mode = output->mode_info;
 
-
-	    //printf ("%s %s\n", output_info->name, connection[output_info->connection]);
-	    if(output_info->connection == 0)
-	    	    return crtc_info->width;
-	    /*
-	    if (mode)
+	    if( strstr(output_info->name, "VGA") > 0 )
 	    {
-		if (crtc_info) {
-		    printf (" %dx%d+%d+%d",
-			    crtc_info->width, crtc_info->height,
-			    crtc_info->x, crtc_info->y);
-		} else {
-		    printf (" %dx%d+%d+%d",
-			    mode->width, mode->height, output->x, output->y);
-		}
+		    if (mode)
+		    {
+			if (crtc_info) {
+			    *x = crtc_info->x;
+			    *y = crtc_info->y;
+			} else {
+			    *x = output->x;
+			    *y = output->y;
+			}
+		    }
+		    return 0;
 	    }
-	    */
+	    
 	}
-	return -1;
+	return 1;
 #endif
-return -1;
+return 1;
 }
 
 int find_VGA_output(char *name)
@@ -3291,11 +3287,11 @@ int find_VGA_output(char *name)
     int found_vga;
     if(ret = init_xrandr())
     	    return ret;
-    
+
 	get_screen ();
 	get_crtcs ();
 	get_outputs ();
-
+   
 	for (output = outputs; output; output = output->next)
 	{
 	    XRROutputInfo   *output_info = output->output_info;
@@ -3308,7 +3304,8 @@ int find_VGA_output(char *name)
 	    Rotation	    rotations = output_rotations (output);
 
 	    if( strstr(output_info->name, "VGA") > 0 ){
-	    	    memcpy(name,output_info->name, sizeof(output_info->name));
+	    	    if(name)
+	    	    	    memcpy(name,output_info->name, sizeof(output_info->name));
 	    	    return 0;
 	    }
 	   
