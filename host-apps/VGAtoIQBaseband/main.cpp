@@ -104,7 +104,9 @@ int drawMode = 0;
 int cutofright = 1;
 int cutofbottom = 2;
 ifstream filestr;
-
+char *VGAname = new char(255);
+    
+int vgax = 0,vgay = 0;
 Timer timer, t1, t2;
 float copyTime, updateTime;
 GLint       program = 0;
@@ -138,7 +140,7 @@ int main(int argc, char **argv)
 {
     int i;
     int msps = 64;
-    char VGAname[255];
+
     
     if( argc < 2 ){
     	    cout << "No inputfile given." << endl;
@@ -185,14 +187,32 @@ int main(int argc, char **argv)
         
     }
 
-    if(find_VGA_output(&VGAname[0])){
-    	    cout << "couldn't find VGA port" << endl;
-    	    exit(1);	
+    if( init_xrandr() )
+    {
+    	cout << "failed to init xrandr" << endl;	    
+    	exit(1);
     }
-    if( beVerbose )
-    	    cout << "found port: " << VGAname << endl;
     
-    add_custom_mode(&VGAname[0], msps, 2, 1 );
+    if(find_VGA_output(&VGAname[0],&vgax, &vgay)){
+    	    cout << "couldn't find VGA port" << endl;
+    	    exit(1);
+    }
+    
+        
+    if( beVerbose )
+    	    cout << "found port: " << VGAname << "@ " << vgax << "," << vgay << endl;
+    
+    // add new modeline 
+    add_custom_mode(&VGAname[0], msps, 1, 2 );
+    
+    if( beVerbose )
+    	    cout << "added custom mode" << endl;
+    
+    // set mode
+     enable_output(&VGAname[0], "newmode", vgax, vgay);
+    
+    if( beVerbose )
+    	    cout << "set mode on VGA " << endl;
     
     // init GLUT and GL
     initGLUT(argc, argv);
@@ -202,8 +222,6 @@ int main(int argc, char **argv)
     glInfo glInfo;
     glInfo.getInfo();
     //glInfo.printSelf();
-    
-
     
     // init 2 texture objects
     glGenTextures(1, &textureId);
@@ -348,14 +366,14 @@ int initGLUT(int argc, char **argv)
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_ALPHA); // display mode
 
     glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);               // window size
-    int x = 0,y = 0;
-    get_VGA_position(&x, &y);
+
     
-    glutInitWindowPosition(x, y);           // window location
+    glutInitWindowPosition(vgax, vgay);           // window location
 
     // finally, create a window with openGL context
     // Window will not displayed until glutMainLoop() is called
     // it returns a unique ID
+    //int handle = 0;
     int handle = glutCreateWindow(argv[0]);     // param is the title of window
     glutFullScreen();
     //glutGameModeString("1400x700:32");
@@ -771,4 +789,6 @@ void keyboardCB(unsigned char key, int x, int y)
 void exitCB()
 {
     clearSharedMem();
+    rm_mode(&VGAname[0],"newmode");
+    //enable_output(&VGAname[0],"auto", vgax, vgay);
 }

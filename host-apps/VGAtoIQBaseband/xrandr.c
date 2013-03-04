@@ -2966,80 +2966,12 @@ main (int argc, char **argv)
 }
 #endif
 
-int
-new_custom_mode (int pixelclk, int hsync, int vsync)
-{
-    char          *display_name = NULL;
-
-#if HAS_RANDR_1_2
-    int		major, minor;
-#endif
-
-    program_name = "blafoo"; //argv[0];
-  
-    umode_t  *m = malloc (sizeof (umode_t));
-    float   clock = pixelclk;
-    
-    m->mode.name = "newmode";
-    m->mode.nameLength = strlen ("newmode");
-    m->mode.dotClock = clock * 1e6;
-    m->mode.width = 1400;
-    m->mode.hSyncStart = m->mode.width;
-    m->mode.hSyncEnd = m->mode.hSyncStart + hsync;
-    m->mode.hTotal = m->mode.hSyncEnd + 1;
-    m->mode.height = 700;
-    m->mode.vSyncStart = m->mode.height;
-    m->mode.vSyncEnd = m->mode.vSyncStart + vsync;
-    m->mode.vTotal = m->mode.vSyncEnd + 1;
-    m->mode.modeFlags = RR_HSyncPositive|RR_VSyncPositive;
-
-    dpy = XOpenDisplay (display_name);
-
-    if (dpy == NULL) {
-	fprintf (stderr, "Can't open display %s\n", XDisplayName(display_name));
-	return 1;
-    }
-    if (screen < 0)
-	screen = DefaultScreen (dpy);
-    if (screen >= ScreenCount (dpy)) {
-	fprintf (stderr, "Invalid screen number %d (display has %d)\n",
-		 screen, ScreenCount (dpy));
-	return 1;
-    }
-
-    root = RootWindow (dpy, screen);
-
-#if HAS_RANDR_1_2
-    if (!XRRQueryVersion (dpy, &major, &minor))
-    {
-	fprintf (stderr, "RandR extension missing\n");
-	return 1;
-    }
-    if (major > 1 || (major == 1 && minor >= 2))
-	has_1_2 = True;
-	
-    if (has_1_2)
-    {
-        get_screen ();
-	get_crtcs();
-	get_outputs();
-	XRRCreateMode (dpy, root, &m->mode);
-		
-	XSync (dpy, False);
-	return 0;
-
-    }
-#endif
-    return 1;
-}
-
 
 int init_xrandr(void){
     int		major, minor;
     char          *display_name = NULL;
-    if(dpy)
-    	    return 0;
 
+    program_name = "xrandr";
     dpy = XOpenDisplay (display_name);
 
     if (dpy == NULL) {
@@ -3066,96 +2998,93 @@ int init_xrandr(void){
     {
         has_1_2 = True;
     }
-    else
-    {
-    	return 1;	    
-    }
-    
     return 0;
 }
 
 int
-add_custom_mode (int pixelclk, int hsync, int vsync)
+add_custom_mode (char *output_name, int pixelclk, int hsync, int vsync)
 {
-#if HAS_RANDR_1_2
-    int		major, minor;
-#endif
-    int ret;
-    if(ret = init_xrandr())
-    	    return ret;
-    
-    program_name = "blafoo"; //argv[0];
-  
-    umode_t  *m = malloc (sizeof (umode_t));
-    float   clock = pixelclk;
-    
-    m->mode.name = "newmode";
-    m->mode.nameLength = strlen ("newmode");
-    m->mode.dotClock = clock * 1e6;
-    m->mode.width = 1400;
-    m->mode.hSyncStart = m->mode.width;
-    m->mode.hSyncEnd = m->mode.hSyncStart + hsync;
-    m->mode.hTotal = m->mode.hSyncEnd + 1;
-    m->mode.height = 700;
-    m->mode.vSyncStart = m->mode.height;
-    m->mode.vSyncEnd = m->mode.vSyncStart + vsync;
-    m->mode.vTotal = m->mode.vSyncEnd + 1;
-    m->mode.modeFlags = RR_HSyncPositive|RR_VSyncPositive;
-
-    set_name (&m->output, "VGA", name_string|name_xid);
-    set_name (&m->name, m->mode.name, name_string|name_xid);
-
-#if HAS_RANDR_1_2
     if (has_1_2)
     {
     	XRRModeInfo *e;
 	output_t	*o;
-	    
-        get_screen ();
-	get_crtcs();
-	get_outputs();
-	XRRCreateMode (dpy, root, &m->mode);
-		
-	XSync (dpy, False);
-	o = find_output (&m->output);
+
+	umode_t  *m = malloc (sizeof (umode_t));
+    
+	m->mode.name = "newmode";
+	m->mode.nameLength = strlen ("newmode");
+	m->mode.dotClock = (float)pixelclk * 1e6;
+	m->mode.width = 1400;
+	m->mode.hSyncStart = m->mode.width;
+	m->mode.hSyncEnd = m->mode.hSyncStart + hsync;
+	m->mode.hTotal = m->mode.hSyncEnd + 1;
+	m->mode.height = 700;
+	m->mode.vSyncStart = m->mode.height;
+	m->mode.vSyncEnd = m->mode.vSyncStart + vsync;
+	m->mode.vTotal = m->mode.vSyncEnd + 1;
+	m->mode.modeFlags = RR_HSyncPositive|RR_VSyncPositive;
+
+	get_screen ();
+	get_crtcs ();
+	get_outputs ();
+	o = find_output_by_name (output_name);
+	if (!o) {
+	o = add_output ();
+	set_name (&o->output, output_name, name_string|name_xid);
+	}
 	if (!o)
-	fatal ("cannot find output \"%s\"\n", m->output.string);
-	e = find_mode (&m->name, 0);
-	if (!e)
-		fatal ("cannot find mode \"%s\"\n", m->name.string);
+	fatal ("cannot find output \"%s\"\n", output_name);
+	e = find_mode_by_name("newmode");
+	if (e){
+		printf("fatal: mode exists\n");
+		exit(0);
+	}
+	   
+    	XRRCreateMode (dpy, root, &m->mode);
+    	XSync (dpy, False);
+    	get_screen ();
+	get_crtcs ();
+	get_outputs ();
+	set_name (&m->output, output_name, name_string|name_xid);
+	set_name (&m->name, m->mode.name, name_string|name_xid);
+	e = find_mode_by_name("newmode");
+	if (!e){
+		printf("failed to create mode\n");
+		exit(0);
+	}	
 	XRRAddOutputMode (dpy, o->output.xid, e->id);
-		
+	XSync (dpy, False);
 	return 0;
 
     }
-#endif
     return 1;
 }
 
 int
-apply_mode (void)
+enable_output (char *output_name, char* mode_name, int x, int y)
 {
-#if HAS_RANDR_1_2
-    output_t	*output = NULL;
-#endif
-    int ret;
-    if(ret = init_xrandr())
-    	    return ret;
-    
-	output = find_output_by_name ("VGA");
+	output_t	*output = NULL;
+	
+	output = find_output_by_name (output_name);
 	if (!output) {
-	output = add_output ();
-	set_name (&output->output, "VGA", name_string|name_xid);
+		output = add_output ();
+		set_name (&output->output, output_name, name_string|name_xid);
 	}
 
-	set_name (&output->mode, "newmode", name_string|name_xid);
-	output->changes |= changes_mode;
+	if(strstr(mode_name, "auto")){
+		output->automatic = True;
+		output->changes |= changes_automatic;	
+	}
+	else
+	{
+		set_name (&output->mode, mode_name, name_string|name_xid);
+		output->changes |= changes_mode;
+	}
+  	output->x = x;
+  	output->y = y;
+
+	output->changes |= changes_position;
 	
-	output->relation = right_of;
-	output->relative_to = "LVDS";
-	output->changes |= changes_relation;
-	
-#if HAS_RANDR_1_2	
 	get_screen ();
 	get_crtcs ();
 	get_outputs ();
@@ -3173,38 +3102,7 @@ apply_mode (void)
 	 * Mark changing crtcs
 	 */
 	mark_changing_crtcs ();
-#if 0	
-	/*
-	 * If an output was specified to track dpi, use it
-	 */
-	if (dpi_output)
-	{
-	    output_t	*output = find_output_by_name (dpi_output);
-	    XRROutputInfo	*output_info;
-	    XRRModeInfo	*mode_info;
-	    if (!output)
-		fatal ("Cannot find output %s\n", dpi_output);
-	    output_info = output->output_info;
-	    mode_info = output->mode_info;
-	    if (output_info && mode_info && output_info->mm_height)
-	    {
-		/*
-		 * When this output covers the whole screen, just use
-		 * the known physical size
-		 */
-		if (fb_width == mode_info->width &&
-		    fb_height == mode_info->height)
-		{
-		    fb_width_mm = output_info->mm_width;
-		    fb_height_mm = output_info->mm_height;
-		}
-		else
-		{
-		    dpi = (25.4 * mode_info->height) / output_info->mm_height;
-		}
-	    }
-	}
-#endif	
+
 	/*
 	 * Compute physical screen size
 	 */
@@ -3225,7 +3123,8 @@ apply_mode (void)
 		fb_height_mm = DisplayHeightMM (dpy, screen);
 	    }
 	}
-
+	
+		//set_screen_size ();
 	/*
 	 * Now apply all of the changes
 	 */
@@ -3233,32 +3132,33 @@ apply_mode (void)
 	
 	XSync (dpy, False);
 	return 0;
-#endif
-	return 1;
+
 }
 
-int get_VGA_position(int *x, int *y)
+int find_VGA_output(char *name,int *x, int *y)
 {
-#if HAS_RANDR_1_2
-    output_t	*output = NULL;
+	output_t	*output = NULL;
 
-    int ret;
-    if(ret = init_xrandr())
-    	    return ret;
-    
+	//int found_vga;
+	
 	get_screen ();
 	get_crtcs ();
 	get_outputs ();
-
+	
 	for (output = outputs; output; output = output->next)
 	{
 	    XRROutputInfo   *output_info = output->output_info;
 	    crtc_t	    *crtc = output->crtc_info;
 	    XRRCrtcInfo	    *crtc_info = crtc ? crtc->crtc_info : NULL;
 	    XRRModeInfo	    *mode = output->mode_info;
-
-	    if( strstr(output_info->name, "VGA") > 0 )
-	    {
+	    //Atom	    *props;
+	    //int		    j, k, nprop;
+	    //Bool	    *mode_shown;
+	    //Rotation	    rotations = output_rotations (output);
+	
+	    if( strstr(output_info->name, "VGA") > 0 ){
+		    if(name)
+			    memcpy(name,output_info->name, sizeof(output_info->name));
 		    if (mode)
 		    {
 			if (crtc_info) {
@@ -3271,46 +3171,91 @@ int get_VGA_position(int *x, int *y)
 		    }
 		    return 0;
 	    }
-	    
-	}
-	return 1;
-#endif
-return 1;
-}
-
-int find_VGA_output(char *name)
-{
-#if HAS_RANDR_1_2
-    output_t	*output = NULL;
-
-    int ret;
-    int found_vga;
-    if(ret = init_xrandr())
-    	    return ret;
-
-	get_screen ();
-	get_crtcs ();
-	get_outputs ();
-   
-	for (output = outputs; output; output = output->next)
-	{
-	    XRROutputInfo   *output_info = output->output_info;
-	    crtc_t	    *crtc = output->crtc_info;
-	    XRRCrtcInfo	    *crtc_info = crtc ? crtc->crtc_info : NULL;
-	    XRRModeInfo	    *mode = output->mode_info;
-	    Atom	    *props;
-	    int		    j, k, nprop;
-	    Bool	    *mode_shown;
-	    Rotation	    rotations = output_rotations (output);
-
-	    if( strstr(output_info->name, "VGA") > 0 ){
-	    	    if(name)
-	    	    	    memcpy(name,output_info->name, sizeof(output_info->name));
-	    	    return 0;
-	    }
 	   
 	}
 	return 1;
-#endif
-return 1;
+}
+
+
+void disable_output(char* name)
+{
+	output_t	*output = NULL;
+
+	output = find_output_by_name (name);
+	if (!output) {
+	output = add_output ();
+	set_name (&output->output, name, name_string|name_xid);
+	}
+
+	set_name_xid (&output->mode, None);
+	set_name_xid (&output->crtc, None);
+	output->changes |= changes_mode;
+	
+	get_screen ();
+	get_crtcs ();
+	get_outputs ();
+	set_positions ();
+	set_screen_size ();
+	
+	pick_crtcs ();
+	
+	/*
+	 * Assign outputs to crtcs
+	 */
+	set_crtcs ();
+	
+	/*
+	 * Mark changing crtcs
+	 */
+	mark_changing_crtcs ();
+
+	/*
+	 * Compute physical screen size
+	 */
+	if (fb_width_mm == 0 || fb_height_mm == 0)
+	{
+	    if (fb_width != DisplayWidth (dpy, screen) ||
+		fb_height != DisplayHeight (dpy, screen) || dpi != 0.0)
+	    {
+		if (dpi <= 0)
+		    dpi = (25.4 * DisplayHeight (dpy, screen)) / DisplayHeightMM(dpy, screen);
+	
+		fb_width_mm = (25.4 * fb_width) / dpi;
+		fb_height_mm = (25.4 * fb_height) / dpi;
+	    }
+	    else
+	    {
+		fb_width_mm = DisplayWidthMM (dpy, screen);
+		fb_height_mm = DisplayHeightMM (dpy, screen);
+	    }
+	}
+	//set_screen_size ();
+	/*
+	 * Now apply all of the changes
+	 */
+	apply ();
+	XSync (dpy, False);	
+}
+
+int rm_mode (char* output_name, char* mode_name)
+{
+	output_t	*output = NULL;
+	disable_output(output_name);
+	
+	get_screen ();
+	get_crtcs ();
+	get_outputs ();
+	
+	XRRModeInfo *e;
+	e = find_mode_by_name(mode_name);
+	output = find_output_by_name (output_name);
+	XRRDeleteOutputMode (dpy, output->output.xid, e->id);
+	XSync (dpy, False);
+	
+	get_screen ();
+	get_crtcs ();
+	get_outputs ();
+	XRRDestroyMode (dpy, e->id);
+	XSync (dpy, False);
+	return 0;
 }

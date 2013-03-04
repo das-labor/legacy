@@ -2,10 +2,11 @@
 extern "C" { 
 #endif
 
-int new_custom_mode (int pixelclk, int hsync, int vsync);
-int apply_mode (void);
-int find_VGA_output(char *name);
-int get_VGA_position(int *x, int *y);
+int add_custom_mode (char *name, int pixelclk, int hsync, int vsync);
+int enable_output (char *output_name, char* mode_name, int x, int y);
+int find_VGA_output(char *name,int *x, int *y);
+int rm_mode (char* output_name, char* mode_name);
+void disable_output(char* name);
 int init_xrandr(void);
 
 #ifdef __cplusplus
