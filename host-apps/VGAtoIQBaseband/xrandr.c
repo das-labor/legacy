@@ -37,6 +37,8 @@
 #include <stdarg.h>
 #include <math.h>
 
+#include "xrandr.h"
+
 #if RANDR_MAJOR > 1 || (RANDR_MAJOR == 1 && RANDR_MINOR >= 2)
 #define HAS_RANDR_1_2 1
 #endif
@@ -47,7 +49,7 @@ static Window	root;
 static int	screen = -1;
 static Bool	verbose = False;
 static Bool	automatic = False;
-static Bool	properties = False;
+//static Bool	properties = False;
 
 static char *direction[5] = {
     "normal", 
@@ -55,7 +57,7 @@ static char *direction[5] = {
     "inverted", 
     "right",
     "\n"};
-
+#if 0
 static char *reflections[5] = {
     "normal", 
     "x", 
@@ -71,7 +73,7 @@ static char *order[6] = {
     "vertical rgb",
     "vertical bgr",
     "no subpixels"};
-
+#endif
 static const struct {
     char	    *string;
     unsigned long   flag;
@@ -326,12 +328,12 @@ struct _umode {
     name_t	    output;
     name_t	    name;
 };
-
+#if 0
 static char *connection[3] = {
     "connected",
     "disconnected",
     "unknown connection"};
-
+#endif
 #define OUTPUT_NAME 1
 
 #define CRTC_OFF    2
@@ -354,7 +356,7 @@ static XRRScreenResources  *res;
 static int	fb_width = 0, fb_height = 0;
 static int	fb_width_mm = 0, fb_height_mm = 0;
 static float	dpi = 0;
-static char	*dpi_output = NULL;
+//static char	*dpi_output = NULL;
 static Bool	dryrun = False;
 static int	minWidth, maxWidth, minHeight, maxHeight;
 static Bool    	has_1_2 = False;
@@ -395,7 +397,7 @@ transform_point (XTransform *transform, double *xp, double *yp)
     double  vector[3];
     double  result[3];
     int	    i, j;
-    double  partial, v;
+    double v; // double  partial
 
     vector[0] = *xp;
     vector[1] = *yp;
@@ -442,6 +444,7 @@ path_bounds (XTransform *transform, point_t *points, int npoints, box_t *box)
 	    if (point.y2 > box->y2) box->y2 = point.y2;
 	}
     }
+    return True;
 }
 
 static void
@@ -478,6 +481,7 @@ mode_refresh (XRRModeInfo *mode_info)
     return rate;
 }
 
+#if 0
 /* h sync frequency in Hz */
 static float
 mode_hsync (XRRModeInfo *mode_info)
@@ -490,6 +494,7 @@ mode_hsync (XRRModeInfo *mode_info)
     	rate = 0;
     return rate;
 }
+#endif
 
 static void
 init_name (name_t *name)
@@ -542,7 +547,7 @@ set_name (name_t *name, char *string, name_kind_t valid)
     XID	xid;
     int index;
 
-    if ((valid & name_xid) && sscanf (string, "0x%x", &xid) == 1)
+    if ((valid & name_xid) && sscanf (string, "0x%x", (unsigned int *)&xid) == 1)
 	set_name_xid (name, xid);
     else if ((valid & name_index) && sscanf (string, "%d", &index) == 1)
 	set_name_index (name, index);
@@ -843,7 +848,7 @@ crtc_can_use_rotation (crtc_t *crtc, Rotation rotation)
 	return True;
     return False;
 }
-
+#if 0
 static Bool
 crtc_can_use_transform (crtc_t *crtc, XTransform *transform)
 {
@@ -880,7 +885,7 @@ output_rotations (output_t *output)
     }
     return rotation;
 }
-
+#endif
 static Bool
 output_can_use_rotation (output_t *output, Rotation rotation)
 {
@@ -1051,7 +1056,7 @@ get_crtcs (void)
 #if RANDR_MAJOR > 1 || RANDR_MINOR >= 3
 	XRRCrtcTransformAttributes  *attr;
 #endif
-	int	    x;
+	//int	    x;
 	set_name_xid (&crtcs[c].crtc, res->crtcs[c]);
 	set_name_index (&crtcs[c].crtc, c);
 	if (!crtc_info) fatal ("could not get crtc 0x%x information", res->crtcs[c]);
@@ -3180,7 +3185,7 @@ int find_VGA_output(char *name,int *x, int *y, char* mode_active)
 	    XRRCrtcInfo	    *crtc_info = crtc ? crtc->crtc_info : NULL;
 	    XRRModeInfo	    *mode = output->mode_info;
 	    //Atom	    *props;
-	    int		    j;//, k, nprop;
+	    //int		    j, k, nprop;
 	    //Bool	    *mode_shown;
 	    //Rotation	    rotations = output_rotations (output);
 	
