@@ -41,6 +41,5 @@ void main(void)
 			sum += tmp * kernel[i] * 0.2712;
 	   }
 
-    sum.z = 1.0;
    gl_FragColor = sum;
 }
