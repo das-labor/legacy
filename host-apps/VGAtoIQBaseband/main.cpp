@@ -105,7 +105,8 @@ int cutofright = 1;
 int cutofbottom = 2;
 ifstream filestr;
 char *VGAname = new char(255);
-    
+char *activemode = new char(255);
+
 int vgax = 0,vgay = 0;
 Timer timer, t1, t2;
 float copyTime, updateTime;
@@ -193,15 +194,22 @@ int main(int argc, char **argv)
     	exit(1);
     }
     
-    if(find_VGA_output(&VGAname[0],&vgax, &vgay)){
+    if(find_VGA_output(&VGAname[0],&vgax, &vgay, &activemode[0])){
     	    cout << "couldn't find VGA port" << endl;
     	    exit(1);
     }
-    
         
     if( beVerbose )
-    	    cout << "found port: " << VGAname << "@ " << vgax << "," << vgay << endl;
+    	    cout << "found port: " << VGAname << "@ " << vgax << "," << vgay << "mode: " << activemode << endl;
     
+    if( strstr(activemode,"newmode") )
+    {
+    	if( beVerbose )
+    	    cout << "newmode is active, removing it now..." << endl;
+        enable_output(&VGAname[0],"1024x768", vgax, vgay);
+        disable_output(&VGAname[0]);
+        rm_mode(&VGAname[0],"newmode");
+    }
     // add new modeline 
     add_custom_mode(&VGAname[0], msps, 1, 2 );
     
@@ -209,7 +217,7 @@ int main(int argc, char **argv)
     	    cout << "added custom mode" << endl;
     
     // set mode
-     enable_output(&VGAname[0], "newmode", vgax, vgay);
+    enable_output(&VGAname[0], "newmode", vgax, vgay);
     
     if( beVerbose )
     	    cout << "set mode on VGA " << endl;
@@ -789,6 +797,8 @@ void keyboardCB(unsigned char key, int x, int y)
 void exitCB()
 {
     clearSharedMem();
+    enable_output(&VGAname[0],&activemode[0], vgax, vgay);
+    disable_output(&VGAname[0]);
     rm_mode(&VGAname[0],"newmode");
-    //enable_output(&VGAname[0],"auto", vgax, vgay);
+    enable_output(&VGAname[0],&activemode[0], vgax, vgay);
 }

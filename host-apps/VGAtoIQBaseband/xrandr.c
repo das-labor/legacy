@@ -2971,6 +2971,14 @@ int init_xrandr(void){
     int		major, minor;
     char          *display_name = NULL;
 
+    fb_width = 0; fb_height = 0;
+    fb_width_mm = 0; fb_height_mm = 0;
+    dpi = 0;
+//outputs = NULL;
+//*outputs_tail = &outputs;
+    crtcs = NULL;
+    umodes = NULL;
+
     program_name = "xrandr";
     dpy = XOpenDisplay (display_name);
 
@@ -2978,8 +2986,9 @@ int init_xrandr(void){
 	fprintf (stderr, "Can't open display %s\n", XDisplayName(display_name));
 	return 1;
     }
-    if (screen < 0)
-	screen = DefaultScreen (dpy);
+
+    screen = DefaultScreen (dpy);
+    
     if (screen >= ScreenCount (dpy)) {
 	fprintf (stderr, "Invalid screen number %d (display has %d)\n",
 		 screen, ScreenCount (dpy));
@@ -3004,6 +3013,8 @@ int init_xrandr(void){
 int
 add_custom_mode (char *output_name, int pixelclk, int hsync, int vsync)
 {
+	init_xrandr();
+	
     if (has_1_2)
     {
     	XRRModeInfo *e;
@@ -3036,8 +3047,20 @@ add_custom_mode (char *output_name, int pixelclk, int hsync, int vsync)
 	fatal ("cannot find output \"%s\"\n", output_name);
 	e = find_mode_by_name("newmode");
 	if (e){
-		printf("fatal: mode exists\n");
-		exit(0);
+		enable_output(output_name,"1024x768", 0, 0);
+		disable_output(output_name);
+		rm_mode(output_name,"newmode");
+		init_xrandr();
+		get_screen ();
+		get_crtcs ();
+		get_outputs ();
+		o = find_output_by_name (output_name);
+		if (!o) {
+		o = add_output ();
+		set_name (&o->output, output_name, name_string|name_xid);
+		}
+		if (!o)
+		fatal ("cannot find output \"%s\"\n", output_name);
 	}
 	   
     	XRRCreateMode (dpy, root, &m->mode);
@@ -3065,12 +3088,17 @@ enable_output (char *output_name, char* mode_name, int x, int y)
 {
 	output_t	*output = NULL;
 	
+	init_xrandr();
+	
 	output = find_output_by_name (output_name);
 	if (!output) {
 		output = add_output ();
 		set_name (&output->output, output_name, name_string|name_xid);
 	}
 
+	set_name_xid (&output->mode, None);
+	set_name_xid (&output->crtc, None);
+	
 	if(strstr(mode_name, "auto")){
 		output->automatic = True;
 		output->changes |= changes_automatic;	
@@ -3124,7 +3152,7 @@ enable_output (char *output_name, char* mode_name, int x, int y)
 	    }
 	}
 	
-		//set_screen_size ();
+	
 	/*
 	 * Now apply all of the changes
 	 */
@@ -3135,11 +3163,11 @@ enable_output (char *output_name, char* mode_name, int x, int y)
 
 }
 
-int find_VGA_output(char *name,int *x, int *y)
+int find_VGA_output(char *name,int *x, int *y, char* mode_active)
 {
 	output_t	*output = NULL;
 
-	//int found_vga;
+	init_xrandr();
 	
 	get_screen ();
 	get_crtcs ();
@@ -3152,13 +3180,13 @@ int find_VGA_output(char *name,int *x, int *y)
 	    XRRCrtcInfo	    *crtc_info = crtc ? crtc->crtc_info : NULL;
 	    XRRModeInfo	    *mode = output->mode_info;
 	    //Atom	    *props;
-	    //int		    j, k, nprop;
+	    int		    j;//, k, nprop;
 	    //Bool	    *mode_shown;
 	    //Rotation	    rotations = output_rotations (output);
 	
 	    if( strstr(output_info->name, "VGA") > 0 ){
 		    if(name)
-			    memcpy(name,output_info->name, sizeof(output_info->name));
+			    memcpy(name,output_info->name, strlen(output_info->name));
 		    if (mode)
 		    {
 			if (crtc_info) {
@@ -3168,9 +3196,26 @@ int find_VGA_output(char *name,int *x, int *y)
 			    *x = output->x;
 			    *y = output->y;
 			}
+			if(mode_active)
+				memcpy(mode_active,mode->name,strlen(mode->name));
 		    }
+		    #if 0
+		      for (j = 0; j < output_info->nmode; j++)
+		      {
+		      	      XRRModeInfo	*mode = find_mode_by_xid (output_info->modes[j]);
+		   
+		    if (mode == output->mode_info)
+		    {
+		    		if(mode_active)
+		    			memcpy(mode_active,mode->name,strlen(mode->name));
+		    }
+		
+		      }
+		      #endif
 		    return 0;
 	    }
+	    
+	  
 	   
 	}
 	return 1;
@@ -3181,6 +3226,8 @@ void disable_output(char* name)
 {
 	output_t	*output = NULL;
 
+	init_xrandr();
+	
 	output = find_output_by_name (name);
 	if (!output) {
 	output = add_output ();
@@ -3229,7 +3276,7 @@ void disable_output(char* name)
 		fb_height_mm = DisplayHeightMM (dpy, screen);
 	    }
 	}
-	//set_screen_size ();
+	
 	/*
 	 * Now apply all of the changes
 	 */
