@@ -214,13 +214,13 @@ int main(int argc, char **argv)
     add_custom_mode(&VGAname[0], msps, 1, 2 );
     
     if( beVerbose )
-    	    cout << "added custom mode" << endl;
+    	    cout << "added custom mode: newmode" << endl;
     
     // set mode
     enable_output(&VGAname[0], "newmode", vgax, vgay);
     
     if( beVerbose )
-    	    cout << "set mode on VGA " << endl;
+    	    cout << "set mode \"newmode\" on VGA " << endl;
     
     // init GLUT and GL
     initGLUT(argc, argv);
@@ -409,8 +409,9 @@ void initGL()
     // enable /disable features
     glDisable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
-
-    glClearColor(0, 0, 0, 0);                   // background color
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+    glClearColor(0, 0, 0.5f, 0);                   // background color
 }
 
 ///////////////////////////////////////////////////////////////////////////////
