@@ -188,6 +188,10 @@ int main(int argc, char **argv)
         
     }
 
+    if( beVerbose )
+    	cout << "hsync: " << cutofright << "vsync: " << cutofbottom << endl;
+
+    
     if( init_xrandr() )
     {
     	cout << "failed to init xrandr" << endl;	    
@@ -211,7 +215,7 @@ int main(int argc, char **argv)
         rm_mode(&VGAname[0],"newmode");
     }
     // add new modeline 
-    add_custom_mode(&VGAname[0], msps, 1, 2 );
+    add_custom_mode(&VGAname[0], msps, cutofright, cutofbottom );
     
     if( beVerbose )
     	    cout << "added custom mode: newmode" << endl;
@@ -466,9 +470,9 @@ bool initSharedMem()
     testpatternB = new GLubyte[DATA_SIZE];
     
     ptr = (float*)testpatternB;
-    for(int i = 0; i < IMAGE_HEIGHT * IMAGE_WIDTH; ++i)
+    for(int i = 0; i < IMAGE_HEIGHT * IMAGE_WIDTH; i++)
     {
-    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f)*0.5f + 0.25f);
+    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f)*0.25f + 0.5f);
     	    ++ptr;
     	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f + 3.1415928f/2.0f)*0.25f + 0.5f);
     	    ++ptr;
