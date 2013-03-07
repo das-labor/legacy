@@ -70,13 +70,11 @@ void printTransferRate();
 
 
 // constants
-const int    SCREEN_WIDTH    = 7*200;
-const int    SCREEN_HEIGHT   = 600;
 const float  CAMERA_DISTANCE = sqrt(3.0f);
 const int    TEXT_WIDTH      = 8;
 const int    TEXT_HEIGHT     = 13;
 const int    IMAGE_WIDTH = 200;
-const int    IMAGE_HEIGHT = 600;
+const int    IMAGE_HEIGHT = 700;
 const int    CHANNEL_COUNT = 2;
 const int    BYTE_PER_CHANNEL = 4;
 const int    DATA_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * CHANNEL_COUNT * BYTE_PER_CHANNEL;
@@ -189,23 +187,30 @@ int main(int argc, char **argv)
     }
 
     if( beVerbose )
-    	cout << "hsync: " << cutofright << "vsync: " << cutofbottom << endl;
+    	cout << "hsync: " << cutofright << " vsync: " << cutofbottom << endl;
 
-    
+#ifdef _WIN32
+	#warn modesetting not supported  
+#else  
     if( init_xrandr() )
     {
     	cout << "failed to init xrandr" << endl;	    
     	exit(1);
     }
     
-    if(find_VGA_output(&VGAname[0],&vgax, &vgay, &activemode[0])){
+    if( find_VGA_output(&VGAname[0],&vgax, &vgay, &activemode[0]) ){
     	    cout << "couldn't find VGA port" << endl;
     	    exit(1);
     }
         
     if( beVerbose )
-    	    cout << "found port: " << VGAname << "@ " << vgax << "," << vgay << "mode: " << activemode << endl;
-    
+    {
+    	    cout << "found port: " << VGAname << " @ " << vgax << "," << vgay << " mode: " << activemode << endl;
+        if( !strlen(activemode) )
+            cout << "cannot detect mode. no mode set ?" << endl;
+    }
+
+    //test if newmode is active, if so remove it
     if( strstr(activemode,"newmode") )
     {
     	if( beVerbose )
@@ -214,18 +219,20 @@ int main(int argc, char **argv)
         disable_output(&VGAname[0]);
         rm_mode(&VGAname[0],"newmode");
     }
+
     // add new modeline 
-    add_custom_mode(&VGAname[0], msps, cutofright, cutofbottom );
+    add_custom_mode( &VGAname[0], msps, cutofright, cutofbottom );
     
     if( beVerbose )
     	    cout << "added custom mode: newmode" << endl;
     
     // set mode
-    enable_output(&VGAname[0], "newmode", vgax, vgay);
+    enable_output( &VGAname[0], "newmode", vgax, vgay );
     
     if( beVerbose )
     	    cout << "set mode \"newmode\" on VGA " << endl;
-    
+#endif
+
     // init GLUT and GL
     initGLUT(argc, argv);
     initGL();
@@ -352,7 +359,7 @@ int main(int argc, char **argv)
     }
 
     if( fragmentisSupported )
-    	    setShaders( SCREEN_WIDTH,  SCREEN_HEIGHT , beVerbose);
+    	    setShaders( IMAGE_WIDTH,  IMAGE_HEIGHT , beVerbose);
     
     // start timer, the elapsed time will be used for updateVertices()
     timer.start();
@@ -377,7 +384,7 @@ int initGLUT(int argc, char **argv)
 
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_ALPHA); // display mode
 
-    glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);               // window size
+    glutInitWindowSize(IMAGE_WIDTH, IMAGE_HEIGHT);               // window size
 
     
     glutInitWindowPosition(vgax, vgay);           // window location
@@ -388,7 +395,7 @@ int initGLUT(int argc, char **argv)
     //int handle = 0;
     int handle = glutCreateWindow(argv[0]);     // param is the title of window
     glutFullScreen();
-    //glutGameModeString("1400x700:32");
+
     // register GLUT callback functions
     glutDisplayFunc(displayCB);
     glutIdleFunc(idleCB);                       // redraw only every given millisec
@@ -426,8 +433,8 @@ bool initSharedMem()
     float* ptr;
     enableconvolutional = 0;
 
-    screenWidth = SCREEN_WIDTH;
-    screenHeight = SCREEN_HEIGHT;
+    screenWidth = IMAGE_WIDTH;
+    screenHeight = IMAGE_HEIGHT;
 
     cameraAngleX = cameraAngleY = 0;
     cameraDistance = CAMERA_DISTANCE;
@@ -746,9 +753,9 @@ void displayCB()
     glBegin(GL_QUADS);
     glNormal3f(0, 0, 1);
 
-    glTexCoord2f(0.0f, 0.0f);   glVertex3f(-1.0f, -1.0f - 2.0f/SCREEN_HEIGHT * cutofbottom, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);   glVertex3f( 1.0f + 2.0f/SCREEN_WIDTH * cutofright, -1.0f - 2.0f/SCREEN_HEIGHT * cutofbottom, 0.0f);
-    glTexCoord2f(1.0f, 1.0f);   glVertex3f( 1.0f + 2.0f/SCREEN_WIDTH * cutofright,  1.0f, 0.0f);
+    glTexCoord2f(0.0f, 0.0f);   glVertex3f(-1.0f, -1.0f - 2.0f/IMAGE_HEIGHT * cutofbottom, 0.0f);
+    glTexCoord2f(1.0f, 0.0f);   glVertex3f( 1.0f + 2.0f/IMAGE_WIDTH * cutofright, -1.0f - 2.0f/IMAGE_HEIGHT * cutofbottom, 0.0f);
+    glTexCoord2f(1.0f, 1.0f);   glVertex3f( 1.0f + 2.0f/IMAGE_WIDTH * cutofright,  1.0f, 0.0f);
     glTexCoord2f(0.0f, 1.0f);   glVertex3f(-1.0f,  1.0f, 0.0f);
 
     glEnd();
@@ -802,8 +809,15 @@ void keyboardCB(unsigned char key, int x, int y)
 void exitCB()
 {
     clearSharedMem();
-    enable_output(&VGAname[0],&activemode[0], vgax, vgay);
-    disable_output(&VGAname[0]);
-    rm_mode(&VGAname[0],"newmode");
-    enable_output(&VGAname[0],&activemode[0], vgax, vgay);
+#ifdef _WIN32
+	#warn modesetting not supported  
+#else
+    if( strlen(activemode) )
+    {
+        enable_output( &VGAname[0],&activemode[0], vgax, vgay );
+        disable_output( &VGAname[0] );
+        rm_mode( &VGAname[0],"newmode" );
+        enable_output( &VGAname[0],&activemode[0], vgax, vgay );
+    }
+#endif
 }
