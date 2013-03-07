@@ -108,7 +108,7 @@ void printShaderInfoLog(GLuint obj, bool beVerbose)
     {
         infoLog = (char *)malloc(infologLength);
         glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
-        if( beVerbose )
+        if( beVerbose && charsWritten )
 		cout << "printShaderInfoLog:" << infoLog << endl;
         free(infoLog);
 	}else{
@@ -129,7 +129,7 @@ void printProgramInfoLog(GLuint obj, bool beVerbose)
     {
         infoLog = (char *)malloc(infologLength);
         glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
-        if( beVerbose )
+        if( beVerbose && charsWritten )
 		cout << "printProgramInfoLog: " << infoLog << endl;
         free(infoLog);
     }else{
@@ -147,7 +147,7 @@ void setShaders(float width, float height, bool beVerbose)
 {
 	//a few strings
 	// will hold onto the file read in!
-	char *fs = NULL; //, *fs2 = NULL, *gs = NULL,*vs = NULL, ;
+	char *fs = NULL;
 	
 #ifdef _WIN32
 	glCreateShader = (PFNGLCREATESHADERARBPROC)wglGetProcAddress("glCreateShaderARB");
@@ -172,7 +172,7 @@ void setShaders(float width, float height, bool beVerbose)
 
 	glShaderSource(f, 1, &ff, NULL);
 
-	free(fs);//free(gs);free(vs);
+	free(fs);
 
 	glCompileShader(f);
 
