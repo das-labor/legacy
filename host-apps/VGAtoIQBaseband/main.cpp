@@ -215,9 +215,9 @@ int main(int argc, char **argv)
     {
     	if( beVerbose )
     	    cout << "newmode is active, removing it now..." << endl;
-        enable_output(&VGAname[0],"1024x768", vgax, vgay);
-        disable_output(&VGAname[0]);
-        rm_mode(&VGAname[0],"newmode");
+        enable_output( &VGAname[0],"1024x768", vgax, vgay );
+        disable_output( &VGAname[0] );
+        rm_mode( &VGAname[0],"newmode" );
     }
 
     // add new modeline 
@@ -422,7 +422,7 @@ void initGL()
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
-    glClearColor(0, 0, 0.5f, 0);                   // background color
+    glClearColor(0.5f, 0.5f, 0.5f, 0);                   // background color
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -458,9 +458,15 @@ bool initSharedMem()
 	    {
 		    if(j == IMAGE_WIDTH/2)
 		    {
-			    *ptr = float(1.0f);
+			    *ptr = float(0.5f);
 			    ++ptr;
-			    *ptr = float(1.0f);
+			    *ptr = float(0.5f);
+		    }
+		    else if(j == IMAGE_WIDTH/4 || j == 3*IMAGE_WIDTH/4 )
+		    {
+			    *ptr = float(-0.5f);
+			    ++ptr;
+			    *ptr = float(-0.5f);
 		    }
 		    else
 		    {
@@ -479,9 +485,9 @@ bool initSharedMem()
     ptr = (float*)testpatternB;
     for(int i = 0; i < IMAGE_HEIGHT * IMAGE_WIDTH; i++)
     {
-    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f)*0.25f + 0.5f);
+    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f)*0.25f);
     	    ++ptr;
-    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f + 3.1415928f/2.0f)*0.25f + 0.5f);
+    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f + 3.1415928f/2.0f)*0.25f);
     	    ++ptr;
     }
    	    
