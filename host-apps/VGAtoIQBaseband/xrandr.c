@@ -3016,7 +3016,7 @@ int init_xrandr(void){
 }
 
 int
-add_custom_mode (char *output_name, int pixelclk, int hsync, int vsync)
+add_custom_mode (const char *output_name, int pixelclk, int hsync, int vsync)
 {
 	init_xrandr();
 	
@@ -3043,10 +3043,10 @@ add_custom_mode (char *output_name, int pixelclk, int hsync, int vsync)
 	get_screen ();
 	get_crtcs ();
 	get_outputs ();
-	o = find_output_by_name (output_name);
+	o = find_output_by_name ((char *)output_name);
 	if (!o) {
 	o = add_output ();
-	set_name (&o->output, output_name, name_string|name_xid);
+	set_name (&o->output, (char *)output_name, name_string|name_xid);
 	}
 	if (!o)
 	fatal ("cannot find output \"%s\"\n", output_name);
@@ -3059,10 +3059,10 @@ add_custom_mode (char *output_name, int pixelclk, int hsync, int vsync)
 		get_screen ();
 		get_crtcs ();
 		get_outputs ();
-		o = find_output_by_name (output_name);
+		o = find_output_by_name ((char *)output_name);
 		if (!o) {
 		o = add_output ();
-		set_name (&o->output, output_name, name_string|name_xid);
+		set_name (&o->output, (char *)output_name, name_string|name_xid);
 		}
 		if (!o)
 		fatal ("cannot find output \"%s\"\n", output_name);
@@ -3073,7 +3073,7 @@ add_custom_mode (char *output_name, int pixelclk, int hsync, int vsync)
     	get_screen ();
 	get_crtcs ();
 	get_outputs ();
-	set_name (&m->output, output_name, name_string|name_xid);
+	set_name (&m->output, (char *)output_name, name_string|name_xid);
 	set_name (&m->name, m->mode.name, name_string|name_xid);
 	e = find_mode_by_name("newmode");
 	if (!e){
@@ -3089,16 +3089,16 @@ add_custom_mode (char *output_name, int pixelclk, int hsync, int vsync)
 }
 
 int
-enable_output (char *output_name, char* mode_name, int x, int y)
+enable_output (const char *output_name, const char* mode_name, int x, int y)
 {
 	output_t	*output = NULL;
 	
 	init_xrandr();
 	
-	output = find_output_by_name (output_name);
+	output = find_output_by_name ((char *)output_name);
 	if (!output) {
 		output = add_output ();
-		set_name (&output->output, output_name, name_string|name_xid);
+		set_name (&output->output, (char *)output_name, name_string|name_xid);
 	}
 
 	set_name_xid (&output->mode, None);
@@ -3110,7 +3110,7 @@ enable_output (char *output_name, char* mode_name, int x, int y)
 	}
 	else
 	{
-		set_name (&output->mode, mode_name, name_string|name_xid);
+		set_name (&output->mode, (char *)mode_name, name_string|name_xid);
 		output->changes |= changes_mode;
 	}
   	output->x = x;
@@ -3227,16 +3227,16 @@ int find_VGA_output(char *name,int *x, int *y, char* mode_active)
 }
 
 
-void disable_output(char* name)
+void disable_output(const char* name)
 {
 	output_t	*output = NULL;
 
 	init_xrandr();
 	
-	output = find_output_by_name (name);
+	output = find_output_by_name ((char *)name);
 	if (!output) {
 	output = add_output ();
-	set_name (&output->output, name, name_string|name_xid);
+	set_name (&output->output, (char *)name, name_string|name_xid);
 	}
 
 	set_name_xid (&output->mode, None);
@@ -3289,7 +3289,7 @@ void disable_output(char* name)
 	XSync (dpy, False);	
 }
 
-int rm_mode (char* output_name, char* mode_name)
+int rm_mode (const char* output_name, const char* mode_name)
 {
 	output_t	*output = NULL;
 	disable_output(output_name);
@@ -3299,8 +3299,8 @@ int rm_mode (char* output_name, char* mode_name)
 	get_outputs ();
 	
 	XRRModeInfo *e;
-	e = find_mode_by_name(mode_name);
-	output = find_output_by_name (output_name);
+	e = find_mode_by_name((char *)mode_name);
+	output = find_output_by_name ((char *)output_name);
 	XRRDeleteOutputMode (dpy, output->output.xid, e->id);
 	XSync (dpy, False);
 	
