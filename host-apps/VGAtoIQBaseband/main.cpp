@@ -186,9 +186,11 @@ int main(int argc, char **argv)
         
     }
 
-    if( beVerbose )
+    if( beVerbose ){
     	cout << "hsync: " << cutofright << " vsync: " << cutofbottom << endl;
+	cout << "msps: " << msps << endl;
 
+    }
 #ifdef _WIN32
 	#warn modesetting not supported  
 #else  
@@ -247,8 +249,8 @@ int main(int argc, char **argv)
     glBindTexture(GL_TEXTURE_2D, textureId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, IMAGE_WIDTH, IMAGE_HEIGHT, 0, PIXEL_FORMAT, GL_FLOAT, (GLvoid*)imageData); //GL_RGBA12
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -422,7 +424,7 @@ void initGL()
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
-    glClearColor(0.5f, 0.5f, 0.5f, 0);                   // background color
+    glClearColor(0.0f, 0.0f, 0.5f, 0);                   // background color
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -458,21 +460,21 @@ bool initSharedMem()
 	    {
 		    if(j == IMAGE_WIDTH/2)
 		    {
-			    *ptr = float(0.5f);
+			    *ptr = float(1.0f);
 			    ++ptr;
-			    *ptr = float(0.5f);
+			    *ptr = float(1.0f);
 		    }
 		    else if(j == IMAGE_WIDTH/4 || j == 3*IMAGE_WIDTH/4 )
 		    {
-			    *ptr = float(-0.5f);
+			    *ptr = float(0.0f);
 			    ++ptr;
-			    *ptr = float(-0.5f);
+			    *ptr = float(0.0f);
 		    }
 		    else
 		    {
-			    *ptr = float(0);
+			    *ptr = float(0.5f);
 			    ++ptr;
-			    *ptr = float(0);
+			    *ptr = float(0.5f);
 		    }
 		    ++ptr;
 
@@ -481,14 +483,14 @@ bool initSharedMem()
     
     // allocate texture buffer
     testpatternB = new GLubyte[DATA_SIZE];
-    
+
     ptr = (float*)testpatternB;
-    for(int i = 0; i < IMAGE_HEIGHT * IMAGE_WIDTH; i++)
+    for(int i = 0; i < (IMAGE_HEIGHT * IMAGE_WIDTH); i++)
     {
-    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f)*0.25f);
+    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f)*0.25f+0.5f);
     	    ++ptr;
-    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f + 3.1415928f/2.0f)*0.25f);
-    	    ++ptr;
+    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f + 3.1415928f/2.0f)*0.25f+0.5f);
+    	    ++ptr; 
     }
    	    
     return true;
@@ -557,6 +559,8 @@ void updatePixels(GLubyte* dst, int size)
     	    	    }
     	    }while( filestr.eof() )*/
     	    filestr.read (ptr,DATA_SIZE);
+    	    if( filestr.gcount() < DATA_SIZE )
+    	    	    cout << "couldn't read enough" << endl;
     }
     else
     {
@@ -758,12 +762,11 @@ void displayCB()
     glColor4f(1, 1, 1, 1);
     glBegin(GL_QUADS);
     glNormal3f(0, 0, 1);
-
-    glTexCoord2f(0.0f, 0.0f);   glVertex3f(-1.0f, -1.0f - 2.0f/IMAGE_HEIGHT * cutofbottom, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);   glVertex3f( 1.0f + 2.0f/IMAGE_WIDTH * cutofright, -1.0f - 2.0f/IMAGE_HEIGHT * cutofbottom, 0.0f);
-    glTexCoord2f(1.0f, 1.0f);   glVertex3f( 1.0f + 2.0f/IMAGE_WIDTH * cutofright,  1.0f, 0.0f);
-    glTexCoord2f(0.0f, 1.0f);   glVertex3f(-1.0f,  1.0f, 0.0f);
-
+cutofbottom = 0;
+    glTexCoord2f(0.0f, 1.0f);   glVertex3f( -1.0f, -1.0f - 2.0f/IMAGE_HEIGHT * cutofbottom, 0.0f);
+    glTexCoord2f(1.0f, 1.0f);   glVertex3f( 1.0f + 2.0f/IMAGE_WIDTH * cutofright, -1.0f - 2.0f/IMAGE_HEIGHT * cutofbottom, 0.0f);
+    glTexCoord2f(1.0f, 0.0f);   glVertex3f( 1.0f + 2.0f/IMAGE_WIDTH * cutofright,  1.0f, 0.0f);
+    glTexCoord2f(0.0f, 0.0f);   glVertex3f( -1.0f,  1.0f, 0.0f);
     glEnd();
 
     // unbind texture
