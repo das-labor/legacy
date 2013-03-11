@@ -8,6 +8,15 @@
 
 
 void buttons_nv_handler(netvar_desc *nd, void *ref) {
+	uint8_t i = (uint16_t) ref;
+	uint8_t val;
+	netvar_read(nd, &val);
+	
+	if (val) {
+		uart_putc ('A' + i);
+	} else {
+		uart_putc ('a' + i);	
+	}
 }
 
 
