@@ -24,26 +24,22 @@ static struct t_pin_parameter {
 
 void init_io()
 {
-	// Init shiftregister
-
-	// PWM default values
-
-	DDRA  &= ~(_BV(PA4) | _BV(PA7)); // Eingänge Türkontakt / Taster
-	PORTA |= _BV(PA4);	// PULLUP Türkontakt
-	send_status();
+	
 }
 
-enum {
-	LAMP_OUT_FENSTER,
-	LAMP_OUT_MITTE
-};
+#define F_LED 0
 
 static void lamp_out(void *num, uint8_t val) {
 	uint8_t i = (uint8_t) (uint16_t) num;
 	switch (i) {
-		case LAMP_OUT_FENSTER:
-			set_pwm   (F_PWM_FENSTER, val);
-			set_output(F_REG_FENSTER, val);
+		case F_LED:
+			if (val) {
+				DDR_LED |= R_LED;
+				DDR_LED &= ~(G_LED);
+			} else {
+				DDR_LED |= G_LED;
+				DDR_LED &= ~(R_LED);
+			}
 			break;
 	}
 }
@@ -51,14 +47,19 @@ static void lamp_out(void *num, uint8_t val) {
 static netvar_desc *out_netvars[NUM_INPUTS];
 
 void switch_netvars_init() {
-	out_netvars[0] = netvar_register(0x0100, 0x2f, 1); // Taster
-	out_netvars[1] = netvar_register(0x000A, 0x00, 1); // Bewegung
+	out_netvars[0] = netvar_register(0x0100, 0x2f, 1); // Taster Vortragsraum Licht
+//	out_netvars[1] = netvar_register(0x000A, 0x00, 1); // Bewegung
 }
 
 #define NV_IDX_LAMP_CONTROLLER_VORTRAG 0x0100
 
 void lamp_out_init() {
-	new_netvar_output_1(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x39, status_led, (void *) F_LED);
+	new_netvar_output_1(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x3f, lamp_out, (void *) F_LED);
+}
+
+static void input_changed_event(uint8_t num, uint8_t val) {
+
+	netvar_write(out_netvars[num], &val);
 }
 
 #define DEBOUNCE_CYCLES 2
