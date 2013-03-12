@@ -69,6 +69,7 @@ static void init(void)
 
 int main(void)
 {
+	//system initialization
 	init();
 	switch_netvars_init();
 	lamp_out_init();
@@ -77,7 +78,7 @@ int main(void)
 	{
 		can_handler();
 		if (tickscounter > 9) {
-			//switch_handler();
+			switch_handler();
 			//temp_sensor_read();
 			netvar_handle_events();
 			tickscounter = 0;

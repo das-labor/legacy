@@ -1,5 +1,4 @@
 #include <avr/io.h>
-#include <util/delay.h>
 
 #include "config.h"
 #include "io.h"
@@ -44,11 +43,8 @@ static void lamp_out(void *num, uint8_t val) {
 #define NV_IDX_LAMP_CONTROLLER_KUECHE 0x0102
 
 void lamp_out_init() {
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_KUECHE, 0x50, lamp_out, (void *) LED);
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_KUECHE, 0x3f, lamp_out, (void *) LED);
 }
-
-
-
 
 static netvar_desc *out_netvars[NUM_INPUTS];
 
