@@ -24,7 +24,17 @@ static struct t_pin_parameter {
 
 void init_io()
 {
-	
+	// Ausgänge für LED Stripe
+	RGB_DDR |= RGB_DATA | RGB_CLK;
+	RGB_PORT |= RGB_DATA | RGB_CLK;
+
+	// Ausgänge für RGB LED
+	DDR_LED |= R_LED | G_LED | B_LED;
+	// Eingänge für Taster
+	DDRB &= ~(I_BV_0 | I_BV_1);
+
+	// pullups aktivieren
+	PORTB |= (I_BV_0 | I_BV_1);
 }
 
 #define F_LED 0
