@@ -1,4 +1,5 @@
-OBJ = main.o can/can.o can/spi.o netvar/can_handler.o netvar/netvar.o netvar/netvar_io.o io.o motion.o
+OBJ = main.o can/can.o can/spi.o netvar/can_handler.o netvar/netvar.o netvar/netvar_io.o io.o twi_master/twi_master.o hardware.o util_lib/list.o
+#motion.o
 
 # Default values
 OUT           ?= image
