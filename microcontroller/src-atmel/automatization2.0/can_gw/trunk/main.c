@@ -124,10 +124,12 @@ static void syscontrol(uint8_t ctrl_reg_new);
 /*****************************************************************************
  * CAN to UART
  */
-static uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char* buf, uint8_t len) {
+static uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char *buf, uint8_t len)
+{
 	uint8_t i;
 
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < len; i++)
+	{
 		crc = _crc16_update(crc, *buf);
 		uart_putc( *buf++);
 	}
@@ -135,7 +137,8 @@ static uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char* buf, uint8_t le
 	return crc;
 }
 
-static void write_can_message_to_uart(can_message * cmsg) {
+static void write_can_message_to_uart(can_message *cmsg)
+{
 	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
 	uint16_t crc;
 
@@ -166,7 +169,7 @@ static void write_cmd_to_uart(uint8_t cmd, char* buf, uint8_t len)
 	uart_putc(cmd); 		//command
 	uart_putc(len);			//length
 
-	if(len)
+	if (len)
 		crc = write_buffer_to_uart_and_crc(crc, buf, len);
 
 	uart_putc(crc >> 8);	//crc16
@@ -184,16 +187,16 @@ typedef enum {STATE_START, STATE_LEN, STATE_PAYLOAD, STATE_CRC} canu_rcvstate_t;
 
 rs232can_msg	canu_rcvpkt;
 canu_rcvstate_t	canu_rcvstate = STATE_START;
-unsigned char 	canu_rcvlen   = 0;
+unsigned char	canu_rcvlen   = 0;
 unsigned char	canu_failcnt  = 0;
 
-static rs232can_msg * canu_get_nb(void)
+static rs232can_msg *canu_get_nb(void)
 {
 	static char *uartpkt_data;
 	static uint16_t crc, crc_in;
 	unsigned char c;
 
-	while (uart_getc_nb((char *)&c))
+	while (uart_getc_nb((char *) &c))
 	{
 		#ifdef DEBUG
 		printf("canu_get_nb received: %02x\n", c);
@@ -211,7 +214,7 @@ static rs232can_msg * canu_get_nb(void)
 				break;
 			case STATE_LEN:
 				canu_rcvlen       = c;
-				if(canu_rcvlen > RS232CAN_MAXLENGTH)
+				if (canu_rcvlen > RS232CAN_MAXLENGTH)
 				{
 					canu_rcvstate = STATE_START;
 					break;
@@ -222,7 +225,7 @@ static rs232can_msg * canu_get_nb(void)
 				crc = _crc16_update(crc, c);
 				break;
 			case STATE_PAYLOAD:
-				if(canu_rcvlen--)
+				if (canu_rcvlen--)
 				{
 					*(uartpkt_data++) = c;
 					crc = _crc16_update(crc, c);
@@ -235,7 +238,7 @@ static rs232can_msg * canu_get_nb(void)
 				break;
 			case STATE_CRC:
 				canu_rcvstate = STATE_START;
-				if(crc == ((crc_in << 8) | c))
+				if (crc == ((crc_in << 8) | c))
 				{
 					canu_failcnt = 0;
 					return &canu_rcvpkt;
@@ -254,12 +257,13 @@ static rs232can_msg * canu_get_nb(void)
 void canu_reset(void)
 {
 	unsigned char i;
-	for(i=sizeof(rs232can_msg)+2; i>0; i--)
-		uart_putc( (char)0x00 );
+	for (i = sizeof(rs232can_msg) + 2; i > 0; i--)
+		uart_putc( (char) 0x00 );
 }
 
 
-void process_cantun_msg(rs232can_msg *msg) {
+void process_cantun_msg(rs232can_msg *msg)
+{
 	can_message *cmsg;
 
 	switch (msg->cmd) {
@@ -282,33 +286,33 @@ void process_cantun_msg(rs232can_msg *msg) {
 			canu_reset();
 			break;
 		case RS232CAN_VERSION:
-			write_cmd_to_uart(RS232CAN_VERSION, (char *)firmware_version, sizeof(firmware_version));
+			write_cmd_to_uart(RS232CAN_VERSION, (char *) firmware_version, sizeof(firmware_version));
 			break;
 		case RS232CAN_IDSTRING:
-			write_cmd_to_uart(RS232CAN_IDSTRING, (char *)FW_IDSTRING, (sizeof(FW_IDSTRING)-1)>20?sizeof(FW_IDSTRING)-1:20);
+			write_cmd_to_uart(RS232CAN_IDSTRING, (char *) FW_IDSTRING, (sizeof(FW_IDSTRING) - 1) > 20 ? sizeof(FW_IDSTRING) -1 : 20);
 			break;
 		case RS232CAN_PACKETCOUNTERS:
-			write_cmd_to_uart(RS232CAN_PACKETCOUNTERS, (char *)&pkt_cnt, sizeof(pkt_cnt));
+			write_cmd_to_uart(RS232CAN_PACKETCOUNTERS, (char *) &pkt_cnt, sizeof(pkt_cnt));
 			break;
 		case RS232CAN_ERRORCOUNTERS:
 			err_cnt.rx_errors   = mcp_read(REC);
 			err_cnt.tx_errors   = mcp_read(TEC);
 			err_cnt.error_flags = mcp_read(EFLG);
-			write_cmd_to_uart(RS232CAN_ERRORCOUNTERS, (char *)&err_cnt, sizeof(err_cnt));
+			write_cmd_to_uart(RS232CAN_ERRORCOUNTERS, (char *) &err_cnt, sizeof(err_cnt));
 			break;
 		case RS232CAN_POWERDRAW:
-			write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&bus_pwr, sizeof(bus_pwr));
+			write_cmd_to_uart(RS232CAN_POWERDRAW, (char *) &bus_pwr, sizeof(bus_pwr));
 			break;
 		case RS232CAN_READ_CTRL_REG:
-			write_cmd_to_uart(RS232CAN_READ_CTRL_REG, (char *)&ctrl_reg, sizeof(ctrl_reg));
+			write_cmd_to_uart(RS232CAN_READ_CTRL_REG, (char *) &ctrl_reg, sizeof(ctrl_reg));
 			break;
 		case RS232CAN_WRITE_CTRL_REG:
 			syscontrol((uint8_t)msg->data[0]);
-			write_cmd_to_uart(RS232CAN_WRITE_CTRL_REG, (char *)&ctrl_reg, sizeof(ctrl_reg));
+			write_cmd_to_uart(RS232CAN_WRITE_CTRL_REG, (char *) &ctrl_reg, sizeof(ctrl_reg));
 			break;
 		case RS232CAN_GET_RESETCAUSE:
 			msg->data[0] = REG_RESETCAUSE & MSK_RESETCAUSE;
-			write_cmd_to_uart(RS232CAN_GET_RESETCAUSE, (char*)&msg->data[0], 1);
+			write_cmd_to_uart(RS232CAN_GET_RESETCAUSE, (char*) &msg->data[0], 1);
 			break;
 		default:
 			write_cmd_to_uart(RS232CAN_ERROR, 0, 0);  //send error
@@ -316,9 +320,10 @@ void process_cantun_msg(rs232can_msg *msg) {
 	}
 }
 
-
-static void buspower(uint8_t on) {
-	if(on)
+#ifdef BUSPOWER_SWITCH
+static void buspower(uint8_t on)
+{
+	if (on)
 	{
 		DDR_BUSPOWER |= (1<<BIT_BUSPOWER);
 		PORT_BUSPOWER |= (1<<BIT_BUSPOWER);
@@ -329,17 +334,21 @@ static void buspower(uint8_t on) {
 		PORT_BUSPOWER &= ~(1<<BIT_BUSPOWER);
 	}
 }
+#endif // BUSPOWER_SWITCH
 
-
-static void led_init() {
-	DDR_LEDS |= (1<<PIN_LEDD)|(1<<PIN_LEDCL)|(1<<PIN_LEDCK);
+#ifdef LED_SUPPORT
+static void led_init()
+{
+	DDR_LEDS |= (1<<PIN_LEDD) | (1<<PIN_LEDCL) | (1<<PIN_LEDCK);
 	PORT_LEDS |= (1<<PIN_LEDCL);
 }
 
 
-static void led_set(unsigned int stat) {
+static void led_set(unsigned int stat)
+{
 	unsigned char x;
-	for (x = 0; x < 16; x++) {
+	for (x = 0; x < 16; x++)
+	{
 		if (stat & 0x01) {
 			PORT_LEDS |= (1<<PIN_LEDD);
 		} else {
@@ -350,6 +359,9 @@ static void led_set(unsigned int stat) {
 		PORT_LEDS &= ~(1<<PIN_LEDCK);
 	}
 }
+#endif // LED_SUPPORT
+
+#ifdef POWER_MEASUREMENT
 
 //setup adc operations
 static void adc_init(void)
@@ -450,6 +462,7 @@ ISR(ADC_vect)
 	}
 }
 
+#endif // POWER_MEASUREMENT
 
 //setup timer0 to simply count up
 static void timer0_init(void)
@@ -480,13 +493,19 @@ static void sys_init(void)
 	ACSR |= _BV(ACD);
 
 	//init all subsystems
+#ifdef LED_SUPPORT
 	led_init();
+#endif // LED_SUPPORT
+#ifdef BUSPOWER_SWITCH
 	buspower(1);
+#endif // BUSPOWER_SWITCH
 	uart_init();
 	spi_init();
 	wdt_reset();
 	can_init();
+#ifdef POWER_MEASUREMENT
 	adc_init();
+#endif // POWER_MEASUREMENT
 	timer0_init();
 
 	//init ctrl reg
@@ -510,34 +529,37 @@ void syscontrol(uint8_t ctrl_reg_new)
 {
 	uint8_t changes = ctrl_reg_new ^ ctrl_reg;
 
-	if(ctrl_reg_new & _BV(FLAG_RESET))
+	if (ctrl_reg_new & _BV(FLAG_RESET))
 	{
 		wdt_enable(WDTO_15MS);
-		while(23);
+		while (23);
 	}
-
-	if(changes & _BV(FLAG_BUSPOWER))
+#ifdef BUSPOWER_SWITCH
+	if (changes & _BV(FLAG_BUSPOWER))
 		buspower(ctrl_reg_new & _BV(FLAG_BUSPOWER));
-
-	if(ctrl_reg_new & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS)))
+#endif // BUSPOWER_SWITCH
+	if (ctrl_reg_new & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS)))
 	{
 		autoreport_last_schedule_time = 0;
 	}
 
-	if(changes)
+	if (changes)
 		ctrl_reg = ctrl_reg_new;
 }
 
 
-int main(void) {
+int main(void)
+{
+#ifdef LED_SUPPORT
 	static uint16_t leds, leds_old;
+#endif // LED_SUPPORT
 
 	//init
 	sys_init();
 
 	//notify host that we had a reset
 	adc_last_schedule_time = REG_RESETCAUSE & MSK_RESETCAUSE;
-	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, (char*)&adc_last_schedule_time, 1);
+	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, (char *) &adc_last_schedule_time, 1);
 
 	//begin can operations
 	can_setmode(NORMAL);
@@ -545,8 +567,9 @@ int main(void) {
 
 	//store system counter
 	adc_last_schedule_time = autoreport_last_schedule_time = sys_ticks;
-	while (1) {
-		rs232can_msg  *rmsg;
+	while (1)
+	{
+		rs232can_msg *rmsg;
 		can_message *cmsg;
 
 		wdt_reset();
@@ -555,7 +578,7 @@ int main(void) {
 		rmsg = canu_get_nb();
 		if (rmsg)
 			process_cantun_msg(rmsg);
-		else if(canu_failcnt > 1)
+		else if (canu_failcnt > 1)
 		{
 			canu_reset();
 			write_cmd_to_uart(RS232CAN_RESYNC, 0, 0);
@@ -564,38 +587,44 @@ int main(void) {
 
 		//transmission from can to host
 		cmsg = can_get_nb();
-		if (cmsg) {
+		if (cmsg)
+		{
 			pkt_cnt.tx_count ++;
 			pkt_cnt.tx_size += cmsg->dlc;
 			write_can_message_to_uart(cmsg);
 			can_free(cmsg);
 		}
 
+#ifdef LED_SUPPORT
 		//update leds
 		leds = (pkt_cnt.rx_count << 8) | pkt_cnt.tx_count;
-		if (leds != leds_old) {
+		if (leds != leds_old)
+		{
 			leds_old = leds;
 			led_set(leds);
 		}
-
+#endif // LED_SUPPORT
+#ifdef POWER_MEASUREMENT
 		//schedule adc measurements, approx. twice a second
 		//the timer frequency is approx. 61Hz @ 16MHz cpu. freq
 		//so our delta should be around SYS_TICK_FREQ/2
-		if((sys_ticks - adc_last_schedule_time) > (SYS_TICK_FREQ / 2))
+		if ((sys_ticks - adc_last_schedule_time) > (SYS_TICK_FREQ / 2))
 		{
 			adc_last_schedule_time = sys_ticks;
 			ADC_START();
 		}
-
+#endif // POWER_MEASUREMENT
 		//schedule autoreport functions approx once a second
-		if((ctrl_reg & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS))) > 0 || (sys_ticks - autoreport_last_schedule_time) > (SYS_TICK_FREQ))
+		if ((ctrl_reg & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS))) > 0 || (sys_ticks - autoreport_last_schedule_time) > (SYS_TICK_FREQ))
 		{
 			autoreport_last_schedule_time = sys_ticks;
 
-			if(ctrl_reg & _BV(FLAG_AUTOREPORT_PSTATS))
-				write_cmd_to_uart(RS232CAN_PACKETCOUNTERS, (char *)&pkt_cnt, sizeof(pkt_cnt));
-			if(ctrl_reg & _BV(FLAG_AUTOREPORT_POWERDRAW))
-				write_cmd_to_uart(RS232CAN_POWERDRAW, (char *)&bus_pwr, sizeof(bus_pwr));
+			if (ctrl_reg & _BV(FLAG_AUTOREPORT_PSTATS))
+				write_cmd_to_uart(RS232CAN_PACKETCOUNTERS, (char *) &pkt_cnt, sizeof(pkt_cnt));
+#ifdef POWER_MEASUREMENT
+			if (ctrl_reg & _BV(FLAG_AUTOREPORT_POWERDRAW))
+				write_cmd_to_uart(RS232CAN_POWERDRAW, (char *) &bus_pwr, sizeof(bus_pwr));
+#endif // POWER_MEASUREMENT
 		}
 	}
 
@@ -606,6 +635,6 @@ int main(void) {
 void wdt_init(void) __attribute__((naked)) __attribute__((section(".init3")));
 void wdt_init(void)
 {
-    wdt_disable();
-    return;
+	wdt_disable();
+	return;
 }

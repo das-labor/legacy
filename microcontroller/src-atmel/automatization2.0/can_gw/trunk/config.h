@@ -17,26 +17,32 @@
 #endif
 
 
+#define BUSPOWER_SWITCH
+#define POWER_MEASUREMENT
+#define LED_SUPPORT
+
+
 // uart.[ch] defines
 #define UART_INTERRUPT
-#define UART_BAUD_RATE 230400
+#define UART_BAUD_RATE 230400UL
 #define UART_RXBUFSIZE 50
 #define UART_TXBUFSIZE 50
 //#define UART_LEDS
 
-
+// if mcp2510 is used
+//#define MCP2510
 
 // can.[ch] defines
 #define CAN_RAW
 
-#define F_MCP 16000000
+#define F_MCP 16000000UL
 
-#define MCP_CS_PORT PORTB
-#define MCP_CS_BIT    PB2
+#define MCP_CS_PORT  PORTB
+#define MCP_CS_BIT   PB2
 
 
-#define SPI_REG_PIN_MCP_INT  PIND
-#define SPI_PIN_MCP_INT      PD2
+#define SPI_REG_PIN_MCP_INT PIND
+#define SPI_PIN_MCP_INT     PD2
 
 
 #define CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
@@ -50,8 +56,5 @@
 #define MCP_INT_VEC        INT0_vect
 
 
+#endif // CONFIG_H
 
-// lap.[ch] defines
-
-
-#endif
