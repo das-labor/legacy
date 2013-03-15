@@ -99,7 +99,7 @@ void help()
 }
 
 
-void hexdump(unsigned char * addr, int size)
+void hexdump(unsigned char *addr, int size)
 {
 	unsigned char x = 0;
 
@@ -351,7 +351,7 @@ void process_uart_msg()
 
 	if (!msg)
 		return;
-	else if(canu_failcnt > CANU_FAILTHRESH)
+	else if (canu_failcnt > CANU_FAILTHRESH)
 	{
 		debug(0, "UART failure threshold exceeded (%u), resyncing gateway.", canu_failcnt);
 		canu_reset();
@@ -360,6 +360,8 @@ void process_uart_msg()
 	}
 
 	debug(8, "Processing message from uart..." );
+	if (debug_level >= 3)
+		hexdump((void *) msg, msg->len + 2);
 	process_msg_from_gateway(msg);
 	canu_free(msg);
 	debug(8, "...processing done.");
@@ -370,7 +372,7 @@ void canusb_transmit(rs232can_msg *msg)
 {
 	(void) usb_control_msg (udhandle,
 		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-		0x18, 0, 0, (char *)msg, msg->len + 2, 100);
+		0x18, 0, 0, (char *) msg, msg->len + 2, 100);
 
 }
 
@@ -391,7 +393,7 @@ void process_client_msg(cann_conn_t *client)
 
 	debug(3, "Processing message from network..." );
 	if (debug_level >= 3)
-		hexdump((void *)msg, msg->len + 2);
+		hexdump((void *) msg, msg->len + 2);
 
 	switch (msg->cmd) {
 		case RS232CAN_SETFILTER:
@@ -445,7 +447,7 @@ int poll_usb()
 
 	r = usb_control_msg (udhandle,
 	    USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-	    0x17, 0, 0, (char *)packetBuffer, 1000, 100);
+	    0x17, 0, 0, (char *) packetBuffer, 1000, 100);
 
 
 	if (r > 0) {
@@ -462,7 +464,7 @@ int poll_usb()
 			debug(11, "p=%x\n", p);
 			process_msg_from_gateway((rs232can_msg *) &packetBuffer[p]);
 
-			p += packetBuffer[p+1] + 2;
+			p += packetBuffer[p + 1] + 2;
 		}
 	}
 	return 0;
@@ -533,7 +535,7 @@ void event_loop()
 		// check client activity
 		//
 		while ( (client = cann_activity(&rset)) ) {
-			debug(5, "CANN actiity found" );
+			debug(5, "CANN activity found" );
 			process_client_msg(client);
 		}
 
@@ -652,7 +654,7 @@ static void signal_handler(int sig, siginfo_t *si, void *unused)
 	shutdown_all();
 	signal(sig, SIG_DFL);
 
-	switch(sig)
+	switch (sig)
 	{
 		case SIGINT:
 		case SIGQUIT:
