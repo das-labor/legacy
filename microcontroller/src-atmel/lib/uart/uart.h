@@ -21,13 +21,13 @@
 #include <avr/pgmspace.h>
 
 //prototypes
-void uart_init();
+void uart_init(void);
 
 void uart_putc(char c);
-void uart_putstr(char * str);
+void uart_putstr(char *str);
 void uart_putstr_P(PGM_P str);
 
-char uart_getc();
+char uart_getc(void);
 char uart_getc_nb(char *c);		// non blocking, returns 1 on success
 
 #ifdef UART_HEXDUMP
@@ -39,7 +39,7 @@ char uart_getc_nb(char *c);		// non blocking, returns 1 on success
 	//get one Cariage return terminated line
 	//echo charakters back on Uart
 	//returns buffer with zero terminated line on success, 0 pointer otherwise
-	char * uart_getline();
+	char *uart_getline(void);
 #endif
 char uart_rxbuffer_notempty(void);	//returns 1 if queue is not empty, otherwise 0
 #if UART_RXBUFSIZE < 255
