@@ -126,11 +126,16 @@ void uart_init()
 
 	UCSRA = 0;
 	UCSRB = _BV(TXEN) | _BV(RXEN); // UART RX und TX einschalten
-	UCSRC = (3<<UCSZ0);		//Asynchron 8N1
 
 
 	UBRRH = (uint8_t) (UART_BAUD_CALC(UART_BAUD_RATE, F_CPU) >> 8);
 	UBRRL = (uint8_t) (UART_BAUD_CALC(UART_BAUD_RATE, F_CPU));
+
+#ifdef URSEL
+	UCSRC = _BV(URSEL) | _BV(UCSZ1) | _BV(UCSZ0);	// Asynchron 8N1
+#else
+	UCSRC = _BV(UCSZ1) | _BV(UCSZ0);
+#endif
 
 #ifdef UART_INTERRUPT
 	// init buffers
