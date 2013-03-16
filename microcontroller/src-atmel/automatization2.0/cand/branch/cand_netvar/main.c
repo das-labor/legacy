@@ -562,17 +562,19 @@ void event_loop()
 	}
 }
 
-unsigned int running = 0;
+volatile unsigned int running = 0;
 
 void shutdown_all()
 {
 	if (running)
 	{
+		running = 0;
 		cann_close_errors();
 		cann_close(NULL);
+		deinit_netvar_server(netvar_server);
 		shutdown(listen_socket, SHUT_RDWR);
 		close(listen_socket);
-		deinit_netvar_server(netvar_server);
+
 		if (udhandle)
 			usb_close(udhandle);
 		debug_close();
