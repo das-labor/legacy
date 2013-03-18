@@ -22,8 +22,4 @@ ifeq ($(ANIMATION_FAIRYDUST),y)
   SRC += fairydust.c
 endif
 
-ifeq ($(ANIMATION_IDEENPARK),y)
-  SRC += ideenpark.c
-endif
-
 include $(TOPDIR)/rules.mk

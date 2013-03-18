@@ -92,7 +92,6 @@ ANIMATION_BMSCROLLER=y
 # ANIMATION_AMPHIBIAN is not set
 # ANIMATION_LOGO_OOS is not set
 ANIMATION_FAIRYDUST=y
-# ANIMATION_IDEENPARK is not set
 
 #
 # Fixed-point math patterns
