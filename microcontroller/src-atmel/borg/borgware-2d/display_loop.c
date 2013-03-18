@@ -16,7 +16,6 @@
 #include "animations/bitmapscroller/amphibian.h"
 #include "animations/bitmapscroller/outofspec.h"
 #include "animations/bitmapscroller/fairydust.h"
-#include "animations/bitmapscroller/ideenpark.h"
 #include "animations/fpmath_patterns.h"
 #include "animations/mherweg.h"
 #include "animations/blackhole.h"
@@ -217,32 +216,26 @@ void display_loop(){
 			break;
 #endif
 
-#ifdef ANIMATION_IDEENPARK
-		case 21:
-			logo_Ideenpark();
-			break;
-#endif
-
 #ifdef ANIMATION_PLASMA
-		case 22:
+		case 21:
 			plasma();
 			break;
 #endif
 
 #ifdef ANIMATION_PSYCHEDELIC
-		case 23:
+		case 22:
 			psychedelic();
 			break;
 #endif
 
 #ifdef ANIMATION_BLACKHOLE
-		case 24:
+		case 23:
 			blackhole();
 			break;
 #endif
 
 #ifdef ANIMATION_SQUARES
-		case 25:
+		case 24:
 			squares();
 			break;
 #endif
