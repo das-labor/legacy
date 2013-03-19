@@ -42,9 +42,53 @@ PFNGLUSEPROGRAMMARBPROC pglUseProgramARB = 0;
 #define glUseProgram              pglUseProgramARB
 #endif
 
+const char text_fragment[] =
+"#define KERNEL_SIZE 7\n"
+
+"float kernel[KERNEL_SIZE];\n"
+
+"uniform sampler2D colorMap;\n"
+"uniform float width;\n"
+"uniform float height;\n"
+
+"float step_w = 1.0/width;\n"
+"float step_h = 1.0/height;\n"
+
+"void main(void)\n"
+"{\n"
+"   int i = 0;\n"
+"   float lastline = 0.0;\n"
+"   float lastpixel = 0.0;\n"
+"   vec4 sum = vec4(0.0);\n"
+   
+"   kernel[0] = 0.0470400026866;\n"
+"   kernel[1] = 0.454648713413;\n"
+"   kernel[2] =0.841470984808;\n"
+"   kernel[3] =1.0;\n"
+"   kernel[4] =0.841470984808;\n"
+"   kernel[5] =0.454648713413;\n"
+"   kernel[6] =0.0470400026866;\n"
+
+"	   for( i=0; i<KERNEL_SIZE; i++ )\n"
+"	   {\n"
+"               if(float(gl_TexCoord[0].s - float(i)*step_w) < step_w)\n"
+"               {\n"
+"                   lastline = 1.0;\n"
+"                   if( lastpixel < 1.0 ){\n"
+"                       lastpixel = float(i);\n"
+"                   }\n"
+"               }\n"
+"			vec4 tmp = texture2D( colorMap, gl_TexCoord[0].st +  vec2(-step_w * (float(i)-lastpixel) + lastline, -step_h * lastline));\n"
+"			sum += tmp * kernel[i] * 0.2712;\n"
+"	   }\n"
+
+"   gl_FragColor = sum;\n"
+"}\n"
+;
 //Function from: http://www.evl.uic.edu/aej/594/code/ogl.cpp
 //Read in a textfile (GLSL program)
 // we need to pass it as a string to the GLSL driver
+/*
 char *textFileRead(char *fn) 
 {
 	FILE *fp;
@@ -73,7 +117,7 @@ char *textFileRead(char *fn)
 	}
 
 	return content;
-}
+}*/
 
 //Function from: http://www.evl.uic.edu/aej/594/code/ogl.cpp
 //Read in a textfile (GLSL program)
@@ -124,7 +168,7 @@ void printProgramInfoLog(GLuint obj, bool beVerbose)
     int infologLength = 0;
     int charsWritten  = 0;
     char *infoLog;
-	glGetProgramiv(obj, GL_INFO_LOG_LENGTH,&infologLength);
+    glGetProgramiv(obj, GL_INFO_LOG_LENGTH,&infologLength);
     if (infologLength > 0)
     {
         infoLog = (char *)malloc(infologLength);
@@ -147,7 +191,7 @@ void setShaders(float width, float height, bool beVerbose)
 {
 	//a few strings
 	// will hold onto the file read in!
-	char *fs = NULL;
+	//char *fs = NULL;
 	
 #ifdef _WIN32
 	glCreateShader = (PFNGLCREATESHADERARBPROC)wglGetProcAddress("glCreateShaderARB");
@@ -162,17 +206,18 @@ void setShaders(float width, float height, bool beVerbose)
 	//First, create our shaders 
 	f = glCreateShader(GL_FRAGMENT_SHADER);
 	
-        char filename[] = "fragment.glsl";
+        //char filename[] = "fragment.glsl";
         
 	//Read in the programs
-	fs = textFileRead(&filename[0]);
+	//fs = text_fragment;
+	//fs = textFileRead(&filename[0]);
 
 	//Setup a few constant pointers for below
-	const char * ff = fs;
+	const char * ff = text_fragment;
 
 	glShaderSource(f, 1, &ff, NULL);
 
-	free(fs);
+	//free(fs);
 
 	glCompileShader(f);
 
