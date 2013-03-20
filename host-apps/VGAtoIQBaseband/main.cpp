@@ -74,7 +74,7 @@ const float  CAMERA_DISTANCE = sqrt(3.0f);
 const int    TEXT_WIDTH      = 8;
 const int    TEXT_HEIGHT     = 13;
 const int    IMAGE_WIDTH = 200;
-const int    IMAGE_HEIGHT = 700;
+const int    IMAGE_HEIGHT = 800;
 const int    CHANNEL_COUNT = 2;
 const int    BYTE_PER_CHANNEL = 4;
 const int    DATA_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * CHANNEL_COUNT * BYTE_PER_CHANNEL;
@@ -87,6 +87,8 @@ GLuint textureId;                   // ID of texture
 GLubyte* imageData = 0;             // pointer to texture buffer
 GLubyte* testpatternA = 0;
 GLubyte* testpatternB = 0;
+GLubyte* readfifo = 0;
+int dataready = 0;
 int screenWidth;
 int screenHeight;
 int enableconvolutional;
@@ -100,7 +102,7 @@ bool testpattern;
 int pboMode = 0;
 int drawMode = 0;
 int cutofright = 1;
-int cutofbottom = 2;
+int cutofbottom = 3;
 ifstream filestr;
 char *VGAname = new char(255);
 char *activemode = new char(255);
@@ -191,6 +193,9 @@ int main(int argc, char **argv)
 	cout << "msps: " << msps << endl;
 
     }
+    screenWidth = (IMAGE_WIDTH - cutofright) * 7;
+    screenHeight = IMAGE_HEIGHT - cutofbottom;
+    
 #ifdef _WIN32
 	#warn modesetting not supported  
 #else  
@@ -223,7 +228,7 @@ int main(int argc, char **argv)
     }
 
     // add new modeline 
-    add_custom_mode( &VGAname[0], msps, cutofright, cutofbottom );
+    add_custom_mode( &VGAname[0], msps, screenHeight, cutofright, cutofbottom );
     
     if( beVerbose )
     	    cout << "added custom mode: newmode" << endl;
@@ -274,7 +279,7 @@ int main(int argc, char **argv)
            glMapBufferARB && glUnmapBufferARB && glDeleteBuffersARB && glGetBufferParameterivARB)
         {
             pboisSupported = true;
-            pboMode = 2;    // using 2 PBO
+            pboMode = 1;    // using 2 PBO
             //cout << "Video card supports GL_ARB_pixel_buffer_object." << endl;
         }
         else
@@ -359,10 +364,14 @@ int main(int argc, char **argv)
     	    	    return -1;
     	    }
     }
+    filestr.read ((char *)readfifo,DATA_SIZE*240);
+            if( filestr.gcount() < (DATA_SIZE*240) )
+                    cout << "couldn't read enough" << endl;
 
     if( fragmentisSupported )
-    	    setShaders( IMAGE_WIDTH,  IMAGE_HEIGHT , beVerbose);
-    
+    	    setShaders( screenWidth, screenHeight, beVerbose, 3810000.0f, (float)msps*1000000.0f);
+    //sleep_us(1000);
+
     // start timer, the elapsed time will be used for updateVertices()
     timer.start();
 
@@ -386,7 +395,7 @@ int initGLUT(int argc, char **argv)
 
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_ALPHA); // display mode
 
-    glutInitWindowSize(IMAGE_WIDTH, IMAGE_HEIGHT);               // window size
+    glutInitWindowSize(screenWidth, screenHeight);               // window size
 
     
     glutInitWindowPosition(vgax, vgay);           // window location
@@ -435,21 +444,20 @@ bool initSharedMem()
     float* ptr;
     enableconvolutional = 0;
 
-    screenWidth = IMAGE_WIDTH;
-    screenHeight = IMAGE_HEIGHT;
-
     cameraAngleX = cameraAngleY = 0;
     cameraDistance = CAMERA_DISTANCE;
 
     drawMode = 0; // 0:fill, 1: wireframe, 2:points
     
+ 
     beVerbose = false;
     testpattern = false;
     
     // allocate texture buffer
     imageData = new GLubyte[DATA_SIZE];
     memset(imageData, 0, DATA_SIZE);
-
+    readfifo = new GLubyte[DATA_SIZE*240];
+    memset(readfifo, 0 , DATA_SIZE*240);
     // allocate texture buffer
     testpatternA = new GLubyte[DATA_SIZE];
     
@@ -458,6 +466,7 @@ bool initSharedMem()
     {
 	    for(int j = 0; j < IMAGE_WIDTH; ++j)
 	    {
+#if 0
 		    if(j == IMAGE_WIDTH/2)
 		    {
 			    *ptr = float(1.0f);
@@ -476,6 +485,38 @@ bool initSharedMem()
 			    ++ptr;
 			    *ptr = float(0.5f);
 		    }
+#endif
+
+		if(j == IMAGE_WIDTH - 4)
+		    {
+			    *ptr = float(1.0f);
+			    ++ptr;
+			    *ptr = float(1.0f);
+		    }
+		else if(j == IMAGE_WIDTH - 3)
+		    {
+			    *ptr = float(0.0f);
+			    ++ptr;
+			    *ptr = float(0.0f);
+		    }
+		else if(j == IMAGE_WIDTH - 2)
+		    {
+			    *ptr = float(1.0f);
+			    ++ptr;
+			    *ptr = float(1.0f);
+		    }
+		else if(j == 0)
+		    {
+			    *ptr = float(1.0f);
+			    ++ptr;
+			    *ptr = float(1.0f);
+		    }
+		else
+		    {
+			    *ptr = float(0.5f);
+			    ++ptr;
+			    *ptr = float(0.5f);
+		    }
 		    ++ptr;
 
 	    } 
@@ -483,7 +524,6 @@ bool initSharedMem()
     
     // allocate texture buffer
     testpatternB = new GLubyte[DATA_SIZE];
-
     ptr = (float*)testpatternB;
     for(int i = 0; i < (IMAGE_HEIGHT * IMAGE_WIDTH); i++)
     {
@@ -546,7 +586,11 @@ void updatePixels(GLubyte* dst, int size)
 
     if( !testpattern )
     {
-    	    char* ptr = (char*)dst;
+	dataready += DATA_SIZE;
+	if(dataready >= (DATA_SIZE * 240))
+		dataready = 0;
+	memcpy(dst, (readfifo+dataready), DATA_SIZE);
+    	   // char* ptr = (char*)dst;
     	    /*do{
     	    	    if(  filestr.eof() )
     	    	    	    ptr += filestr.gcount();
@@ -558,9 +602,9 @@ void updatePixels(GLubyte* dst, int size)
     	    	    	    return;
     	    	    }
     	    }while( filestr.eof() )*/
-    	    filestr.read (ptr,DATA_SIZE);
-    	    if( filestr.gcount() < DATA_SIZE )
-    	    	    cout << "couldn't read enough" << endl;
+    	 //   filestr.read (ptr,DATA_SIZE);
+    	 //   if( filestr.gcount() < DATA_SIZE )
+    	 //   	    cout << "couldn't read enough" << endl;
     }
     else
     {
@@ -762,7 +806,7 @@ void displayCB()
     glColor4f(1, 1, 1, 1);
     glBegin(GL_QUADS);
     glNormal3f(0, 0, 1);
-cutofbottom = 0;
+
     glTexCoord2f(0.0f, 1.0f);   glVertex3f( -1.0f, -1.0f - 2.0f/IMAGE_HEIGHT * cutofbottom, 0.0f);
     glTexCoord2f(1.0f, 1.0f);   glVertex3f( 1.0f + 2.0f/IMAGE_WIDTH * cutofright, -1.0f - 2.0f/IMAGE_HEIGHT * cutofbottom, 0.0f);
     glTexCoord2f(1.0f, 0.0f);   glVertex3f( 1.0f + 2.0f/IMAGE_WIDTH * cutofright,  1.0f, 0.0f);
@@ -798,6 +842,11 @@ void timerCB(int millisec)
 
 void idleCB()
 {
+//	if(dataready == 0)
+//{
+	//cout << "bla" << endl;
+	
+//}
     glutPostRedisplay();
 }
 
