@@ -67,7 +67,7 @@ void setCamera(float posX, float posY, float posZ, float targetX, float targetY,
 void updatePixels(GLubyte* dst, int size);
 void showInfo();
 void printTransferRate();
-
+void usage();
 
 // constants
 const float  CAMERA_DISTANCE = sqrt(3.0f);
@@ -97,6 +97,7 @@ float cameraAngleY;
 float cameraDistance;
 bool pboisSupported;
 bool fragmentisSupported;
+bool forcefragmentoff;
 bool beVerbose;
 bool testpattern;
 int pboMode = 0;
@@ -141,12 +142,14 @@ int main(int argc, char **argv)
 {
     int i;
     int msps = 64;
-
+    bool inputfilegiven;
     
     if( argc < 2 ){
-    	    cout << "No inputfile given." << endl;
+    	    cout << "No args given." << endl;
+    	    usage();
     	    return -1;
     }
+    inputfilegiven = true;
     
     initSharedMem();
     // register exit callback
@@ -161,6 +164,8 @@ int main(int argc, char **argv)
         	        i++;
         	    }
         	}
+        	if( i == 1 )
+        		inputfilegiven = false;
         }
         
         if( strcmp(argv[i],"-cutofbottom")==0 ){
@@ -170,10 +175,19 @@ int main(int argc, char **argv)
         	        i++;
         	    }
         	}
+        	if( i == 1 )
+        		inputfilegiven = false;
         }
         
         if( strcmp(argv[i],"-v")==0 || strcmp(argv[i],"-verbose")==0){
         	beVerbose = true;
+        	if( i == 1 )
+        		inputfilegiven = false;
+        }
+
+        if( strcmp(argv[i],"-h")==0 || strcmp(argv[i],"--help")==0){
+        	usage();
+        	return 0;
         }
         
         if( strcmp(argv[i],"-pclk")==0 ){
@@ -183,11 +197,23 @@ int main(int argc, char **argv)
         	        i++;
         	    }
         	}
-        }    
+        	if( i == 1 )
+        		inputfilegiven = false;
+        }
         
-        
+        if( strcmp(argv[i],"-nofilter")==0 ){
+        	forcefragmentoff = false;
+        	if( i == 1 )
+        		inputfilegiven = false;
+        }
+        if( strcmp(argv[i],"-t")==0 ){
+        	testpattern = true; 
+                if( i == 1 )
+        		inputfilegiven = false;
+        }
     }
 
+    
     if( beVerbose ){
     	cout << "hsync: " << cutofright << " vsync: " << cutofbottom << endl;
 	cout << "msps: " << msps << endl;
@@ -205,7 +231,7 @@ int main(int argc, char **argv)
     	exit(1);
     }
     
-    if( find_VGA_output(&VGAname[0],&vgax, &vgay, &activemode[0]) ){
+    if( find_VGA_output( &VGAname[0],&vgax, &vgay, &activemode[0] ) ){
     	    cout << "couldn't find VGA port" << endl;
     	    exit(1);
     }
@@ -241,7 +267,7 @@ int main(int argc, char **argv)
 #endif
 
     // init GLUT and GL
-    initGLUT(argc, argv);
+    initGLUT( argc, argv );
     initGL();
     
     // get OpenGL info
@@ -345,32 +371,29 @@ int main(int argc, char **argv)
         glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB, DATA_SIZE, 0, GL_STREAM_DRAW_ARB);
         glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
     }
-    
-    for(i=1; i < argc; i++)
-    {
-        if( strcmp(argv[i],"-nofilter")==0 )
-        	fragmentisSupported = false;
+
         
-        if( strcmp(argv[i],"-t")==0 )
-        	testpattern = true; 
-    }
-    
-    if( !testpattern )
-    {
+    if( inputfilegiven && !testpattern ){
     	    filestr.open (argv[1], ifstream::binary);
     	    if ( filestr.fail() ){
     	    	    cout << "Error opening file." << endl;
     	    	    clearSharedMem();
     	    	    return -1;
     	    }
-    }
-    filestr.read ((char *)readfifo,DATA_SIZE*240);
+
+    	    
+    	    filestr.read ((char *)readfifo,DATA_SIZE*240);
             if( filestr.gcount() < (DATA_SIZE*240) )
                     cout << "couldn't read enough" << endl;
-
-    if( fragmentisSupported )
-    	    setShaders( screenWidth, screenHeight, beVerbose, 3810000.0f, (float)msps*1000000.0f);
-    //sleep_us(1000);
+    }
+    else
+    {
+    	   testpattern = true; 
+    }
+    
+    if( fragmentisSupported && !forcefragmentoff)
+    	    setShaders( screenWidth, screenHeight, beVerbose, 3810000.0f, (float)msps*1000000.0f, 17);
+   
 
     // start timer, the elapsed time will be used for updateVertices()
     timer.start();
@@ -382,6 +405,22 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// print help message
+///////////////////////////////////////////////////////////////////////////////
+void usage(void)
+{
+	cout << "Usage:\nvgatoiqbaseband [inputfile] [args]\nargs can be:" << endl;
+	cout << "\t-h , --help\t\tthis message" << endl;	
+	cout << "\t-v , --verbose\t\tbe verbose" << endl;	
+	cout << "\t-nofilter\t\tturn off fragment-shader" << endl;	
+	cout << "\t-pclk <x>\t\tset the pixel clock rate to x MSps" << endl;	
+	cout << "\t-t\t\t\tdo not read inputfile, generate test patterns" << endl;	
+	cout << "\t-cutofright <x>\t\tdo not display x elements at the right screen border\tdefault: 1 (7 pixel)" << endl;	
+	cout << "\t-cutofbottom <x>\t\tdo not display x elements at the bottom screen border\tdefault: 2" << endl;		
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // initialize GLUT for windowing
@@ -452,6 +491,7 @@ bool initSharedMem()
  
     beVerbose = false;
     testpattern = false;
+    forcefragmentoff = false;
     
     // allocate texture buffer
     imageData = new GLubyte[DATA_SIZE];
@@ -485,7 +525,7 @@ bool initSharedMem()
 			    ++ptr;
 			    *ptr = float(0.5f);
 		    }
-#endif
+#else
 
 		if(j == IMAGE_WIDTH - 4)
 		    {
@@ -517,6 +557,7 @@ bool initSharedMem()
 			    ++ptr;
 			    *ptr = float(0.5f);
 		    }
+#endif
 		    ++ptr;
 
 	    } 
@@ -644,9 +685,12 @@ void printTransferRate()
     }
     else
     {
-        cout << std::fixed << std::setprecision(1);
-        cout << "Transfer Rate: " << (count / elapsedTime) * DATA_SIZE * INV_MEGA << " MB/s. (" << count / elapsedTime << " FPS)\n";
-        cout << std::resetiosflags(std::ios_base::fixed | std::ios_base::floatfield);
+    	if( beVerbose ){
+    		cout << std::fixed << std::setprecision(1);
+    		cout << "Transfer Rate: " << (count / elapsedTime) * DATA_SIZE * INV_MEGA << " MB/s. (" << count / elapsedTime << " FPS)\n";
+    		cout << std::resetiosflags(std::ios_base::fixed | std::ios_base::floatfield);
+    	}
+    	
         count = 0;                      // reset counter
         timer.start();                  // restart timer
     }
@@ -822,6 +866,7 @@ void displayCB()
     glPopMatrix();
 
     glutSwapBuffers();
+    glutPostRedisplay();
 }
 
 void reshapeCB(int width, int height)
@@ -842,11 +887,6 @@ void timerCB(int millisec)
 
 void idleCB()
 {
-//	if(dataready == 0)
-//{
-	//cout << "bla" << endl;
-	
-//}
     glutPostRedisplay();
 }
 
