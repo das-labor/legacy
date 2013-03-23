@@ -21,7 +21,9 @@ int main (void) {
 	uart_init();
 	joy_init();
 	sei();
+#ifdef BORG_CAN
 	bcan_init();
+#endif
 	clear_screen(0);
 
 	mode = setjmp(newmode_jmpbuf);
