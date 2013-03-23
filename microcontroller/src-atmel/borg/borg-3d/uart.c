@@ -19,8 +19,8 @@ volatile static char *volatile rxhead, *volatile rxtail;
 volatile static char *volatile txhead, *volatile txtail;
 
 
-SIGNAL(SIG_UART_DATA) {
-#ifdef UART_LEDS	
+ISR(USART_UDRE_vect) {
+#ifdef UART_LEDS
 	PORTC ^= 0x01;
 #endif
 	
@@ -32,8 +32,8 @@ SIGNAL(SIG_UART_DATA) {
 	}
 }
 
-SIGNAL(SIG_UART_RECV) {
-	int diff; 
+ISR(USART_RXC_vect) {
+	int diff;
 
 #ifdef UART_LEDS
 	PORTC ^= 0x02;
@@ -62,8 +62,8 @@ void uart_init() {
 
 	UCSRB |= ( 1 << RXEN );			//Uart RX einschalten
 
-	UBRRH=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
-	UBRRL=(uint8_t)(UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
+	UBRRH = (uint8_t) (UART_BAUD_CALC(UART_BAUD_RATE,F_CPU)>>8);
+	UBRRL = (uint8_t) (UART_BAUD_CALC(UART_BAUD_RATE,F_CPU));
 
 #ifdef UART_INTERRUPT
 	// init buffers
@@ -87,7 +87,7 @@ void uart_putc(char c) {
 
 	cli();
 	*txhead = c;
- 	if (++txhead == (txbuf + UART_TXBUFSIZE)) txhead = txbuf;
+	if (++txhead == (txbuf + UART_TXBUFSIZE)) txhead = txbuf;
 
 	UCSRB |= (1 << UDRIE);		/* enable data register empty IRQ */
 	sei();
@@ -140,7 +140,7 @@ char uart_getc()
 	while(rxhead==rxtail) ;
 
 	val = *rxtail;
- 	if (++rxtail == (rxbuf + UART_RXBUFSIZE)) rxtail = rxbuf;
+	if (++rxtail == (rxbuf + UART_RXBUFSIZE)) rxtail = rxbuf;
 
 	return val;
 }
@@ -178,7 +178,7 @@ char uart_getc_nb(char *c)
 //get one Cariage return terminated line
 //echo charakters back on Uart
 //returns buffer with zero terminated line on success, 0 pointer otherwise
-char * uart_getline_nb(){
+char *uart_getline_nb() {
 	static char buffer[UART_LINE_BUFFER_SIZE];
 	static char * pos = buffer;
 	char tmp;

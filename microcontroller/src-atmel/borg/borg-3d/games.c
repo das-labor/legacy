@@ -33,7 +33,7 @@ void pong() {
 	unsigned char lives0 = 5, lives1 = 5, score0 = 0, score1 = 0;
 	unsigned char counter = 8, joy0 = 0, joy1 = 0, ballV, i;
 	ball ballPos128 = {4*128, 2*128, 4*128};
-	pixel3d helpDir, ballDir = INIT_DIR, ballPos, ballPosOld;
+	pixel3d helpDir, ballDir = INIT_DIR, ballPos;
 	waitForFire = 0;
 	clear_screen(0);
 	
@@ -220,7 +220,6 @@ void pong() {
 			counter = 24;
 		}
 		clearpixel3d(ballPos);
-		ballPosOld = ballPos;
 	}
 	waitForFire = 1;
 }
