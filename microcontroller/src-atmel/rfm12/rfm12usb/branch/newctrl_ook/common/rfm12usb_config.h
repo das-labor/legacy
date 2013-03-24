@@ -8,6 +8,8 @@
  * definition in hwref/ 
  */
 
+#pragma once
+
 #ifndef HWREV
 	#define HWREV 4
 #endif
