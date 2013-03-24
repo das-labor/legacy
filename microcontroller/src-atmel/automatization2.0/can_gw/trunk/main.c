@@ -553,7 +553,7 @@ void syscontrol(uint8_t ctrl_reg_new)
 
 int main(void)
 {
-#ifdef LED_SUPPORT
+#if defined(LED_SUPPORT) || defined(LED_SUPPORT_MCP)
 	static uint16_t leds, leds_old;
 #endif // LED_SUPPORT
 
