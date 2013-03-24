@@ -85,8 +85,8 @@ typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t;
  * Management
  */
 
-extern void can_init();
-extern void can_setfilter();
+extern void can_init(void);
+extern void can_setfilter(void);
 extern void can_setmode(can_mode_t);
 extern void can_setled(uint8_t led, uint8_t state);
 
@@ -95,7 +95,7 @@ extern void can_setled(uint8_t led, uint8_t state);
  * Sending
  */
 
-extern can_message *can_buffer_get();
+extern can_message *can_buffer_get(void);
 extern void can_transmit(can_message *msg);
 
 
@@ -103,8 +103,8 @@ extern void can_transmit(can_message *msg);
  * Receiving
  */
 
-extern can_message *can_get();
-extern can_message *can_get_nb();
+extern can_message *can_get(void);
+extern can_message *can_get_nb(void);
 extern void can_free(can_message *msg);
 
 #endif // _CAN_H
