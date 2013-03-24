@@ -1,10 +1,10 @@
 /*******************************************************
- Author:			Manfred Langemann
- mailto:			Manfred.Langemann ät t-online.de
- Begin of project:		04.01.2008
+ Author:					Manfred Langemann
+ mailto:					Manfred.Langemann ät t-online.de
+ Begin of project:			04.01.2008
  Latest version generated:	04.01.2008
- Filename:			TWI_Master.c
- Description:			TWI Master functions
+ Filename:					TWI_Master.c
+ Description:				TWI Master functions
 
  Master code adapted form Peter Fleury <pfleury@gmx.ch>
  http://jump.to/fleury
@@ -94,23 +94,25 @@ int main (void)
  Purpose: Initialize the TWI Master Interface
 
  Input Parameter:
-	- uint16_t	TWI_Bitrate (Hz)
+ 	- uint16_t	TWI_Bitrate (Hz)
 
  Return Value: uint8_t
-	- FALSE:	Bitrate too high
-	- TRUE:		Bitrate OK
+ 	- FALSE:	Bitrate too high
+ 	- TRUE:		Bitrate OK
 
 *******************************************************/
 uint8_t TWIM_Init()
 {
-/*
-** Set TWI bitrate
-** If bitrate is too high, then error return
-*/
+	/*
+	** Set TWI bitrate
+	** If bitrate is too high, then error return
+	*/
 	TWSR = 0;
 	TWBR = ((F_CPU / TWI_BITRATE) - 16) / 2;
+
 	if (TWBR < 11)
 		return 0;
+
 	return 1;
 }
 
@@ -120,46 +122,53 @@ uint8_t TWIM_Init()
  Purpose: Start the TWI Master Interface
 
  Input Parameter:
-	- uint8_t	Device address + 
-			Type of required Operation:
+ 	- uint8_t	Device address +
+ 			Type of required Operation:
 				TWIM_READ: Read data from the slave
 				TWIM_WRITE: Write data to the slave
 
  Return Value: uint8_t
-	- TRUE:		OK, TWI Master accessible
-	- FALSE:	Error in starting TWI Master
+ 	- TRUE:		OK, TWI Master accessible
+ 	- FALSE:	Error in starting TWI Master
 
 *******************************************************/
 uint8_t TWIM_Start(uint8_t address)
 {
 	uint8_t twst;
-/*
-** Send START condition
-*/
+	/*
+	** Send START condition
+	*/
 	TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
-/*
-** Wait until transmission completed
-*/
+
+	/*
+	** Wait until transmission completed
+	*/
 	while (!(TWCR & _BV(TWINT)));
-/*
-** Check value of TWI Status Register. Mask prescaler bits.
-*/
+
+	/*
+	** Check value of TWI Status Register. Mask prescaler bits.
+	*/
 	twst = TW_STATUS;
+
 	if ((twst != TW_START) && (twst != TW_REP_START))
 		return 0;
-/*
-** Send device address
-*/
+
+	/*
+	** Send device address
+	*/
 	TWDR = address;
 	TWCR = _BV(TWINT) | _BV(TWEN);
-/*
-** Wait until transmission completed and ACK/NACK has been received
-*/
+
+	/*
+	** Wait until transmission completed and ACK/NACK has been received
+	*/
 	while (!(TWCR & _BV(TWINT)));
-/*
-** Check value of TWI Status Register. Mask prescaler bits.
-*/
+
+	/*
+	** Check value of TWI Status Register. Mask prescaler bits.
+	*/
 	twst = TW_STATUS;
+
 	if ((twst != TW_MT_SLA_ACK) && (twst != TW_MR_SLA_ACK))
 		return 0;
 
@@ -177,13 +186,14 @@ uint8_t TWIM_Start(uint8_t address)
 *******************************************************/
 void TWIM_Stop()
 {
-/*
-** Send stop condition
-*/
+	/*
+	** Send stop condition
+	*/
 	TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWSTO);
-/*
-** Wait until stop condition is executed and bus released
-*/
+
+	/*
+	** Wait until stop condition is executed and bus released
+	*/
 	while (TWCR & _BV(TWSTO));
 }
 /*******************************************************
@@ -192,29 +202,32 @@ void TWIM_Stop()
  Purpose: Write a byte to the slave
 
  Input Parameter:
-	- uint8_t	Byte to be sent
+ 	- uint8_t	Byte to be sent
 
  Return Value: uint8_t
-	- TRUE:		Error in byte transmission
-	- FALSE:	OK, Byte sent
+ 	- TRUE:		Error in byte transmission
+ 	- FALSE:	OK, Byte sent
 
 *******************************************************/
 uint8_t TWIM_Write(uint8_t byte)
 {
 	uint8_t twst;
-/*
-** Send data to the previously addressed device
-*/
+	/*
+	** Send data to the previously addressed device
+	*/
 	TWDR = byte;
 	TWCR = _BV(TWINT) | _BV(TWEN);
-/*
-** Wait until transmission completed
-*/
+
+	/*
+	** Wait until transmission completed
+	*/
 	while (!(TWCR & _BV(TWINT)));
-/*
-** Check value of TWI Status Register. Mask prescaler bits
-*/
+
+	/*
+	** Check value of TWI Status Register. Mask prescaler bits
+	*/
 	twst = TW_STATUS;
+
 	if (twst != TW_MT_DATA_ACK)
 		return 1;
 
@@ -228,12 +241,13 @@ uint8_t TWIM_Write(uint8_t byte)
  Input Parameter: None
 
  Return Value: uint8_t
-	- uint8_t	Read byte
+ 	- uint8_t	Read byte
 
 *******************************************************/
 uint8_t TWIM_ReadAck()
 {
 	TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWEA);
+
 	while (!(TWCR & _BV(TWINT)));
 
 	return TWDR;
@@ -246,12 +260,13 @@ uint8_t TWIM_ReadAck()
  Input Parameter: None
 
  Return Value: uint8_t
-	- uint8_t	Read byte
+ 	- uint8_t	Read byte
 
 *******************************************************/
 uint8_t TWIM_ReadNack()
 {
 	TWCR = _BV(TWINT) | _BV(TWEN);
+
 	while (!(TWCR & _BV(TWINT)));
 
 	return TWDR;
