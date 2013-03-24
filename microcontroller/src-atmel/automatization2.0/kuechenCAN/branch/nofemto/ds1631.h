@@ -2,8 +2,8 @@
 #define _DS1631_H
 
 
-extern void init_ds1631(uint8_t addr);
-extern void get_temp_ds1631(uint8_t *p, uint8_t addr);
+extern uint8_t init_ds1631(uint8_t addr);
+extern uint8_t get_temp_ds1631(uint8_t *p, uint8_t addr);
 
 /* Initiates temperature conversions. If the part is in one-shot mode (1SHOT = 1), only one conversion is
  * performed. In continuous mode (1SHOT = 0), continuous temperature conversions are performed until a
@@ -43,7 +43,7 @@ extern void get_temp_ds1631(uint8_t *p, uint8_t addr);
  * 1SHOT*—Conversion Mode (Read/Write)          factory = 0
  * *EEPROM BACKED
  */
-#define DS1631_I2CDEFAULTCONFIG		0b00001100
+#define DS1631_I2CDEFAULTCONFIG		0b10001100
 
 #endif // _DS1631_H
 
