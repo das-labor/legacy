@@ -26,3 +26,13 @@ void pushDot(dot_t *dot)
 	}
 }
 
+// need some delay after push
+void updateDots()
+{
+	for (uint8_t i = 0; i < 5; i++)
+	{
+		RGB_PORT |= RGB_DATA;
+		RGB_PORT &= ~RGB_DATA;
+	}
+}
+

@@ -60,7 +60,7 @@ int main(void)
 	while (1)
 	{
 		can_handler();
-
+		do_ani();
 		if (tickscounter > 20)
 		{
 			tickscounter = 0;

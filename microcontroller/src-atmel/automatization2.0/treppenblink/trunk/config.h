@@ -10,8 +10,8 @@
 
 #define CAN_INTERRUPT
 
-#define   ENABLE_CAN_INT()    GIMSK |= _BV(INT0)
-#define   DISABLE_CAN_INT()   GIMSK &= ~_BV(INT0)
+#define   ENABLE_CAN_INT()    GICR |= _BV(INT0)
+#define   DISABLE_CAN_INT()   GICR &= ~_BV(INT0)
 #define   SETUP_CAN_INT()     MCUCR |= _BV(ISC01)
 #define   MCP_INT_VEC         INT0_vect
 
