@@ -48,8 +48,7 @@ int main(void)
 	while (1)
 	{
 		can_handler();
-		// alle 32 ticks ... 0.032 sekunden
-		if (tickscounter > 20)
+		if (tickscounter > 15)
 		{
 			tickscounter = 0;
 			switch_handler();
