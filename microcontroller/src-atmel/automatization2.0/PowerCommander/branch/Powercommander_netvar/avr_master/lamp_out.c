@@ -9,7 +9,8 @@ enum {
 	LAMP_OUT_TAFEL,
 	LAMP_OUT_BEAMER,
 	LAMP_OUT_SCHRANK,
-	LAMP_OUT_FLIPPER
+	LAMP_OUT_FLIPPER,
+	LAMP_OUT_KUECHE
 };
 
 static void lamp_out(void *num, uint8_t val) {
@@ -31,15 +32,21 @@ static void lamp_out(void *num, uint8_t val) {
 			set_pwm   (PWM_FLIPPER, val);
 			set_output(SWL_FLIPPER, val);
 			break;
+		case LAMP_OUT_KUECHE:
+			set_pwm   (PWM_KUECHE, val);
+			set_output(SWL_KUECHE, val);
+			break;
 	}
 }
 
 #define NV_IDX_LAMP_CONTROLLER_VORTRAG 0x0100
+#define NV_IDX_LAMP_CONTROLLER_KUECHE  0x0102
 
 void lamp_out_init() {
 	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x50, lamp_out, (void *) LAMP_OUT_TAFEL);
 	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x51, lamp_out, (void *) LAMP_OUT_BEAMER);
 	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x52, lamp_out, (void *) LAMP_OUT_SCHRANK);
 	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x53, lamp_out, (void *) LAMP_OUT_FLIPPER);
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_KUECHE,  0x50, lamp_out, (void *) LAMP_OUT_KUECHE);
 }
 
