@@ -9,13 +9,12 @@
 uint8_t myaddr;
 
 void twi_get(uint8_t *p);
-uint8_t status[10][10];
 
-extern void can_handler()
+void can_handler()
 {
-	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
+	can_message *msg;
 	can_message *rx_msg;
-	if ((rx_msg = can_get_nb()) != 0)			//get next canmessage in rx_msg
+	if ((rx_msg = can_get_nb())) //get next canmessage in rx_msg
 	{
 		if ((rx_msg->addr_dst == myaddr))
 		{
@@ -25,31 +24,25 @@ extern void can_handler()
 				switch (rx_msg->data[0])
 				{
 					case FKT_MGT_RESET:
-//						TCCR2 = 0;
 						wdt_enable(0);
 						while (1);
-			
+						break;
 					case FKT_MGT_PING:
-
-						msg.addr_src = myaddr;
-						msg.addr_dst = rx_msg->addr_src;
-						can_transmit(&msg);
+						msg = can_buffer_get();
+						msg->addr_src = myaddr;
+						msg->addr_dst = rx_msg->addr_src;
+						msg->port_src = PORT_MGT;
+						msg->port_dst = PORT_MGT;
+						msg->dlc = 1;
+						msg->data[0] = FKT_MGT_PONG;
+						can_transmit(msg);
 						break;
 				}
 			}
 		}
-	}
-}
 
-void can_send(uint8_t port, uint8_t *p)
-{
-	static can_message msg = {0xa9, 0x00, 0x00, 0x01, 1, {0}};
-	uint8_t i;
-	for (i = 0; i < 2; i++)
-		msg.data[i] = p[i];
-	msg.addr_src = myaddr;
-	msg.port_dst = port;
-	can_transmit(&msg);
+		can_free(rx_msg);
+	}
 }
 
 void read_can_addr()
