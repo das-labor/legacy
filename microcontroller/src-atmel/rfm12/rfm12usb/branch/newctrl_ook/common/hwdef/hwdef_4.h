@@ -4,6 +4,7 @@
 
 /* -- GENERAL STUFF ---- */
 #define F_CPU 20000000
+#define RFMUSB_DEBUG 1 /* enable debug printing */
 
 /* -- LEDs ------------- */ 
 #define RX_LED(a) \
@@ -17,8 +18,16 @@
 	PORTC &= ~(_BV(PC2) | _BV(PC5)) \
 	PORTC |= (a<<PC2)
 
+#define USB_LED(a) \
+	PORTC &= ~(_BV(PC2) | _BV(PC5)) \
+	PORTC |= (a<<PC5)
+
 #define HW_INIT(a) \
 	DDRC |= (_BV(PC2) | _BV(PC3) | _BV(PC4) | _BV(PC5))
+
+/* -- BUFFERS --------- */
+#define RFMUSB_USB_BUF_SIZE 64    /* buffer containing data from/to the usb host */
+#define RFMUSB_DEBUG_BUF_SIZE 16  /* buffer for debug messages, only active when RFMUSB_DEBUG is set to 1 */
 
 
 /* -- USB ------------- */

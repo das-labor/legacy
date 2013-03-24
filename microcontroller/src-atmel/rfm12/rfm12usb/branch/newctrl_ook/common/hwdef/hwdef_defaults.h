@@ -1,5 +1,6 @@
 /* this file contains (empty) default definitions for
  * macros that haven't been set by hardware configurations.
+ * -> cleaner code by omitting #ifdef's around hardware-specific stuff...
  */
 
 #ifndef TX_LED
@@ -10,6 +11,9 @@
 #endif
 #ifndef DEBUG_LED
 	#define DEBUG_LED(a)
+#endif
+#ifndef USB_LED
+	#define USB_LED(a)
 #endif
 
 #ifndef HW_INIT
