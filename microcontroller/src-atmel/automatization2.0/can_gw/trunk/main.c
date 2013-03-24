@@ -47,7 +47,7 @@
 #define CH_BUSVOLTAGE (_BV(MUX2) | _BV(MUX0))
 #define CH_BUSCURRENT (_BV(MUX2))
 #define CH_REF_1300MV (_BV(MUX3) | _BV(MUX2) | _BV(MUX1))
-#define CH_REF_GND	  (_BV(MUX3) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0))
+#define CH_REF_GND    (_BV(MUX3) | _BV(MUX2) | _BV(MUX1) | _BV(MUX0))
 
 //adc start conversion
 #define ADC_START() (ADCSRA |= _BV(ADSC))
@@ -150,7 +150,7 @@ static void write_can_message_to_uart(can_message *cmsg)
 
 	crc = write_buffer_to_uart_and_crc(crc, (char*)cmsg, len); //data
 
-	uart_putc(crc >> 8);	  //crc16
+	uart_putc(crc >> 8);      //crc16
 	uart_putc(crc & 0xFF);
 }
 /*****************************************************************************/
@@ -159,15 +159,15 @@ static void write_can_message_to_uart(can_message *cmsg)
 /*****************************************************************************
  * CMD to UART
  */
-static void write_cmd_to_uart(uint8_t cmd, char* buf, uint8_t len)
+static void write_cmd_to_uart(uint8_t cmd, char *buf, uint8_t len)
 {
 	uint16_t crc;
 
 	crc = _crc16_update(0, cmd);
 	crc = _crc16_update(crc, len);
 
-	uart_putc(cmd); 		//command
-	uart_putc(len);			//length
+	uart_putc(cmd);		//command
+	uart_putc(len);		//length
 
 	if (len)
 		crc = write_buffer_to_uart_and_crc(crc, buf, len);
@@ -266,7 +266,8 @@ void process_cantun_msg(rs232can_msg *msg)
 {
 	can_message *cmsg;
 
-	switch (msg->cmd) {
+	switch (msg->cmd)
+	{
 		case RS232CAN_SETFILTER:
 			break;
 		case RS232CAN_SETMODE:
@@ -349,9 +350,11 @@ static void led_set(unsigned int stat)
 	unsigned char x;
 	for (x = 0; x < 16; x++)
 	{
-		if (stat & 0x01) {
+		if (stat & 0x01)
+		{
 			PORT_LEDS |= (1<<PIN_LEDD);
-		} else {
+		} else
+		{
 			PORT_LEDS &= ~(1<<PIN_LEDD);
 		}
 		stat >>= 1;
@@ -396,7 +399,7 @@ static void adc_calibrate(void)
 	sei();
 
 	//wait for ongoing measurements to finish
-	while(ADCSRA & _BV(ADIF));
+	while (ADCSRA & _BV(ADIF));
 
 	//switch adc and state machine to reference measuring
 	adc_state = CH_REF_GND;
@@ -410,7 +413,7 @@ static void adc_calibrate(void)
 	sleep_cpu();
 
 	//wait for this to finish
-	while(((ADCSRA & _BV(ADIF)) != 0) && (adc_state != CH_BUSVOLTAGE));
+	while (((ADCSRA & _BV(ADIF)) != 0) && (adc_state != CH_BUSVOLTAGE));
 
 	//disable sleep mode
 	MCUCR &= ~_BV(SE);
@@ -431,7 +434,7 @@ static void adc_calibrate(void)
 //adc interrupt to switch channels
 ISR(ADC_vect)
 {
-	switch(adc_state)
+	switch (adc_state)
 	{
 		case CH_BUSVOLTAGE:
 			bus_pwr.v = ADC;
@@ -562,7 +565,6 @@ int main(void)
 	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, (char *) &adc_last_schedule_time, 1);
 
 	//begin can operations
-	can_setmode(NORMAL);
 	can_setled(0, 1);
 
 	//store system counter
@@ -595,13 +597,17 @@ int main(void)
 			can_free(cmsg);
 		}
 
-#ifdef LED_SUPPORT
+#if defined(LED_SUPPORT) || defined(LED_SUPPORT_MCP)
 		//update leds
 		leds = (pkt_cnt.rx_count << 8) | pkt_cnt.tx_count;
 		if (leds != leds_old)
 		{
 			leds_old = leds;
+#ifdef LED_SUPPORT_MCP
+			can_setled(0, leds & 1);
+#else
 			led_set(leds);
+#endif // LED_SUPPORT
 		}
 #endif // LED_SUPPORT
 #ifdef POWER_MEASUREMENT
