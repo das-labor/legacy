@@ -24,8 +24,8 @@
 
 #define F_MCP F_CPU
 
-#define MCP_CMD_PORT PORTB
-#define MCP_CS       PB4
+#define MCP_CS_BIT    PB4
+#define MCP_CS_PORT   PORTB
 
 #define SPI_REG_PIN_MCP_INT  PINB
 #define SPI_PIN_MCP_INT      PB2
@@ -35,9 +35,11 @@
 #define CAN_RX_BUFFER_SIZE 8	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 8	//only used for Interrupt
 
-#define ENABLE_CAN_INT()   GICR |= (1<<INT2)
-#define MCP_INT_VEC        INT2_vect
 
+#define   ENABLE_CAN_INT()    GICR |= _BV(INT2)
+#define   DISABLE_CAN_INT()   GICR &= ~_BV(INT2)
+#define   SETUP_CAN_INT()     MCUCSR &= ~_BV(ISC2)
+#define   MCP_INT_VEC         INT2_vect
 
 
 // lap.[ch] defines
