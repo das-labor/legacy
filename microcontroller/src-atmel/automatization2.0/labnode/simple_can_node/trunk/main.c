@@ -1,10 +1,5 @@
-/* -*- Mode: C; tab-width: 2 -*- */
-
-
 #include <avr/io.h>
-//#include <avr/wdt.h>
 #include <avr/interrupt.h>
-#include <util/delay.h>
 
 #include "config.h"
 
@@ -13,10 +8,10 @@
 #include "can/spi.h"
 #include "can/lap.h"
 
-void init(void)
+static void init(void)
 {
 	DDRB |= _BV(PB0); // LED out
-		
+
 	//initialize spi port
 	spi_init();
 	
@@ -25,7 +20,7 @@ void init(void)
 	
 	read_can_addr();
 }
-	 
+
 int main(void)
 {
 	volatile uint16_t foo = 0;
