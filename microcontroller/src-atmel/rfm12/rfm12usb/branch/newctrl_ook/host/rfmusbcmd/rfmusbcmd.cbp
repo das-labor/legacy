@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="rfmusbcmd" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="default">
+				<Option output="rfmusbcmd" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add directory="C:\Programme\LibUSB-Win32\include" />
+		</Compiler>
+		<Linker>
+			<Add option="C:/Programme/LibUSB-Win32/lib/gcc/libusb.a" />
+			<Add directory="C:\Programme\LibUSB-Win32\lib\gcc" />
+		</Linker>
+		<Unit filename="..\CDriver\RfmUsb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="..\example\opendevice.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="rfmusbcmd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
