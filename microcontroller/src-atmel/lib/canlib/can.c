@@ -68,9 +68,9 @@ typedef struct
 
 
 /* MCP */
-static uint8_t mcp_status();
+static uint8_t mcp_status(void);
 static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val);
-static void mcp_reset();
+static void mcp_reset(void);
 
 void mcp_write(uint8_t reg, uint8_t data);
 uint8_t mcp_read(uint8_t reg);
