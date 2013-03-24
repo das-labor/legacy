@@ -5,7 +5,7 @@
 extern t_outputdata outputdata;
 
 // function for setting the outputs
-extern void set_outputs();
+extern void set_outputs(void);
 
 // set all the outputs to output and init the PWM timers
-extern void init_outputs();
+extern void init_outputs(void);
