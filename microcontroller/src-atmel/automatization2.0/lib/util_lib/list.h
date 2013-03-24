@@ -1,37 +1,39 @@
 //
-// This file is part of the gui-library for microcontrollers 
+// This file is part of the gui-library for microcontrollers
 // by Peter Fuhrmann.
 //
 
 #ifndef _H_LIST
 #define _H_LIST
 
-typedef struct {
-	void ** childs;
+typedef struct
+{
+	void **childs;
 	uint16_t num_childs;
 	uint16_t allocated;
 	uint16_t akt_foreach;
 } list_t;
 
 
-void init_list(list_t * l);
+void init_list(list_t *l);
 
-void delete_list(list_t * l);//destructor
-void uninit_list(list_t * l);//destructor
+void delete_list(list_t *l);//destructor
+void uninit_list(list_t *l);//destructor
 
-list_t * new_list();
-void list_append(list_t * l, void * child) ;
+list_t *new_list(void);
+void list_append(list_t *l, void *child);
 
 
 typedef uint16_t list_iterator_t;
 
-void list_foreach_begin(list_iterator_t * it, list_t * l);
-void * list_foreach(list_iterator_t * it, list_t * l);
+void list_foreach_begin(list_iterator_t *it, list_t *l);
+void *list_foreach(list_iterator_t *it, list_t *l);
 
 //remove element from list by index
-void list_remove_at (list_t * l, uint16_t i);
+void list_remove_at(list_t *l, uint16_t i);
 
 //remove element from list by value
-void list_remove (list_t * l, void * child);
+void list_remove(list_t *l, void *child);
 
 #endif
+
