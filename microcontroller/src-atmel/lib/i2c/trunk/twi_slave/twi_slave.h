@@ -4,7 +4,7 @@
  Begin of project:			04.01.2008
  Latest version generated:	04.01.2008
  Filename:					TWI_Slave.h
- Description:    			TWI slave functions include file
+ Description:				TWI slave functions include file
 
  ********************************************************/
 #ifndef _TWIS
@@ -36,7 +36,7 @@
  	- TRUE:	Bitrate OK
 
 *******************************************************/
-uint8_t	TWIS_Init();
+uint8_t TWIS_Init(void);
 
 /*******************************************************
  Public Function: TWIS_Stop
@@ -44,7 +44,7 @@ uint8_t	TWIS_Init();
  Purpose: Stop the TWI Slave Interface
 
 *******************************************************/
-void	TWIS_Stop();
+void TWIS_Stop(void);
 
 /*******************************************************
  Public Function: TWIS_Write
@@ -55,7 +55,7 @@ void	TWIS_Stop();
  	- uint8_t	Byte to be sent
 
 *******************************************************/
-void	TWIS_Write(uint8_t byte);
+void TWIS_Write(uint8_t byte);
 
 /*******************************************************
  Public Function: TWIS_ReadAck
@@ -68,7 +68,7 @@ void	TWIS_Write(uint8_t byte);
   	- uint8_t	Read byte
 
 *******************************************************/
-uint8_t	TWIS_ReadAck();
+uint8_t TWIS_ReadAck(void);
 
 /*******************************************************
  Public Function: TWIS_ReadNack
@@ -81,7 +81,7 @@ uint8_t	TWIS_ReadAck();
   	- uint8_t	Read byte
 
 *******************************************************/
-uint8_t	TWIS_ReadNack();
+uint8_t TWIS_ReadNack(void);
 
 /*******************************************************
  Public Function: TWIS_ResponseRequired
@@ -100,7 +100,7 @@ uint8_t	TWIS_ReadNack();
 		FALSE: No response required
 
 *******************************************************/
-uint8_t	TWIS_ResponseRequired(uint8_t *TWI_ResonseType);
+uint8_t TWIS_ResponseRequired(uint8_t *TWI_ResonseType);
 
 
 #endif
