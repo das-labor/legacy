@@ -1,9 +1,6 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
-
-// SS Pin muss Ausgang sein wenn nicht als SC verwendet
-
 #define MCP_CS_BIT    PB2
 #define MCP_CS_PORT   PORTB
 
@@ -22,6 +19,7 @@
 #define CAN_RX_BUFFER_SIZE 4
 
 #define F_MCP F_CPU
+#define MCP2510
 
 // RGB LED Taster Küchenlicht
 #define R_LED _BV(PC1)

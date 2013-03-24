@@ -5,35 +5,46 @@
 #include "config.h"
 
 // XXX error handling, init
-void init_ds1631(uint8_t addr)
+uint8_t init_ds1631(uint8_t addr)
 {
+	uint8_t ret = 1;
 	uint8_t temp = 0;
 	if (TWIM_Start(addr + TW_WRITE))
 	{
-		TWIM_Write(DS1631_SOFTWARE_POR);
+		if (TWIM_Write(DS1631_SOFTWARE_POR))
+			ret = 0;
 	}
+	else
+		ret = 0;
 	TWIM_Stop();
 	if (TWIM_Start(addr + TW_WRITE))
 	{
-		TWIM_Write(DS1631_ACCESS_CONFIG);
+		if (TWIM_Write(DS1631_ACCESS_CONFIG))
+			ret = 0;
 	}
 	TWIM_Stop();
 	if (TWIM_Start(addr + TW_READ))
 	{
-		temp = TWIM_ReadAck();
+		temp = TWIM_ReadNack();
 	}
+	else
+		ret = 0;
 	TWIM_Stop();
-	/*if (temp != DS1631_I2CDEFAULTCONFIG)
+	if (temp != DS1631_I2CDEFAULTCONFIG) {
 		
-	*/
+	}
 	if (TWIM_Start(addr + TW_WRITE))
 	{
-		TWIM_Write(DS1631_START_CONVERT);
+		if (TWIM_Write(DS1631_START_CONVERT))
+			ret = 0;
 	}
+	else
+		ret = 0;
 	TWIM_Stop();
+	return ret;
 }
 
-void get_temp_ds1631(uint8_t *p, uint8_t addr)
+uint8_t get_temp_ds1631(uint8_t *p, uint8_t addr)
 {
 	if (!TWIM_Start(addr + TW_WRITE))
 	{
@@ -44,7 +55,7 @@ void get_temp_ds1631(uint8_t *p, uint8_t addr)
 	else
 	{
 		TWIM_Write(DS1631_READ_TEMPERATURE);
-	}
+	} // Repeated start condition
 	if (TWIM_Start(addr + TW_READ))
 	{
 		p[0] = TWIM_ReadAck();
