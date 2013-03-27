@@ -17,7 +17,7 @@
 
 #include "usb_id.h"
 #include "opendevice.h"
-#include "can.h"
+#include "lib/can.h"
 #include "lib-host/can-tcp.h"
 #include "lib/can_message_converters.h"
 #include "lib-host/uart-host.h"

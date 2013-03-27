@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "can.h"
+#include "lib/can.h"
 #include "lib-host/can-encap.h"
 #include "lib/can_message_converters.h"
 
@@ -49,7 +49,7 @@ void can_transmit(can_message *cmsg)
 		printf("ERROR: cmsg is NULL!\n");
 		exit(EXIT_FAILURE);
 	}
-	can_message_raw raw_msg;	
+	can_message_raw raw_msg;
 	can_message_raw_from_can_message(&raw_msg, cmsg);
 	
 	free(cmsg);
