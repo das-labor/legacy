@@ -18,11 +18,11 @@
 #include "usb_id.h"
 #include "opendevice.h"
 #include "can.h"
-#include "can-tcp.h"
+#include "lib-host/can-tcp.h"
 #include "lib/can_message_converters.h"
-#include "uart-host.h"
-#include "can-uart.h"
-#include "debug.h"
+#include "lib-host/uart-host.h"
+#include "lib-host/can-uart.h"
+#include "lib-host/debug.h"
 #include "lib-host/tcp_server.h"
 #include "netvar_server.h"
 #include "netvar/netvar.h"
@@ -745,7 +745,6 @@ int main(int argc, char *argv[])
 	// setup serial communication
 	if (serial) {
 		canu_init(serial);
-		debug(1, "Serial CAN communication established" );
 	}
 
 	if (usb_parm) {
