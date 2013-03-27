@@ -10,9 +10,9 @@
 
 #include "lib-host/tcp_server.h"
 #include "lib-host/can-encap.h"
+#include "lib-host/debug.h"
 #include "lib/can_message_converters.h"
 
-#include "debug.h"
 
 tcp_server_t *netvar_server;
 

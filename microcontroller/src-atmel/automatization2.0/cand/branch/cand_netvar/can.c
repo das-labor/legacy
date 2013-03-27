@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "can.h"
-#include "can-encap.h"
+#include "lib-host/can-encap.h"
 #include "lib/can_message_converters.h"
 
 uint8_t myaddr;
