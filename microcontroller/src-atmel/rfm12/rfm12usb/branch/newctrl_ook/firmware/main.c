@@ -19,8 +19,17 @@
 
 #include "../common/rfm12usb_config.h"
 #include "rfm12.h"
+#include "usbstuff.h"
 
 int main ()
 {
+	usbstuff_init ();
+	rfm12_init();
+	sei();
 
+	while (23)
+	{
+		rfm12_tick();
+		handle_rx();
+	}
 }

@@ -81,6 +81,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 				usb_buf_state = BUFSTATE_IDLE;
 
 				/* send tmp bytes to host */
+				USB_LED(0);
 				return tmp;
 			}
 		break;
@@ -89,26 +90,87 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 			/* TODO: debug printing */
 			break;
 
-		//host wants to configure radio
+		/* rfm12 configuration */
 		case RFMUSB_RQ_RADIO_CFG:
-			//use the first byte as configure command index
-			usbrfm_configureRfm12(rq->wIndex.bytes[0], rq->wValue.word);
+			if (rq->wIndex.bytes[0] >= NUM_LIVECTRL_CMDS)
+				break;
 
-			//switch led
-			LED_STATUS_TOGGLE;
-
-			//use default return value
+			rfm12_livectrl (rq->wIndex.bytes[0], rq->wValue.word);
 			break;
 
-		//use default return value
 		default:
 			break;
 	}
 
+	USB_LED(0);
 	return 0;   /* default for not implemented requests: return no data back to host */
 
 }
 
+/* host -> rfm12 transmission */
 uchar usbFunctionWrite(uchar *data, uchar len)
 {
+	uint8_t i;
+
+	if (usb_rx_target_cnt < len)
+		len = usb_rx_target_cnt;
+	
+	usb_rx_target_cnt -= len;
+
+	for (i=0; i<RFMUSB_USB_BUF_SIZE; i++)
+	{
+		usb_buf[usb_rx_cnt++] = data[i];
+	}
+
+	if (usb_rx_target_cnt > 0)
+		return 0; /* we haven't got all data of the current packet */
+	
+	/* fire! */
+	TX_LED(1);
+
+	rfm12_tx (usb_buf[0], usb_buf[1], &usb_buf[2]);
+	usb_buf_state = BUFSTATE_IDLE;
+	rfm12usb_mode = MODE_IDLE;
+
+	TX_LED(0);
+	USB_LED(0);
+
+	return 1;
+}
+
+/* rfm12 -> host, polling mode */
+void handle_rx ()
+{
+	uint8_t len;
+
+	if (rfm12_rx_status != STATUS_COMPLETE)
+		return;
+	
+	if (usb_buf_state != BUFSTATE_IDLE)
+		return;
+	
+	RX_LED(1);
+	rfm12usb_mode = MODE_RX;
+
+	len = rfm12_rx_len();
+
+#if RFM12_RX_BUFFER_SIZE > RFMUSB_USB_BUF_SIZE
+	/* bounds checking (only makes sense when usb buffer is smaller than that 
+	 * of the rfm12lib)
+	 */
+	if (len > RFMUSB_USB_BUF_SIZE)
+		len = RFMUSB_USB_BUF_SIZE;
+#endif
+
+	memcpy (&usb_buf[2], (uint8_t *) rfm12_rx_buffer(), len);
+	usb_buf[0] = len;
+	usb_buf[1] = rfm12_rx_type();
+	usb_buf_len = len + 2;
+	
+	/* let usbFunctionSetup() know we've got data */
+	usb_buf_state = BUFSTATE_RX;
+
+	rfm12_rx_clear();
+
+	RX_LED(0);
 }
