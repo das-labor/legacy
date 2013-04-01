@@ -10,27 +10,7 @@
  * developed by Christian Starkjohann under the copyright (c) 2008 by
  * OBJECTIVE DEVELOPMENT Software GmbH.
  */
-
-#include <avr/io.h>
-#include <avr/wdt.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
-#include <avr/pgmspace.h>
-
-#include "../common/requests.h"
-#include "vusb/usbdrv.h"
-#include "usbdebug.h"
-
-/* modes for the internal state machine
- */
-#define MODE_IDLE 0
-#define MODE_RX   1
-#define MODE_TX   2
-
-/* states of the usb rx/tx buffer */
-#define BUFSTATE_IDLE 0  /* buffer may be used */
-#define BUFSTATE_RX   1  /* buffer contains received data from the radio interface */
-#define BUFSTATE_TX   2  /* buffer contains data that is to be sent through the radio interface */
+#include "usbstuff.h"
 
 static uint8_t usb_rx_cnt = 0;                    /* usb rx c(o)unt */
 static uint8_t usb_rx_target_cnt = 0;             /* amount of bytes to be received */
@@ -42,7 +22,10 @@ static uint8_t usb_buf_len = 0;                   /* fill state of usb buffer */
 
 void usbstuff_init ()
 {
-
+	usbInit();
+	usbDeviceDisconnect();
+	_delay_ms (150);
+	usbDeviceConnect();
 }
 
 /* handle host requests - mostly like the old handler
@@ -70,11 +53,11 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 
 		/* rfm12 -> host (polling) */
 		case RFMUSB_RQ_RADIO_GET:
-			if (bufstate == BUFSTATE_RX)
+			if (usb_buf_state == BUFSTATE_RX)
 			{
 				uint8_t tmp;
 				
-				usbMsgPtr = (uchar *) usb_buf;
+				usbMsgPtr = (usbMsgPtr_t) usb_buf;
 
 				tmp = usb_buf_len;
 				usb_buf_len = 0;

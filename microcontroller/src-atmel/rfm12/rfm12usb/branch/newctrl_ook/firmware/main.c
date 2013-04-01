@@ -24,6 +24,7 @@
 int main ()
 {
 	usbstuff_init ();
+	FSK_INIT();
 	rfm12_init();
 	sei();
 
