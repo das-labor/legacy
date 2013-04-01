@@ -7,14 +7,14 @@
 # License: GNU GPL v2 (see License.txt) or proprietary (CommercialLicense.txt)
 # This Revision: $Id: Makefile 553 2008-04-17 19:00:20Z cs $
 
-DEVICE  = atmega8
-F_CPU   = 16000000	# in Hz
-FUSE_L  = 0x9f
-FUSE_H  = 0xc9
+DEVICE  = atmega168
+F_CPU   = 20000000	# in Hz
+#FUSE_L  = 0x9f
+#FUSE_H  = 0xc9
 AVRDUDE = avrdude -c usbasp -p $(DEVICE) # edit this line for your programmer
 
 CFLAGS  = -Iusbdrv -I. -DDEBUG_LEVEL=0 -DHWREF=1
-OBJECTS = usbdrv/usbdrv.o usbdrv/usbdrvasm.o usbdrv/oddebug.o main.o rfm12.o
+OBJECTS = vusb/usbdrv.o vusb/usbdrvasm.o vusb/oddebug.o main.o usbstuff.o rfm12.o
 
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE)
 
@@ -143,10 +143,10 @@ clean:
 # file targets:
 
 # Since we don't want to ship the driver multipe times, we copy it into this project:
-usbdrv:
-	cp -r ../../../usbdrv .
+#usbdrv:
+#	cp -r ../../../usbdrv .
 
-main.elf: usbdrv $(OBJECTS)	# usbdrv dependency only needed because we copy it
+main.elf: $(OBJECTS)	# usbdrv dependency only needed because we copy it
 	$(COMPILE) -o main.elf $(OBJECTS)
 
 main.hex: main.elf
