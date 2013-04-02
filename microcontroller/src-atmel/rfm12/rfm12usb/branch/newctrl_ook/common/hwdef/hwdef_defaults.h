@@ -19,3 +19,11 @@
 #ifndef HW_INIT
 	#define HW_INIT(a)
 #endif
+
+#ifndef FSK_SET
+	#define FSK_SET(a)
+#endif
+
+#ifndef FSK_INIT
+	#define FSK_INIT(a)
+#endif

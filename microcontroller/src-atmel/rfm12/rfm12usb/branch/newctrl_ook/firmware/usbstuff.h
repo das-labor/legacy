@@ -10,7 +10,8 @@
 #include "rfm12.h"
 #include "../common/rfm12usb_config.h"
 #include "../common/requests.h"
-#include "vusb/usbdrv.h"
+#include "oddebug.h"
+#include "usbdrv.h"
 #include "usbdebug.h"
 
 /* modes for the internal state machine

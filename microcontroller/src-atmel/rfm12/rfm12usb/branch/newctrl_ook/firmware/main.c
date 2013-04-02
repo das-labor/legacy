@@ -10,27 +10,34 @@
  * developed by Christian Starkjohann under the copyright (c) 2008 by
  * OBJECTIVE DEVELOPMENT Software GmbH.
  */
-
+#include "../common/rfm12usb_config.h"
+#define F_CPU 20000000UL
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
 
-#include "../common/rfm12usb_config.h"
 #include "rfm12.h"
 #include "usbstuff.h"
+#include "oddebug.h"
+#include "usbdrv.h"
 
 int main ()
 {
+	HW_INIT();
+	DEBUG_LED(1);
 	usbstuff_init ();
 	FSK_INIT();
 	rfm12_init();
+	DEBUG_LED(0);
+
 	sei();
 
 	while (23)
 	{
 		rfm12_tick();
+		usbPoll();
 		handle_rx();
 	}
 }

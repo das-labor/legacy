@@ -22,10 +22,13 @@ static uint8_t usb_buf_len = 0;                   /* fill state of usb buffer */
 
 void usbstuff_init ()
 {
+	DEBUG_LED(1);
 	usbInit();
 	usbDeviceDisconnect();
-	_delay_ms (150);
+	_delay_ms (250);
+	_delay_ms (250);
 	usbDeviceConnect();
+	DEBUG_LED(0);
 }
 
 /* handle host requests - mostly like the old handler
@@ -126,7 +129,7 @@ void handle_rx ()
 {
 	uint8_t len;
 
-	if (rfm12_rx_status != STATUS_COMPLETE)
+	if (rfm12_rx_status() != STATUS_COMPLETE)
 		return;
 	
 	if (usb_buf_state != BUFSTATE_IDLE)
