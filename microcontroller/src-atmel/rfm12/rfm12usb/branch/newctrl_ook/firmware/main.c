@@ -22,6 +22,20 @@
 #include "usbstuff.h"
 #include "oddebug.h"
 #include "usbdrv.h"
+#include "ook.h"
+
+#define DELAY_FN mydelay
+inline void mydelay (uint16_t in_delay)
+{
+	uint16_t tdelay = in_delay << 1;
+	tdelay += in_delay >> 1; /* + 0.5 */
+	TCCR1B = 0x00;      /* stop timer */
+	TCNT1 =  1;         /* set value to 1 */
+	TCCR1B = _BV(CS11); /* normal mode, clk/8 */
+
+	while (TCNT1 < tdelay)
+		asm volatile ("nop");
+}
 
 void send_testcode ()
 {
@@ -33,13 +47,14 @@ void send_testcode ()
 	rfm12_ask_tx_mode(1);
 	rfm12_tx_off();
 	//#define DLY 78
-	#define DLY 360
+	#define DLY 100
 
 	for (byte = 0; byte < 3;)
 	{
 		rfm12_tx_on();
-		_delay_us (240);
-		_delay_us(DLY);
+		DELAY_FN (240);
+		DELAY_FN (160);
+		DELAY_FN(DLY);
 
 		if (tx_bytes[byte] & msk)
 		{
@@ -52,13 +67,15 @@ void send_testcode ()
 			rfm12_tx_off();
 			DEBUG_LED(0);
 		}
-		_delay_us (240);
-		_delay_us (DLY);
+		DELAY_FN (240);
+		DELAY_FN (160);
+		DELAY_FN (DLY);
 
 		DEBUG_LED(0);
 		rfm12_tx_off();
-		_delay_us (140);
-		_delay_us (DLY);
+		DELAY_FN (140);
+		DELAY_FN (160);
+		DELAY_FN (DLY);
 
 		msk >>= 1;
 		if (msk == 0x00)
@@ -69,14 +86,16 @@ void send_testcode ()
 	}
 	
 	rfm12_tx_on();
-	_delay_us (240);
-	_delay_us (DLY);
+	DELAY_FN (240);
+		DELAY_FN (160);
+	DELAY_FN (DLY);
 	rfm12_tx_off();
 
 	for (byte = 12; byte != 0; byte--)
 	{
-		_delay_us(240);
-		_delay_us(DLY);
+		DELAY_FN(240);
+		DELAY_FN (160);
+		DELAY_FN(DLY);
 	}
 	
 	rfm12_ask_tx_mode(0);
@@ -84,27 +103,34 @@ void send_testcode ()
 
 int main ()
 {
+	uint8_t i=0;
+	uint8_t testcode[3] = {0x41, 0x45, 0x51};
+
 	HW_INIT();
 	DEBUG_LED(1);
 	usbstuff_init ();
-	rfm12_init();
 	FSK_INIT();
 	DEBUG_LED(0);
 	wdt_disable();
-#if 0
-	_delay_ms(200);
-	rfm12_ask_tx_mode(1);
-	_delay_ms(50);
-	rfm12_ask_tx_mode(0);
-	_delay_ms(50);
-#endif
+
+	/* crude bugfix */
+	_delay_ms(100);
+	rfm12_init();
+	rfm12_tx_on();
+	_delay_ms(10);
+	rfm12_init();
 	sei();
+	//send_ook (24, 250, testcode, OOK_2722);
+
+	for (i=0; i<8; i++)
+	{
+	//	send_ook (24, 400, testcode, OOK_2722);
+	//	send_testcode();
+	}
 
 	while (1)
 	{
-		send_testcode();
-		send_testcode();
-		send_testcode();
+		send_ook (24, 500, testcode, OOK_2722);
 		rfm12_tick();
 		usbPoll();
 		handle_rx();
