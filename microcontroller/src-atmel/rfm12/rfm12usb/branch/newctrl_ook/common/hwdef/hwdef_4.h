@@ -34,6 +34,7 @@
 /* -- BUFFERS --------- */
 #define RFMUSB_USB_BUF_SIZE        64  /* buffer containing data from/to the usb host */
 #define RFMUSB_DEBUG_BUF_SIZE      16  /* buffer for debug messages, only active when RFMUSB_DEBUG is set to 1 */
+#define RFMUSB_OOK_MAXLEN          16  /* buffer for ook bits */
 
 /* -- USB ------------- */
 #define USB_CFG_IOPORTNAME             D
@@ -100,8 +101,8 @@
 	PORTC |=  (a << PC0)
 
 /* set as _INPUT_ pin, we're just driving the FSK via pullup */
-#define FSK_INIT(a) \
-	DDRC &= (_BV(PC0)); \
+#define FSK_INIT() \
+	DDRC &= ~(_BV(PC0)); \
 	PORTC |= (_BV(PC0))
 
 /* NOTE: Values below are for the default initialization.
@@ -109,7 +110,7 @@
  */
 #define RFM12_BASEBAND        RFM12_BAND_433
 #define RFM12_FREQUENCY       433920000UL
-#define FSK_SHIFT             125000
+//#define FSK_SHIFT             125000
 #define DATARATE_VALUE        RFM12_DATARATE_CALC_HIGH(9600.0)
 #define RFM12_RSSI_THRESHOLD  RFM12_RXCTRL_RSSI_79
 #define RFM12_FILTER_BW       RFM12_RXCTRL_BW_400
@@ -136,12 +137,12 @@
 
 #define RFM12_LIVECTRL             1
 #define RFM12_NORETURNS            0
-#define RFM12_NOCOLLISIONDETECTION 0
+#define RFM12_NOCOLLISIONDETECTION 1
 #define RFM12_TRANSMIT_ONLY        0
 #define RFM12_SPI_SOFTWARE         0
 #define RFM12_USE_POLLING          0
 #define RFM12_RECEIVE_ASK          0
-#define RFM12_TRANSMIT_ASK         0
+#define RFM12_TRANSMIT_ASK         1
 #define RFM12_USE_WAKEUP_TIMER     0
 #define RFM12_USE_POWER_CONTROL    0
 #define RFM12_LOW_POWER            0

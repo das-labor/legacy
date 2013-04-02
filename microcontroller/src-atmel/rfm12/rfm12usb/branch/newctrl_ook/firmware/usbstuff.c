@@ -42,11 +42,18 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 	switch(rq->bRequest)
 	{
 		/* host -> rfm12 */
-		case RFMUSB_RQ_RADIO_PUT:
+		case RFMUSB_RQ_OOK_SEND:    /* ook */
+		case RFMUSB_RQ_RADIO_PUT:   /* data packet */
 			usb_rx_cnt = 0;
 			usb_rx_target_cnt = rq->wLength.bytes[0];
 			/* note: this will terminate any ongoing receiption */
-			rfm12usb_mode = MODE_TX; 
+			if (rq->bRequest == RFMUSB_RQ_RADIO_PUT)
+			{
+				rfm12usb_mode = MODE_TX;
+			} else
+			{
+				rfm12usb_mode = MODE_OOK_TX;
+			}
 
 			if(usb_rx_target_cnt > RFMUSB_USB_BUF_SIZE)
 				usb_rx_target_cnt = RFMUSB_USB_BUF_SIZE;
@@ -83,6 +90,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 
 			rfm12_livectrl (rq->wIndex.bytes[0], rq->wValue.word);
 			break;
+		
 
 		default:
 			break;
@@ -113,8 +121,14 @@ uchar usbFunctionWrite(uchar *data, uchar len)
 	
 	/* fire! */
 	TX_LED(1);
-
-	rfm12_tx (usb_buf[0], usb_buf[1], &usb_buf[2]);
+	
+	if (rfm12usb_mode == MODE_TX)
+	{
+		rfm12_tx (usb_buf[0], usb_buf[1], &usb_buf[2]);
+	} else if (rfm12usb_mode == MODE_OOK_TX)
+	{
+		ook_queue_msg (usb_buf);
+	}
 	usb_buf_state = BUFSTATE_IDLE;
 	rfm12usb_mode = MODE_IDLE;
 
