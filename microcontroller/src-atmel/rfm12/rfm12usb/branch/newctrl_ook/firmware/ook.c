@@ -1,5 +1,31 @@
 #include "ook.h"
 
+volatile static rfmusb_ook_t tx_rq;
+volatile static uint8_t tx_bits[RFMUSB_OOK_MAXLEN];
+
+/* copy usb buffer to local tx_rq */
+void ook_queue_msg (uint8_t *in_msg)
+{
+	memcpy ((uint8_t *) &tx_rq, in_msg, sizeof(rfmusb_ook_t));
+	if (tx_rq.len > RFMUSB_OOK_MAXLEN*8)
+		tx_rq.len = RFMUSB_OOK_MAXLEN*8;
+
+	if (tx_rq.len == 0)
+		return;
+
+	memcpy ((uint8_t *) tx_bits, in_msg + sizeof(rfmusb_ook_t), tx_rq.len / 8);
+}
+
+/* transmit an ook message if there's one in the buffer */
+void ook_tick ()
+{
+	if (!tx_rq.count)
+		return;
+	
+	tx_rq.count--;
+	ook_send (tx_rq.len, tx_rq.delay, (uint8_t *) tx_bits, tx_rq.type);
+}
+
 /* 1us - timer */
 inline void ook_delay (uint16_t in_delay)
 {
@@ -13,7 +39,7 @@ inline void ook_delay (uint16_t in_delay)
 		asm volatile ("nop");
 }
 
-void send_ook (uint8_t in_bits, uint16_t in_delay, uint8_t *in_data, uint8_t in_type)
+void ook_send (uint8_t in_bits, uint16_t in_delay, uint8_t *in_data, uint8_t in_type)
 {
 	uint8_t msk = 0x80;
 	uint8_t bytes = in_bits >> 3, current_byte;

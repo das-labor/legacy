@@ -13,12 +13,14 @@
 #include "oddebug.h"
 #include "usbdrv.h"
 #include "usbdebug.h"
+#include "ook.h"
 
 /* modes for the internal state machine
  */
-#define MODE_IDLE 0
-#define MODE_RX   1
-#define MODE_TX   2
+#define MODE_IDLE     0
+#define MODE_RX       1
+#define MODE_TX       2
+#define MODE_OOK_TX   3
 
 /* states of the usb rx/tx buffer */
 #define BUFSTATE_IDLE 0  /* buffer may be used */

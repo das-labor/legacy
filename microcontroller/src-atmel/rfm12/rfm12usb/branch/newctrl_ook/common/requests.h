@@ -28,7 +28,25 @@ typedef enum
 	//poll notifications
 	RFMUSB_RQ_NOTIFY_GET,
 	//configure radio interface
-	RFMUSB_RQ_RADIO_CFG
+	RFMUSB_RQ_RADIO_CFG,
+	// send ook message
+	RFMUSB_RQ_OOK_SEND
 } rfmusb_requests;
+
+#pragma pack(push)
+#pragma pack(1)
+
+#define OOK_RAW  0x00 /* send given bits as they are */
+#define OOK_2722 0x01 /* encode 1 to 110, 0 to 100, add trailing bit, add trailing delay */
+
+/* ook metadata header */
+typedef struct
+{
+	uint8_t  len;   /* length in BITS */
+	uint8_t  type;  /* see above for possible types */
+	uint16_t delay; /* delay between bits */
+	uint8_t  count; /* repeat message count times */
+} rfmusb_ook_t;
+#pragma pack(pop)
 
 #endif /* __REQUESTS_H_INCLUDED__ */
