@@ -8,9 +8,8 @@
  * definition in hwref/ 
  */
 
-#pragma once
 
 #ifndef HWREV
 	#define HWREV 4
 #endif
-#include "hwdef/hwref.h"
+#include "hwdef/hwdef.h"

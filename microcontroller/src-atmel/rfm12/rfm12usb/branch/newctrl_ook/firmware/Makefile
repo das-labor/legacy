@@ -8,13 +8,14 @@
 # This Revision: $Id: Makefile 553 2008-04-17 19:00:20Z cs $
 
 DEVICE  = atmega168
-F_CPU   = 20000000	# in Hz
+F_CPU   = 20000000UL	# in Hz
 #FUSE_L  = 0x9f
 #FUSE_H  = 0xc9
 AVRDUDE = avrdude -c usbasp -p $(DEVICE) # edit this line for your programmer
 
-CFLAGS  = -Iusbdrv -I. -DDEBUG_LEVEL=0 -DHWREF=1
-OBJECTS = vusb/usbdrv.o vusb/usbdrvasm.o vusb/oddebug.o main.o usbstuff.o rfm12.o
+CFLAGS  = -Iusbdrv -I. -DDEBUG_LEVEL=0 -DHWREF=4
+#OBJECTS = usbdrv/usbdrv.o usbdrv/usbdrvasm.o usbdrv/oddebug.o usbstuff.o main.o rfm12.o
+OBJECTS = usbdrv/usbdrv.o usbdrv/usbdrvasm.o usbdrv/oddebug.o usbstuff.o main.o rfm12.o
 
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE)
 
@@ -122,7 +123,7 @@ flash: main.hex
 
 # rule for deleting dependent files (those which can be built by Make):
 clean:
-	rm -f main.hex main.lst main.obj main.cof main.list main.map main.eep.hex main.elf *.o usbdrv/*.o main.s usbdrv/oddebug.s usbdrv/usbdrv.s
+	rm -f main.hex main.lst main.obj main.cof main.list main.map main.eep.hex main.elf *.o usbdrv/*.o main.s usbdrv/oddebug.s usbdrv/usbdrv.s rfm12.o
 
 # Generic rule for compiling C files:
 .c.o:
