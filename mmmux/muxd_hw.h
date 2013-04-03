@@ -34,6 +34,9 @@ typedef void (*mmmux_hw_close_f) (void*);
 typedef ssize_t  (*mmmux_hw_tx_f)    (void*, size_t, void*);
 typedef ssize_t  (*mmmux_hw_rx_f)    (void*, size_t, void*);
 
+/* ctrl function */
+typedef ssize_t  (*mmmux_hw_ctrl_f)  (void*, mmmux_ctrl_t, void*);
+
 /* hardware description struct
  */
 typedef struct
@@ -43,6 +46,7 @@ typedef struct
 	mmmux_hw_tx_f tx;       /* transmit function */
 	mmmux_hw_rx_f rx;       /* receive function */
 	mmmux_hw_close_f close; /* close function */
+	mmmux_hw_ctrl_f ctrl;   /* control function */
 	void *udata;            /* extra data */
 	void *next;
 	size_t txcount;

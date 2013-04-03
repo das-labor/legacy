@@ -14,7 +14,7 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *   Copyright (C) 2012 Soeren Heisrath (forename at surename dot org)
+ *   Copyright (C) 2012,2013 Soeren Heisrath (forename at surename dot org)
  */
 
 #include <stdio.h>
@@ -69,12 +69,18 @@ typedef enum
 	server
 } mmmux_mode_t;
 
+typedef enum
+{
+	mode_normal    = 0x00,
+	mode_ook       = 0x01
+} mmmux_ctrl_t;
+
 #pragma pack(push)
 #pragma pack(1)
 typedef enum
 {
 	data = 0,
-	management = 1
+	management = 1,
 } mmmux_packettype_t;
 
 typedef struct 

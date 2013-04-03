@@ -14,7 +14,7 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *   Copyright (C) 2012 Soeren Heisrath (forename at surename dot org)
+ *   Copyright (C) 2012,2013 Soeren Heisrath (forename at surename dot org)
  */
 
 #include "muxd_client.h"
@@ -57,8 +57,23 @@ int mmmux_client_connect (mmmux_sctx_t *in_c)
 
 int mmmux_send (mmmux_sctx_t *in_c, void* in_buf, size_t in_len)
 {
+	return mmmux_send_raw (in_c, in_buf, in_len, data);
+}
+
+int mmmux_send_raw (mmmux_sctx_t *in_c, void* in_buf, size_t in_len, mmmux_packettype_t in_type)
+{
 	size_t sent = 0;
 	int rv, e;
+	uint8_t txbuf[2048];
+	mmmux_hdr_t h = { .version = 0x00, .type = in_type};
+
+	if (in_len - sizeof(mmmux_hdr_t) > sizeof(txbuf))
+		in_len = sizeof(txbuf) - sizeof(mmmux_hdr_t);
+
+	memcpy (txbuf, &h, sizeof(mmmux_hdr_t));
+	memcpy (txbuf + sizeof(mmmux_hdr_t), in_buf, in_len);
+
+	in_len += sizeof(mmmux_hdr_t);
 
 	while (sent < in_len)
 	{
@@ -79,4 +94,22 @@ int mmmux_send (mmmux_sctx_t *in_c, void* in_buf, size_t in_len)
 int mmmux_receive (mmmux_sctx_t *in_c, void* out_buf, size_t in_maxlen)
 {
 	return recv (in_c->listenfd, out_buf, in_maxlen, 0);
+}
+
+int mmmux_ctrl (mmmux_sctx_t *in_c, mmmux_ctrl_t in_var, void *in_data)
+{
+	uint64_t out_var = in_var;
+	uint8_t txbuf[128];
+	size_t txlen;
+
+	switch (in_var)
+	{
+		case mode_ook:
+		case mode_normal:
+		default:
+			txlen = sizeof(out_var);
+		break;
+	}
+	
+	return mmmux_send_raw (in_c, &out_var, txlen, management);
 }

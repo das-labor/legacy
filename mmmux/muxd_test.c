@@ -20,7 +20,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
+
 #include "muxd.h"
+
+void print_help (int in_ac, char* in_av)
+{
+	printf ("usage: %s <options>\n", in_av[0]);
+	printf ("Options may be one or more of the following:\n");
+	printf ("  -v Fork the daemon in verbose mode\n");
+	printf ("  -s <sockname> use <sockname> instead of the default socket name\n");
+}
 
 int main (int argc, char* argv[])
 {
