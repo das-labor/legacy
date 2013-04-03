@@ -1,0 +1,6 @@
+import sys,glob,os
+envlib = Environment(parse_flags='-lusb')
+envstatic = Environment(parse_flags='-lusb')
+envprog = Environment(LIBPATH = ['./mmmux-lib'], CPPPATH = ['./mmmux-lib'], parse_flags='-lusb -lmmmuxd -lm')
+
+ookbuild = envprog.Program ('ook-send', ['main.c'])

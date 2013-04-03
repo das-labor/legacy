@@ -41,6 +41,7 @@ void test_ook()
 
 int main ()
 {
+
 	HW_INIT();
 	DEBUG_LED(1);
 	usbstuff_init ();

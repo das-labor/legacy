@@ -21,16 +21,18 @@
  */
 typedef enum
 {
+	/* anchient request; not used; just there to retain compatibility */
+	RFMUSB_RQ_ECHO          = 0x00,
 	//put data into the rfm12 transmit buffer
-	RFMUSB_RQ_RADIO_PUT	= 0x00,
+	RFMUSB_RQ_RADIO_PUT	= 0x01,
 	//poll radio packets
-	RFMUSB_RQ_RADIO_GET,
+	RFMUSB_RQ_RADIO_GET     = 0x02,
 	//poll notifications
-	RFMUSB_RQ_NOTIFY_GET,
+	RFMUSB_RQ_NOTIFY_GET    = 0x03,
 	//configure radio interface
-	RFMUSB_RQ_RADIO_CFG,
+	RFMUSB_RQ_RADIO_CFG     = 0x04,
 	// send ook message
-	RFMUSB_RQ_OOK_SEND
+	RFMUSB_RQ_OOK_SEND      = 0x05
 } rfmusb_requests;
 
 #pragma pack(push)
