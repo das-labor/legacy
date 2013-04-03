@@ -67,7 +67,7 @@ int mmmux_send_raw (mmmux_sctx_t *in_c, void* in_buf, size_t in_len, mmmux_packe
 	uint8_t txbuf[2048];
 	mmmux_hdr_t h = { .version = 0x00, .type = in_type};
 
-	if (in_len - sizeof(mmmux_hdr_t) > sizeof(txbuf))
+	if (in_len > sizeof(txbuf) - sizeof(mmmux_hdr_t))
 		in_len = sizeof(txbuf) - sizeof(mmmux_hdr_t);
 
 	memcpy (txbuf, &h, sizeof(mmmux_hdr_t));
@@ -77,7 +77,7 @@ int mmmux_send_raw (mmmux_sctx_t *in_c, void* in_buf, size_t in_len, mmmux_packe
 
 	while (sent < in_len)
 	{
-		rv = send (in_c->listenfd, (void*) ((size_t) in_buf + sent), in_len - sent, 0);
+		rv = send (in_c->listenfd, (void*) ((size_t) txbuf + sent), in_len - sent, 0);
 		e = errno;
 
 		if (rv < 0)
@@ -98,18 +98,22 @@ int mmmux_receive (mmmux_sctx_t *in_c, void* out_buf, size_t in_maxlen)
 
 int mmmux_ctrl (mmmux_sctx_t *in_c, mmmux_ctrl_t in_var, void *in_data)
 {
-	uint64_t out_var = in_var;
+	mmmux_ctrl_packet_t ctrl_packet;
 	uint8_t txbuf[128];
 	size_t txlen;
-
+	
+	dbg ("received CTRL packet: %08X", in_var);
 	switch (in_var)
 	{
 		case mode_ook:
 		case mode_normal:
+			ctrl_packet.ctrlcode = in_var;
+		/* fallthrough */
 		default:
-			txlen = sizeof(out_var);
+			txlen = sizeof(mmmux_ctrl_packet_t);
 		break;
 	}
 	
-	return mmmux_send_raw (in_c, &out_var, txlen, management);
+	dbg ("txlen = %i", txlen);
+	return mmmux_send_raw (in_c, &ctrl_packet, txlen, management);
 }

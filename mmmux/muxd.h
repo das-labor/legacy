@@ -33,6 +33,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <stdint.h>
+#include <endian.h>
 
 #pragma once
 #include "muxd_config.h"
@@ -69,19 +70,25 @@ typedef enum
 	server
 } mmmux_mode_t;
 
+
+#pragma pack(push)
+#pragma pack(1)
 typedef enum
 {
 	mode_normal    = 0x00,
 	mode_ook       = 0x01
 } mmmux_ctrl_t;
 
-#pragma pack(push)
-#pragma pack(1)
 typedef enum
 {
-	data = 0,
-	management = 1,
+	data = 0x0000,
+	management = 0x0001,
 } mmmux_packettype_t;
+
+typedef struct
+{
+	mmmux_ctrl_t ctrlcode;
+} mmmux_ctrl_packet_t;
 
 typedef struct 
 {

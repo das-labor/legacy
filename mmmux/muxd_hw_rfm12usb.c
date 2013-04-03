@@ -56,6 +56,7 @@ ssize_t rfm12usb_tx (void *in_ctx, size_t in_len, void* in_data)
 			if (txlen > rs->txlen)
 				txlen = rs->txlen;
 			
+			dbg ("sending %i bytes in NORMAL mode", txlen);
 			rv = usb_control_msg (rs->uhandle,
 				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
 				RFMUSB_RQ_RADIO_PUT, 1, 0, (char *) in_data, txlen,
@@ -65,6 +66,17 @@ ssize_t rfm12usb_tx (void *in_ctx, size_t in_len, void* in_data)
 			if (txlen < sizeof(rfmusb_ook_t))
 				return 0;
 
+			dbg ("sending %i bytes in OOK mode: %02X %02X %02X %02X %02X %02X %02X %02X ...",
+				txlen,
+				((uint8_t *) in_data)[0],
+				((uint8_t *) in_data)[1],
+				((uint8_t *) in_data)[2],
+				((uint8_t *) in_data)[3],
+				((uint8_t *) in_data)[4],
+				((uint8_t *) in_data)[5],
+				((uint8_t *) in_data)[6],
+				((uint8_t *) in_data)[7]
+				);
 			rv = usb_control_msg (rs->uhandle,
 				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
 				RFMUSB_RQ_OOK_SEND, 1, 0, (char *) in_data, txlen,
@@ -93,14 +105,18 @@ ssize_t rfm12usb_rx (void *in_ctx, size_t in_maxlen, void* out_data)
 		100);
 
 	if (rv > 0)
+	{
 		((mmmux_hw_t*) in_ctx)->rxcount += rv;
+		return (ssize_t) rv;
+	}
 
-	return (ssize_t) rv;
+	return 0;
 }
 
 ssize_t rfm12usb_ctrl  (void* in_ctx, mmmux_ctrl_t in_c, void* in_data)
 {
 	rfm12usb_t *rs = ((mmmux_hw_t*) in_ctx)->udata;
+	dbg ("received CTRL code: %llu", in_c);
 	switch (in_c)
 	{
 		case mode_ook:
@@ -131,6 +147,8 @@ int rfm12usb_find (mmmux_sctx_t *in_c)
 	usb_find_devices();
 
 	bus = usb_get_busses();
+
+	dbg ("...");
 	while (bus != NULL)
 	{
 		for (dev = bus->devices; dev != NULL; dev = dev->next)
