@@ -1,5 +1,5 @@
 import sys,glob,os
-envlib = Environment(parse_flags='-lusb')
+envlib = Environment(parse_flags='-lusb -ldl')
 envstatic = Environment(parse_flags='-lusb')
 envprog = Environment(LIBPATH = ['./'], CPPPATH = ['./'], parse_flags='-lusb -lmmmuxd')
 

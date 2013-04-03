@@ -49,14 +49,30 @@ ssize_t rfm12usb_tx (void *in_ctx, size_t in_len, void* in_data)
 	size_t txlen = in_len;
 	int rv;
 	rfm12usb_t *rs = ((mmmux_hw_t*) in_ctx)->udata;
-
-	if (txlen > rs->txlen)
-		txlen = rs->txlen;
 	
-	rv = usb_control_msg (rs->uhandle,
-		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-		RFMUSB_RQ_RFM12_PUT, 0, 0, (char *) in_data, txlen,
-		DEFAULT_USB_TIMEOUT);
+	switch (rs->mode)
+	{
+		case mode_normal:
+			if (txlen > rs->txlen)
+				txlen = rs->txlen;
+			
+			rv = usb_control_msg (rs->uhandle,
+				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
+				RFMUSB_RQ_RADIO_PUT, 1, 0, (char *) in_data, txlen,
+				DEFAULT_USB_TIMEOUT);
+		break;
+		case mode_ook:
+			if (txlen < sizeof(rfmusb_ook_t))
+				return 0;
+
+			rv = usb_control_msg (rs->uhandle,
+				USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
+				RFMUSB_RQ_OOK_SEND, 1, 0, (char *) in_data, txlen,
+				DEFAULT_USB_TIMEOUT);
+		break;
+		default:
+			return 0;
+	}
 
 	if (rv > 0)
 		((mmmux_hw_t*) in_ctx)->txcount += rv;
@@ -73,13 +89,28 @@ ssize_t rfm12usb_rx (void *in_ctx, size_t in_maxlen, void* out_data)
 
 	rv = usb_control_msg (rs->uhandle,
 		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-		RFMUSB_RQ_RFM12_GET, 0, 0, (char *) out_data, in_maxlen,
+		RFMUSB_RQ_RADIO_GET, 0, 0, (char *) out_data, in_maxlen,
 		100);
 
 	if (rv > 0)
 		((mmmux_hw_t*) in_ctx)->rxcount += rv;
 
 	return (ssize_t) rv;
+}
+
+ssize_t rfm12usb_ctrl  (void* in_ctx, mmmux_ctrl_t in_c, void* in_data)
+{
+	rfm12usb_t *rs = ((mmmux_hw_t*) in_ctx)->udata;
+	switch (in_c)
+	{
+		case mode_ook:
+		case mode_normal:
+			rs->mode = in_c;
+		break;
+		default:
+			return 1;
+	}
+	return 0;
 }
 
 /* walk along the usb busses and devices, search for rfm12usb devices
@@ -126,11 +157,13 @@ int rfm12usb_find (mmmux_sctx_t *in_c)
 			rs->txlen = 64; /* XXX hardcoded values for now */
 			rs->rxlen = 64;
 			rs->uhandle = h;
+			rs->mode = mode_normal;
 			sprintf (hws->name, "RFM12USB device #%u", c++);
 			hws->init = NULL;
 			hws->close = rfm12usb_close;
 			hws->tx = rfm12usb_tx;
 			hws->rx = rfm12usb_rx;
+			hws->ctrl = rfm12usb_ctrl;
 			hws->sdelay = 5000; /* 10ms */
 
 			mmmux_hw_add (in_c, hws);

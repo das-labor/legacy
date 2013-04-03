@@ -14,7 +14,7 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *   Copyright (C) 2012 Soeren Heisrath (forename at surename dot org)
+ *   Copyright (C) 2012,2013 Soeren Heisrath (forename at surename dot org)
  */
 
 #include "muxd_hw.h"
@@ -31,6 +31,7 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 
 	fd_set m_set, r_set;
 	struct timeval tv;
+	mmmux_hdr_t *h;
 	
 	/* each hw task has its own pipe */
 	pipe (pfds);
@@ -112,7 +113,34 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 		
 		dbg ("hw task (%s): got %i bytes via pipe %02X%02X%02X%02X ...", in_h->name, rv,
 			buf[0], buf[1], buf[2], buf[3]);
-		in_h->tx (in_h, rv, buf);
+
+		h = (mmmux_hdr_t *) buf;
+		
+		switch (h->type)
+		{
+			/* data transmission */
+			case data:
+				in_h->tx (in_h, rv, buf + sizeof(mmmux_hdr_t));
+			break;
+
+			/* management command -> let ctrl func handle this */
+			case management:
+				if (in_h->ctrl != NULL)
+				{
+					mmmux_ctrl_t ct;
+					uint64_t dummy;
+
+					memcpy (&dummy, buf + sizeof(mmmux_hdr_t), sizeof(uint64_t));
+					ct = dummy;
+
+					in_h->ctrl (in_h, ct, buf + sizeof(mmmux_hdr_t) + sizeof(dummy));
+				}
+			break;
+
+			default:
+				err ("unable to parse header");
+			break;
+		}
 	}
 	return 0;
 }
@@ -182,6 +210,7 @@ int mmmux_hw_init (mmmux_sctx_t *in_c)
 		in_c->fds_hw[rv] = -1;
 	
 #if MMMUX_USE_RFM12USB == 1
+	/* built-in rfm12 support */
 	rv = rfm12usb_find (in_c);
 	if (rv != 0)
 	{
@@ -192,6 +221,11 @@ int mmmux_hw_init (mmmux_sctx_t *in_c)
 
 #if MMMUX_USE_DUMMYHW == 1 && 0
 	rv = dummyhw_find (in_c);
+#endif
+
+#if MMMUX_USE_LIBS == 1
+	/* hardware definition loading from libraries */
+	
 #endif
 	dbg ("wtf");
 	return 0;

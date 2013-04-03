@@ -14,10 +14,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *   Copyright (C) 2012 Soeren Heisrath (forename at surename dot org)
+ *   Copyright (C) 2012,2013 Soeren Heisrath (forename at surename dot org)
  */
 
 #include "muxd.h"
 
 #pragma once
 int mmmux_client_connect (mmmux_sctx_t *in_c);
+int mmmux_send (mmmux_sctx_t *in_c, void* in_buf, size_t in_len);
+int mmmux_ctrl (mmmux_sctx_t *in_c, mmmux_ctrl_t in_var, void *in_data);
