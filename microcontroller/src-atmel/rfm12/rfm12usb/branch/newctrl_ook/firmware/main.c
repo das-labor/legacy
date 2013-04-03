@@ -60,7 +60,7 @@ int main ()
 	/* (you can open your eyes again now ...) */
 
 	sei();
-	
+	test_ook();
 
 	while (1)
 	{
