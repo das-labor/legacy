@@ -59,8 +59,8 @@
 #define USB_CFG_CHECK_DATA_TOGGLING     0
 #define USB_CFG_HAVE_MEASURE_FRAME_LENGTH   0
 #define USB_USE_FAST_CRC                0
-#define USB_CFG_VENDOR_ID       0x20, 0xa0 
-#define USB_CFG_DEVICE_ID       0x41, 0x98 /* officially assigned to the rfm12usb */
+#define USB_CFG_VENDOR_ID       0xa0, 0x20 
+#define USB_CFG_DEVICE_ID       0x98, 0x41 /* officially assigned to the rfm12usb */
 #define USB_CFG_DEVICE_VERSION  0x00, 0x01
 #define USB_CFG_VENDOR_NAME     's', 'o', 'l', 'd', 'e', 'r', 'w', 'a', 'r', 'e', '.', 'o', 'r', 'g'
 #define USB_CFG_VENDOR_NAME_LEN 14
