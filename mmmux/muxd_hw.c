@@ -120,20 +120,28 @@ int mmmux_hw_task (mmmux_sctx_t *in_c, mmmux_hw_t *in_h)
 		{
 			/* data transmission */
 			case data:
-				in_h->tx (in_h, rv, buf + sizeof(mmmux_hdr_t));
+				if (rv - sizeof(mmmux_hdr_t) <= 0)
+				{
+					dbg ("packet too short - not sending");
+					break;
+				}
+				dbg ("got data packet");
+				in_h->tx (in_h, rv - sizeof(mmmux_hdr_t), buf + sizeof(mmmux_hdr_t));
 			break;
 
 			/* management command -> let ctrl func handle this */
 			case management:
+				dbg ("got management packet");
 				if (in_h->ctrl != NULL)
 				{
-					mmmux_ctrl_t ct;
-					uint64_t dummy;
+					mmmux_ctrl_packet_t *ctrlh;
 
-					memcpy (&dummy, buf + sizeof(mmmux_hdr_t), sizeof(uint64_t));
-					ct = dummy;
 
-					in_h->ctrl (in_h, ct, buf + sizeof(mmmux_hdr_t) + sizeof(dummy));
+					ctrlh = (mmmux_ctrl_packet_t *) (buf + sizeof(mmmux_hdr_t));
+
+					dbg ("ctrl header command: %u", ctrlh->ctrlcode);
+
+					in_h->ctrl (in_h, ctrlh->ctrlcode, buf + sizeof(mmmux_hdr_t) + sizeof(mmmux_ctrl_packet_t));
 				}
 			break;
 
@@ -211,6 +219,7 @@ int mmmux_hw_init (mmmux_sctx_t *in_c)
 	
 #if MMMUX_USE_RFM12USB == 1
 	/* built-in rfm12 support */
+	dbg ("searching for rfm12usb device...");
 	rv = rfm12usb_find (in_c);
 	if (rv != 0)
 	{

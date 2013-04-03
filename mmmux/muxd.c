@@ -143,6 +143,7 @@ mmmux_sctx_t* mmmuxd_init (int in_debug, char* in_sockname)
 			err ("connection failed for above reason.\n");
 			return NULL;
 		}
+		sleep (2); /* hw task needs some time to start */
 		dbg ("server ready, starting client");
 	}
 	mmmux_client_connect (sc);
