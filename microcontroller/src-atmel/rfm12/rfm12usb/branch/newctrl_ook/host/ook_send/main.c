@@ -4,6 +4,7 @@
 #include <muxd.h>
 #include <endian.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "../../common/requests.h"
 
@@ -21,6 +22,8 @@ void print_help (int ac, char* av[])
 	printf ("  %s 01100 A 1     <- set switch with housecode 01100 an switchcode A to on\n", av[0]);
 	printf ("  %s 01100 10000 1 <- equivalent bitwise representation of above example\n", av[0]);
 	printf ("  %s disco         <- run for a day, check the trashbins for new ('broken') switch units afterwards\n", av[0]);
+	printf ("\nThis programm may as well be run as CGI handler.\n");
+	printf ("If used as CGI handler, use \"hc=...\" as housecode, \"sc=...\" as switchcode\nand \"mode=[0|1]\" as mode switch.");
 	printf ("\n");
 }
 
@@ -97,6 +100,84 @@ void ook_next (uint8_t **in_p)
 	}
 }
 
+int cgi_handler (char* in_qs, int *ac, char *av[])
+{
+	static char hc[16], sc[16], mode[16];
+	char *tmp;
+	const char *qs = in_qs;
+	int i;
+
+	memset (hc, 0x00, sizeof(hc));
+	memset (sc, 0x00, sizeof(sc));
+	memset (mode, 0x00, sizeof(mode));
+
+	printf ("HTTP/1.1 200 OK\r\nCache-Control: no-cache, must-revalidate\r\nExpires: Sat, 26 Jul 1997 05:00:00 GMT\r\nConnection: close\r\n");
+	printf ("Content-Type: text/html\r\n\r\n");
+
+	/* housecode */
+	tmp = strstr(qs, "hc=");
+	if (tmp == NULL)
+		return - __LINE__;
+
+	if (strlen(tmp) < 8)
+		return - __LINE__;
+
+	for (i=0, tmp += 3; i<5; i++)
+	{
+		if (tmp[i] != '0' && tmp[i] != '1')
+			return - __LINE__;
+	}
+	strncpy (hc, tmp, 5);
+
+	/* switch code */
+	tmp = strstr(qs, "sc=");
+	if (strlen(tmp) < 4)
+		return - __LINE__;
+
+	/* single-letter code */
+	if ((tmp[3] >= 'A' && tmp[3] <= 'E')
+		|| (tmp[3] >= 'a' && tmp[3] <= 'e'))
+	{
+		sc[0] = tmp[3];
+	} else /* binary code */
+	{
+		if (strlen(tmp) < 8)
+			return - __LINE__;
+		
+		for (i=0, tmp += 3; i<5; i++)
+		{
+			if (tmp[i] != '0' && tmp[i] != '1')
+				return - __LINE__;
+		}
+
+		strncpy (sc, tmp, 5);
+	}
+
+	/* 0/1 */
+	tmp = strstr(qs, "mode=");
+	if (strlen(tmp) < 6)
+		return - __LINE__;
+	
+	if (tmp[5] == '0')
+	{
+		mode[0] = '0';
+	} else if (tmp[5] == '1')
+	{
+		mode[0] = '1';
+	} else
+	{
+		return - __LINE__;
+	}
+
+	
+	av[1] = hc;
+	av[2] = sc;
+	av[3] = mode;
+	*ac = 4;
+
+	return 0;
+}
+
 int main (int ac, char* av[])
 {
 	mmmux_sctx_t *mc;
@@ -109,6 +190,18 @@ int main (int ac, char* av[])
 		disco
 	} mymode = single;
 	int i;
+	char *query_string;
+
+	query_string = getenv("QUERY_STRING");
+	if (query_string != NULL)
+	{
+		i = cgi_handler(query_string, &ac, av);
+		if (i != 0)
+		{
+			printf ("error parsing your query (%i)\n", i);
+			return i;
+		}
+	}
 	
 	ook_payload = txdata + sizeof(rfmusb_ook_t);
 	pp = &ook_payload;
