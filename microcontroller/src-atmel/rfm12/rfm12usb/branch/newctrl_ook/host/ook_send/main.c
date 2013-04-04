@@ -1,3 +1,25 @@
+/* This is the corresponding host software for the RFM12USB device to send OOK/ASK
+ * modulated data via the RFM12.
+ * This software uses the mmmux library, see https://das-labor.org/wiki/Mmmuxd
+ * for reference.
+ * ook-ctrl may either be used as commandline tool or as CGI handler which may
+ * be used by any webserver that supports CGI.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *   Copyright (C) 2013 Soeren Heisrath (forename at surename dot org)
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -215,8 +237,8 @@ int main (int ac, char* av[])
 
 	ook_header->len   = 24;                  /* 24 bits */
 	ook_header->type  = OOK_2722;            /* 2722 power plug */
-	ook_header->delay = htole16(480);        /* 500us between flanks */
-	ook_header->count = 16;                  /* repeat 16 times */
+	ook_header->delay = htole16(500);        /* 500us between flanks */
+	ook_header->count = 32;                  /* repeat 16 times */
 	
 
 	mmmux_ctrl (mc, mode_ook, NULL);
