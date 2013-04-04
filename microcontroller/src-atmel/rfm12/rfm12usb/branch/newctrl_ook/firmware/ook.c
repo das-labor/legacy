@@ -90,6 +90,13 @@ void ook_send (uint8_t in_bits, uint16_t in_delay, uint8_t *in_data, uint8_t in_
 		
 		ook_delay (in_delay * 12);
 	}
+	
+	/* additional delay - the rfm12b sometimes doesn't stop sending..
+	 * (hw bug?)
+	 */
+	ook_delay (4000);
+	rfm12_tx_off();
+	ook_delay (4000);
 
 	rfm12_ask_tx_mode(0);
 }
