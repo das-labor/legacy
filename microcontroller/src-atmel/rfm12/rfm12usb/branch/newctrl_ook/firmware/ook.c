@@ -45,7 +45,9 @@ void ook_send (uint8_t in_bits, uint16_t in_delay, uint8_t *in_data, uint8_t in_
 	uint8_t bytes = in_bits >> 3, current_byte;
 	
 	rfm12_ask_tx_mode(1);
+	ook_delay (1000);
 	rfm12_tx_off();
+	ook_delay (1000);
 	
 	for (current_byte = 0; current_byte < bytes;)
 	{
@@ -94,9 +96,9 @@ void ook_send (uint8_t in_bits, uint16_t in_delay, uint8_t *in_data, uint8_t in_
 	/* additional delay - the rfm12b sometimes doesn't stop sending..
 	 * (hw bug?)
 	 */
-	ook_delay (4000);
+	ook_delay (1000);
 	rfm12_tx_off();
-	ook_delay (4000);
+	ook_delay (1000);
 
 	rfm12_ask_tx_mode(0);
 }
