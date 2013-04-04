@@ -9,11 +9,19 @@
 
 void print_help (int ac, char* av[])
 {
+	printf ("COMMANDLINE SWITCH TOOL FOR THE RFM12USB\n");
 	printf ("usage:\n  %s <housecode> <switch> <on|off>\n", av[0]);
 	printf ("  housecode: housecode in binary - i.e. 10011\n");
 	printf ("  switch:    switch code (A to E)\n");
+	printf ("  (alternate switchcode representation: bitwise - i.e. 01101)\n");
 	printf ("  on/off:    accepted values: on, off, 0, 1\n\n");
 	printf ("alternate usage: %s disco\n", av[0]);
+	printf ("\nexamples:\n");
+	printf ("  %s 01100 01001 1 <- set switch with housecode 01100 an switchcode 01001 to on\n", av[0]);
+	printf ("  %s 01100 A 1     <- set switch with housecode 01100 an switchcode A to on\n", av[0]);
+	printf ("  %s 01100 10000 1 <- equivalent bitwise representation of above example\n", av[0]);
+	printf ("  %s disco         <- run for a day, check the trashbins for new ('broken') switch units afterwards\n", av[0]);
+	printf ("\n");
 }
 
 void ook_next (uint8_t **in_p)
@@ -114,7 +122,7 @@ int main (int ac, char* av[])
 
 	ook_header->len   = 24;                  /* 24 bits */
 	ook_header->type  = OOK_2722;            /* 2722 power plug */
-	ook_header->delay = htole16(500);        /* 500us between flanks */
+	ook_header->delay = htole16(480);        /* 500us between flanks */
 	ook_header->count = 16;                  /* repeat 16 times */
 	
 
@@ -141,7 +149,7 @@ int main (int ac, char* av[])
 		case disco:
 			ook_payload[0] = 0x00;
 			ook_payload[1] = 0x05;
-			ook_payload[2] = 0x51;
+			ook_payload[2] = 0x54;
 
 			printf ("this program will run forever and switch on all powerplugs in the neighborhood ;-)\n");
 			printf ("press CTRL-C to abort.\n");
@@ -163,7 +171,7 @@ int main (int ac, char* av[])
 			int hc_tmp;
 			int shift = 4;
 
-			memset (txcode + sizeof(rfmusb_ook_t), 0x00, 3);
+			memset (txcode, 0x00, 3);
 
 			if (ac != 4)
 			{
@@ -204,35 +212,98 @@ int main (int ac, char* av[])
 				printf ("can't parse housecode (bit 5)\n");
 				return -1;
 			}
-			
-			switch (av[2][0])
-			{
-				case 'a':
-				case 'A':
-					txcode[1] += 0x05;
-					txcode[2]  = 0x50;
-				break;
-				case 'b':
-				case 'B':
-					txcode[1] += 0x11;
-					txcode[2]  = 0x50;
-				break;
 
-				case 'c':
-				case 'C':
-					txcode[1] += 0x14;
-					txcode[2]  = 0x50;
-				break;
-				case 'd':
-				case 'D':
-					txcode[1] += 0x15;
-					txcode[2]  = 0x10;
-				break;
-				case 'e':
-				case 'E':
-					txcode[1] += 0x15;
-					txcode[2]  = 0x40;
-				break;
+			if (av[2][0] == '0' || av[2][0] == '1')
+			{
+				uint8_t dipcode = 0x20; /* 0th dip is always on gnd */
+				uint8_t msk = 0x30;
+				
+				if (strlen(av[2]) != 5)
+				{
+					printf ("bit code must have exactly 5 bits.\n");
+					return - __LINE__;
+				}
+				
+				/* step 1: read bitcode */
+				for (i=0; i<5; i++)
+				{
+					if (av[2][i] == '1') /* gnd */
+					{
+						dipcode |= (1<<4-i);
+					} else if (av[2][i] != '0')
+					{
+						printf ("can't read bit #%i - use either 0 or 1.\n", i);
+						return - __LINE__;
+					}
+				}
+				
+				msk = 0x30;
+				shift = 4;
+				for (i=0; i<3; i++)
+				{
+					uint8_t n = 0x00;
+
+					switch ((msk & dipcode) >> shift)
+					{
+						case 0x00: /* open open */
+							n = 0x05;
+						break;
+
+						case 0x01: /* open GND  */
+							n = 0x04;
+						break;
+
+						case 0x02: /* GND  open */
+							n = 0x01;
+						break;
+
+						case 0x03: /* GND  GND  */
+							n = 0x00;
+						break;
+
+						default:
+							printf ("WTF? (%i)\n", __LINE__);
+							return - __LINE__;
+					}
+
+					if (i == 0) txcode[1] |= (n << 4);
+					if (i == 1) txcode[1] |= n;
+					if (i == 2) txcode[2] |= (n << 4);
+
+					shift -= 2;
+					msk >>= 2;
+				}
+			} else
+			{
+				switch (av[2][0])
+				{
+					case 'a':
+					case 'A':
+						txcode[1] += 0x05;
+						txcode[2]  = 0x50;
+					break;
+					case 'b':
+					case 'B':
+						txcode[1] += 0x11;
+						txcode[2]  = 0x50;
+					break;
+
+					case 'c':
+					case 'C':
+						txcode[1] += 0x14;
+						txcode[2]  = 0x50;
+					break;
+					case 'd':
+					case 'D':
+						txcode[1] += 0x15;
+						txcode[2]  = 0x10;
+					break;
+					case 'e':
+					case 'E':
+						txcode[1] += 0x15;
+						txcode[2]  = 0x40;
+					break;
+				}
 			}
 
 
@@ -243,6 +314,8 @@ int main (int ac, char* av[])
 			{
 				txcode[2] += 0x04;
 			}
+
+		//	txcode[0] = 0x41; txcode[1] = 0x41; txcode[2] = 0x54;
 			printf ("sending code: %02X, %02X, %02X\n",
 				ook_payload[0],
 				ook_payload[1],
