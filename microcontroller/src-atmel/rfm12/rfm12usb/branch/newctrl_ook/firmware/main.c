@@ -1,15 +1,21 @@
-/* This is the firmware for the RFMUSB device.
+/* This is the firmware for the RFMUSB device (USB handling functions).
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
  *
- * Copyright (c) 2013 Soeren Heisrath, Peter Fuhrmann, Hans-Gert Dahmen
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Parts of this code were extracted from the example project
- * developed by Christian Starkjohann under the copyright (c) 2008 by
- * OBJECTIVE DEVELOPMENT Software GmbH.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *   Copyright (C) 2013 Soeren Heisrath (forename at surename dot org)
  */
+
 #include "../common/rfm12usb_config.h"
 #define F_CPU 20000000UL
 #include <avr/io.h>
