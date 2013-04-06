@@ -43,10 +43,10 @@ static void lamp_out(void *num, uint8_t val) {
 #define NV_IDX_LAMP_CONTROLLER_KUECHE  0x0102
 
 void lamp_out_init() {
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x50, lamp_out, (void *) LAMP_OUT_TAFEL);
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x51, lamp_out, (void *) LAMP_OUT_BEAMER);
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x52, lamp_out, (void *) LAMP_OUT_SCHRANK);
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x53, lamp_out, (void *) LAMP_OUT_FLIPPER);
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_KUECHE,  0x50, lamp_out, (void *) LAMP_OUT_KUECHE);
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x00, lamp_out, (void *) LAMP_OUT_TAFEL);
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x01, lamp_out, (void *) LAMP_OUT_BEAMER);
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x02, lamp_out, (void *) LAMP_OUT_SCHRANK);
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x03, lamp_out, (void *) LAMP_OUT_FLIPPER);
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_KUECHE,  0x00, lamp_out, (void *) LAMP_OUT_KUECHE);
 }
 
