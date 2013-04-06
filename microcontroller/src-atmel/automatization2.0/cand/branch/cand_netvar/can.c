@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "lib/can.h"
+#include "lib-host/can.h"
 #include "lib-host/can-encap.h"
 #include "lib/can_message_converters.h"
 

@@ -15,9 +15,10 @@
 #include <errno.h>
 #include <usb.h>
 
+#include "config.h"
 #include "usb_id.h"
 #include "opendevice.h"
-#include "lib/can.h"
+#include "lib-host/can.h"
 #include "lib-host/can-tcp.h"
 #include "lib/can_message_converters.h"
 #include "lib-host/uart-host.h"
@@ -27,8 +28,6 @@
 #include "netvar_server.h"
 #include "netvar/netvar.h"
 
-// Atmel ; LAP includes
-#include "config.h"
 
 #ifndef max
  #define max(a,b) (((a) > (b)) ? (a) : (b))
