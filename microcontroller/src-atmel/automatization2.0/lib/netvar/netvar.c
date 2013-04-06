@@ -1,4 +1,3 @@
-
 #include <string.h>
 #include <stdint.h>
 
@@ -9,7 +8,7 @@
 	#include "../can/can.h"
 #else
 	#include <malloc.h>
-	#include "../can.h"
+	#include "../lib-host/can.h"
 #endif
 
 #include "../util_lib/list.h"
@@ -312,19 +311,18 @@ uint8_t netvar_read(netvar_desc *nd, void *data) {
 }
 
 static void netvar_transmit(netvar_desc *nd) {
-	//static can_message msg = {0, 0, PORT_NETVAR, PORT_NETVAR, 1, {0,0,0,0,0,0,0,0}};
 	can_message *msg = can_buffer_get();
 	uint16_t idx;
 	uint8_t sidx;
-	
+
 	msg->addr_src = myaddr;
 	msg->addr_dst = 0;
 	msg->port_src = PORT_NETVAR;
 	msg->port_dst = PORT_NETVAR;
-	
+
 	idx = nd->idx;
 	sidx = nd->sidx;
-	
+
 	msg->data[0] = idx;
 	msg->data[1] = idx >> 8;
 	msg->data[2] = sidx;
@@ -338,7 +336,7 @@ static void netvar_transmit(netvar_desc *nd) {
 void unregistered_netvar_write (uint16_t idx, uint8_t sidx, uint8_t size, void *data) {
 	//search if this netvar is also registered on this device.
 	netvar_desc *nd = get_netvar_by_idx (idx, sidx);
-	
+
 	if (nd) {
 		//the netvar is registered. default to normal wite function.
 		netvar_write (nd, data);
