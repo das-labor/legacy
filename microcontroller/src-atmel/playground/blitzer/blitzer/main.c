@@ -103,7 +103,9 @@ int main(){
 		//OCR0A = 240;
 		for(x=0;x<256;x++){
 			OCR0A = pgm_read_byte(&charge_table[x]);
-			_delay_us(400);
+			//_delay_us(400); //10µF cap
+			_delay_us(2000); //50µF cap
+			
 			val = read_adc_nb();
 			if (val > ADC_VAL){
 				OCR0A = 0;
@@ -116,6 +118,8 @@ int main(){
 		}
 		
 		OCR0A = 0;
+		
+		/*
 		uint16_t delay = 4000;
 		
 		while(1){
@@ -128,12 +132,11 @@ int main(){
 			delay--;
 			if(delay == 0) break;
 		}
-		
+		*/
 			
 		BLITZER_PORT |= _BV(BLITZER_BIT);
 		_delay_ms(1);
 		BLITZER_PORT &= ~_BV(BLITZER_BIT);
 		
-		_delay_ms(100);
 	}
 }
