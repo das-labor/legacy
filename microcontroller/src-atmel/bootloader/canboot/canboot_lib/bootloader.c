@@ -16,7 +16,9 @@
 #include "util.h"
 
 
+#ifndef GPIOR0
 uint8_t Station_id;
+#endif
 
 
 typedef struct
@@ -34,26 +36,26 @@ typedef struct
 
 
 //uint8_t Device_info_msg[] __attribute__ ((section (".progdata"))) =
-const uint8_t Device_info_msg[] PROGMEM =
+static const uint8_t Device_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_UINT32_RO,
-	(uint8_t)(SPM_PAGESIZE),
-	(uint8_t)(SPM_PAGESIZE >> 8),
+	(uint8_t) (SPM_PAGESIZE),
+	(uint8_t) (SPM_PAGESIZE >> 8),
 	(FLASHEND + 1ul) / 1024ul, //changed this from Atmega number to real Flash-size in kB
 	0
 };
 
 //uint8_t Flash_info_msg[] __attribute__ ((section (".progdata"))) =
-const uint8_t Flash_info_msg[] PROGMEM =
+static const uint8_t Flash_info_msg[] PROGMEM =
 {
 	SDO_CMD_REPLY,
 	SDO_TYPE_STRING_WO,
 #if (FLASHEND >= 0xffff)
 	0xff,0xff //dirty hack : return 65535 bytes instead of 65536 because we used to small sized integer...
 #else
-	(uint8_t)((uint8_t)FLASHEND + 1),
-	((uint16_t)FLASHEND + 1) >> 8
+	(uint8_t) ((uint8_t) FLASHEND + 1),
+	((uint16_t) FLASHEND + 1) >> 8
 #endif
 };
 
@@ -62,7 +64,7 @@ const uint8_t Flash_info_msg[] PROGMEM =
 void bootloader(void) {
 	uint16_t Address;
 	uint8_t x;
-	
+
 	asm volatile(
 		"eor r1,r1    \n\t"
 		"out 0x3f, r0 \n\t"
@@ -87,45 +89,51 @@ void bootloader(void) {
 	//don't use library function to read eeprom
 	//because it wouldn't end up in bootloader section
 	EEAR = EEPR_ADDR_NODE;
-	EECR = (1<<EERE);
+	EECR = _BV(EERE);
+#ifdef GPIOR0
+	GPIOR0 = EEDR;
+#else
 	Station_id = EEDR;
-
+#endif
 	can_init();
-	
+#ifdef GPIOR0
+	Tx_msg.addr_src = GPIOR0;
+#else
 	Tx_msg.addr_src = Station_id;
+#endif
 	Tx_msg.addr_dst = 0;
 	Tx_msg.port_src = PORT_MGT;
 	Tx_msg.port_dst = PORT_MGT;
 	Tx_msg.dlc = 1;
 	Tx_msg.data[0] = FKT_MGT_AWAKE;
-	
+
 	can_transmit();
-	
+
 	uint8_t count = 20;
 	#if defined(TOGGLE_MCP_LED)
 		uint8_t toggle = 0x1C;
 	#elif defined(TOGGLE_PORT_LED)
-		DDR_LED |= (1<<BIT_LED);
+		DDR_LED |= (1 << BIT_LED);
 	#endif
 	while (count--) {
 		#if defined(TOGGLE_MCP_LED)
 			mcp_write(BFPCTRL, toggle);
 			toggle ^= 0x10;
 		#elif defined(TOGGLE_PORT_LED)
-			PORT_LED ^= (1<<BIT_LED);
+			PORT_LED ^= (1 << BIT_LED);
 		#endif
 		_delay_ms(100);
-		
+
 		if (can_get_nb()) {
 			goto sdo_server;
 		}
 	}
-	
+
 	start_app:
 	asm volatile(JUMP_OPCODE " __vectors\r\t");
-	
+
 	sdo_server:
-	
+
 #ifdef CALL_USER_BOOTLOADER_ENTRY
 	//user can do things like displaying status on bootloader entry
 	user_bootloader_entry();
@@ -133,13 +141,13 @@ void bootloader(void) {
 
 	while (1) {
 		if (Rx_msg.port_dst == PORT_SDO_CMD) {
-			sdo_message * msg = (sdo_message*)Rx_msg.data;
-			
+			sdo_message *msg = (sdo_message *) Rx_msg.data;
+
 			Tx_msg.port_src = PORT_SDO_CMD;
 			Tx_msg.addr_dst = Rx_msg.addr_src;
 			Tx_msg.port_dst = Rx_msg.port_src;
-			
-			
+
+
 			if (msg->cmd == SDO_CMD_READ) {
 				switch (msg->index) {
 					case 0xFF00:	//device information
@@ -180,11 +188,11 @@ void bootloader(void) {
 	while (1) {
 		while (!can_get_nb());
 		if (Rx_msg.port_dst != PORT_SDO_DATA) {
-			boot_rww_enable ();
+			boot_rww_enable();
 			goto sdo_server;
 		} else {
 			for (x = 0; x < 4; x++) {
-				sdo_data_message* tmp = (sdo_data_message*) Rx_msg.data;
+				sdo_data_message *tmp = (sdo_data_message *) Rx_msg.data;
 				boot_page_fill(Address, tmp->data[x]);
 				Address += 2;
 			}

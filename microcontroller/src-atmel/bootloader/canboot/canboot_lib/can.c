@@ -13,13 +13,11 @@ typedef uint16_t pgm_p_t;
 
 #ifdef pgm_read_byte_far
 	#undef pgm_read_byte
-	#define pgm_read_byte(x) pgm_read_byte_far(0x10000l | (x)) 
+	#define pgm_read_byte(x) pgm_read_byte_far(0x10000l | (x))
 #endif
 
 /* MCP */
-void mcp_write(uint8_t reg, uint8_t data) BOOTLOADER_SECTION;
-void mcp_write_b(pgm_p_t stream) BOOTLOADER_SECTION;
-uint8_t mcp_read(uint8_t reg) BOOTLOADER_SECTION;
+static void mcp_write_b(pgm_p_t stream) BOOTLOADER_SECTION;
 
 
 // Functions
@@ -27,34 +25,13 @@ uint8_t mcp_read(uint8_t reg) BOOTLOADER_SECTION;
 #define spi_release_ss() SPI_PORT |= _BV(SPI_PIN_SS)
 #define spi_assert_ss() SPI_PORT &= ~_BV(SPI_PIN_SS)
 
-uint8_t spi_data(uint8_t c)  __attribute__ ((noinline)) __attribute__ ((section (".bootloader")));
+static uint8_t spi_data(uint8_t c) __attribute__ ((noinline)) BOOTLOADER_SECTION;
 
-uint8_t spi_data(uint8_t c)
+static uint8_t spi_data(uint8_t c)
 {
 	SPDR = c;
 	while (!(SPSR & _BV(SPIF)));
 	return(SPDR);
-}
-
-inline static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val)
-{
-	spi_assert_ss();
-	spi_data(BIT_MODIFY);
-	spi_data(reg);
-	spi_data(mask);
-	spi_data(val);
-	spi_release_ss();
-}
-
-uint8_t mcp_read(uint8_t reg)
-{
-	uint8_t d;
-	spi_assert_ss();
-	spi_data(READ);
-	spi_data(reg);
-	d = spi_data(0);
-	spi_release_ss();
-	return d;
 }
 
 void mcp_write(uint8_t reg, uint8_t data)
@@ -66,15 +43,15 @@ void mcp_write(uint8_t reg, uint8_t data)
 	spi_release_ss();
 }
 
-void mcp_write_b(pgm_p_t stream)
+static void mcp_write_b(pgm_p_t stream)
 {
 	uint8_t len;
-	
+
 	while ((len = pgm_read_byte(stream++)))
 	{
 		spi_assert_ss();
 		spi_data(WRITE);
-		
+
 		while (len--)
 		{
 			spi_data(pgm_read_byte(stream++));
@@ -89,10 +66,16 @@ void can_transmit()
 {
 	uint8_t x;
 	spi_assert_ss();
-	spi_data(LOAD_TX_BUFFER);
 
-	spi_data(((uint8_t)(Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
-	spi_data((uint8_t)((Tx_msg.port_dst & 0x0C) << 3) | (1 << EXIDE) | (Tx_msg.port_dst & 0x03));
+#ifdef MCP2510
+	spi_data(WRITE);
+	spi_data(TXB0SIDH);
+#else
+	spi_data(LOAD_TX_BUFFER);
+#endif
+
+	spi_data(((uint8_t) (Tx_msg.port_src << 2)) | (Tx_msg.port_dst >> 4));
+	spi_data((uint8_t) ((Tx_msg.port_dst & 0x0C) << 3) | (1 << EXIDE) | (Tx_msg.port_dst & 0x03));
 	spi_data(Tx_msg.addr_src);
 	spi_data(Tx_msg.addr_dst);
 	spi_data(Tx_msg.dlc);
@@ -102,7 +85,7 @@ void can_transmit()
 	spi_release_ss();
 
 	spi_assert_ss();
-	spi_data(RTS + 1); //base addr + TXB0
+	spi_data(RTS + 1); // base addr + TXB0
 	spi_release_ss();
 }
 
@@ -114,12 +97,19 @@ static inline void message_fetch()
 	uint8_t x;
 
 	spi_assert_ss();
+
+#ifdef MCP2510
+	spi_data(READ);
+	spi_data(RXB0SIDH);
+#else
 	spi_data(READ_RX_BUFFER);
+#endif
+
 	tmp1 = spi_data(0);
 	Rx_msg.port_src = tmp1 >> 2;
 	tmp2 = spi_data(0);
-	tmp3 = (uint8_t)((uint8_t)(tmp2 >> 3) & 0x0C);
-	Rx_msg.port_dst = ((uint8_t)(tmp1 << 4 ) & 0x30) | tmp3 | (uint8_t)(tmp2 & 0x03);
+	tmp3 = (uint8_t)((uint8_t) (tmp2 >> 3) & 0x0C);
+	Rx_msg.port_dst = ((uint8_t) (tmp1 << 4 ) & 0x30) | tmp3 | (uint8_t) (tmp2 & 0x03);
 
 	Rx_msg.addr_src = spi_data(0);
 	Rx_msg.addr_dst = spi_data(0);
@@ -128,14 +118,15 @@ static inline void message_fetch()
 		Rx_msg.data[x] = spi_data(0);
 	spi_release_ss();
 
-	mcp_bitmod(CANINTF, _BV(RX0IF), 0x00);
+	//mcp_bitmod(CANINTF, _BV(RX0IF), 0x00); // only rx0 int is used so we can use write command
+	mcp_write(CANINTF, 0x00);
 }
 
 
 #define FLT_PORT_SRC 0
 #define FLT_PORT_DST1 PORT_SDO_CMD
 #define FLT_PORT_DST2 PORT_SDO_DATA
-#define FLT_ADDR_SRC 0	
+#define FLT_ADDR_SRC 0
 
 #define MSK_PORT_SRC 0
 #define MSK_PORT_DST 0x3F
@@ -162,7 +153,7 @@ static inline void message_fetch()
 
 
 //uint8_t mcp_config_str1[] __attribute__ ((section (".progdata"))) = {
-const uint8_t mcp_config_str1[] PROGMEM = {
+static const uint8_t mcp_config_str1[] PROGMEM = {
 	2, BFPCTRL, 0x0C,		//RXBF Pins to Output
 	4, CNF3,
 		0x05,			//CNF3
@@ -185,10 +176,10 @@ const uint8_t mcp_config_str1[] PROGMEM = {
 		MSK_ADDR_DST,
 	0
 };
-	
-	
+
+
 //uint8_t mcp_config_str2[] __attribute__ ((section (".progdata"))) = {
-const uint8_t mcp_config_str2[] PROGMEM = {
+static const uint8_t mcp_config_str2[] PROGMEM = {
 	2, CANCTRL, 0,
 	2, CANINTE, _BV(RX0IE),
 	0
@@ -205,6 +196,10 @@ void can_init()
 		SPI_DDR |= _BV(SPI_PIN_MOSI) | _BV(SPI_PIN_SCK) | _BV(SPI_PIN_SS);
 	#endif
 
+	#ifdef SPECIAL_CS
+		SPECIAL_CS();
+	#endif
+
 	//set Slave select high
 	spi_release_ss();
 	SPCR = _BV(SPE) | _BV(MSTR);
@@ -214,11 +209,15 @@ void can_init()
 	spi_assert_ss();
 	spi_data(RESET);
 	spi_release_ss();
-	
-	mcp_write_b((pgm_p_t) mcp_config_str1);
 
-	mcp_write(RXF0EID0, Station_id);
-	mcp_write(RXF1EID0, Station_id);
+	mcp_write_b((pgm_p_t) mcp_config_str1);
+	#ifdef GPIOR0
+		mcp_write(RXF0EID0, GPIOR0);
+		mcp_write(RXF1EID0, GPIOR0);
+	#else
+		mcp_write(RXF0EID0, Station_id);
+		mcp_write(RXF1EID0, Station_id);
+	#endif
 
 	mcp_write_b((pgm_p_t) mcp_config_str2);
 }
@@ -231,7 +230,7 @@ uint8_t can_get_nb()
 	{
 		return 0; //no message
 	}
-	
+
 	message_fetch();
 	return 1;
 }
