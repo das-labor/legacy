@@ -21,16 +21,16 @@
 typedef uint8_t can_addr;
 typedef uint8_t can_port;
 
-typedef struct{
+typedef struct {
 	can_addr      addr_src;
 	can_addr      addr_dst;
 	can_port      port_src;
 	can_port      port_dst;
 	uint8_t dlc;
 	uint8_t data[8];
-}can_message;
+} can_message;
 
-typedef enum { normal, mode_sleep, loopback, listenonly, config } can_mode_t;
+typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t;
 
 extern can_message Rx_msg, Tx_msg;
 
@@ -39,38 +39,27 @@ extern can_message Rx_msg, Tx_msg;
  * MCP
  */
 
-void mcp_write(uint8_t reg, uint8_t data) BOOTLOADER_SECTION;
+extern void mcp_write(uint8_t reg, uint8_t data) __attribute__ ((noinline)) BOOTLOADER_SECTION;
 
 /*****************************************************************************
  * Management
  */
 
-void can_init() BOOTLOADER_SECTION;
-void can_setmode(can_mode_t) BOOTLOADER_SECTION;
-#define BFPCTRL 0x0C
+extern void can_init(void) BOOTLOADER_SECTION;
 
 
 /*****************************************************************************
  * Sending
  */
 
-can_message * can_buffer_get()BOOTLOADER_SECTION;
-void can_transmit()BOOTLOADER_SECTION;
+extern void can_transmit(void) BOOTLOADER_SECTION;
 
 
 /*****************************************************************************
  * Receiving
  */
 
-uint8_t can_get_nb()BOOTLOADER_SECTION;
-
-// this is only needed for Interrupt driven Version
-#ifndef CAN_INTERRUPT
-#  define can_free(m)
-#else
-  void can_free(can_message * msg);
-#endif
-
+extern uint8_t can_get_nb(void) BOOTLOADER_SECTION;
 
 
 
