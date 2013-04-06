@@ -7,8 +7,11 @@
 #include <stdlib.h>
 
 #include "list.h"
+#include "../config.h"
 
-#define LIST_ALLOCATION_BLOCK_SIZE 4
+#ifndef LIST_ALLOCATION_BLOCK_SIZE
+	#define LIST_ALLOCATION_BLOCK_SIZE 4
+#endif
 
 void init_list(list_t *l)
 {
