@@ -89,7 +89,8 @@ int main(void)
 	init();
 	switch_netvars_init();
 	lamp_out_init();
-
+	new_lamp_controller(0x100, 4);
+	
 	//the main loop continuously handles can messages
 	while (1)
 	{

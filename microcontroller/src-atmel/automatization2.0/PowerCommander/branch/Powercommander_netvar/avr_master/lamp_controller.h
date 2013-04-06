@@ -4,10 +4,13 @@ typedef struct{
 	uint8_t * lamp_values;
 	uint16_t on_mask;
 	
+	uint8_t master_power;
+	
 	netvar_desc ** slider_out_netvars;
+	netvar_desc ** lamp_out_netvars;
 	
 	netvar_desc * master_slider_out_netvar;
-	
+	netvar_desc * master_button_out_netvar;
 }lamp_controller_t;
 
 
