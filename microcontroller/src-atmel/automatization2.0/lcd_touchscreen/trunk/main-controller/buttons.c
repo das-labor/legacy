@@ -45,7 +45,7 @@ void init_buttons() {
 void update_buttons() {
 	char c; uint8_t val;
 	while (uart_getc_nb(&c)) {
-		uart_putc(c);
+		//uart_putc(c);
 		if (c < 'a') {
 			c -= 'A';
 			val = 0xff;
