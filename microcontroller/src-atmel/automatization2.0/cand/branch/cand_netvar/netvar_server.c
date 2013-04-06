@@ -4,7 +4,7 @@
 #include <string.h>
 #include <errno.h>
 
-#include "lib/can.h"
+#include "lib-host/can.h"
 #define CAN_HANDLER_C
 #include "netvar/netvar.h"
 
