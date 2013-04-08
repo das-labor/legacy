@@ -25,7 +25,7 @@
 //interrupt pin of MCP2515 for non interrupt drive can
 #define SPI_PIN_MCP_INT PE7
 #define SPI_REG_PIN_MCP_INT PINE
-	
+
 
 // can.[ch] defines
 #define F_MCP F_CPU

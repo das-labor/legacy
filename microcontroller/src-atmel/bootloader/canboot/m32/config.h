@@ -5,10 +5,10 @@
 #define EEPR_ADDR_NODE 0x00
 
 //#define TOGGLE_MCP_LED
-#define TOGGLE_PORT_LED
-#define PORT_LED PORTB
-#define DDR_LED DDRB
-#define BIT_LED  PB0
+//#define TOGGLE_PORT_LED
+//#define PORT_LED PORTB
+//#define DDR_LED DDRB
+//#define BIT_LED  PB0
 
 // spi.[ch] defines
 #define SPI_HARDWARE
@@ -22,9 +22,9 @@
 #define SPI_PIN_SS PB4		// for slave select
 
 //interrupt pin of MCP2515 for non interrupt drive can
-#define SPI_PIN_MCP_INT PD2        //int2 pin for labnode
-#define SPI_REG_PIN_MCP_INT PIND   //int2 pin for labnode
-	
+#define SPI_PIN_MCP_INT PD2        //int0
+#define SPI_REG_PIN_MCP_INT PIND   //int0
+
 
 // can.[ch] defines
 #define F_MCP F_CPU

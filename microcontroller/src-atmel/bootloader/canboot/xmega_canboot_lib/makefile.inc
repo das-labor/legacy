@@ -8,7 +8,6 @@ OPTIMIZE       = -Os -fshort-enums
 FLASHCMD       = avrdude -p $(MCU_TARGET) -c avrisp2 -P usb -e  -U boot:w:bootloader.bin:r
 FUSECMD        = avrdude -p $(MCU_TARGET) -c avrisp2 -P usb -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m -U efuse:w:$(EFUSE):m
 
-DEFS           = -DF_CPU=32000000
 LIBS           =
 
 # You should not have to change anything below here.

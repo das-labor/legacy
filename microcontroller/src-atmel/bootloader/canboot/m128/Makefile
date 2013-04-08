@@ -1,7 +1,6 @@
 
-
-MCU_TARGET     = atmega128
-
+MCU_TARGET       = atmega128
+DEFS             = -DF_CPU=16000000
 BOOTLOADER_START = 0x1f800
 
 EFUSE = 0xFF
