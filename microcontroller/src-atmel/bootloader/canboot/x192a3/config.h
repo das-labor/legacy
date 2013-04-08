@@ -21,7 +21,7 @@
 //interrupt pin of MCP2515 for non interrupt driven can
 #define SPI_PIN_MCP_INT          1
 #define SPI_REG_PIN_MCP_INT  PORTD
-	
+
 
 // can.[ch] defines
 #define F_MCP ((F_CPU) / 2)

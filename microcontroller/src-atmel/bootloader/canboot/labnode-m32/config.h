@@ -24,7 +24,7 @@
 //interrupt pin of MCP2515 for non interrupt drive can
 #define SPI_PIN_MCP_INT PB2        //int2 pin for labnode
 #define SPI_REG_PIN_MCP_INT PINB   //int2 pin for labnode
-	
+
 
 // can.[ch] defines
 #define F_MCP F_CPU

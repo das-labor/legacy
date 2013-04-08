@@ -1,7 +1,6 @@
 
-
-MCU_TARGET     = atmega168
-
+MCU_TARGET       = atmega168
+DEFS             = -DF_CPU=16000000
 BOOTLOADER_START = 0x3c00
 
 EFUSE = 0xF8

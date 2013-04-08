@@ -6,14 +6,13 @@ FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -V -U bootloader.hex
 FUSECMD        = avrdude -p $(MCU_TARGET) -c usbasp -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m -U efuse:w:$(EFUSE):m
 LOCKCMD        = avrdude -p $(MCU_TARGET) -c usbasp -U lock:w:$(LOCKBYTE):m
 
-DEFS           = -DF_CPU=16000000
 LIBS           =
 
 # You should not have to change anything below here.
 
 CC             = avr-gcc
 
-SIZE	       = avr-size
+SIZE           = avr-size
 
 # Override is only needed by avr-lib build system.
 
