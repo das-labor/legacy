@@ -11,11 +11,11 @@
 
 #define PORT_LEDS PORTD
 
-unsigned char Station_id;
+uint8_t Station_id;
 
-static inline void set_lampe(unsigned char lampe, unsigned char val)
+static inline void set_lampe(uint8_t lampe, uint8_t val)
 {
-	Bright[lampe] = 64-(val>>2);
+	Bright[lampe] = 64 - (val >> 2);
 }
 
 #define LED_B1 0xF0
@@ -25,29 +25,29 @@ static inline void set_lampe(unsigned char lampe, unsigned char val)
 #define LED_B5 0xCC
 #define LED_B6 0x80
 
-unsigned char FLAGS;
+uint8_t flags;
 #define F_RCV_CAN 0x01
 #define F_MODE_ON 0x02
 
 #define LED_GREEN PD1
 
 static inline void blink_leds() {
-	static unsigned char rol;
+	static uint8_t rol;
 	if (TIFR & _BV(OCF1A)) {
 		TIFR = _BV(OCF1A); //clear flag
 		if ((rol>>=1) == 0) rol = 0x80;
-		if (FLAGS & F_RCV_CAN) {
-			FLAGS &= ~ F_RCV_CAN;
-			PORT_LEDS ^= (1<<LED_GREEN);
+		if (flags & F_RCV_CAN) {
+			flags &= ~ F_RCV_CAN;
+			PORT_LEDS ^= (1 << LED_GREEN);
 		} else {
-			if (FLAGS & F_MODE_ON)
+			if (flags & F_MODE_ON)
 			{
-				PORT_LEDS |= (1<<LED_GREEN);
+				PORT_LEDS |= (1 << LED_GREEN);
 			} else {
 				if (rol & LED_B6) {
-					PORT_LEDS |= (1<<LED_GREEN);
+					PORT_LEDS |= (1 << LED_GREEN);
 				} else {
-					PORT_LEDS &= ~(1<<LED_GREEN);
+					PORT_LEDS &= ~(1 << LED_GREEN);
 				}
 			}
 		}
@@ -55,81 +55,78 @@ static inline void blink_leds() {
 }
 
 static inline void relais_check() {
-	unsigned char x, on = 0;
+	uint8_t x, on = 0;
 	for (x = 0; x < NUM_LAMPS; x++) {
 		if (Bright[x] != 64) {
 			on = 1;
 		}
 	}
 	if (on) {
-		FLAGS |= F_MODE_ON;
+		flags |= F_MODE_ON;
 		PORTD |=  0x10;
 	} else {
-		FLAGS &= ~F_MODE_ON;
+		flags &= ~F_MODE_ON;
 		PORTD &= ~0x10;
 	}
-
 }
 
 void eventloop() {
-	Tx_msg.addr_src = Station_id;
+	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 	while (1) {
-		if (can_get_nb()) {
-			FLAGS |= F_RCV_CAN;
-			switch (Rx_msg.port_dst) {
-			case PORT_MGT:
-				// Management
-				switch (((pdo_message*)&Rx_msg)->cmd) {
-				case FKT_MGT_PING:
-					{pdo_message *rmsg = (pdo_message *)&Tx_msg;
-					rmsg->addr_dst = Rx_msg.addr_src;
-					rmsg->port_dst = Rx_msg.port_src;
-					rmsg->port_src = PORT_MGT;
-					rmsg->cmd = FKT_MGT_PONG;
-					rmsg->dlc = 1;
-					can_transmit();
-					break;}
-				case FKT_MGT_RESET:
-					asm volatile("rjmp __vectors");
+		can_message *rx_msg;
+		if ((rx_msg = can_get_nb()) != 0) {
+			flags |= F_RCV_CAN;
+			switch (rx_msg->port_dst) {
+				case PORT_MGT:
+					// Management
+					switch (rx_msg->data[0]) {
+						case FKT_MGT_PING:
+							msg.addr_src = Station_id;
+							msg.addr_dst = rx_msg->addr_src;
+							can_transmit(&msg);
+							break;
+						case FKT_MGT_RESET:
+							asm volatile("rjmp __vectors");
+							break;
+					}
 					break;
-				}
-			case PORT_LAMPE:
-				// Lampen steuern
-				switch (((pdo_message*)&Rx_msg)->cmd) {
-					case FKT_LAMPE_SET: {
-						if (Rx_msg.dlc != 3) continue;
-						unsigned char value;
-						unsigned char lampe;
-						lampe = ((pdo_message*)&Rx_msg)->data[0];
-						value = ((pdo_message*)&Rx_msg)->data[1];
-			
-						Ramp.end_bright[lampe] = value;
-						break;
-					}
-					case FKT_LAMPE_SETMASK: {
-						unsigned char i;
-						if (Rx_msg.dlc != NUM_LAMPS + 2) continue;
-						for (i = 0; i < NUM_LAMPS; i++) {
-							unsigned char value = ((pdo_message*)&Rx_msg)->data[i];
-							set_lampe(i, value);
+				case PORT_LAMPE:
+					// Lampen steuern
+					switch (rx_msg->data[0]) {
+						case FKT_LAMPE_SET: {
+							if (rx_msg->dlc != 3) continue;
+							uint8_t value;
+							uint8_t lampe;
+							lampe = rx_msg->data[1];
+							value = rx_msg->data[2];
+							Ramp.end_bright[lampe] = value;
+							break;
 						}
-						break;
+						case FKT_LAMPE_SETMASK: {
+							uint8_t i;
+							if (rx_msg->dlc != NUM_LAMPS + 2) continue;
+							for (i = 0; i < NUM_LAMPS; i++) {
+								uint8_t value = rx_msg->data[i];
+								set_lampe(i, value);
+							}
+							break;
+						}
+						case FKT_LAMPE_SETDELAY: {
+							if (rx_msg->dlc != 4) continue;
+							union {
+								uint16_t i;
+								uint8_t c[2];
+							} value;
+							uint8_t lampe;
+							lampe = rx_msg->data[1];
+							value.c[1] = rx_msg->data[2];
+							value.c[0] = rx_msg->data[3];
+							Ramp.delay_rl[lampe] = value.i;
+							Ramp.delay[lampe] = value.i;
+							break;
+						}
 					}
-					case FKT_LAMPE_SETDELAY:{
-						if (Rx_msg.dlc != 4) continue;
-						union{
-							unsigned int i;
-							unsigned char c[2];
-						}value;
-						unsigned char lampe;
-						lampe = ((pdo_message*)&Rx_msg)->data[0];
-						value.c[1] = ((pdo_message*)&Rx_msg)->data[1];
-						value.c[0] = ((pdo_message*)&Rx_msg)->data[2];
-						Ramp.delay_rl[lampe] = value.i;
-						Ramp.delay[lampe] = value.i;
-						break;
-					}
-				}
+					break;
 			}
 		}
 		blink_leds();
@@ -144,23 +141,23 @@ static inline void timer1_init() {
 	TCNT1 = 0;
 }
 
-int main() {
-	DDRD = 0x73;
-	DDRB = 0x0F;//rest will be set by spi_init
-	PORTD = 0x12;
-	
+int main(void) {
+	DDRD = 0x73; // 0111 0011
+	DDRB = 0x0F; // 0000 1111
+	PORTD = 0x12; // 0001 0010
+
 	timer1_init();
-	
+
 	Station_id = 0x35;
-	
+
 	spi_init();
 	can_init();
 
 	dimmer_init();
 
 	sei();
-	
+
 	eventloop();
-	return 0;
+	return 1;
 }
 

@@ -1,12 +1,13 @@
 #define NUM_LAMPS 4
 
 typedef struct {
-	unsigned char end_bright[NUM_LAMPS];
-	unsigned int delay_rl[NUM_LAMPS];
-	unsigned int delay[NUM_LAMPS];
+	uint8_t end_bright[NUM_LAMPS];
+	uint16_t delay_rl[NUM_LAMPS];
+	uint16_t delay[NUM_LAMPS];
 } dimmer_ramp;
 
 
-void dimmer_init();
-extern unsigned char Bright[NUM_LAMPS];
+extern void dimmer_init(void);
+extern uint8_t Bright[NUM_LAMPS];
 extern dimmer_ramp Ramp;
+
