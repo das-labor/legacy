@@ -1,10 +1,10 @@
 
 
 enum {
-BLUE,
-GREEN,
-RED,
-NUM_COLORS
+	BLUE,
+	GREEN,
+	RED,
+	NUM_COLORS
 } led_colors_t;
 
 
@@ -16,4 +16,5 @@ typedef struct {
 } dot_t;
 
 extern void pushDot(dot_t *dot);
+extern void updateDots(void);
 

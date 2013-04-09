@@ -13,8 +13,8 @@
 #include "motion.h"
 
 
-static volatile uint16_t tickscounter = 0;
-ISR(TIMER2_OVF_vect)
+static volatile uint8_t tickscounter;
+ISR(TIMER0_OVF_vect)
 {
 	tickscounter++;
 }
@@ -25,8 +25,12 @@ static void init(void)
 
 	//motion_init();
 
-	init_io();
+	TCCR0 = _BV(CS02) | _BV(CS00);
+	TCNT0 = 0;
+	TIMSK = _BV(TOIE0);
 
+	init_io();
+	PORT_LED |= B_LED;
 	// init twi
 	if (!TWIM_Init())
 	{
@@ -47,24 +51,25 @@ static void init(void)
 	//turn on interrupts
 	sei();
 	wdt_enable(WDTO_250MS); // 250 ms
+
+	//switch_netvars_init();
+	//lamp_out_init();
 }
 
 int main(void)
 {
-	//system initialization
+	// system initialization
 	init();
-	switch_netvars_init();
-	lamp_out_init();
 
-	//the main loop continuously handles can messages
 	while (1)
 	{
 		can_handler();
 		do_ani();
 		if (tickscounter > 20)
 		{
+			PORT_LED ^= R_LED;
 			tickscounter = 0;
-			netvar_handle_events();
+			//netvar_handle_events();
 			switch_handler();
 			//temp_sensor_read();
 			//motion_tick();

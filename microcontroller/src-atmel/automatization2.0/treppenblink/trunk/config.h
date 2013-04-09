@@ -30,9 +30,9 @@
 #define LAMPS 50
 
 // Taster LED
-#define G_LED _BV(PD1)
-#define R_LED _BV(PD3)
-#define B_LED _BV(PD4)
+#define R_LED _BV(PD1)
+#define B_LED _BV(PD3)
+#define G_LED _BV(PD4)
 #define PORT_LED PORTD
 #define DDR_LED DDRD
 
@@ -47,7 +47,7 @@
 #define EEP_MY_ADDR 0x00
 #define EEP_MOTION_TRESH 0x01
 
-// TWI Adresse des temperatursensors
+// TWI Adresse des Temperatursensors
 #define I2C_ADRESSE_DS1631 0x9e
 
 #endif // ifndef CONFIG_H
