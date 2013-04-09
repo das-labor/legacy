@@ -95,4 +95,14 @@
 #define RX_STATUS 0xB0
 #define BIT_MODIFY 0x05
 
+// Controller Modes
+
+typedef enum {
+	NORMAL,
+	MODE_SLEEP,
+	LOOPBACK,
+	LISTENONLY,
+	CONFIG
+} can_mode_t;
+
 #endif //_MCP2551REGS_H
