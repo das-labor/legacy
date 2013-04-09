@@ -17,7 +17,7 @@ LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U $(OUT).hex
-CANFLASHCMD    = lapcontrol -s kvm flash 0x $(OUT).hex
+CANFLASHCMD    = lapcontrol -s kvm flash 0x25 $(OUT).hex
 
 #############################################################################
 # Rules

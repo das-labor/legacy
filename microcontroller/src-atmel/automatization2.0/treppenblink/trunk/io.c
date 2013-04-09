@@ -30,6 +30,7 @@ void init_io()
 
 	// Ausgänge für RGB LED
 	DDR_LED |= R_LED | G_LED | B_LED;
+
 	// Eingänge für Taster
 	DDRB &= ~(I_BV_0 | I_BV_1);
 
@@ -44,11 +45,11 @@ static void lamp_out(void *num, uint8_t val) {
 	switch (i) {
 		case F_LED:
 			if (val) {
-				DDR_LED |= R_LED;
-				DDR_LED &= ~(G_LED);
+				PORT_LED |= R_LED;
+				PORT_LED &= ~(G_LED);
 			} else {
-				DDR_LED |= G_LED;
-				DDR_LED &= ~(R_LED);
+				PORT_LED |= G_LED;
+				PORT_LED &= ~(R_LED);
 			}
 			break;
 	}
