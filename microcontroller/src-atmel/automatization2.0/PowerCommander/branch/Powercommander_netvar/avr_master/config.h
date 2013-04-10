@@ -4,7 +4,6 @@
 
 // SPI
 
-// SS Pin muss Ausgang sein wenn nicht als CS verwendet
 #define MCP_CS_BIT   PB4
 #define MCP_CS_PORT  PORTB
 
@@ -20,7 +19,7 @@
 
 #define F_MCP F_CPU
 
-#define TESTBOARD
+//#define TESTBOARD
 
 #ifdef TESTBOARD
 #define LED_ROT   _BV(PA3)
@@ -54,4 +53,4 @@
 
 #define LIST_ALLOCATION_BLOCK_SIZE 1
 
-#endif // ifndef CONFIG_H
+#endif // ifndef _CONFIG_H

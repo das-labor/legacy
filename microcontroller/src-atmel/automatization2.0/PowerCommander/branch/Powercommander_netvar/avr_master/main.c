@@ -16,6 +16,7 @@
 #include "hauptschalter.h"
 #include "statusled.h"
 #include "lamp_out.h"
+#include "lamp_controller.h"
 
 
 static volatile uint8_t tickscounter;
