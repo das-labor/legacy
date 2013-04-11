@@ -1,5 +1,4 @@
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 
 #include "../config.h"
@@ -119,7 +118,9 @@ static inline void message_fetch()
 	spi_release_ss();
 
 	//mcp_bitmod(CANINTF, _BV(RX0IF), 0x00); // only rx0 int is used so we can use write command
+#ifdef MCP2510 // CANINTF is cleard by 'Read RX Buffer' instruction
 	mcp_write(CANINTF, 0x00);
+#endif
 }
 
 
@@ -141,10 +142,10 @@ static inline void message_fetch()
 // 0x01 : 125kbit/8MHz
 // 0x03 : 125kbit/16MHz
 // 0x04 : 125kbit/20MHz
-#if F_MCP == 16000000
-#define CNF1_T 0x03
-#elif F_MCP == 8000000
+#if F_MCP == 8000000
 #define CNF1_T 0x01
+#elif F_MCP == 16000000
+#define CNF1_T 0x03
 #elif F_MCP == 20000000
 #define CNF1_T 0x04
 #else
