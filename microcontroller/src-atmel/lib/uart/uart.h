@@ -20,6 +20,9 @@
 #include <inttypes.h>
 #include <avr/pgmspace.h>
 
+#ifdef UART_BAUD_RATE
+	#define BAUD UART_BAUD_RATE
+#endif
 //prototypes
 void uart_init(void);
 
