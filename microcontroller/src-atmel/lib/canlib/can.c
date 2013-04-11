@@ -171,8 +171,9 @@ static void message_fetch(can_message_x *msg)
 		msg->msg.data[x] = spi_send(0);
 	}
 	SET_CS();
-
-	mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
+#ifdef MCP2510 // CANINTF is cleard by Read RX Buffer instruction
+	mcp_bitmod(CANINTF, (1 << RX0IF), 0x00);
+#endif
 }
 #ifdef CAN_INTERRUPT
 
