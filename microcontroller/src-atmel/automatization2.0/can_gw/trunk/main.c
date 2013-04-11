@@ -117,7 +117,9 @@ typedef struct {
 } rs232can_msg;
 
 //forward declarations
+#ifdef BUSPOWER_SWITCH
 static void buspower(uint8_t on);
+#endif // BUSPOWER_SWITCH
 static void syscontrol(uint8_t ctrl_reg_new);
 
 
