@@ -71,7 +71,6 @@ typedef struct
 static uint8_t mcp_status(void);
 static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val);
 static void mcp_reset(void);
-static void can_setmode(mcp2515_mode_t mode);
 static void can_setfilter(void);
 
 void mcp_write(uint8_t reg, uint8_t data);
@@ -279,7 +278,7 @@ uint8_t mcp_read(uint8_t reg)
 
 
 /* Management */
-static void can_setmode(mcp2515_mode_t mode)
+void mcp_setmode(uint8_t mode)
 {
 	uint8_t val = mode << 5;
 	val |= _BV(CLKEN);  // CLKEN
@@ -288,7 +287,7 @@ static void can_setmode(mcp2515_mode_t mode)
 }
 
 
-static void can_setfilter()
+static void mcp_setfilter()
 {
 	//RXM1   RXM0
 	//  0      0     receive matching filter
@@ -298,7 +297,7 @@ static void can_setfilter()
 	mcp_write(RXB0CTRL, (1 << RXM1) | (1 << RXM0));
 }
 
-void can_setled(uint8_t led, uint8_t state)
+void mcp_setled(uint8_t led, uint8_t state)
 {
 	mcp_bitmod(BFPCTRL, 0x10 << led, state ? 0xff : 0);
 }
@@ -363,8 +362,8 @@ void can_init()
 	mcp_write(CNF3, (_BV(PHSEG22) | _BV(PHSEG20))); // (PHSEG2 + 1) x TQ  PS2 Lenght - 3 ms
 	// bittime = t1 + propseg + ps1 + ps2 = 8 -  1 / 8 = 0,125
 
-	can_setfilter();
-	can_setmode(NORMAL);
+	mcp_setfilter();
+	mcp_setmode(NORMAL);
 
 #ifdef CAN_INTERRUPT
 
