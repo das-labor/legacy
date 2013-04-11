@@ -8,7 +8,7 @@
 #define TOGGLE_PORT_LED
 #define PORT_LED PORTA
 #define DDR_LED DDRA
-#define BIT_LED  PA2
+#define BIT_LED  PA2 // red LED
 
 // spi.[ch] defines
 #define SPI_HARDWARE
