@@ -71,7 +71,7 @@ typedef struct
 static uint8_t mcp_status(void);
 static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val);
 static void mcp_reset(void);
-static void can_setfilter(void);
+static void mcp_setfilter(void);
 
 void mcp_write(uint8_t reg, uint8_t data);
 uint8_t mcp_read(uint8_t reg);
