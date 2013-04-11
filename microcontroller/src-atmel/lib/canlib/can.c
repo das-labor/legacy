@@ -71,6 +71,8 @@ typedef struct
 static uint8_t mcp_status(void);
 static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val);
 static void mcp_reset(void);
+static void can_setmode(mcp2515_mode_t mode);
+static void can_setfilter(void);
 
 void mcp_write(uint8_t reg, uint8_t data);
 uint8_t mcp_read(uint8_t reg);
@@ -129,7 +131,7 @@ static void message_load(can_message_x *msg)
 	}
 	SET_CS();
 	CLEAR_CS();
-	spi_send(RTS + 1); //base addr + TXB0
+	spi_send(RTS | _BV(TXB0)); // base addr + TXB0
 	SET_CS();
 }
 
@@ -276,16 +278,16 @@ uint8_t mcp_read(uint8_t reg)
 
 
 /* Management */
-void can_setmode(can_mode_t mode)
+static void can_setmode(mcp2515_mode_t mode)
 {
 	uint8_t val = mode << 5;
-	val |= 0x04;  // CLKEN
+	val |= _BV(CLKEN);  // CLKEN
 
 	mcp_write(CANCTRL, val);
 }
 
 
-void can_setfilter()
+static void can_setfilter()
 {
 	//RXM1   RXM0
 	//  0      0     receive matching filter
@@ -340,7 +342,7 @@ void can_init()
 
 	_delay_ms(10);
 
-	mcp_write(BFPCTRL, 0x0C);//RXBF Pins to Output
+	mcp_write(BFPCTRL, _BV(B1BFE) | _BV(B0BFE)); // RXBF Pins to Output
 
 	// 0x01 : 125kbit/8MHz
 	// 0x03 : 125kbit/16MHz
@@ -355,9 +357,9 @@ void can_init()
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz
 #endif
-	mcp_write(CNF1, 0x40 | CNF1_T); // SJW: Synchronization Jump Width Length bits - 1 ms / TQ = 0,5 ms
-	mcp_write(CNF2, 0xf1); // Length of PS2 determined by PHSEG, Bus line is sampled three times at the sample point, PS1 Length - 3,5 ms, Propagation Segment Length - 1 ms
-	mcp_write(CNF3, 0x05); // (PHSEG2 + 1) x TQ  PS2 Lenght - 3 ms
+	mcp_write(CNF1, _BV(SJW0) | CNF1_T); // SJW: Synchronization Jump Width Length bits - 1 ms / TQ = 0,5 ms
+	mcp_write(CNF2, (_BV(BTLMODE) | _BV(SAM) | _BV(PHSEG12) | _BV(PHSEG11) | _BV(PRSEG0))); // Length of PS2 determined by PHSEG, Bus line is sampled three times at the sample point, PS1 Length - 3,5 ms, Propagation Segment Length - 1 ms
+	mcp_write(CNF3, (_BV(PHSEG22) | _BV(PHSEG20))); // (PHSEG2 + 1) x TQ  PS2 Lenght - 3 ms
 	// bittime = t1 + propseg + ps1 + ps2 = 8 -  1 / 8 = 0,125
 
 	can_setfilter();
