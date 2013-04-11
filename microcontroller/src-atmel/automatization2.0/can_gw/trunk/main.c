@@ -273,7 +273,7 @@ void process_cantun_msg(rs232can_msg *msg)
 		case RS232CAN_SETFILTER:
 			break;
 		case RS232CAN_SETMODE:
-			can_setmode(msg->data[0]);
+			mcp_setmode(msg->data[0]);
 			break;
 		case RS232CAN_PKT:
 			cmsg = can_buffer_get();                      //alocate buffer
@@ -566,9 +566,6 @@ int main(void)
 	adc_last_schedule_time = REG_RESETCAUSE & MSK_RESETCAUSE;
 	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, (char *) &adc_last_schedule_time, 1);
 
-	//begin can operations
-	can_setled(0, 1);
-
 	//store system counter
 	adc_last_schedule_time = autoreport_last_schedule_time = sys_ticks;
 	while (1)
@@ -606,7 +603,7 @@ int main(void)
 		{
 			leds_old = leds;
 #ifdef LED_SUPPORT_MCP
-			can_setled(0, leds & 1);
+			mcp_setled(0, leds & 1);
 #else
 			led_set(leds);
 #endif // LED_SUPPORT
