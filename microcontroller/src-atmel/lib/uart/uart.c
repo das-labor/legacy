@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include "uart.h"
+#include <util/setbaud.h>
 
 #if defined(__AVR_ATmega128__)
 	#ifndef USE_UART_1
@@ -62,9 +63,6 @@
 #ifdef UART_LEDS
 	#warning UART_LEDS is truned on, which means that PC0 and PC1 will be toggled by receiving/transmitting bytes!!
 #endif
-
-
-#define UART_BAUD_CALC(UART_BAUD_RATE, F_OSC) ((F_OSC + (UART_BAUD_RATE) * 8L) / ((UART_BAUD_RATE) * 16L) - 1)
 
 
 #ifdef UART_INTERRUPT
@@ -124,12 +122,17 @@ void uart_init()
 #endif
 	PORTD |= 0x01;				//Pullup an RXD an
 
-	UCSRA = 0;
 	UCSRB = _BV(TXEN) | _BV(RXEN); // UART RX und TX einschalten
 
 
-	UBRRH = (uint8_t) (UART_BAUD_CALC(UART_BAUD_RATE, F_CPU) >> 8);
-	UBRRL = (uint8_t) (UART_BAUD_CALC(UART_BAUD_RATE, F_CPU));
+	UBRRH = UBRRH_VALUE;
+	UBRRL = UBRRL_VALUE;
+
+#if USE_2X
+	UCSRA = _BV(U2X);
+#else
+	UCSRA = 0;
+#endif
 
 #ifdef URSEL
 	UCSRC = _BV(URSEL) | _BV(UCSZ1) | _BV(UCSZ0);	// Asynchron 8N1
