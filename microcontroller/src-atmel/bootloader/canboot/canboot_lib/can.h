@@ -30,8 +30,6 @@ typedef struct {
 	uint8_t data[8];
 } can_message;
 
-typedef enum { NORMAL, MODE_SLEEP, LOOPBACK, LISTENONLY, CONFIG } can_mode_t;
-
 extern can_message Rx_msg, Tx_msg;
 
 
@@ -61,6 +59,5 @@ extern void can_transmit(void) BOOTLOADER_SECTION;
 
 extern uint8_t can_get_nb(void) BOOTLOADER_SECTION;
 
-
-
 #endif
+
