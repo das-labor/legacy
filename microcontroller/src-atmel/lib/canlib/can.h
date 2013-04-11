@@ -84,8 +84,6 @@
  */
 
 extern void can_init(void);
-extern void can_setfilter(void);
-extern void can_setmode(can_mode_t);
 extern void can_setled(uint8_t led, uint8_t state);
 
 
