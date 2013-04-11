@@ -34,7 +34,7 @@
 			#error Interrupt Enable for Part not defined
 		#endif
 	#endif
-	
+
 	#ifndef DISABLE_CAN_INT //makro in which user can implement disabling of AVR-interrupt
 		#if defined (__AVR_ATmega8__) || (__AVR_ATmega32__)
 			#define	DISABLE_CAN_INT()   GIMSK &= ~_BV(MCP_INT_MASK)
@@ -54,7 +54,7 @@
 			#error Interrupt Enable for Part not defined
 		#endif
 	#endif
-	
+
 	#ifndef MCP_INT_VEC
 		#error MCP_INT_VEC undefined. please define it in config.h like this: #define MCP_INT_VEC INT0_vect
 	#endif
@@ -99,7 +99,7 @@ static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val)
 }
 
 //load a message to mcp2515 and start transmission
-void message_load(can_message_x *msg)
+static void message_load(can_message_x *msg)
 {
 	uint8_t x;
 
@@ -114,7 +114,7 @@ void message_load(can_message_x *msg)
 #ifdef CAN_RAW
 	spi_send((uint8_t) ((uint32_t) msg->msg.id >> 21));
 	spi_send(((uint8_t) ((uint32_t) msg->msg.id >> 13) & 0xE0) | (1 << EXIDE) | ((uint8_t) ((uint32_t) msg->msg.id >> 16) & 0x03));
-	spi_send((uint8_t)(msg->msg.id>>8));
+	spi_send((uint8_t)(msg->msg.id >> 8));
 	spi_send((uint8_t)(msg->msg.id));
 #else
 	spi_send(((uint8_t) (msg->msg.port_src << 2)) | (msg->msg.port_dst >> 4));
@@ -134,7 +134,7 @@ void message_load(can_message_x *msg)
 }
 
 //get a message from mcp2515 and disable RX interrupt Condition
-void message_fetch(can_message_x *msg)
+static void message_fetch(can_message_x *msg)
 {
 	uint8_t tmp1, tmp2, tmp3;
 	uint8_t x;
@@ -152,7 +152,7 @@ void message_fetch(can_message_x *msg)
 	tmp2 = spi_send(0);
 	tmp3 = spi_send(0);
 
-	msg->msg.id = ((uint32_t)tmp1 << 21) | ((uint32_t) ((uint8_t) tmp2 & 0xE0) << 13) 
+	msg->msg.id = ((uint32_t) tmp1 << 21) | ((uint32_t) ((uint8_t) tmp2 & 0xE0) << 13) 
 			| ((uint32_t) ((uint8_t) tmp2 & 0x03) << 16) | ((uint16_t) tmp3 << 8) | spi_send(0);
 #else
 	tmp1 = spi_send(0);
@@ -199,12 +199,13 @@ ISR (MCP_INT_VEC)
 			{
 				message_fetch(&rx_buffer[rx_head]);
 				rx_buffer[rx_head].flags |= 0x01;//mark buffer as used
-				if (++rx_head == CAN_RX_BUFFER_SIZE) rx_head = 0;
+				if (++rx_head == CAN_RX_BUFFER_SIZE)
+					rx_head = 0;
 			} else
 			{
 				//buffer overflow
 				//just clear the Interrupt condition, and lose the message
-				mcp_bitmod(CANINTF, (1<<RX0IF), 0x00);
+				mcp_bitmod(CANINTF, (1 << RX0IF), 0x00);
 			}
 		}
 		if (status & 0x08) {	// TX0 empty
@@ -213,12 +214,13 @@ ISR (MCP_INT_VEC)
 				((can_message_x *) &tx_buffer[tx_tail])->flags &= ~0x01;
 				tx_int = 1;
 				message_load(&tx_buffer[tx_tail]);
-				if (++tx_tail == CAN_TX_BUFFER_SIZE) tx_tail = 0;
+				if (++tx_tail == CAN_TX_BUFFER_SIZE)
+					tx_tail = 0;
 			} else
 			{
 				tx_int = 0;
 			}
-			mcp_bitmod(CANINTF, (1<<TX0IF), 0x00);
+			mcp_bitmod(CANINTF, (1 << TX0IF), 0x00);
 		}
 #ifdef CAN_HANDLEERROR
 		if (status & ~0x09)
@@ -235,7 +237,7 @@ ISR (MCP_INT_VEC)
 #endif // CAN_HANDLEERROR
 
 	} while (status);
-	
+
 	#ifdef CAN_INT_NOBLOCK
 		cli();
 		ENABLE_CAN_INT(); //if global interrupts are enabled during handler, enable our own interrupt here again, but with globals off
@@ -290,7 +292,7 @@ void can_setfilter()
 	//  0      1     " only 11bit Identifier
 	//  1      0     " only 29bit Identifier
 	//  1      1     any
-	mcp_write(RXB0CTRL, (1<<RXM1) | (1<<RXM0));
+	mcp_write(RXB0CTRL, (1 << RXM1) | (1 << RXM0));
 }
 
 void can_setled(uint8_t led, uint8_t state)
@@ -344,18 +346,18 @@ void can_init()
 	// 0x03 : 125kbit/16MHz
 	// 0x04 : 125kbit/20MHz
 
-#if F_MCP == 16000000
-#define CNF1_T 0x03
-#elif F_MCP == 8000000
+#if F_MCP == 8000000
 #define CNF1_T 0x01
+#elif F_MCP == 16000000
+#define CNF1_T 0x03
 #elif F_MCP == 20000000
 #define CNF1_T 0x04
 #else
 #error Can Baudrate is only defined for 8, 16 and 20 MHz
 #endif
-	mcp_write( CNF1, 0x40 | CNF1_T ); // SJW: Synchronization Jump Width Length bits - 1 ms / TQ = 0,5 ms
-	mcp_write( CNF2, 0xf1 ); // Length of PS2 determined by PHSEG, Bus line is sampled three times at the sample point, PS1 Length - 3,5 ms, Propagation Segment Length - 1 ms
-	mcp_write( CNF3, 0x05 ); // (PHSEG2 + 1) x TQ  PS2 Lenght - 3 ms
+	mcp_write(CNF1, 0x40 | CNF1_T); // SJW: Synchronization Jump Width Length bits - 1 ms / TQ = 0,5 ms
+	mcp_write(CNF2, 0xf1); // Length of PS2 determined by PHSEG, Bus line is sampled three times at the sample point, PS1 Length - 3,5 ms, Propagation Segment Length - 1 ms
+	mcp_write(CNF3, 0x05); // (PHSEG2 + 1) x TQ  PS2 Lenght - 3 ms
 	// bittime = t1 + propseg + ps1 + ps2 = 8 -  1 / 8 = 0,125
 
 	can_setfilter();
@@ -388,7 +390,8 @@ can_message *can_get_nb()
 	} else
 	{
 		p = &rx_buffer[rx_tail];
-		if (++rx_tail == CAN_RX_BUFFER_SIZE) rx_tail = 0;
+		if (++rx_tail == CAN_RX_BUFFER_SIZE)
+			rx_tail = 0;
 		return &(p->msg);
 	}
 }
@@ -400,7 +403,8 @@ can_message *can_get()
 	while (rx_head == rx_tail) { };
 
 	p = &rx_buffer[rx_tail];
-	if (++rx_tail == CAN_RX_BUFFER_SIZE) rx_tail = 0;
+	if (++rx_tail == CAN_RX_BUFFER_SIZE)
+		rx_tail = 0;
 
 	return &(p->msg);
 }
@@ -419,8 +423,9 @@ can_message *can_buffer_get()
 {
 	can_message_x *p;
 	p = &tx_buffer[tx_head];
-	while (p->flags&0x01); //wait until buffer is free
-	if (++tx_head == CAN_TX_BUFFER_SIZE) tx_head = 0;
+	while (p->flags & 0x01); //wait until buffer is free
+	if (++tx_head == CAN_TX_BUFFER_SIZE)
+		tx_head = 0;
 	return &(p->msg);
 }
 
@@ -442,7 +447,8 @@ void can_transmit(can_message *msg2)
 			DISABLE_CAN_INT();
 			message_load(&tx_buffer[tx_tail]);
 			ENABLE_CAN_INT();
-			if (++tx_tail == CAN_TX_BUFFER_SIZE) tx_tail = 0;
+			if (++tx_tail == CAN_TX_BUFFER_SIZE)
+				tx_tail = 0;
 		}
 	}
 }
@@ -498,11 +504,11 @@ can_message *can_buffer_get()
 void can_transmit(can_message *msg)
 {
 	static uint8_t not_first;
-	if(!not_first){
+	if (!not_first) {
 		not_first = 1; //first call: no message to wait for
 	} else {
 		while ((mcp_status() & 0x08) == 0); //wait until last packet transmitted
-		mcp_bitmod(CANINTF, (1<<TX0IF), 0x00);//clear interrupt
+		mcp_bitmod(CANINTF, (1 << TX0IF), 0x00);//clear interrupt
 	}
 	message_load((can_message_x *) msg);
 }
@@ -512,3 +518,4 @@ void can_free(can_message *msg)
 }
 
 #endif //CAN_INTERRUPT
+
