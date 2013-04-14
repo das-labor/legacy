@@ -1,2 +1,2 @@
 
-extern void hardware_reset();
+extern void hardware_reset(void);
