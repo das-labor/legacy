@@ -21,6 +21,8 @@
 #define F_MCP F_CPU
 #define MCP2510
 
+#define NO_NETVAR
+
 // RGB LED Taster Küchenlicht
 #define R_LED _BV(PC1)
 #define G_LED _BV(PC2)

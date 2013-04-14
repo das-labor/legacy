@@ -1,9 +1,9 @@
 #ifndef _IO_H
 #define _IO_H
 
-extern void switch_netvars_init();
-extern void lamp_out_init();
-extern void switch_handler();
+extern void switch_netvars_init(void);
+extern void lamp_out_init(void);
+extern void switch_handler(void);
 
 #endif // _IO
 

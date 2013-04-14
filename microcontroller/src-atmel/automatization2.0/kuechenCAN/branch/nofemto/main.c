@@ -13,7 +13,7 @@
 
 static volatile uint8_t tickscounter;
 
-ISR(TIMER1_OVF_vect)
+ISR(TIMER0_OVF_vect)
 {
 	tickscounter++;
 }
@@ -22,12 +22,8 @@ static void init(void)
 {
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
-//	MCUCR |= _BV(SE); // Enable "sleep" mode (low power when idle)
-
-	// this stuff is now handled by timer2 (see io.c)
-	// -> timer0 is used by the motion detectors (see motion.c)
-	// TCCR0B = _BV(CS01) | _BV(CS00); /* clk / 64 */
-	// TIMSK0 = _BV(TOIE0);
+	TCCR0 = _BV(CS01) | _BV(CS00); /* clk / 64 */
+	TIMSK = _BV(TOIE0);
 
 	// ############ Küchenlicht ################
 	// RGB LED im Taster
@@ -69,18 +65,21 @@ static void init(void)
 
 int main(void)
 {
-	//system initialization
+	// system initialization
 	init();
+#ifndef NO_NETVAR
 	switch_netvars_init();
 	lamp_out_init();
-
+#endif
 	while (1)
 	{
 		can_handler();
 		if (tickscounter > 9) {
 			switch_handler();
 			//temp_sensor_read();
+#ifndef NO_NETVAR
 			netvar_handle_events();
+#endif
 			tickscounter = 0;
 		}
 		wdt_reset();
