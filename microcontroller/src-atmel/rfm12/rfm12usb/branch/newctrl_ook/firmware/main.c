@@ -71,7 +71,6 @@ int main ()
 	while (1)
 	{
 		rfm12_tick();
-		usbPoll();
 		handle_rx();
 		ook_tick();
 	}

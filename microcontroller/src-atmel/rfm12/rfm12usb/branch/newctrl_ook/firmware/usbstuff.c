@@ -24,6 +24,11 @@ static uint8_t usb_buf_state = BUFSTATE_IDLE;     /* state of the usb buffer */
 static uint8_t usb_buf[RFMUSB_USB_BUF_SIZE];      /* buffer for data from/to host */
 static uint8_t usb_buf_len = 0;                   /* fill state of usb buffer */
 
+ISR (TIMER0_COMPA_vect)
+{
+	TCNT0 = 0;
+	usbPoll();
+}
 
 void usbstuff_init ()
 {
@@ -33,6 +38,13 @@ void usbstuff_init ()
 	_delay_ms (250);
 	_delay_ms (250);
 	usbDeviceConnect();
+	
+	TCNT0 = 0;
+	TCCR0B = (_BV(CS02) | _BV(CS00)); /* clk/1024 */
+	OCR0A = 190;                      /* approx. 9.8ms */
+	TIMSK0 = _BV(OCIE0A);             /* */
+
+
 	DEBUG_LED(0);
 }
 
