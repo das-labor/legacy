@@ -124,6 +124,7 @@ usbMsgLen_t usbFunctionSetup(uchar data[8])
 				//tell driver to send n bytes
 				return tmp;
 			}
+			break;
 
 		//host wants to configure radio
 		case RFMUSB_RQ_RADIO_CFG:
