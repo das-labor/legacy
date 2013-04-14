@@ -26,7 +26,6 @@ void can_handler()
 				switch (rx_msg->data[0])
 				{
 					case FKT_MGT_RESET:
-						TCCR2 = 0;
 						wdt_enable(0);
 						while (1);
 					case FKT_MGT_PING:
@@ -211,6 +210,6 @@ static void send_status(uint8_t addr)
 
 void read_can_addr()
 {
-	myaddr = 0x02;//eeprom_read_byte(0x00);
+	eeprom_read_byte(0x00);
 }
 
