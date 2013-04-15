@@ -16,10 +16,8 @@ uint8_t myaddr;
 
 void can_handler()
 {
-	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 	can_message *rx_msg;
-	can_message *txmsg;
-	if ((rx_msg = can_get_nb()) != 0) //get next canmessage in rx_msg
+	if ((rx_msg = can_get_nb())) //get next canmessage in rx_msg
 	{
 		if ((rx_msg->addr_dst == myaddr))
 		{
@@ -34,12 +32,16 @@ void can_handler()
 						RST.CTRL = RST_SWRST_bm;
 						while (1);
 					case FKT_MGT_PING:
-						msg.addr_src = myaddr;
-						msg.addr_dst = rx_msg->addr_src;
-
-						txmsg = can_buffer_get();
-						memcpy(txmsg, &msg, sizeof(can_message));
-						can_transmit(txmsg);
+					{
+						can_message *tx_msg = can_buffer_get();
+						tx_msg->port_src = PORT_MGT;
+						tx_msg->port_dst = PORT_MGT;
+						tx_msg->addr_src = myaddr;
+						tx_msg->addr_dst = rx_msg->addr_src;
+						tx_msg->dlc = 1;
+						tx_msg->data[0] = FKT_MGT_PONG;
+						can_transmit(tx_msg);
+						}
 						break;
 				}
 			}
@@ -50,7 +52,7 @@ void can_handler()
 
 void read_can_addr()
 {
-	myaddr = eeprom_read_byte(0x00);
+	myaddr = eeprom_read_byte(EEPROM_LAP_ADDR);
 }
 
 void can_send_value_packet(can_message *template_msg, uint8_t id, void *value, size_t length)

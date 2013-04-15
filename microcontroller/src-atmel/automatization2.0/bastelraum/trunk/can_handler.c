@@ -19,7 +19,6 @@ void can_handler()
 	{
 		if ((rx_msg->addr_dst == myaddr))
 		{
-		PORTB |= _BV(PB0);
 			if (rx_msg->port_dst == PORT_MGT)
 			{
 				switch (rx_msg->data[0])
@@ -60,17 +59,17 @@ void can_handler()
 
 void send_status()
 {
-	static can_message msg = {0x00, 0x00, 0x03, 0x03, 4, {0, 0, 0, 0}};
+	/*static can_message msg = {0x00, 0x00, 0x03, 0x03, 4, {0, 0, 0, 0}};
 	msg.data[0] = get_outputs();
 	msg.data[1] = get_pwm(F_PWM_FENSTER);
 	msg.data[2] = get_pwm(F_PWM_MITTE);
 	msg.data[3] = get_pwm(F_PWM_NISCHE);
 	msg.addr_src = myaddr;
-	can_transmit(&msg);
+	can_transmit(&msg);*/
 }
 
 void read_can_addr()
 {
-	myaddr = eeprom_read_byte(EEP_MY_ADDR);
+	myaddr = eeprom_read_byte(EEPROM_LAP_ADDR);
 }
 

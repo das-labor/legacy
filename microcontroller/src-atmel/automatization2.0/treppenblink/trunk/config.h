@@ -44,8 +44,8 @@
 #define I_BV_1  _BV(PB1) // 
 
 /* eeprom settings */
-#define EEP_MY_ADDR 0x00
-#define EEP_MOTION_TRESH 0x01
+#define EEPROM_LAP_ADDR 0x00
+#define EEPROM_MOTION_TRESH 0x01
 
 // TWI Adresse des Temperatursensors
 #define I2C_ADRESSE_DS1631 0x9e

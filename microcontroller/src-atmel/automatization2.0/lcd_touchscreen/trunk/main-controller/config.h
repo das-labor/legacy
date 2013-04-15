@@ -3,9 +3,6 @@
 
 
 // SPI
-#define MC_MOSI    PB2
-#define MC_CLK     PB1
-
 #define MCP_CS_BIT   PB4
 #define MCP_CS_PORT  PORTB
 
@@ -26,6 +23,9 @@
 #define CAN_HANDLER_C
 
 #define F_MCP F_CPU
+
+/* eeprom settings */
+#define EEPROM_LAP_ADDR 0x00
 
 // Display config
 
