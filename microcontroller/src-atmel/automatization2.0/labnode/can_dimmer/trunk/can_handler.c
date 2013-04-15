@@ -55,7 +55,7 @@ extern void can_handler()
 {
 	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 	can_message *rx_msg;
-	if ((rx_msg = can_get_nb()) != 0)			//get next canmessage in rx_msg
+	if ((rx_msg = can_get_nb()))			//get next canmessage in rx_msg
 	{
 		if ((rx_msg->addr_dst == myaddr))
 		{
@@ -252,6 +252,6 @@ void send_status(uint8_t addr)
 
 void read_can_addr()
 {
-	myaddr = eeprom_read_byte(0x00);
+	myaddr = eeprom_read_byte(EEPROM_LAP_ADDR);
 }
 

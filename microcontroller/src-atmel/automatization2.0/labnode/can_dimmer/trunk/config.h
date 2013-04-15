@@ -19,5 +19,8 @@
 
 #define NUM_CHANNELS 4
 
+/* eeprom settings */
+#define EEPROM_LAP_ADDR 0x00
+
 #endif // ifndef CONFIG_H
 

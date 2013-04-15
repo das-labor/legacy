@@ -2,9 +2,6 @@
 #define _CONFIG_H
 
 // SPI
-#define MC_MOSI    PB5
-#define MC_SCK     PB7
-
 #define MCP_CS_BIT    PB4
 #define MCP_CS_PORT   PORTB
 
@@ -23,6 +20,9 @@
 #define CAN_RX_BUFFER_SIZE 4
 
 #define F_MCP F_CPU
+
+/* eeprom settings */
+#define EEPROM_LAP_ADDR 0x00
 
 //dimmer
 #define NUM_DIMMER_CHANNELS 4

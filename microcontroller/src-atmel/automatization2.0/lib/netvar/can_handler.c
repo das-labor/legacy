@@ -58,6 +58,6 @@ void can_handler()
 
 void read_can_addr()
 {
-	myaddr = eeprom_read_byte(EEP_MY_ADDR);
+	myaddr = eeprom_read_byte(EEPROM_LAP_ADDR);
 }
 

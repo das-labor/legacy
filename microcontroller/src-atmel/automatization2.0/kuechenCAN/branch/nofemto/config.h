@@ -39,7 +39,7 @@
 #define I2C_ADRESSE_DS1631 0x9e
 
 /* eeprom settings */
-#define EEP_MY_ADDR 0x00
+#define EEPROM_LAP_ADDR 0x00
 
 #endif //_CONFIG_H
 

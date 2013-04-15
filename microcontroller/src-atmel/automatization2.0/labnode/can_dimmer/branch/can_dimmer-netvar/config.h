@@ -21,6 +21,9 @@
 
 #define F_MCP F_CPU
 
+/* eeprom settings */
+#define EEPROM_LAP_ADDR 0x00
+
 //dimmer
 #define NUM_CHANNELS 4
 

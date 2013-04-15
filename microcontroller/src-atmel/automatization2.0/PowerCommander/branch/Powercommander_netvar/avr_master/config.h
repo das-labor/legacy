@@ -49,7 +49,8 @@
 #define PIN_RCD_POWER      (PINC)
 #define PIN_RCD_LICHT      (PIND)
 
-
+/* eeprom settings */
+#define EEPROM_LAP_ADDR 0x00
 
 #define LIST_ALLOCATION_BLOCK_SIZE 1
 
