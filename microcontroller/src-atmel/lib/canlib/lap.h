@@ -51,64 +51,69 @@ typedef enum {
 	PORT_GATE		= 0x22,
 	PORT_BORG		= 0x23,
 	PORT_CHUCK		= 0x26,
-	PORT_MGT		= 0x30
-} ports;
+	PORT_MGT		= 0x30,
+	PORT_NETVAR		= 0x37
+} lap_ports;
 
 /****************************************************************************
  * Known services
  */
 typedef enum {
-	FKT_MGT_PING,
-	FKT_MGT_PONG,
-	FKT_MGT_RESET,
-	FKT_MGT_AWAKE
+	FKT_MGT_PING		= 0x00,
+	FKT_MGT_PONG		= 0x01,
+	FKT_MGT_RESET		= 0x02,
+	FKT_MGT_AWAKE		= 0x03
 } lap_mgt_fkts;
 
 typedef enum {
-	FKT_LAMPE_SET,
-	FKT_LAMPE_SETMASK,
-	FKT_LAMPE_SETDELAY,
-	FKT_LAMPE_ADD
+	FKT_LAMPE_SET		= 0x00,
+	FKT_LAMPE_SETMASK	= 0x01,
+	FKT_LAMPE_SETDELAY	= 0x02,
+	FKT_LAMPE_ADD		= 0x03
 } lap_lampe_fkts;
 
 typedef enum {
-	FKT_BORG_INFO,
-	FKT_BORG_MODE,
-	FKT_BORG_SCROLLTEXT_RESET,
-	FKT_BORG_SCROLLTEXT_APPEND
+	FKT_BORG_INFO				= 0x00,
+	FKT_BORG_MODE				= 0x01,
+	FKT_BORG_SCROLLTEXT_RESET	= 0x02,
+	FKT_BORG_SCROLLTEXT_APPEND	= 0x03
 } lap_borg_fkts;
 
 typedef enum {
-	FKT_ONOFF_INFO,
-	FKT_ONOFF_SET,
-	FKT_ONOFF_GET
+	FKT_ONOFF_INFO		= 0x00,
+	FKT_ONOFF_SET		= 0x01,
+	FKT_ONOFF_GET		= 0x02
 } lap_lapd_fkts;
 
 typedef enum {
-	FKT_MOOD_INFO,
-	FKT_MOOD_GET,
-	FKT_MOOD_SET,
-	FKT_MOOD_ONOFF
+	FKT_MOOD_INFO		= 0x00,
+	FKT_MOOD_GET		= 0x01,
+	FKT_MOOD_SET		= 0x02,
+	FKT_MOOD_ONOFF		= 0x03
 } lap_mood_fkts;
 
-#define SDO_CMD_READ			0x20
-#define SDO_CMD_REPLY			0x21
-#define SDO_CMD_INFO			0x22
-#define SDO_CMD_READ_BLK		0x40
-#define SDO_CMD_READ_BLK_ACK	0x41
-#define SDO_CMD_WRITE_BLK		0x48
-#define SDO_CMD_WRITE_BLK_ACK	0x49
-#define SDO_CMD_ERROR_INDEX		0x80
+enum {
+	SDO_CMD_READ			= 0x20,
+	SDO_CMD_REPLY			= 0x21,
+	SDO_CMD_INFO			= 0x22,
+	SDO_CMD_READ_BLK		= 0x40,
+	SDO_CMD_READ_BLK_ACK	= 0x41,
+	SDO_CMD_WRITE_BLK		= 0x48,
+	SDO_CMD_WRITE_BLK_ACK	= 0x49,
+	SDO_CMD_ERROR_INDEX		= 0x80
+} lap_sdo_cmds;
 
-#define SDO_TYPE_UINT8_RO		0x00
-#define SDO_TYPE_UINT8_RW		0x01
-#define SDO_TYPE_UINT16_RO		0x04
-#define SDO_TYPE_UINT16_RW		0x05
-#define SDO_TYPE_UINT32_RO		0x08
-#define SDO_TYPE_UINT32_RW		0x09
-#define SDO_TYPE_STRING_RO		0x80
-#define SDO_TYPE_STRING_RW		0x81
-#define SDO_TYPE_STRING_WO		0x82
+enum {
+	SDO_TYPE_UINT8_RO		= 0x00,
+	SDO_TYPE_UINT8_RW		= 0x01,
+	SDO_TYPE_UINT16_RO		= 0x04,
+	SDO_TYPE_UINT16_RW		= 0x05,
+	SDO_TYPE_UINT32_RO		= 0x08,
+	SDO_TYPE_UINT32_RW		= 0x09,
+	SDO_TYPE_STRING_RO		= 0x80,
+	SDO_TYPE_STRING_RW		= 0x81,
+	SDO_TYPE_STRING_WO		= 0x82
+} lap_sdo_types;
 
 
 /****************************************************************************
