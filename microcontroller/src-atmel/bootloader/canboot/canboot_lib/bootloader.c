@@ -1,17 +1,12 @@
-#include <avr/boot.h>
-//#include "pgmspace.h"
 #include <avr/io.h>
 #include <util/delay.h>
-#include <avr/interrupt.h>
 #include <avr/pgmspace.h>
-#include <inttypes.h>
 #include <avr/eeprom.h>
 #include <avr/wdt.h>
 
 
 #include "../config.h"
 #include "bootloader.h"
-
 #include "can.h"
 #include "util.h"
 
