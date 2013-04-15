@@ -22,10 +22,9 @@ uint8_t myaddr;
 
 void can_handler()
 {
-	//static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
-	can_message * msg;
+	can_message *tx_msg;
 	can_message *rx_msg;
-	while ((rx_msg = can_get_nb()) != 0) //get next canmessage in rx_msg
+	while ((rx_msg = can_get_nb())) //get next canmessage in rx_msg
 	{
 		if ((rx_msg->addr_dst == myaddr))
 		{
@@ -37,22 +36,20 @@ void can_handler()
 						hardware_reset();
 						break;
 					case FKT_MGT_PING:
-						msg = can_buffer_get();
-						msg->addr_src = myaddr;
-						msg->addr_dst = rx_msg->addr_src;
-						msg->port_src = PORT_MGT;
-						msg->port_dst = PORT_MGT;
-						msg->dlc = 1;
-						msg->data[0] = FKT_MGT_PONG;
-						can_transmit(msg);
+						tx_msg = can_buffer_get();
+						tx_msg->addr_src = myaddr;
+						tx_msg->addr_dst = rx_msg->addr_src;
+						tx_msg->port_src = PORT_MGT;
+						tx_msg->port_dst = PORT_MGT;
+						tx_msg->dlc = 1;
+						tx_msg->data[0] = FKT_MGT_PONG;
+						can_transmit(tx_msg);
 						break;
 				}
 			}
-			
 		}
-		if (rx_msg->port_dst == 0x37)
+		if (rx_msg->port_dst == PORT_NETVAR)
 		{
-			//printf("netvar received\r\n");
 			netvar_received(rx_msg);
 		}
 		can_free(rx_msg);
@@ -61,6 +58,6 @@ void can_handler()
 
 void read_can_addr()
 {
-	myaddr = eeprom_read_byte(0x00);
+	myaddr = eeprom_read_byte(EEP_MY_ADDR);
 }
 
