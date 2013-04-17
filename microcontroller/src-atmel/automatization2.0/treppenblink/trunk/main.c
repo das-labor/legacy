@@ -25,7 +25,7 @@ static void init(void)
 
 	//motion_init();
 
-	TCCR0 = _BV(CS02) | _BV(CS00);
+	TCCR0 = _BV(CS01) | _BV(CS00);
 	TCNT0 = 0;
 	TIMSK = _BV(TOIE0);
 
@@ -52,8 +52,8 @@ static void init(void)
 	sei();
 	wdt_enable(WDTO_250MS); // 250 ms
 
-	//switch_netvars_init();
-	//lamp_out_init();
+	switch_netvars_init();
+	lamp_out_init();
 }
 
 int main(void)
