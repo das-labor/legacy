@@ -70,7 +70,7 @@ void lamp_out_init() {
 
 static void input_changed_event(uint8_t num, uint8_t val) {
 
-	netvar_write(out_netvars[num], &val);
+	//netvar_write(out_netvars[num], &val);
 }
 
 #define DEBOUNCE_CYCLES 2

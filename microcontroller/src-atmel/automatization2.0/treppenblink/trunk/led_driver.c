@@ -9,11 +9,12 @@ static const uint16_t gammatable[] PROGMEM = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
 */
 void pushDot(dot_t *dot)
 {
-	uint8_t i, j;
-	for (i = 0 ; i < NUM_COLORS; i++)
+	uint8_t i = NUM_COLORS, j;
+	uint16_t *bla = (uint16_t *) dot;
+	while (i--)
 	{
-//		uint16_t val = pgm_read_word(*((uint16_t *) dot) + i);
-		uint16_t val = *((uint16_t *) dot) + i;
+		//uint16_t val = pgm_read_word(gammatable[*(bla++)]);
+		uint16_t val = *(bla++);
 		for (j = 0 ; j < BITSPERLAMP; j++)
 		{
 			if (val & 0x0800) // if bit 11 is set
