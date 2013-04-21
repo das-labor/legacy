@@ -14,6 +14,7 @@
 
 
 static volatile uint8_t tickscounter;
+
 ISR(TIMER0_OVF_vect)
 {
 	tickscounter++;
@@ -25,8 +26,7 @@ static void init(void)
 
 	//motion_init();
 
-	TCCR0 = _BV(CS01) | _BV(CS00);
-	TCNT0 = 0;
+	TCCR0 = _BV(CS01) | _BV(CS00); // clk / 64
 	TIMSK = _BV(TOIE0);
 
 	init_io();
@@ -40,20 +40,22 @@ static void init(void)
 	// Init twi Tempearture Sensor
 	//init_ds1631(I2C_ADRESSE_DS1631);
 
-	//initialize spi port
+	// initialize spi port
 	spi_init();
 
-	//initialize can communication
+	// initialize can communication
 	can_init();
 
 	read_can_addr();
 
-	//turn on interrupts
+	// turn on interrupts
 	sei();
 	wdt_enable(WDTO_250MS); // 250 ms
 
+#ifndef NO_NETVAR
 	switch_netvars_init();
 	lamp_out_init();
+#endif
 }
 
 int main(void)
@@ -67,10 +69,12 @@ int main(void)
 		do_ani();
 		if (tickscounter > 20)
 		{
-			PORT_LED ^= R_LED;
 			tickscounter = 0;
-			//netvar_handle_events();
 			switch_handler();
+			PORT_LED ^= R_LED;
+#ifndef NO_NETVAR
+			netvar_handle_events();
+#endif
 			//temp_sensor_read();
 			//motion_tick();
 		}

@@ -1,5 +1,6 @@
-OBJ = main.o can/can.o can/spi.o netvar/can_handler.o netvar/netvar.o netvar/netvar_io.o io.o twi_master/twi_master.o hardware.o util_lib/list.o led_driver.o animationen.o
-#motion.o
+LAP_ADDR       = 0x25
+
+OBJ            = main.o can/spi.o can/can.o twi_master/twi_master.o netvar/can_handler.o netvar/netvar.o netvar/netvar_io.o hardware.o util_lib/list.o io.o ds1631.o led_driver.o animationen.o
 
 # Default values
 OUT           ?= image
@@ -17,14 +18,14 @@ LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U $(OUT).hex
-CANFLASHCMD    = lapcontrol -s kvm flash 0x25 $(OUT).hex
+CANFLASHCMD    = lapcontrol -s kvm flash $(LAP_ADDR) $(OUT).hex
 
 #############################################################################
 # Rules
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o netvar/*.o util_lib/*.o twi_master/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
