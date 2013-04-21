@@ -22,28 +22,38 @@ static struct t_pin_parameter {
 	{ 0, 0, 0, (&(I_PIN_1)), I_BV_1}
 };
 
+void init_io()
+{
+	// ############ Küchenlicht ################
+	// RGB LED im Taster
+	DDR_LED |= R_LED | G_LED | B_LED; // Ausgang
+	// Taster
+	DDRC &= ~_BV(PC0); // Eingang
+	PORTC |= _BV(PC0); // pullup
 
-#define LED 0
+	// ############ Alarm ################
+	// 3 Taster LEDs
+	DDR_LED |= _BV(PD5) | _BV(PD6) | _BV(PD7); // Ausgang
+	// Taster
+	DDRB &= ~_BV(PB1);      // Eingang
+	PORTB |= _BV(PB1);      // pullup
+}
+
+#define F_LED 0
 
 static void lamp_out(void *num, uint8_t val) {
 	uint8_t i = (uint8_t) (uint16_t) num;
 	switch (i) {
-		case LED:
+		case F_LED:
 			if (val) {
-				PORTC |= R_LED;
-				PORTC &= ~(G_LED);
+				PORT_LED |= R_LED;
+				PORT_LED &= ~(G_LED);
 			} else {
-				PORTC |= G_LED;
-				PORTC &= ~(R_LED);
+				PORT_LED |= G_LED;
+				PORT_LED &= ~(R_LED);
 			}
 			break;
 	}
-}
-
-#define NV_IDX_LAMP_CONTROLLER_KUECHE 0x0102
-
-void lamp_out_init() {
-	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_KUECHE, 0x3f, lamp_out, (void *) LED);
 }
 
 static netvar_desc *out_netvars[NUM_INPUTS];
@@ -51,6 +61,12 @@ static netvar_desc *out_netvars[NUM_INPUTS];
 void switch_netvars_init() {
 	out_netvars[0] = netvar_register(0x0102, 0x2f, 1); // Taster Küche
 	out_netvars[1] = netvar_register(0x0008, 0x00, 1); // Alarmbutton
+}
+
+#define NV_IDX_LAMP_CONTROLLER_KUECHE 0x0102
+
+void lamp_out_init() {
+	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_KUECHE, 0x3f, lamp_out, (void *) F_LED);
 }
 
 static void input_changed_event(uint8_t num, uint8_t val) {
@@ -112,7 +128,6 @@ void switch_handler() {
 #define F_SW_TOGGLE   (0x03)
 #define F_PWM_MOD     (0x02)
 #define F_PWM_DIR     (0x03)
-
 #define PWM_KUECHE   (O_PWM05)
 #define SWL_KUECHE      (O_SW00)
 
@@ -171,7 +186,7 @@ void keypress() {
 	}
 	if (held_0)
 	{
-		/*can_message *msg = can_buffer_get();
+		can_message *msg = can_buffer_get();
 		msg->data[0] = C_PWM;
 		msg->data[1] = PWM_KUECHE;
 		msg->data[2] = F_PWM_MOD;
@@ -180,11 +195,11 @@ void keypress() {
 		msg->port_dst = 1;
 		msg->port_src = LIGHTCANPORT;
 		msg->dlc = 4;
-		can_transmit(msg);*/	/* send packet */
+		can_transmit(msg);	/* send packet */
 	}
 	else if (last_held_0)
 	{
-		/*can_message *msg = can_buffer_get();
+		can_message *msg = can_buffer_get();
 		msg->data[0] = C_PWM;
 		msg->data[1] = PWM_KUECHE;
 		msg->data[2] = F_PWM_DIR;
@@ -193,7 +208,7 @@ void keypress() {
 		msg->port_dst = 1;
 		msg->port_src = LIGHTCANPORT;
 		msg->dlc = 4;
-		can_transmit(msg);*/	/* send packet */
+		can_transmit(msg);	/* send packet */
 	}
 	last_held_0 = held_0;
 }

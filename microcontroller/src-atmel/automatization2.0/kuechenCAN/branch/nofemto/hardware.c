@@ -6,3 +6,4 @@ void hardware_reset() {
 	wdt_enable(0);
 	while (1);
 }
+

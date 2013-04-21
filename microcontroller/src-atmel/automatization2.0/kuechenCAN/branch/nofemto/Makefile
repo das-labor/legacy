@@ -1,7 +1,6 @@
-################ can address and port
-MY_CANADDR=0x23
+LAP_ADDR       = 0x23
 
-OBJ            = main.o can/spi.o can/can.o twi_master/twi_master.o netvar/netvar.o netvar/netvar_io.o netvar/can_handler.o hardware.o ds1631.o util_lib/list.o io.o
+OBJ            = main.o can/spi.o can/can.o twi_master/twi_master.o netvar/can_handler.o netvar/netvar.o netvar/netvar_io.o hardware.o util_lib/list.o io.o ds1631.o
 
 # Default values
 OUT           ?= image
@@ -13,13 +12,13 @@ WARNINGS      ?= -Wall -Winline -Wextra
 DEFS          ?= -DF_CPU=16000000UL
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
 ASFLAGS	      += -mmcu=avr5
-LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
+LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
 FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U $(OUT).hex
-CANFLASHCMD    = lapcontrol -s kvm flash $(MY_CANADDR) $(OUT).hex
+CANFLASHCMD    = lapcontrol -s kvm flash $(LAP_ADDR) $(OUT).hex
 
 #############################################################################
 # Rules

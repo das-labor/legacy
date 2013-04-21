@@ -1,6 +1,7 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
+// SPI
 #define MCP_CS_BIT    PB2
 #define MCP_CS_PORT   PORTB
 
@@ -27,19 +28,22 @@
 #define R_LED _BV(PC1)
 #define G_LED _BV(PC2)
 #define B_LED _BV(PC3)
+#define PORT_LED PORTD
+#define DDR_LED DDRD
 
-// Taster eingänge
+// Taster Eingänge
 #define NUM_INPUTS 2
 #define I_PIN_0 PINB
 #define I_BV_0  _BV(PB1) //
 #define I_PIN_1 PINC
 #define I_BV_1  _BV(PC0) //
 
-// TWI Adresse des temperatursensors
-#define I2C_ADRESSE_DS1631 0x9e
 
 /* eeprom settings */
 #define EEPROM_LAP_ADDR 0x00
+
+// TWI Adresse des Temperatursensors
+#define I2C_ADRESSE_DS1631 0x9e
 
 #endif //_CONFIG_H
 
