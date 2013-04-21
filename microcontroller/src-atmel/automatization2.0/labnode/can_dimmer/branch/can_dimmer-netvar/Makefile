@@ -1,4 +1,4 @@
-OBJ = main.o can/can.o can/spi.o netvar/can_handler.o dimmer.o netvar/netvar.o netvar/netvar_io.o hardware.o util_lib/list.o
+OBJ = main.o can/can.o can/spi.o netvar/can_handler.o dimmer/dimmer.o netvar/netvar.o netvar/netvar_io.o hardware.o util_lib/list.o
 
 # Default values
 OUT           ?= image
