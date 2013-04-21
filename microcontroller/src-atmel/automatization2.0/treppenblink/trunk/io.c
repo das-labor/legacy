@@ -70,7 +70,9 @@ void lamp_out_init() {
 
 static void input_changed_event(uint8_t num, uint8_t val) {
 
-	//netvar_write(out_netvars[num], &val);
+#ifndef NO_NETVAR
+	netvar_write(out_netvars[num], &val);
+#endif
 }
 
 #define DEBOUNCE_CYCLES 2
@@ -103,5 +105,105 @@ void switch_handler() {
 			}
 		}
 	}
+#ifdef NO_NETVAR
+	keypress();
+#endif
 }
+
+
+#ifdef NO_NETVAR
+#define HOLD_THRESHOLD 18
+#define CLICK_THRESHOLD 0
+
+#define C_VIRT (0x02)
+#define F_SW_TOGGLE   (0x03)
+#define F_PWM_MOD     (0x02)
+#define F_PWM_DIR     (0x03)
+#define O_VIRT01 (0x01)
+#define O_VIRT02 (0x02)
+#define VIRT_VORTRAG (O_VIRT01)
+#define VIRT_VORTRAG_PWM (O_VIRT02)
+
+#define LIGHTCANPORT 0x04
+
+#include "can/can.h"
+
+void keypress() {
+	static uint8_t counter_0;
+	static uint8_t clicked_0 = 0;
+	static uint8_t held_0    = 0;
+	static uint8_t last_held_0;
+
+	clicked_0 = 0;
+	held_0 = 0;
+	if (pin_matrix[0].state)
+	{
+		counter_0++;
+		if (counter_0 > HOLD_THRESHOLD)
+		{
+			held_0 = 1;
+			counter_0 = HOLD_THRESHOLD;
+		}
+	}
+	else
+	{
+		if (counter_0 > CLICK_THRESHOLD)
+		{
+			if (counter_0 < HOLD_THRESHOLD)
+			{
+				clicked_0 = 1;
+			}
+		}
+		counter_0 = 0;
+	}
+	if (clicked_0 == 1)
+	{
+		if (PORTC & R_LED)
+		{
+			lamp_out(0, 0);
+		}
+		else
+		{
+			lamp_out(0, 1);
+		}
+		can_message *msg = can_buffer_get();
+		msg->data[0] = C_VIRT;
+		msg->data[1] = VIRT_VORTRAG;
+		msg->data[2] = F_SW_TOGGLE;
+		msg->addr_src = 0x23;
+		msg->addr_dst = 0x02;
+		msg->port_dst = 1;
+		msg->port_src = LIGHTCANPORT;
+		msg->dlc = 4;
+		can_transmit(msg);	/* send packet */
+	}
+	if (held_0)
+	{
+		can_message *msg = can_buffer_get();
+		msg->data[0] = C_VIRT;
+		msg->data[1] = VIRT_VORTRAG_PWM;
+		msg->data[2] = F_PWM_MOD;
+		msg->addr_src = 0x23;
+		msg->addr_dst = 0x02;
+		msg->port_dst = 1;
+		msg->port_src = LIGHTCANPORT;
+		msg->dlc = 4;
+		can_transmit(msg);	/* send packet */
+	}
+	else if (last_held_0)
+	{
+		can_message *msg = can_buffer_get();
+		msg->data[0] = C_VIRT;
+		msg->data[1] = VIRT_VORTRAG_PWM;
+		msg->data[2] = F_PWM_DIR;
+		msg->addr_src = 0x23;
+		msg->addr_dst = 0x02;
+		msg->port_dst = 1;
+		msg->port_src = LIGHTCANPORT;
+		msg->dlc = 4;
+		can_transmit(msg);	/* send packet */
+	}
+	last_held_0 = held_0;
+}
+#endif
 

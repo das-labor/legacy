@@ -9,9 +9,10 @@
 #define SPI_PIN_MCP_INT      PD2
 
 #define CAN_INTERRUPT
+//#define CAN_INT_NOBLOCK
 
-#define   ENABLE_CAN_INT()    GICR |= _BV(INT0)
-#define   DISABLE_CAN_INT()   GICR &= ~_BV(INT0)
+#define   ENABLE_CAN_INT()    GIMSK |= _BV(INT0)
+#define   DISABLE_CAN_INT()   GIMSK &= ~_BV(INT0)
 #define   SETUP_CAN_INT()     MCUCR |= _BV(ISC01)
 #define   MCP_INT_VEC         INT0_vect
 
@@ -20,16 +21,9 @@
 
 #define F_MCP F_CPU
 
-// Ausgänge LED String
-#define RGB_DATA _BV(PD6)
-#define RGB_CLK  _BV(PD7)
-#define MAXCOLORVALUE (0x0FFF)
-#define RGB_PORT PORTD
-#define RGB_DDR  DDRD
-#define BITSPERLAMP 12
-#define LAMPS 50
+#define NO_NETVAR
 
-// Taster LED
+// RGB LED Taster
 #define R_LED _BV(PD1)
 #define B_LED _BV(PD3)
 #define G_LED _BV(PD4)
@@ -43,6 +37,15 @@
 #define I_PIN_1 PINB
 #define I_BV_1  _BV(PB1) // 
 
+// Ausgänge LED String
+#define RGB_DATA _BV(PD6)
+#define RGB_CLK  _BV(PD7)
+#define MAXCOLORVALUE (0x0FFF)
+#define RGB_PORT PORTD
+#define RGB_DDR  DDRD
+#define BITSPERLAMP 12
+#define LAMPS 50
+
 /* eeprom settings */
 #define EEPROM_LAP_ADDR 0x00
 #define EEPROM_MOTION_TRESH 0x01
@@ -50,5 +53,5 @@
 // TWI Adresse des Temperatursensors
 #define I2C_ADRESSE_DS1631 0x9e
 
-#endif // ifndef CONFIG_H
+#endif // _CONFIG_H
 
