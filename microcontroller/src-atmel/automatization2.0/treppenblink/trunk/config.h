@@ -33,9 +33,9 @@
 // Taster Eingänge
 #define NUM_INPUTS 2
 #define I_PIN_0 PINB
-#define I_BV_0  _BV(PB0) // 
+#define I_BV_0  _BV(PB0) // Vortrag Licht Taster
 #define I_PIN_1 PINB
-#define I_BV_1  _BV(PB1) // 
+#define I_BV_1  _BV(PB1) // Treppenblink Mode Taster
 
 // Ausgänge LED String
 #define RGB_DATA _BV(PD6)

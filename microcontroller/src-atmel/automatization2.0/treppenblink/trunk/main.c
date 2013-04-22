@@ -30,7 +30,7 @@ static void init(void)
 	TIMSK = _BV(TOIE0);
 
 	init_io();
-	PORT_LED |= B_LED;
+//	PORT_LED |= B_LED;
 	// init twi
 	if (!TWIM_Init())
 	{
@@ -67,11 +67,11 @@ int main(void)
 	{
 		can_handler();
 		do_ani();
-		if (tickscounter > 20)
+		if (tickscounter > 10)
 		{
 			tickscounter = 0;
 			switch_handler();
-			PORT_LED ^= R_LED;
+//			PORT_LED ^= R_LED;
 #ifndef NO_NETVAR
 			netvar_handle_events();
 #endif

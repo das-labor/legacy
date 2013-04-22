@@ -13,13 +13,12 @@
 
 static struct t_pin_parameter {
 	uint8_t state;
-	int8_t debounce_count;
 	uint8_t inverted;
 	volatile uint8_t *pin;
 	uint8_t bit;
 } pin_matrix[] = {
-	{ 0, 0, 1, (&(I_PIN_0)), I_BV_0},
-	{ 0, 0, 0, (&(I_PIN_1)), I_BV_1}
+	{ 0, 1, (&(I_PIN_0)), I_BV_0},
+	{ 0, 1, (&(I_PIN_1)), I_BV_1}
 };
 
 void init_io()
@@ -75,33 +74,18 @@ static void input_changed_event(uint8_t num, uint8_t val) {
 #endif
 }
 
-#define DEBOUNCE_CYCLES 2
-
-/*
-*  debounce monitored inputs, invert them if wanted, and check for changes
-*  on change: call input_changed_event
-*/
-
 void switch_handler() {
 	uint8_t i;
 	for (i = 0; i < NUM_INPUTS; i++) {
 		if ((*pin_matrix[i].pin) & pin_matrix[i].bit) {
-			pin_matrix[i].debounce_count++;
-			if (pin_matrix[i].debounce_count > DEBOUNCE_CYCLES) {
-				pin_matrix[i].debounce_count = DEBOUNCE_CYCLES;
-				if (pin_matrix[i].state == pin_matrix[i].inverted) {
-					pin_matrix[i].state = pin_matrix[i].inverted ^ 1;
-					input_changed_event(i, pin_matrix[i].state);
-				}
+			if (pin_matrix[i].state == pin_matrix[i].inverted) {
+				pin_matrix[i].state = pin_matrix[i].inverted ^ 1;
+				input_changed_event(i, pin_matrix[i].state);
 			}
 		} else {
-			pin_matrix[i].debounce_count--;
-			if (pin_matrix[i].debounce_count < 0) {
-				pin_matrix[i].debounce_count = 0;
-				if (pin_matrix[i].state == (pin_matrix[i].inverted ^ 1)) {
-					pin_matrix[i].state = pin_matrix[i].inverted;
-					input_changed_event(i, pin_matrix[i].state);
-				}
+			if (pin_matrix[i].state == (pin_matrix[i].inverted ^ 1)) {
+				pin_matrix[i].state = pin_matrix[i].inverted;
+				input_changed_event(i, pin_matrix[i].state);
 			}
 		}
 	}
@@ -158,7 +142,7 @@ void keypress() {
 	}
 	if (clicked_0 == 1)
 	{
-		if (PORTC & R_LED)
+		if (PORT_LED & R_LED)
 		{
 			lamp_out(0, 0);
 		}
