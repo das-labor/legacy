@@ -42,7 +42,19 @@ PFNGLUSEPROGRAMMARBPROC pglUseProgramARB = 0;
 #define glUseProgram              pglUseProgramARB
 #endif
 
-#define MAX_KERNEL_SIZE 31
+const char text_fragment_1[] =
+"uniform sampler2D colorMap;\n"
+"uniform float width;\n"
+"uniform float height;\n"
+
+"float step_w = 1.0/width;\n"
+"float step_h = 1.0/height;\n"
+
+"void main(void)\n"
+"{\n"
+"   vec4 sum = vec4(0.0);\n"
+"   vec4 tmp;\n"
+;
 
 const char text_fragment_2[] =
 "    if( float(gl_TexCoord[0].s - %f*step_w) < step_w )\n"
@@ -59,19 +71,7 @@ const char text_fragment_3[] =
 "}\n"
 ;
 
-const char text_fragment_1[] =
-"uniform sampler2D colorMap;\n"
-"uniform float width;\n"
-"uniform float height;\n"
 
-"float step_w = 1.0/width;\n"
-"float step_h = 1.0/height;\n"
-
-"void main(void)\n"
-"{\n"
-"   vec4 sum = vec4(0.0);\n"
-"   vec4 tmp;\n"
-;
 
 //Got this from http://www.lighthouse3d.com/opengl/glsl/index.php?oglinfo
 // it prints out shader info (debugging!)
@@ -136,14 +136,15 @@ void setShaders(float width, float height, bool beVerbose, float max_freq, float
         glUseProgram = (PFNGLUSEPROGRAMMARBPROC)wglGetProcAddress("glUseProgramARB");
 #endif
 
-	float sinc[MAX_KERNEL_SIZE];
+	float *sinc;
 	float sum;
 	int i, len;
 	char *buf;
 	char *tmp;
 
-	if( conv_depth > MAX_KERNEL_SIZE )
-		conv_depth = MAX_KERNEL_SIZE;
+	sinc = (float*)malloc( conv_depth * sizeof(float) );
+	if( !sinc || !conv_depth )
+		return;
 	
 	if( (conv_depth & 1) == 0 )
 		cout << "even conv_depth specified, this might not work" << endl;
@@ -167,9 +168,6 @@ void setShaders(float width, float height, bool beVerbose, float max_freq, float
 	for( i=0; i<conv_depth; i++)
 	{
 		sinc[i] /= sum;
-	//	if( beVerbose )
-	//		cout << "sinc " << i <<" : " << sinc[i] << endl;
-		
 	}
 	
 	//First, create our shaders 
@@ -178,12 +176,17 @@ void setShaders(float width, float height, bool beVerbose, float max_freq, float
 	len = sizeof( text_fragment_1 ) + (sizeof( text_fragment_2 )+40)*conv_depth + sizeof( text_fragment_3 );
 	tmp = (char *) malloc( (sizeof( text_fragment_2 )+40)*conv_depth );
 	buf = (char *)calloc( len, 1 );
+
+	//dynamic fragment shader generation
 	std::strcat( buf, text_fragment_1 );
 	for( i=0;i<conv_depth; i++ ){	
 		std::snprintf( tmp, (sizeof( text_fragment_2 )+40)*conv_depth, text_fragment_2, (float)i,(float)i,(float)i,sinc[i] );
 		std::strcat( buf, tmp );
 	}
 	std::strcat( buf,text_fragment_3 );
+
+	free( sinc );
+
 	//if( beVerbose )
 	//	cout << "fragment shader:" << endl;
 	//	cout << buf << endl;

@@ -59,8 +59,6 @@ void keyboardCB(unsigned char key, int x, int y);
 // CALLBACK function when exit() called ///////////////////////////////////////
 void exitCB();
 
-void initGL();
-int  initGLUT(int argc, char **argv);
 bool initSharedMem();
 void clearSharedMem();
 void setCamera(float posX, float posY, float posZ, float targetX, float targetY, float targetZ);
@@ -150,7 +148,7 @@ int main(int argc, char **argv)
     	    return -1;
     }
     inputfilegiven = true;
-    
+
     initSharedMem();
     // register exit callback
     atexit(exitCB);
@@ -213,7 +211,7 @@ int main(int argc, char **argv)
         }
     }
 
-    
+
     if( beVerbose ){
     	cout << "hsync: " << cutofright << " vsync: " << cutofbottom << endl;
 	cout << "msps: " << msps << endl;
@@ -252,9 +250,9 @@ int main(int argc, char **argv)
         disable_output( &VGAname[0] );
         rm_mode( &VGAname[0],"newmode" );
     }
-
+	
     // add new modeline 
-    add_custom_mode( &VGAname[0], msps, screenHeight, cutofright, cutofbottom );
+    //add_custom_mode( &VGAname[0], msps, screenHeight, cutofright, cutofbottom );
     
     if( beVerbose )
     	    cout << "added custom mode: newmode" << endl;
@@ -266,14 +264,42 @@ int main(int argc, char **argv)
     	    cout << "set mode \"newmode\" on VGA " << endl;
 #endif
 
-    // init GLUT and GL
-    initGLUT( argc, argv );
-    initGL();
+    // GLUT stuff for windowing
+    // initialization openGL window.
+    // it is called before any other GLUT routine
+    glutInit(&argc, argv);
+
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_ALPHA); // display mode
+
+    glutInitWindowSize(screenWidth, screenHeight);               // window size
+
     
-    // get OpenGL info
-    glInfo glInfo;
-    glInfo.getInfo();
-    //glInfo.printSelf();
+    glutInitWindowPosition(vgax, vgay);           // window location
+
+    // finally, create a window with openGL context
+    // Window will not displayed until glutMainLoop() is called
+    // it returns a unique ID
+    //int handle = 0;
+    glutCreateWindow(argv[0]);     // param is the title of window  
+    glutFullScreen();
+
+    // register GLUT callback functions
+    glutDisplayFunc(displayCB);
+    glutIdleFunc(idleCB);                       // redraw only every given millisec
+    glutReshapeFunc(reshapeCB);
+    glutKeyboardFunc(keyboardCB);
+
+
+    // init GL
+    glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
+
+    // enable /disable features
+    glDisable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+    glClearColor(0.0f, 0.0f, 0.5f, 0);                   // background color
     
     // init 2 texture objects
     glGenTextures(1, &textureId);
@@ -288,7 +314,8 @@ int main(int argc, char **argv)
 #ifdef _WIN32
 
     // check PBO is supported by your video card
-    if(glInfo.isExtensionSupported("GL_ARB_pixel_buffer_object"))
+
+    if(glutExtensionSupported("GL_ARB_pixel_buffer_object"))
     {
         // get pointers to GL functions
         glGenBuffersARB = (PFNGLGENBUFFERSARBPROC)wglGetProcAddress("glGenBuffersARB");
@@ -317,7 +344,9 @@ int main(int argc, char **argv)
         }
     }
     
-    if(glInfo.isExtensionSupported("GL_ARB_fragment_shader"))
+
+
+    if(glutExtensionSupported("GL_ARB_fragment_shader"))
     {
         fragmentisSupported = true;
         //cout << "Video card supports GL_ARB_fragment_shader." << endl;
@@ -331,7 +360,7 @@ int main(int argc, char **argv)
     
 #else // for linux, do not need to get function pointers, it is up-to-date
 
-    if(glInfo.isExtensionSupported("GL_ARB_pixel_buffer_object"))
+    if(glutExtensionSupported("GL_ARB_pixel_buffer_object"))
     {
 
         pboisSupported = true;
@@ -346,7 +375,7 @@ int main(int argc, char **argv)
         	cout << "Video card does NOT support GL_ARB_pixel_buffer_object." << endl;
     }
 
-    if(glInfo.isExtensionSupported("GL_ARB_fragment_shader"))
+    if(glutExtensionSupported("GL_ARB_fragment_shader"))
     {
         fragmentisSupported = true;
         //cout << "Video card supports GL_ARB_fragment_shader." << endl;
@@ -419,60 +448,6 @@ void usage(void)
 	cout << "\t-t\t\t\tdo not read inputfile, generate test patterns" << endl;	
 	cout << "\t-cutofright <x>\t\tdo not display x elements at the right screen border\tdefault: 1 (7 pixel)" << endl;	
 	cout << "\t-cutofbottom <x>\t\tdo not display x elements at the bottom screen border\tdefault: 2" << endl;		
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-// initialize GLUT for windowing
-///////////////////////////////////////////////////////////////////////////////
-int initGLUT(int argc, char **argv)
-{
-    // GLUT stuff for windowing
-    // initialization openGL window.
-    // it is called before any other GLUT routine
-    glutInit(&argc, argv);
-
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_ALPHA); // display mode
-
-    glutInitWindowSize(screenWidth, screenHeight);               // window size
-
-    
-    glutInitWindowPosition(vgax, vgay);           // window location
-
-    // finally, create a window with openGL context
-    // Window will not displayed until glutMainLoop() is called
-    // it returns a unique ID
-    //int handle = 0;
-    int handle = glutCreateWindow(argv[0]);     // param is the title of window
-    glutFullScreen();
-
-    // register GLUT callback functions
-    glutDisplayFunc(displayCB);
-    glutIdleFunc(idleCB);                       // redraw only every given millisec
-    glutReshapeFunc(reshapeCB);
-    glutKeyboardFunc(keyboardCB);
-
-    return handle;
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// initialize OpenGL
-// disable unused features
-///////////////////////////////////////////////////////////////////////////////
-void initGL()
-{
-    //@glShadeModel(GL_SMOOTH);                    // shading mathod: GL_SMOOTH or GL_FLAT
-    glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
-
-    // enable /disable features
-    glDisable(GL_LIGHTING);
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE);
-    glClearColor(0.0f, 0.0f, 0.5f, 0);                   // background color
 }
 
 ///////////////////////////////////////////////////////////////////////////////

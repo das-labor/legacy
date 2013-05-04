@@ -31,7 +31,7 @@ OBJDIR_RELEASE = obj
 DEP_RELEASE = 
 OUT_RELEASE = vgatoiqbaseband
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/glInfo.o $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Timer.o $(OBJDIR_RELEASE)/shader.o $(OBJDIR_RELEASE)/xrandr.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Timer.o $(OBJDIR_RELEASE)/shader.o $(OBJDIR_RELEASE)/xrandr.o
 
 all: release
 
