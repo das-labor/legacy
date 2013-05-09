@@ -17,7 +17,7 @@ static void send_status(uint8_t addr);
 void can_handler()
 {
 	can_message *rx_msg;
-	if ((rx_msg = can_get_nb()) != 0)			//get next canmessage in rx_msg
+	if ((rx_msg = can_get_nb()))			//get next canmessage in rx_msg
 	{
 		if (rx_msg->addr_dst == myaddr)
 		{
@@ -83,33 +83,38 @@ void can_handler()
 						switch (rx_msg->data[2])
 						{
 							case F_PWM_SET:
-								if (rx_msg->data[2] == 0)
+								switch (rx_msg->data[1])
 								{
-									switch (rx_msg->data[1])
-									{
-										case PWM_TAFEL:
-											set_bright(ROOM_VORTRAG, 0, rx_msg->data[3]);
-											break;
-										case PWM_BEAMER:
-											set_bright(ROOM_VORTRAG, 1, rx_msg->data[3]);
-											break;
-										case PWM_SCHRANK:
-											set_bright(ROOM_VORTRAG, 2, rx_msg->data[3]);
-											break;
-										case PWM_FLIPPER:
-											set_bright(ROOM_VORTRAG, 3, rx_msg->data[3]);
-											break;
-										case PWM_KUECHE:
-											set_bright(ROOM_KUECHE, 0, rx_msg->data[3]);
-											break;
-									}
+									case PWM_TAFEL:
+										set_bright(ROOM_VORTRAG, 0, rx_msg->data[3]);
+										break;
+									case PWM_BEAMER:
+										set_bright(ROOM_VORTRAG, 1, rx_msg->data[3]);
+										break;
+									case PWM_SCHRANK:
+										set_bright(ROOM_VORTRAG, 2, rx_msg->data[3]);
+										break;
+									case PWM_FLIPPER:
+										set_bright(ROOM_VORTRAG, 3, rx_msg->data[3]);
+										break;
+									case PWM_KUECHE:
+										set_bright(ROOM_KUECHE, 0, rx_msg->data[3]);
+										break;
 								}
 								break;
 							case F_PWM_MOD: // TODO
-								dim_vortrag();
+								switch (rx_msg->data[1]) {
+									case PWM_KUECHE:
+										dim_kueche();
+										break;
+								}
 								break;
 							case F_PWM_DIR: // TODO
-								tog_dimdir_vortrag();
+								switch (rx_msg->data[1]) {
+									case PWM_KUECHE:
+										tog_dimdir_kueche();
+										break;
+								}
 								break;
 						}
 						break;
@@ -210,6 +215,6 @@ static void send_status(uint8_t addr)
 
 void read_can_addr()
 {
-	eeprom_read_byte(0x00);
+	myaddr = eeprom_read_byte(EEPROM_LAP_ADDR);
 }
 
