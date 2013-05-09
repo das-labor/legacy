@@ -265,6 +265,29 @@ static void lamp_dim(taster_status *tst) {
 	}
 }
 
+static uint8_t dimmdir_k;
+void dim_kueche() {
+	uint8_t port_pwm_value = get_channel_brightness(SWL_KUECHE);
+
+	if (!(get_channel_status() & 16)) {
+		set_lamp_all(ROOM_KUECHE, 1);
+		port_pwm_value = 0;
+	}
+
+	if (port_pwm_value == 255)
+		dimmdir_k = 0;
+	if (port_pwm_value == 0)
+		dimmdir_k = 1;
+	if (dimmdir_k)
+		port_pwm_value += 1;
+	else
+		port_pwm_value -= 1;
+	set_bright_all(ROOM_KUECHE, port_pwm_value);
+}
+
+void tog_dimdir_kueche() {
+	dimmdir_k ^= 1;
+}
 
 void toggle_vortrag() {
 	set_lamp_all(ROOM_VORTRAG, (outputdata.ports >> SWL_VORTRAG) & 0x01 ? 0 : 1);

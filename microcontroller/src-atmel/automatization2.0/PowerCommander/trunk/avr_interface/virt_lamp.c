@@ -261,7 +261,7 @@ void set_bright_all(uint8_t room, uint8_t value)
 */
 uint8_t get_channel_status(void)
 {
-	uint8_t tmp=0;
+	uint8_t tmp = 0;
 	if(outputdata.ports & _BV(SWL_TAFEL))
 		tmp |= 1;
 	if(outputdata.ports & _BV(SWL_BEAMER))
