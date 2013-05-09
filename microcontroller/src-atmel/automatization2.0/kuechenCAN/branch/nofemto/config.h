@@ -11,10 +11,10 @@
 #define CAN_INTERRUPT
 //#define CAN_INT_NOBLOCK
 
-#define   ENABLE_CAN_INT()    GIMSK |= _BV(INT0)
-#define   DISABLE_CAN_INT()   GIMSK &= ~_BV(INT0)
-#define   SETUP_CAN_INT()     MCUCR |= _BV(ISC01)
-#define   MCP_INT_VEC         INT0_vect
+#define ENABLE_CAN_INT()    GIMSK |= _BV(INT0)
+#define DISABLE_CAN_INT()   GIMSK &= ~_BV(INT0)
+#define SETUP_CAN_INT()     MCUCR |= _BV(ISC01)
+#define MCP_INT_VEC         INT0_vect
 
 #define CAN_TX_BUFFER_SIZE 4
 #define CAN_RX_BUFFER_SIZE 4
@@ -25,9 +25,15 @@
 #define NO_NETVAR
 
 // RGB LED Taster Küchenlicht
-#define R_LED _BV(PC1)
-#define G_LED _BV(PC2)
-#define B_LED _BV(PC3)
+#define LED_R _BV(PC1)
+#define LED_G _BV(PC2)
+#define LED_B _BV(PC3)
+#define PORT_RGBLED PORTC
+#define DDR_RGBLED DDRC
+
+#define B_LED1 _BV(PD5)
+#define B_LED2 _BV(PD6)
+#define B_LED3 _BV(PD7)
 #define PORT_LED PORTD
 #define DDR_LED DDRD
 

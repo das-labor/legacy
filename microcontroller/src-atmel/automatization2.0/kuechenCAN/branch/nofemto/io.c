@@ -26,14 +26,14 @@ void init_io()
 {
 	// ############ Küchenlicht ################
 	// RGB LED im Taster
-	DDR_LED |= R_LED | G_LED | B_LED; // Ausgang
+	DDR_RGBLED |= R_LED | G_LED | B_LED; // Ausgang
 	// Taster
 	DDRC &= ~_BV(PC0); // Eingang
 	PORTC |= _BV(PC0); // pullup
 
 	// ############ Alarm ################
 	// 3 Taster LEDs
-	DDR_LED |= _BV(PD5) | _BV(PD6) | _BV(PD7); // Ausgang
+	DDR_LED |= B_LED1 | B_LED2 | B_LED3; // Ausgang
 	// Taster
 	DDRB &= ~_BV(PB1);      // Eingang
 	PORTB |= _BV(PB1);      // pullup
@@ -118,7 +118,7 @@ void switch_handler() {
 
 
 #ifdef NO_NETVAR
-#define HOLD_THRESHOLD 18
+#define HOLD_THRESHOLD 30
 #define CLICK_THRESHOLD 0
 
 #define C_SW  (0x00)
