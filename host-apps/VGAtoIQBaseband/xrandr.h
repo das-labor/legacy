@@ -2,11 +2,20 @@
 extern "C" { 
 #endif
 
-int add_custom_mode (const char *output_name, int pixelclk, int height, int hsync, int vsync);
-int enable_output (const char *output_name, const char* mode_name, int x, int y);
-int find_VGA_output(char *name,int *x, int *y, char* mode_active);
-int rm_mode (const char* output_name, const char* mode_name);
-void disable_output(const char* name);
+typedef struct 
+{
+	char 		activemode[255];
+	char 		outputname[255];
+	int 		pos_x;
+	int 		pos_y;
+	int 		mode;
+} vga_t;
+
+int add_custom_mode ( vga_t *vga_ptr , int pixelclk, int height, int hsync, int vsync);
+int enable_output ( vga_t *vga_ptr );
+int find_VGA_output( vga_t *vga_ptr );
+int rm_mode ( vga_t *vga_ptr );
+void disable_output( vga_t *vga_ptr );
 int init_xrandr(void);
 
 #ifdef __cplusplus
