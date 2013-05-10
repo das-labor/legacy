@@ -31,7 +31,7 @@ OBJDIR_RELEASE = obj
 DEP_RELEASE = 
 OUT_RELEASE = vgatoiqbaseband
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Timer.o $(OBJDIR_RELEASE)/shader.o $(OBJDIR_RELEASE)/xrandr.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Timer.o $(OBJDIR_RELEASE)/shader.o $(OBJDIR_RELEASE)/xrandr.o $(OBJDIR_RELEASE)/fifo.o
 
 all: release
 
@@ -56,6 +56,9 @@ $(OBJDIR_RELEASE)/shader.o: shader.cpp
 
 $(OBJDIR_RELEASE)/xrandr.o: xrandr.c
 	$(CC) $(CFLAGS_RELEASE) $(INC_RELEASE) -c -o $(OBJDIR_RELEASE)/xrandr.o xrandr.c
+
+$(OBJDIR_RELEASE)/fifo.o: fifo.c
+	$(CC) $(CFLAGS_RELEASE) $(INC_RELEASE) -c -o $(OBJDIR_RELEASE)/fifo.o fifo.c
 	
 clean_release:
 	rm -rf $(OBJ_RELEASE) $(OUT_RELEASE)

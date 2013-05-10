@@ -1765,7 +1765,7 @@ int init_xrandr(void){
 }
 
 int
-add_custom_mode (const char *output_name, int pixelclk, int height, int hsync, int vsync)
+add_custom_mode ( vga_t *vga_ptr, int pixelclk, int height, int hsync, int vsync )
 {
 	init_xrandr();
 	
@@ -1776,12 +1776,12 @@ add_custom_mode (const char *output_name, int pixelclk, int height, int hsync, i
 
 	umode_t  *m = malloc (sizeof (umode_t));
     
-	m->mode.name = "newmode";
-	m->mode.nameLength = strlen ("newmode");
+	m->mode.name = vga_ptr->activemode;
+	m->mode.nameLength = strlen (vga_ptr->activemode);
 	m->mode.dotClock = (float)pixelclk * 1e6;
 	m->mode.width = 1400 - 7;
 	m->mode.hSyncStart = m->mode.width+1; /* for fglrx */
-	m->mode.hSyncEnd = m->mode.hSyncStart + 5; /* ignore hsync */
+	m->mode.hSyncEnd = m->mode.hSyncStart + hsync;
 	m->mode.hTotal = m->mode.hSyncEnd + 1; /* for mesa */
 	m->mode.height = height - 3;
 	m->mode.vSyncStart = m->mode.height+0;
@@ -1792,29 +1792,33 @@ add_custom_mode (const char *output_name, int pixelclk, int height, int hsync, i
 	get_screen ();
 	get_crtcs ();
 	get_outputs ();
-	o = find_output_by_name ((char *)output_name);
+	o = find_output_by_name ((char *)&vga_ptr->outputname);
 	if (!o) {
 	o = add_output ();
-	set_name (&o->output, (char *)output_name, name_string|name_xid);
+	set_name (&o->output, (char *)&vga_ptr->outputname, name_string|name_xid);
 	}
 	if (!o)
-	fatal ("cannot find output \"%s\"\n", output_name);
-	e = find_mode_by_name("newmode");
+	fatal ("cannot find output \"%s\"\n", vga_ptr->outputname);
+	e = find_mode_by_name(vga_ptr->activemode);
 	if (e){
-		enable_output(output_name,"1024x768", 0, 0);
-		disable_output(output_name);
-		rm_mode(output_name,"newmode");
+		vga_t new_config;
+		memcpy( &new_config, vga_ptr, sizeof(vga_t) );
+		memcpy( new_config.activemode,"1024x768", sizeof("1024x768") );
+		enable_output( &new_config );
+		disable_output( &new_config );
+		memcpy( new_config.activemode,"newmode", sizeof("newmode") );
+		rm_mode( &new_config );
 		init_xrandr();
 		get_screen ();
 		get_crtcs ();
 		get_outputs ();
-		o = find_output_by_name ((char *)output_name);
+		o = find_output_by_name ((char *)&vga_ptr->outputname);
 		if (!o) {
 		o = add_output ();
-		set_name (&o->output, (char *)output_name, name_string|name_xid);
+		set_name (&o->output, (char *)&vga_ptr->outputname, name_string|name_xid);
 		}
 		if (!o)
-		fatal ("cannot find output \"%s\"\n", output_name);
+		fatal ("cannot find output \"%s\"\n", vga_ptr->outputname);
 	}
 	   
     	XRRCreateMode (dpy, root, &m->mode);
@@ -1822,9 +1826,9 @@ add_custom_mode (const char *output_name, int pixelclk, int height, int hsync, i
     	get_screen ();
 	get_crtcs ();
 	get_outputs ();
-	set_name (&m->output, (char *)output_name, name_string|name_xid);
+	set_name (&m->output, (char *)&vga_ptr->outputname, name_string|name_xid);
 	set_name (&m->name, m->mode.name, name_string|name_xid);
-	e = find_mode_by_name("newmode");
+	e = find_mode_by_name(vga_ptr->activemode);
 	if (!e){
 		printf("failed to create mode\n");
 		exit(0);
@@ -1838,32 +1842,33 @@ add_custom_mode (const char *output_name, int pixelclk, int height, int hsync, i
 }
 
 int
-enable_output (const char *output_name, const char* mode_name, int x, int y)
+enable_output ( vga_t * vga_ptr )
+
 {
 	output_t	*output = NULL;
 	
 	init_xrandr();
 	
-	output = find_output_by_name ((char *)output_name);
+	output = find_output_by_name ((char *)&vga_ptr->outputname);
 	if (!output) {
 		output = add_output ();
-		set_name (&output->output, (char *)output_name, name_string|name_xid);
+		set_name (&output->output, (char *)&vga_ptr->outputname, name_string|name_xid);
 	}
 
 	set_name_xid (&output->mode, None);
 	set_name_xid (&output->crtc, None);
 	
-	if(strstr(mode_name, "auto")){
+	if(strstr(&vga_ptr->activemode[0], "auto")){
 		output->automatic = True;
 		output->changes |= changes_automatic;	
 	}
 	else
 	{
-		set_name (&output->mode, (char *)mode_name, name_string|name_xid);
+		set_name (&output->mode, (char *)&vga_ptr->activemode, name_string|name_xid);
 		output->changes |= changes_mode;
 	}
-  	output->x = x;
-  	output->y = y;
+  	output->x = vga_ptr->pos_x;
+  	output->y = vga_ptr->pos_y;
 
 	output->changes |= changes_position;
 	
@@ -1917,7 +1922,7 @@ enable_output (const char *output_name, const char* mode_name, int x, int y)
 
 }
 
-int find_VGA_output(char *name,int *x, int *y, char* mode_active)
+int find_VGA_output( vga_t * vga_ptr )
 {
 	output_t	*output = NULL;
 
@@ -1936,19 +1941,19 @@ int find_VGA_output(char *name,int *x, int *y, char* mode_active)
 	
 	    /* look for VGA or CRT */
 	    if( strstr(output_info->name, "VGA") || strstr(output_info->name, "CRT")){
-		    if(name)
-			    memcpy(name,output_info->name, sizeof(output_info->name));
+	    	    memcpy(&vga_ptr->outputname,output_info->name, strlen(output_info->name));
+	    	    
 		    if (mode)
 		    {
 			if (crtc_info) {
-			    *x = crtc_info->x;
-			    *y = crtc_info->y;
+			    vga_ptr->pos_x = crtc_info->x;
+			    vga_ptr->pos_y = crtc_info->y;
 			} else {
-			    *x = output->x;
-			    *y = output->y;
+			    vga_ptr->pos_x = output->x;
+			    vga_ptr->pos_y = output->y;
 			}
-			if(mode_active)
-				memcpy(mode_active,mode->name,strlen(mode->name));
+			
+			memcpy(&vga_ptr->activemode,mode->name,strlen(mode->name));
 		    }
 
 		    return 0;
@@ -1961,16 +1966,16 @@ int find_VGA_output(char *name,int *x, int *y, char* mode_active)
 }
 
 
-void disable_output(const char* name)
+void disable_output( vga_t *vga_ptr )
 {
 	output_t	*output = NULL;
 
 	init_xrandr();
 	
-	output = find_output_by_name ((char *)name);
+	output = find_output_by_name ((char *)&vga_ptr->outputname);
 	if (!output) {
 	output = add_output ();
-	set_name (&output->output, (char *)name, name_string|name_xid);
+	set_name (&output->output, (char *)&vga_ptr->outputname, name_string|name_xid);
 	}
 
 	set_name_xid (&output->mode, None);
@@ -2023,18 +2028,18 @@ void disable_output(const char* name)
 	XSync (dpy, False);	
 }
 
-int rm_mode (const char* output_name, const char* mode_name)
+int rm_mode ( vga_t * vga_ptr )
 {
 	output_t	*output = NULL;
-	disable_output(output_name);
+	disable_output( vga_ptr );
 	
 	get_screen ();
 	get_crtcs ();
 	get_outputs ();
 	
 	XRRModeInfo *e;
-	e = find_mode_by_name((char *)mode_name);
-	output = find_output_by_name ((char *)output_name);
+	e = find_mode_by_name((char *)&vga_ptr->activemode);
+	output = find_output_by_name ((char *)&vga_ptr->outputname);
 	XRRDeleteOutputMode (dpy, output->output.xid, e->id);
 	XSync (dpy, False);
 	
