@@ -32,7 +32,7 @@
 		#define UART_UDRE_VECTOR USART1_UDRE_vect
 		#define UART_RECV_VECTOR USART1_RX_vect
 	#endif
-#elif defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega162__) | defined(__AVR_ATmega644__) | defined(__AVR_ATmega644P__)
+#elif defined(__AVR_ATmega48__) | defined(__AVR_ATmega168__) | defined(__AVR_ATmega644__) | defined(__AVR_ATmega644P__)
 	#define UCSRB UCSR0B
 	#define UCSRC UCSR0C
 	#define UDR UDR0
@@ -49,6 +49,25 @@
 	#define UDRE UDRE0
 	#define UART_UDRE_VECTOR USART0_UDRE_vect
 	#define UART_RECV_VECTOR USART0_RX_vect
+#elif defined(__AVR_ATmega162__)
+	#define UCSRB UCSR0B
+	#define UCSRC UCSR0C
+	#define UDR UDR0
+	#define UBRRH UBRR0H
+	#define UBRRL UBRR0L
+	#define TXEN TXEN0
+	#define RXEN RXEN0
+	#define UCSRA UCSR0A
+	#define UDRIE UDRIE0
+	#define UCSZ0 UCSZ00
+	#define UCSZ1 UCSZ01
+	#define RXCIE RXCIE0
+	#define TXCIE TXCIE0
+	#define RXC RXC0
+	#define UDRE UDRE0
+	#define UART_UDRE_VECTOR USART0_UDRE_vect
+	#define UART_RECV_VECTOR USART0_RXC_vect
+	#define URSEL URSEL0
 #elif defined(__AVR_ATmega8__) | defined(__AVR_ATmega32__) 
 	#define UART_UDRE_VECTOR USART_UDRE_vect
 	#define UART_RECV_VECTOR USART_RXC_vect
