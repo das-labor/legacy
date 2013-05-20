@@ -16,6 +16,8 @@
  *   Copyright (C) 2013 Soeren Heisrath (forename at surename dot org)
  */
 #include "usbstuff.h"
+#include "usbdrv.h"
+#include "oddebug.h"        /* This is also an example for using debug macros */
 
 static uint8_t usb_rx_cnt = 0;                    /* usb rx c(o)unt */
 static uint8_t usb_rx_target_cnt = 0;             /* amount of bytes to be received */
@@ -128,7 +130,7 @@ uchar usbFunctionWrite(uchar *data, uchar len)
 	
 	usb_rx_target_cnt -= len;
 
-	for (i=0; i<RFMUSB_USB_BUF_SIZE; i++)
+	for (i=0; i<len; i++)
 	{
 		usb_buf[usb_rx_cnt++] = data[i];
 	}
