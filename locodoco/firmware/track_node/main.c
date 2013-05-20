@@ -12,10 +12,12 @@ BIT_ISR
 {
 	static uint8_t bytec = 0;
 	static uint8_t mask = 0xff;
+	
+//	PORTB ^= _BV(PB0); return;
 
 	if (!mask) /* stop bit(s) */
 	{
-
+		bytec++;
 		if (bytec < num_bytes)
 		{
 			mask = 0xff; /* start bit */
@@ -25,9 +27,10 @@ BIT_ISR
 			return;
 		}
 		
+		/* send extra stop bits at the end of the transmission */
+		
 		OUT0_1; /* intentionally twice to make delays close to symmetric */
 
-		/* send extra stop bits at the end of the transmission */
 		if (bytec < num_bytes + NUM_STOPBITS)
 			return;
 		
@@ -36,8 +39,7 @@ BIT_ISR
 		bytec = 0;
 	} else if (mask == 0xff) /* start bit */
 	{
-		bytec++;
-		mask = 0x80;
+		mask = 0x01;
 		OUT0_0;
 	} else /* data bits */
 	{
@@ -48,7 +50,7 @@ BIT_ISR
 		{
 			OUT0_0;
 		}
-		mask >>= 1;
+		mask <<= 1;
 	}
 }
 
@@ -64,12 +66,14 @@ void eeprom_init()
 	
 	if (num_bytes > sizeof(tx_seq) - 2)
 	{
-		num_bytes = sizeof (tx_seq) - 2;
+		num_bytes = 7;
 		tx_seq[0] = 'E';
-		tx_seq[1] = 'S';
-		tx_seq[2] = 'I';
-		tx_seq[3] = 'Z';
-		tx_seq[4] = 'E';
+		tx_seq[1] = 'P';
+		tx_seq[2] = 'R';
+		tx_seq[3] = 'O';
+		tx_seq[4] = 'G';
+		tx_seq[5] = '\r';
+		tx_seq[6] = '\n';
 		return; /* unprogrammed */
 	}
 	eeprom_busy_wait();
@@ -97,6 +101,6 @@ int main ()
 
 	while (23)
 	{
-
+	////	PORTB ^= _BV(PB0);
 	}
 }

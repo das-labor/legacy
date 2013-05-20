@@ -33,7 +33,7 @@
 
 	#define TIMER_INIT \
 		TCCR0A = _BV(WGM01); /* clear on compare match */ \
-		OCR0A = 52; /* 2M / 38400 -> 52.083 cycles/bit */ \
+		OCR0A = 208; /* 4800, 1 MHz -> 208.333 cycles/bit -> 0.48% timing error */ \
 		TCCR0B = (_BV(CS00)); /* clk/1;  */ \
 		TIMSK = _BV(OCIE0A) /* OCR0A int */
 		
@@ -45,15 +45,19 @@
 	
 	#define PRESCALER_INIT /* system clock prescaler */ \
 		CLKPR = _BV(CLKPCE); \
-		CLKPR = _BV(CLKPS1) /* / 4 */
+		CLKPR = (_BV(CLKPS1) | _BV(CLKPS0)) /* / 16 */
 #else
 	#error "can't find valid config for your mcu. please edit config.h"
 #endif
 
 /* general config */
-
+#if 0
 #define OUT0_0 PORT_LED0 &= ~(PIN_LED0)
-#define OUT0_1 PORT_LED0 |= PIN_LED0
+#define OUT0_1 PORT_LED0 |= (PIN_LED0)
+#else
+#define OUT0_1 PORT_LED0 &= ~(PIN_LED0)
+#define OUT0_0 PORT_LED0 |= (PIN_LED0)
+#endif
 #define OUT0_INIT DDR_LED0 |= PIN_LED0
 
 /* additional stop bits at the end of each transmission */

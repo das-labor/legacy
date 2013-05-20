@@ -37,10 +37,18 @@ typedef struct
 	ldc_addr_t addr;
 } ldc_header_t;
 
+/* speed setting */
+typedef struct
+{
+	uint16_t speed;
+	uint8_t dir;
+} ldc_speed_t;
+
 /* waypoint id */
 typedef uint16_t ldc_waypoint_t;
 /* distance */
 typedef uint16_t ldc_dist_t;
+
 
 #define LDC_WP_INVALID ((ldc_waypoint_t) -1)
 
@@ -63,7 +71,7 @@ typedef struct
 //#define LDC_HEADER_SET
 
 /* payload offset */
-#define LDC_PAYLOAD(a) ((uint8_t *) ((size_t) a + sizeof(ldc_header_t)))
+#define LDC_PAYLOAD(a) ((uint8_t *) ((uint16_t) a + sizeof(ldc_header_t)))
 
 /* length of remaining packet derived from len field */
 #define LDC_LEN_GET(buf) (((ldc_header_t *) buf)->len - sizeof(ldc_header_t))

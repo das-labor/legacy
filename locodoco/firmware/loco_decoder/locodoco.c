@@ -14,19 +14,21 @@ void ldc_packet_handler ()
 	if (rfm12_rx_status() != STATUS_COMPLETE)
 		return;
 	
+	
 	rxbuf = rfm12_rx_buffer();
 	if (rfm12_rx_type() != LDC_TYPE)
 	{
 		rfm12_rx_clear();
 		return;
 	}
-	PORT_LIGHT_FRONT ^= PIN_LIGHT_BACK;
 
 	switch (LDC_TYPE_GET(rxbuf))
 	{
 		case LDC_CMD_STOP:
+		{
 			M_OCR = 0;
 			motor_set_target_speed (0);
+		}
 		break;
 
 		case LDC_TIMESLOT_END:
@@ -100,14 +102,15 @@ void ldc_packet_handler ()
 
 
 		case LDC_CMD_SPEED_SET:
-			M_OCR = *((uint16_t *) (rxbuf + sizeof(ldc_header_t)));
+			LIGHT_FW_ON();
+			M_OCR = *((uint16_t *) LDC_PAYLOAD(rxbuf));
 		break;
 
 		case LDC_CMD_SPEED_GET:
 		break;
 
 		case LDC_CMD_TARGET_SPEED_SET:
-			motor_set_target_speed (*((uint16_t *) (rxbuf + sizeof(ldc_header_t))));
+			motor_set_speed_cmd ((ldc_speed_t *) LDC_PAYLOAD(rxbuf));
 		break;
 
 		case LDC_CMD_TARGET_SPEED_GET:
