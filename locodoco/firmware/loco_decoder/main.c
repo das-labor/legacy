@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 
 #include "config.h"
 
@@ -20,7 +21,8 @@ int main (void)
 	SENSE_INC();
 	motor_init();
 	LIGHTS_INIT();
-	LIGHT_CABIN_OFF();
+	_delay_ms(100);
+	//LIGHT_CABIN_ON();
 	rfm12_init();
 	LIGHT_RW_ON();
 	sei();
