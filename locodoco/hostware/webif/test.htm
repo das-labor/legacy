@@ -9,7 +9,7 @@ var rsplen = 0;
 
 function get_statinfo()
 {
-	stat_rq.open('GET', '/cgi-bin/statusmonitor?rand=' + Math.random(), true);
+	stat_rq.open('GET', '/l/status.ldc?rand=' + Math.random(), true);
 	stat_rq.onreadystatechange = handle_response;
 	stat_rq.send(null);
 }
@@ -107,12 +107,15 @@ function bclick(in_cmd)
 	var el = document.getElementById('ct');
 	var target = document.getElementById('inptarget').value;
 
-	el.src = '/cgi-bin/ldc?target=' + target + '&cmd=' + in_cmd +
+	el.src = '/l/command.ldc?target=' + target + '&cmd=' + in_cmd +
 		'u16val=' + document.getElementById('speedinp').value +
 		'&rand=' + Math.random();
 	return false;
 }
-
+function cfoo(e)
+{
+	alert("click");
+}
 </script>
 </head>
 <body onload="get_statinfo();">
@@ -143,5 +146,42 @@ function bclick(in_cmd)
 	<a href="javascript:void(0)" onclick="bclick('reboot')">reboot</a>
 </fieldset>
 </div>
+<div class="sbarframe">
+<div class="sbarbtn" id="btn"></div>
+</div>
+<script>
+var e = document.querySelector('#btn');
+e.setAttribute('draggable', 'true');
+e.addEventListener ('dragstart', function (e) {
+	e.dataTransfer.setData('Text', this.id);
+}, false);
+</script>
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<br /> &nbsp; 
+<iframe src="sbar.htm" class="sbarframe" />
 </body>
 </html>
