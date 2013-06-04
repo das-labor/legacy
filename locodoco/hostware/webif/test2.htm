@@ -2,8 +2,20 @@
 <head>
 <title>LocoDoco test-webif</title>
 <link rel="stylesheet" type="text/css" href="screen.css" />
+<script>
+function main_init ()
+{
+	var sb = document.getElementById('speedbar');
+	sb.src="sbar.htm?speed=19&target=1&rand=" + Math.random();
+}
+
+</script>
+<script type="text/javascript" src="ldc.js"></script>
 </head>
 <body>
-<iframe src="sbar.htm" class="sbarframe" />
+<iframe src="#" id="speedbar" class="sbarframe"></iframe>
+<script type="text/javascript">
+main_init();
+</script>
 </body>
 </html>

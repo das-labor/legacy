@@ -1,57 +1,93 @@
 <html>
 <head>
-	<link rel="stylesheet" type="text/css" href="screen.css" />
-	<script type="text/javascript">
+<link rel="stylesheet" type="text/css" href="screen.css" />
+<script type="text/javascript" src="ldc.js"></script>
+<script type="text/javascript">
+var targetaddr = 0;
+var last_pc = 0;
+var last_dir = '';
+
+function scrollhandler (ev)
+{
+	var el = document.getElementById('status');
+	var smax = document.body.scrollHeight - document.body.clientHeight;
+	var pc = 200 - Math.round(200*(document.body.scrollTop / smax));
+	var dir = '&laquo;';
+	if (pc > 100)
+		pc = 200-pc;
+
+	pc = 100 - pc;
+
+	if (document.body.scrollTop > smax / 2)
+		dir = '&raquo;';
+
+	if (pc == 0)
+		dir = '[]';
+
+	document.getElementById('speed').innerHTML = pc + '%' + '<br />' + dir;
 	
-	function scrollhandler (ev)
+	var r = 100 + Math.round((pc / 100) * 100);
+	var g = r;
+	var b = r;
+	g += Math.round (((pc) / 80) * 55);
+	if (pc > 80)
 	{
-		var el = document.getElementById('status');
-		//el.innerHTML =
-		//	"diff: " + (document.body.scrollHeight - document.body.scrollTop - document.body.clientHeight);
-		var smax = document.body.scrollHeight - document.body.clientHeight;
-		var pc = 200 - Math.round(200*(document.body.scrollTop / smax));
-		var dir = '&laquo;';
-		if (pc > 100)
-			pc = 200-pc;
+		r = g;
+		g -= Math.round (((pc - 80) / 20) * 55);
+		b = g;
+	}
 
-		pc = 100 - pc;
+	document.getElementById('scrollinner').style.backgroundColor =
+		"rgb(" + r + "," + g +"," + b + ")";
+	
+	if (last_dir != dir || last_pc != pc)
+	{
+		ldc_send('target_speed_set', targetaddr, pc * 10);
 
-		if (document.body.scrollTop > smax / 2)
-			dir = '&raquo;';
-
-		if (pc == 0)
-			dir = '[]';
-
-		document.getElementById('speed').innerHTML = pc + '%' + '<br />' + dir;
-		
-		var r = 100 + Math.round((pc / 100) * 100);
-		var g = r;
-		var b = r;
-		g += Math.round (((pc) / 80) * 55);
-		if (pc > 80)
+		if (last_dir != dir)
 		{
-			r = g;
-			g -= Math.round (((pc - 80) / 20) * 55);
-			b = g;
+			if (document.body.scrollTop > smax / 2)
+				ldc_send('forward', targetaddr);
+			else
+				ldc_send('reverse', targetaddr);
 		}
-
-		document.getElementById('scrollinner').style.backgroundColor =
-			"rgb(" + r + "," + g +"," + b + ")";
-
 	}
+	last_dir = dir;
+	last_pc = pc;
+	return false;
+}
 
-	function init()
-	{
-		document.body.scrollTop = (document.body.scrollHeight - document.body.clientHeight) / 2;
-		scrollhandler (NULL);
-	}
+function get_url_param (in_name)
+{
+	var needle = ".*[\\?&#]" + in_name + "=([^#&]+)";
+	var rx = new RegExp(needle);
+	var par = rx.exec(window.location.href);
+	return par[1];
+}
 
-	document.addEventListener ('scroll', scrollhandler, false);
-	</script>
+function scroll_set (in_val)
+{
+	if (in_val == NaN || in_val == undefined || in_val == null)
+		return;
+
+	var smax = document.body.scrollHeight - document.body.clientHeight;
+	document.body.scrollTop = smax * ((100+parseInt(in_val)) / 200);
+}
+
+function init()
+{
+	document.body.scrollTop = (document.body.scrollHeight - document.body.clientHeight) / 2;
+	scroll_set(get_url_param("speed"));
+	targetaddr = scroll_set(get_url_param("target"));
+	scrollhandler ();
+}
+
+document.addEventListener ('scroll', scrollhandler, false);
+
+</script>
 </head>
 <body id="scrollinner" onLoad="init()">
 <div id="status"></div>
 <div id="speed"></div>
-
 </body>
 </html>
