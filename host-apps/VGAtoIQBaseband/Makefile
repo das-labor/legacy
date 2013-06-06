@@ -17,9 +17,9 @@ CFLAGS = -Wall
 RESINC = 
 RCFLAGS = 
 LIBDIR = -Lglut/lib
-LIB = -lglut -lGLU -lGL -lXrandr
+LIB = -lglut -lGLU -lGL
 LDFLAGS =
-
+# -lXrandr
 INC_RELEASE = $(INC)
 CFLAGS_RELEASE = $(CFLAGS) -O2
 RESINC_RELEASE = $(RESINC)
@@ -31,7 +31,7 @@ OBJDIR_RELEASE = obj
 DEP_RELEASE = 
 OUT_RELEASE = vgatoiqbaseband
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Timer.o $(OBJDIR_RELEASE)/shader.o $(OBJDIR_RELEASE)/xrandr.o $(OBJDIR_RELEASE)/fifo.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Timer.o $(OBJDIR_RELEASE)/shader.o $(OBJDIR_RELEASE)/fifo.o
 
 all: release
 

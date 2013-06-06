@@ -38,13 +38,16 @@
 #include <cmath>
 #include <pthread.h>
 #include <unistd.h>
+#include <time.h>
 #include "shader.h"
 
 #include "glInfo.h"                             // glInfo struct
 #include "Timer.h"
-#include "xrandr.h"
 #include "fifo.h"
 
+#ifdef _WITH_XRANDR
+#include "xrandr.h"
+#endif
 
 using std::stringstream;
 using std::cout;
@@ -90,7 +93,8 @@ GLuint textureId;                   // ID of texture
 GLubyte* imageData = 0;             // pointer to texture buffer
 GLubyte* testpatternA = 0;
 GLubyte* testpatternB = 0;
-	
+//char *inputfile = 0;
+
 int dataready = 0;
 int screenWidth;
 int screenHeight;
@@ -105,17 +109,17 @@ bool beVerbose;
 bool testpattern;
 bool exit_now;
 int pboMode = 0;
-int drawMode = 0;
 int cutofright = 1;
 int cutofbottom = 3;
 int fps = 0;
-ifstream filestr;
+
 
 pthread_mutex_t exit_mutex;
-
-char *inputfile = new char(255);
-vga_t initial_config;
 pthread_t 	input_thread;
+
+#ifdef _WITH_XRANDR
+vga_t initial_config;
+#endif
 
 Timer timer, t1, t2;
 float copyTime, updateTime;
@@ -153,8 +157,11 @@ int main(int argc, char **argv)
 {
     int i;
     float msps = 64.0;
-    vga_t new_config;
     
+#ifdef _WITH_XRANDR    
+    vga_t new_config;
+#endif
+
     if( argc < 2 ){
     	    cout << "No args given." << endl;
     	    usage();
@@ -164,7 +171,7 @@ int main(int argc, char **argv)
     initSharedMem();
     // register exit callback
     atexit(exitCB);
-    
+  
     for(i=1; i < argc; i++)
     {
         if( strcmp(argv[i],"-cutofright")==0 ){
@@ -209,6 +216,7 @@ int main(int argc, char **argv)
         if( strcmp(argv[i],"-t")==0 ){
         	testpattern = true; 
         }
+#if 0
         if( strcmp(argv[i],"-i")==0 ){
         	if(argc > (i+1)){
         	    if(!(argv[i+1][0] == '-')){
@@ -217,7 +225,7 @@ int main(int argc, char **argv)
         	    }
         	}
         }
-        
+#endif        
     }
 
     fps = (float)(IMAGE_WIDTH * 7 * IMAGE_HEIGHT) / msps;
@@ -225,15 +233,17 @@ int main(int argc, char **argv)
     if( beVerbose ){
     	cout << "hsync: " << cutofright << " vsync: " << cutofbottom << endl;
 	cout << "msps: " << msps << " fps: " << fps << endl;
-
+	cout << "testpattern: " << testpattern << endl;
     }
     screenWidth = (IMAGE_WIDTH - cutofright) * 7;
     screenHeight = IMAGE_HEIGHT - cutofbottom;
     
+#ifdef _WITH_XRANDR 
 #ifdef _WIN32
 	#warn modesetting not supported  
 	memset( &new_config, 0, sizeof(vga_t) );
-#else  
+#else
+
 
     if( init_xrandr() )
     {
@@ -282,7 +292,9 @@ int main(int argc, char **argv)
     if( beVerbose )
     	    cout << "set mode \"newmode\" on VGA " << endl;
 #endif
-
+#endif
+    if( beVerbose )
+    		cout << "glutInit" << endl;
     // GLUT stuff for windowing
     // initialization openGL window.
     // it is called before any other GLUT routine
@@ -291,21 +303,20 @@ int main(int argc, char **argv)
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_ALPHA); // display mode
 
     glutInitWindowSize(screenWidth, screenHeight);               // window size
-
+#ifdef _WITH_XRANDR
     glutInitWindowPosition(new_config.pos_x, new_config.pos_y);           // window location
+#endif
 
-    // finally, create a window with openGL context
     // Window will not displayed until glutMainLoop() is called
     // it returns a unique ID
     glutCreateWindow(argv[0]);     // param is the title of window  
-    glutFullScreen();
+    //glutFullScreen();
 
     // register GLUT callback functions
     glutDisplayFunc(displayCB);
     glutIdleFunc(idleCB);                       // redraw only every given millisec
     glutReshapeFunc(reshapeCB);
     glutKeyboardFunc(keyboardCB);
-
 
     // init GL
     glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
@@ -435,6 +446,10 @@ int main(int argc, char **argv)
     // the last GLUT call (LOOP)
     // window will be shown and display callback is triggered by events
     // NOTE: this call never return main().
+    while( !BufferFull() )
+    {
+    	usleep( 5000 );
+    }
     glutMainLoop(); /* Start GLUT event-processing loop */
     
     pthread_mutex_destroy( &exit_mutex );
@@ -450,11 +465,13 @@ void usage(void)
 	cout << "Usage:\nvgatoiqbaseband [inputfile] [args]\nargs can be:" << endl;
 	cout << "\t-h , --help\t\tthis message" << endl;	
 	cout << "\t-v , --verbose\t\tbe verbose" << endl;	
-	cout << "\t-nofilter\t\tturn off fragment-shader" << endl;	
+	cout << "\t-nofilter\t\tturn off fragment-shader" << endl;
 	cout << "\t-pclk <x>\t\tset the pixel clock rate to x MSps" << endl;	
-	cout << "\t-t\t\t\tdo not read inputfile, generate test patterns" << endl;	
+#ifdef _WITH_XRANDR
 	cout << "\t-cutofright <x>\t\tdo not display x elements at the right screen border\tdefault: 1 (7 pixel)" << endl;	
-	cout << "\t-cutofbottom <x>\t\tdo not display x elements at the bottom screen border\tdefault: 2" << endl;		
+	cout << "\t-cutofbottom <x>\t\tdo not display x elements at the bottom screen border\tdefault: 2" << endl;	
+#endif
+	cout << "\t-t\t\t\tdo not read inputfile, generate test patterns" << endl;		
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -467,19 +484,16 @@ bool initSharedMem()
 
     cameraAngleX = cameraAngleY = 0;
     cameraDistance = CAMERA_DISTANCE;
-
-    drawMode = 0; // 0:fill, 1: wireframe, 2:points
     
-
     beVerbose = false;
     testpattern = false;
     forcefragmentoff = false;
     exit_now = false;
     
     BufferInit( DATA_SIZE );
-    
-    memset(inputfile, 0, 255);
-    
+    //inputfile = new char(255);
+    //memset(inputfile, 0, 255);
+
     // allocate texture buffer
     imageData = new GLubyte[DATA_SIZE];
     memset(imageData, 0, DATA_SIZE);
@@ -588,7 +602,7 @@ void clearSharedMem()
     
     if( !testpattern )
     {
-    	    filestr.close();
+    	    
     }
 }
 
@@ -609,57 +623,84 @@ void *input_thread_func( void* in_ptr )
 {
     static int cnt = 0;
     
-    if( testpattern )	/* generate pattern */
-    {
-    	   cnt++;
-    	   if(cnt < 300)
-    	   {
-    	   	memcpy( BufferIn_Start(), testpatternA, DATA_SIZE );
-    	   	BufferIn_Finish();
-    	   }
-    	   else if ( (cnt >= 300) && (cnt < 600))
-    	   {
-    	   	memcpy( BufferIn_Start(), testpatternB, DATA_SIZE );
-    	   	BufferIn_Finish();
-    	   }
-    	   else
-    	   {
-    	   	cnt = 0;   
-    	   }
-    }
-    else if( strlen(inputfile) )	/* read from inputfile */
-    {
-    	    unsigned char *ptr;
-    	    int read_bytes;
-    	    filestr.open (inputfile, ifstream::binary);
-    	    if ( filestr.fail() ){
-    	    	    pthread_mutex_lock (&exit_mutex);
-    	    	    exit_now = true;
-    	    	    pthread_mutex_unlock (&exit_mutex);
-    	    	    cout << "Error opening file." << endl;
-    	    	    return NULL;
-    	    }
+	while( 1 )
+	{
+	   if( !BufferFull() )
+	   {
+		if( testpattern )	/* generate pattern */
+		{
+		   
+			   cnt++;
+			   if(cnt < 300)
+			   {
+				memcpy( BufferIn_Start(), testpatternA, DATA_SIZE );
+				BufferIn_Finish();
+			   }
+			   else if ( (cnt >= 300) && (cnt < 600))
+			   {
+				memcpy( BufferIn_Start(), testpatternB, DATA_SIZE );
+				BufferIn_Finish();
+			   }
+			   else
+			   {
+				cnt = 0;   
+			   }
+		}
+#if 0    
+	    	else if( strlen(inputfile) )	/* read from inputfile */
+	    	{
+		    unsigned char *ptr;
+		    int read_bytes;
+		    filestr.open (inputfile, ifstream::binary);
+		    if ( filestr.fail() ){
+			    pthread_mutex_lock (&exit_mutex);
+			    exit_now = true;
+			    pthread_mutex_unlock (&exit_mutex);
+			    cout << "Error opening file." << endl;
+			    break;
+		    }
+	
+		    ptr = (unsigned char*) BufferIn_Start();
+		    filestr.read ( (char*)ptr, DATA_SIZE );
+		    BufferIn_Finish();
+		    read_bytes = filestr.gcount();
+		    if( read_bytes < DATA_SIZE )
+		    {
+			    cout << "WARN: couldn't read enough" << endl;
+			    cout << "WARN: exit now ?" << endl;
+			    memset( ptr + read_bytes, 0 , DATA_SIZE - read_bytes );
+			    pthread_mutex_lock (&exit_mutex);
+			    exit_now = true;
+			    pthread_mutex_unlock (&exit_mutex);
+			    break;
+		    }
+	    }
+#endif
+	       else	/* read from stdin */
+	       {
+	    	    unsigned char *ptr;
+		    int read_bytes;
+		    ptr = (unsigned char*)BufferIn_Start();
+		    read_bytes = fread(ptr, 1, DATA_SIZE, stdin);
+		    BufferIn_Finish();
+		    if( read_bytes < DATA_SIZE )
+		    {
+			    cout << "WARN: couldn't read enough" << endl;
+			    cout << "WARN: exit now ?" << endl;
+			    memset( ptr + read_bytes, 0 , DATA_SIZE - read_bytes );
+			    pthread_mutex_lock (&exit_mutex);
+			    exit_now = true;
+			    pthread_mutex_unlock (&exit_mutex);
+			    break;
+		    }
+	       }
+	    }
+	    else
+	    {
+		usleep( 2000 );
+	    }
+	}
 
-    	    ptr = (unsigned char*) BufferIn_Start();
-    	    filestr.read ( (char*)ptr, DATA_SIZE );
-    	    BufferIn_Finish();
-    	    read_bytes = filestr.gcount();
-            if( read_bytes < DATA_SIZE )
-            {
-                    cout << "WARN: couldn't read enough" << endl;
-                    cout << "WARN: exit now ?" << endl;
-                    memset( ptr + read_bytes, 0 , DATA_SIZE - read_bytes );
-                    pthread_mutex_lock (&exit_mutex);
-    	    	    exit_now = true;
-    	    	    pthread_mutex_unlock (&exit_mutex);
-    	    	    return NULL;
-            }
-    }
-    else	/* read from stdin */
-    {
-    	    
-    	    return NULL;
-    }
     return NULL;
 }
 
@@ -808,6 +849,7 @@ void displayCB()
         		/* still empty ? drop frame */
         		if( BufferEmpty() )
         		{
+        			fprintf( stderr, "Buffer underrun ! Skipping frame.\n" );
         			memset( ptr, 0, DATA_SIZE );
         			BufferSkip();
         		}
@@ -820,7 +862,7 @@ void displayCB()
         	else
         	{
         		memcpy( ptr, BufferOut_Start(), DATA_SIZE );
-        		BufferOut_Finish();	
+        		BufferOut_Finish();
         	}
             glUnmapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB); // release pointer to mapping buffer
         }
@@ -936,15 +978,7 @@ void idleCB()
 
 void keyboardCB(unsigned char key, int x, int y)
 {
-    switch(key)
-    {
-    case 27: // ESCAPE
-        exit(0);
-        break;
-
-    default:
-        ;
-    }
+  
 }
 
 void exitCB()
@@ -953,6 +987,7 @@ void exitCB()
 #ifdef _WIN32
 	#warn modesetting not supported  
 #else
+#ifdef _WITH_XRANDR
     if( strlen(initial_config.activemode) > 1)
     {
     	char initialmode[255];
@@ -965,6 +1000,7 @@ void exitCB()
         memcpy(initial_config.activemode, initialmode, sizeof(initial_config.activemode) );        
         enable_output( &initial_config );
     }
+#endif
 #endif
 }
 
