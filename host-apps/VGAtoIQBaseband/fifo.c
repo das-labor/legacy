@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include "fifo.h"
 
-#define BUFFER_SIZE 12
+/* maximum frame count : */
+#define BUFFER_SIZE 25
  
 struct Buffer {
   void* data[BUFFER_SIZE];
@@ -49,7 +50,6 @@ void BufferIn_Finish( void )
   pthread_mutex_lock (&mutex);
   if( !buffer.skip )
   {
-  	  printf("Buffer ++\n");
   	  buffer.write = buffer.write + 1;
   	  if (buffer.write >= BUFFER_SIZE)
   	  	  buffer.write = 0;
@@ -73,7 +73,6 @@ void BufferOut_Finish( void )
 {
   pthread_mutex_lock (&mutex);
   buffer.read = buffer.read + 1;
-  printf("Buffer --\n");
   if (buffer.read >= BUFFER_SIZE)
     buffer.read = 0;
   pthread_mutex_unlock (&mutex);
@@ -98,7 +97,6 @@ int BufferEmpty( void )
   if (buffer.read == buffer.write)
   {
      val = 1;
-     printf("Buffer empty\n");
   }
   pthread_mutex_unlock (&mutex);
   return val;
