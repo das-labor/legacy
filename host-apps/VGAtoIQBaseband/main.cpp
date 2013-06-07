@@ -112,7 +112,8 @@ int pboMode = 0;
 int cutofright = 1;
 int cutofbottom = 3;
 int fps = 0;
-
+float max_baseband_freq = 3810000.0f;
+int conv_depth = 17;
 
 pthread_mutex_t exit_mutex;
 pthread_t 	input_thread;
@@ -174,7 +175,7 @@ int main(int argc, char **argv)
   
     for(i=1; i < argc; i++)
     {
-        if( strcmp(argv[i],"-cutofright")==0 ){
+        if( strcmp(argv[i],"--cutofright")==0 || strcmp(argv[i],"-r")==0 ){
         	if(argc > (i+1)){
         	    if(!(argv[i+1][0] == '-')){
         	        cutofright=atoi(argv[i+1]);
@@ -183,7 +184,7 @@ int main(int argc, char **argv)
         	}
         }
         
-        if( strcmp(argv[i],"-cutofbottom")==0 ){
+        if( strcmp(argv[i],"--cutofbottom")==0 || strcmp(argv[i],"-b")==0 ){
         	if(argc > (i+1)){
         	    if(!(argv[i+1][0] == '-')){
         	        cutofbottom=atoi(argv[i+1]);
@@ -192,7 +193,7 @@ int main(int argc, char **argv)
         	}
         }
         
-        if( strcmp(argv[i],"-v")==0 || strcmp(argv[i],"-verbose")==0){
+        if( strcmp(argv[i],"-v")==0 || strcmp(argv[i],"--verbose")==0){
         	beVerbose = true;
         }
 
@@ -201,7 +202,7 @@ int main(int argc, char **argv)
         	return 0;
         }
         
-        if( strcmp(argv[i],"-pclk")==0 ){
+        if( strcmp(argv[i],"--pclk")==0 || strcmp(argv[i],"-p")==0 ){
         	if(argc > (i+1)){
         	    if(!(argv[i+1][0] == '-')){
         	        msps=atof(argv[i+1]);
@@ -210,10 +211,28 @@ int main(int argc, char **argv)
         	}
         }
         
-        if( strcmp(argv[i],"-nofilter")==0 ){
+        if( strcmp(argv[i],"--freq")==0 || strcmp(argv[i],"-f")==0 ){
+        	if(argc > (i+1)){
+        	    if(!(argv[i+1][0] == '-')){
+        	        max_baseband_freq=atof(argv[i+1]);
+        	        i++;
+        	    }
+        	}
+        }  
+        
+        if( strcmp(argv[i],"-d")==0 || strcmp(argv[i],"--depth")==0 ){
+        	if(argc > (i+1)){
+        	    if(!(argv[i+1][0] == '-')){
+        	        conv_depth=atoi(argv[i+1]);
+        	        i++;
+        	    }
+        	}
+        }    
+        
+        if( strcmp(argv[i],"--nofilter")==0 || strcmp(argv[i],"-n")==0 ){
         	forcefragmentoff = false;
         }
-        if( strcmp(argv[i],"-t")==0 ){
+        if( strcmp(argv[i],"-t")==0 || strcmp(argv[i],"--testpattern")==0 ){
         	testpattern = true; 
         }
 #if 0
@@ -293,8 +312,6 @@ int main(int argc, char **argv)
     	    cout << "set mode \"newmode\" on VGA " << endl;
 #endif
 #endif
-    if( beVerbose )
-    		cout << "glutInit" << endl;
     // GLUT stuff for windowing
     // initialization openGL window.
     // it is called before any other GLUT routine
@@ -435,7 +452,7 @@ int main(int argc, char **argv)
     }
     
     if( fragmentisSupported && !forcefragmentoff)
-    	    setShaders( screenWidth, screenHeight, beVerbose, 3810000.0f, (float)msps*1000000.0f, 17);
+    	    setShaders( screenWidth, screenHeight, beVerbose, max_baseband_freq, (float)msps*1000000.0f, conv_depth);
    
     pthread_mutex_init( &exit_mutex, NULL );
     pthread_create( &input_thread, NULL, input_thread_func, NULL ); 
@@ -622,7 +639,8 @@ void *input_thread_func( void* in_ptr )
 /* input queue */
 {
     static int cnt = 0;
-    
+    	if( beVerbose )
+    		cout << "input thread started" << endl;
 	while( 1 )
 	{
 	   if( !BufferFull() )
@@ -685,8 +703,8 @@ void *input_thread_func( void* in_ptr )
 		    BufferIn_Finish();
 		    if( read_bytes < DATA_SIZE )
 		    {
-			    cout << "WARN: couldn't read enough" << endl;
-			    cout << "WARN: exit now ?" << endl;
+		    	    if( beVerbose )
+		    	    	    cout << "read from stdin failed" << endl;
 			    memset( ptr + read_bytes, 0 , DATA_SIZE - read_bytes );
 			    pthread_mutex_lock (&exit_mutex);
 			    exit_now = true;
@@ -845,11 +863,14 @@ void displayCB()
         {
         	if( BufferEmpty() )
         	{
+        		if( beVerbose )
+        			cout << "Buffer empty ! waiting...\n" << endl;
         		usleep( 500000.0f / fps );
         		/* still empty ? drop frame */
         		if( BufferEmpty() )
         		{
-        			fprintf( stderr, "Buffer underrun ! Skipping frame.\n" );
+        			if( beVerbose )
+        				cout << "Buffer underrun ! Skipping frame.\n" << endl;
         			memset( ptr, 0, DATA_SIZE );
         			BufferSkip();
         		}
@@ -892,7 +913,7 @@ void displayCB()
         	/* still empty ? drop frame */
         	if( BufferEmpty() )
         	{
-        		fprintf( stderr, "Buffer underrun ! Skipping frame.\n" );
+        		cout << "Buffer underrun ! Skipping frame.\n" << endl;
         		memset( imageData, 0, DATA_SIZE);
         		
         		BufferSkip();
@@ -918,7 +939,7 @@ void displayCB()
         t1.stop();
         updateTime = t1.getElapsedTimeInMilliSec();
     }
-
+    //cout << "copy time " << copyTime << "ms , updatetime " << updateTime << "ms" << endl;
     // clear buffer
     glClear(GL_COLOR_BUFFER_BIT); // | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT
 
@@ -951,7 +972,7 @@ void displayCB()
     glPopMatrix();
 
     glutSwapBuffers();
-    glutPostRedisplay();
+    //glutPostRedisplay();
 }
 
 void reshapeCB(int width, int height)
