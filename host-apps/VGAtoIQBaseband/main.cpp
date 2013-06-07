@@ -247,7 +247,7 @@ int main(int argc, char **argv)
 #endif        
     }
 
-    fps = (float)(IMAGE_WIDTH * 7 * IMAGE_HEIGHT) / msps;
+    fps = (1000000.0f * msps) / (float)(IMAGE_WIDTH * 7 * IMAGE_HEIGHT);
     
     if( beVerbose ){
     	cout << "hsync: " << cutofright << " vsync: " << cutofbottom << endl;
