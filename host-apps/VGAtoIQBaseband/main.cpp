@@ -251,8 +251,10 @@ int main(int argc, char **argv)
     
     if( beVerbose ){
     	cout << "hsync: " << cutofright << " vsync: " << cutofbottom << endl;
-	cout << "msps: " << msps << " fps: " << fps << endl;
+	cout << "Pixelclock: " << msps << " fps: " << fps << endl;
 	cout << "testpattern: " << testpattern << endl;
+	cout << "force fragment off: " << forcefragmentoff << endl;
+	cout << "convolutional depth: " << conv_depth << endl;
     }
     screenWidth = (IMAGE_WIDTH - cutofright) * 7;
     screenHeight = IMAGE_HEIGHT - cutofbottom;
@@ -315,6 +317,7 @@ int main(int argc, char **argv)
     // GLUT stuff for windowing
     // initialization openGL window.
     // it is called before any other GLUT routine
+
     glutInit(&argc, argv);
 
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_ALPHA); // display mode
@@ -323,6 +326,7 @@ int main(int argc, char **argv)
 #ifdef _WITH_XRANDR
     glutInitWindowPosition(new_config.pos_x, new_config.pos_y);           // window location
 #endif
+
 
     // Window will not displayed until glutMainLoop() is called
     // it returns a unique ID
@@ -333,7 +337,7 @@ int main(int argc, char **argv)
     glutDisplayFunc(displayCB);
     glutIdleFunc(idleCB);                       // redraw only every given millisec
     glutReshapeFunc(reshapeCB);
-    glutKeyboardFunc(keyboardCB);
+   // glutKeyboardFunc(keyboardCB);
 
     // init GL
     glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
@@ -355,11 +359,10 @@ int main(int argc, char **argv)
    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, IMAGE_WIDTH, IMAGE_HEIGHT, 0, PIXEL_FORMAT, GL_FLOAT, (GLvoid*)imageData); //GL_RGBA12
     glBindTexture(GL_TEXTURE_2D, 0);
-
+ 
 #ifdef _WIN32
 
     // check PBO is supported by your video card
-
     if(glutExtensionSupported("GL_ARB_pixel_buffer_object"))
     {
         // get pointers to GL functions
@@ -391,12 +394,13 @@ int main(int argc, char **argv)
     
 #else // for linux, do not need to get function pointers, it is up-to-date
 
+    //glutExtensionSupported only works with an active window !
     if(glutExtensionSupported("GL_ARB_pixel_buffer_object"))
     {
-
         pboisSupported = true;
         pboMode = PBO_COUNT;
-        //cout << "Video card supports GL_ARB_pixel_buffer_object." << endl;
+        if( beVerbose )
+        	cout << "Video card supports GL_ARB_pixel_buffer_object." << endl;
     }
     else
     {
@@ -405,13 +409,14 @@ int main(int argc, char **argv)
         if( beVerbose )
         	cout << "Video card does NOT support GL_ARB_pixel_buffer_object." << endl;
     }
-    
+
 #endif
 
     if(glutExtensionSupported("GL_ARB_fragment_shader"))
     {
         fragmentisSupported = true;
-        //cout << "Video card supports GL_ARB_fragment_shader." << endl;
+        if( beVerbose )
+        	cout << "Video card supports GL_ARB_fragment_shader." << endl;
     }
     else
     {
@@ -467,28 +472,34 @@ int main(int argc, char **argv)
     {
     	usleep( 5000 );
     }
-    glutMainLoop(); /* Start GLUT event-processing loop */
+    glutMainLoop(); // Start GLUT event-processing loop
     
     pthread_mutex_destroy( &exit_mutex );
     
     return 0;
 }
 
+        
 ///////////////////////////////////////////////////////////////////////////////
 // print help message
 ///////////////////////////////////////////////////////////////////////////////
 void usage(void)
 {
-	cout << "Usage:\nvgatoiqbaseband [inputfile] [args]\nargs can be:" << endl;
-	cout << "\t-h , --help\t\tthis message" << endl;	
-	cout << "\t-v , --verbose\t\tbe verbose" << endl;	
-	cout << "\t-nofilter\t\tturn off fragment-shader" << endl;
-	cout << "\t-pclk <x>\t\tset the pixel clock rate to x MSps" << endl;	
+	cout << "Usage:\nvgatoiqbaseband [args]\n" << endl;
+	cout << "\t-h , --help\t\t\tthis message" << endl;	
+	cout << "\t-v , --verbose\t\t\tbe verbose" << endl;	
+	cout << "\t-n , --nofilter\t\t\tturn off fragment-shader" << endl;
+	cout << "\t-p <f>, --pclk <f>\t\tset the pixel clock rate to x MSps" << endl;	
+	cout << "\t-f <f>, --freq <f>\t\tset the maximum baseband frequency" << endl;	 
+	cout << "\t-d <x>, --depth <x>\t\tset the convolutional filter depth" << endl;	 
+	  
 #ifdef _WITH_XRANDR
-	cout << "\t-cutofright <x>\t\tdo not display x elements at the right screen border\tdefault: 1 (7 pixel)" << endl;	
-	cout << "\t-cutofbottom <x>\t\tdo not display x elements at the bottom screen border\tdefault: 2" << endl;	
+	cout << "\t-r <x>, --cutofright <x>\t\tdo not display x elements at the right screen border\tdefault: 1 (7 pixel)" << endl;	
+	cout << "\t-b <x>, --cutofbottom <x>\t\tdo not display x elements at the bottom screen border\tdefault: 2" << endl;	
 #endif
-	cout << "\t-t\t\t\tdo not read inputfile, generate test patterns" << endl;		
+	cout << "\t-t , --testpattern\t\tdo not read from stdin, generate test patterns" << endl;		
+	cout << "\t <x> is Integer, <f> is float" << endl;	 
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -507,7 +518,11 @@ bool initSharedMem()
     forcefragmentoff = false;
     exit_now = false;
     
-    BufferInit( DATA_SIZE );
+    if( BufferInit( DATA_SIZE ) )
+    {
+    	cout << "out of memory!" << endl;
+    	exit(1);
+    }
     //inputfile = new char(255);
     //memset(inputfile, 0, 255);
 

@@ -10,7 +10,7 @@ void 	BufferOut_Finish( void );
 int 	BufferFull( void );
 int 	BufferEmpty( void );
 void 	BufferClean( void );
-void 	BufferInit( int bufsize );
+int 	BufferInit( int bufsize );
 void 	BufferSkip( void );
 #ifdef __cplusplus
 }

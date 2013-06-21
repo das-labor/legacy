@@ -15,14 +15,17 @@ struct Buffer {
 
 pthread_mutex_t mutex;
 
-void BufferInit( int bufsize )
+int BufferInit( int bufsize )
 {
 	int i;
 	for( i = 0; i < BUFFER_SIZE; i ++ )
 	{
 		buffer.data[i] = malloc( bufsize );
+		if( !buffer.data[i] )
+			return 1;
 	}
 	pthread_mutex_init ( &mutex, NULL );
+	return 0;
 }
 
 void BufferClean( void )
