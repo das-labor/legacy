@@ -17,7 +17,7 @@
 #define laborhack 0
 
 //ADCSamplesPerPeriod mode
-#define USE_STATIC_ADCSamplesPerPeriod 1
+//this value must be smaller than 256 ! since DMA controller only supports 255 transfers at once
 #define ADCSAMPLESPERPERIOD 128
 #define ADCSAMPLESSHIFT 7
 
@@ -26,10 +26,6 @@
 
 //offset compensation for ADC
 #define ADC_OFFSET_CAL 1
-
-//powermeter samplebuffer size (allows up to POWERMETER_SAMPLEBUFF samples per period)
-//this value must be smaller than 256 ! since DMA controller only supports 255 transfers at once
-#define POWERMETER_SAMPLEBUFF 255		//this will use POWERMETER_SAMPLEBUFF*36 bytes of RAM
 
 #define NET_FREQ 50		//set freq of Powerline
 
@@ -57,7 +53,7 @@
 #define MCP_INT_VEC PORTD_INT0_vect
 #define SETUP_CAN_INT() PORTD.PIN1CTRL = PORT_OPC_TOTEM_gc | PORT_ISC_LEVEL_gc; PORTD.INTCTRL = (PORTD.INTCTRL & (~(PORT_INT1LVL_gm | PORT_INT0LVL_gm))) | PORT_INT1LVL_OFF_gc | PORT_INT0LVL_MED_gc;
 
-#define EEP_MY_ADDR 0x00
+#define EEPROM_LAP_ADDR 0x00
 
 #define XMEGA_SPI      SPID
 #define AVR_SPI_PORT  PORTD
@@ -66,7 +62,7 @@
 #define AVR_MISO_BIT      6
 #define AVR_SCK_BIT       7
 
-#if POWERMETER_SAMPLEBUFF * 36 > (15500 - (CAN_TX_BUFFER_SIZE + CAN_RX_BUFFER_SIZE) * 13)
+#if ADCSAMPLESPERPERIOD * 36 > (15500 - (CAN_TX_BUFFER_SIZE + CAN_RX_BUFFER_SIZE) * 13)
 	#error to less RAM, decrease POWERMETER_SAMPLEBUFF or CAN_TX_BUFFER_SIZE or CAN_RX_BUFFER_SIZE
 #endif
 

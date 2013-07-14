@@ -73,6 +73,41 @@ void Interrupt_Init(void)
 	sei();	//global allow interrupts
 }
 
+
+/* User defined RTC Init */
+void RTC_Init( void )
+{
+	/* Security Signature to modify clock */
+	//CCP = CCP_IOREG_gc;
+
+	/* Turn on internal 32kHz. */
+	//OSC.CTRL |= OSC_RC32KEN_bm;
+
+	do {
+		/* Wait for the 32kHz oscillator to stabilize. */
+	} while ((OSC.STATUS & OSC_RC32KRDY_bm) == 0);
+
+
+	/* Set internal 32kHz oscillator as clock source for RTC. */
+	CLK.RTCCTRL = CLK_RTCSRC_RCOSC_gc | CLK_RTCEN_bm;
+
+	do {
+		/* Wait until RTC is not busy. */
+	} while (RTC_Busy());
+
+	/* Configure RTC period to 1 second. */
+	RTC_Initialize(RTC_CYCLES_1S, 0, 0, RTC_PRESCALER_DIV1_gc);
+
+	/* Enable overflow interrupt. */
+	RTC_SetIntLevels(RTC_OVFINTLVL_LO_gc, RTC_COMPINTLVL_OFF_gc);
+
+}
+
+ISR(RTC_OVF_vect)
+{
+	powermeter.seconds_uptime++;
+}
+
 int main(void)
 {
 	LED_initPORTC();  // LED Ports als Ausgang
@@ -88,24 +123,30 @@ int main(void)
 	Interrupt_Init();
 
 	setERROR(0);
-	can_send_packet = 0;
 
 	//init watchdog
 	WDT_EnableAndSetTimeout(WDT_PER_64CLK_gc);
-
-	powermeter_SetSampleratePerPeriod(ADCSAMPLESPERPERIOD);	//configure ADCSAMPLESPERPERIOD in config.h
+	
+	RTC_Init();					//enable 1sec interrupt
 	powermeter_Start();
 
 	uint16_t x = 0;
 	while (1) {
 		can_handler();
+		WDT_Reset();
+		
 		powermeter_docalculations();
-		if (can_send_packet)
+		WDT_Reset();
+		
+		can_handler();
+		WDT_Reset();
+		
+		if( checkforcanupdate() )
 		{
 			can_createDATAPACKET();
-			can_send_packet = 0;
 		}
 		WDT_Reset();
+		
 		if ((RTC.CNT & 0x00ff) >= x)
 			x = RTC.CNT;
 		else
@@ -114,4 +155,3 @@ int main(void)
 		}
 	}
 }
-
