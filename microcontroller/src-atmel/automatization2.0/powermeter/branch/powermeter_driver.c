@@ -1,8 +1,22 @@
-/* powermeter 
- ADC samples are loaded to powermetersamplebuffer[0] or powermetersamplebuffer[1] using DMA
- after that they will be converted and added to powerdraw[IN_PROGRESS]
- on every second powerdraw[] will be updated:
-	 powerdraw[IN_PROGRESS] -> 1s -> powerdraw[LAST_SECOND] -> 60s -> powerdraw[LAST_MINUTE] -> ... */
+/*
+*
+*    Powermeter driver for XMega
+*    Copyright (C) 2013  Patrick Rudolph <siro@das-labor.org>
+*
+*    This program is free software; you can redistribute it and/or modify it under the terms 
+*    of the GNU General Public License as published by the Free Software Foundation; either version 3 
+*    of the License, or (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+*    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*    See the GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License along with this program; 
+*    if not, see <http://www.gnu.org/licenses/>.
+*
+*    This program uses the Xmega ADC and DMA and Timer to measure the power, voltage and current on a 3phase powerline 
+*/
+
 #include <stdio.h>
 
 #include "tc_driver.h"
