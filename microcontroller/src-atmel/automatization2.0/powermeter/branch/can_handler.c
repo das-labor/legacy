@@ -50,7 +50,7 @@ void can_handler()
 	}
 }
 
-void read_can_addr()
+inline void read_can_addr()
 {
 	myaddr = eeprom_read_byte(EEPROM_LAP_ADDR);
 }
@@ -85,6 +85,7 @@ void can_createDATAPACKET()
 		(void *) &powermeter.powerdrawLastSecond.c1.E,
 		(void *) &powermeter.powerdrawLastSecond.c2.E,
 		(void *) &powermeter.powerdrawLastSecond.c3.E,
+		(void *) &powermeter.seconds_uptime,
 	};
 
 	static can_message msg = {0, 0, PORT_POWERMETER, PORT_POWERMETER, 4, {0, 0, 0, 0}};
@@ -93,16 +94,9 @@ void can_createDATAPACKET()
 
 	msg.addr_src = myaddr;
 	msg.dlc = 4;
-	msg.data[0] = (uint8_t) ((powermeter.samplesPerSecondDone >> 8) & 0xff);   //counter (0=start message)
-	//msg.data[1] = id;  //TODO
-	msg.data[1] = (uint8_t) (powermeter.samplesPerSecondDone & 0xff);
-	//msg.data[2] = (uint8_t)((powermeter.adcsamples>>8)&0xff);
-	//msg.data[3] = (uint8_t)(powermeter.adcsamples&0xff);
-	//msg.data[4] = powermeter.ADCSamplesPerPeriod;
-	msg.data[2] = (uint8_t) ((powermeter.timercc1clks >> 8) & 0xff);
-	msg.data[3] = (uint8_t) (powermeter.timercc1clks & 0xff);
-	powermeter.timercc1clks = 0;
-	powermeter.adcsamples = 0;
+	*(uint16_t *)&msg.data[0] = ADCSAMPLESPERPERIOD * NET_FREQ;
+	msg.data[2] = 0;
+	msg.data[3] = 0;
 
 	txmsg = can_buffer_get();
 	memcpy(txmsg, &msg, sizeof(can_message));
