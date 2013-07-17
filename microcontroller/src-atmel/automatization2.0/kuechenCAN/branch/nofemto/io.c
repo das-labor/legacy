@@ -11,6 +11,8 @@
 // Taster            1 = pressed, 0 = released
 // Türkontakt        1 = on, 0 = off
 
+static void keypress(void);
+
 static struct t_pin_parameter {
 	uint8_t state;
 	int8_t debounce_count;
@@ -26,7 +28,7 @@ void init_io()
 {
 	// ############ Küchenlicht ################
 	// RGB LED im Taster
-	DDR_RGBLED |= R_LED | G_LED | B_LED; // Ausgang
+	DDR_RGBLED |= RGBLED_R | RGBLED_G | RGBLED_B; // Ausgang
 	// Taster
 	DDRC &= ~_BV(PC0); // Eingang
 	PORTC |= _BV(PC0); // pullup
@@ -46,11 +48,11 @@ static void lamp_out(void *num, uint8_t val) {
 	switch (i) {
 		case F_LED:
 			if (val) {
-				PORT_LED |= R_LED;
-				PORT_LED &= ~(G_LED);
+				PORT_LED |= RGBLED_R;
+				PORT_LED &= ~(RGBLED_G);
 			} else {
-				PORT_LED |= G_LED;
-				PORT_LED &= ~(R_LED);
+				PORT_LED |= RGBLED_G;
+				PORT_LED &= ~(RGBLED_R);
 			}
 			break;
 	}
@@ -135,7 +137,7 @@ void switch_handler() {
 
 #include "can/can.h"
 
-void keypress() {
+void keypress(void) {
 	static uint8_t counter_0;
 	static uint8_t clicked_0 = 0;
 	static uint8_t held_0    = 0;
@@ -165,7 +167,7 @@ void keypress() {
 	}
 	if (clicked_0 == 1)
 	{
-		if (PORTC & R_LED)
+		if (PORTC & RGBLED_R)
 		{
 			lamp_out(0, 0);
 		}
