@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <util/delay.h>
 
 #include "config.h"
 #include "led_driver.h"
@@ -31,10 +32,12 @@ void pushDot(dot_t *dot)
 // need some delay after push
 void updateDots()
 {
+	_delay_us(6);
 	for (uint8_t i = 0; i < 5; i++)
 	{
 		RGB_PORT |= RGB_DATA;
 		RGB_PORT &= ~RGB_DATA;
 	}
+	_delay_ms(50);
 }
 

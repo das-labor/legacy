@@ -1,11 +1,11 @@
 #include <stdint.h>
-#include <util/delay.h>
+
 
 #include "config.h"
 #include "led_driver.h"
 #include "animationen.h"
 
-uint8_t animation = 8;
+uint8_t animation = 2;
 
 static void makeC(dot_t *point)
 {
@@ -18,19 +18,24 @@ void do_ani()
 {
 	switch (animation)
 	{
-		case 0: {
+		case 0: { // black
+			dot_t mydot = {0, 0, 0};
+			for (uint8_t i = 0; i < LAMPS; i++) {
+				pushDot(&mydot);
+			}
+			updateDots();
+		}
+		break;
+		case 1: {
 			dot_t mydot = {0, 0, 0};
 			for (uint8_t i = 0; i < LAMPS; i++) {
 				makeC(&mydot);
-				//setWhite(&mydot, i);
 				pushDot(&mydot);
 			}
-			_delay_us(5);
 			updateDots();
-			_delay_ms(70);
 		}
 		break;
-		case 8: {
+		case 2: {
 			static const uint16_t lightblob[] = {0x003f, 0x009f, 0x00ff, 0x01ff, 0x03ff, 0x06ff, 0x0fff, 0x0fff, 0x06ff, 0x3ff, 0x01ff, 0x00ff, 0x009f, 0x003f};
 			//static const uint8_t lightblob[] = {0x20, 0x70, 0xa0, 0xb0, 0xd0, 0xf0, 0xff, 0xff, 0xf0, 0xd0, 0xb0, 0xa0, 0x70, 0x20};
 			static uint8_t start[] = {0, LAMPS, 25};
@@ -62,9 +67,7 @@ void do_ani()
 			start[1] = count_b >> 8;
 			start[2] = count_g >> 8;
 
-			_delay_us(3);
 			updateDots();
-			_delay_ms(50);
 		}
 		break;
 		// zufällige farben an zufälligen stellen einfügen

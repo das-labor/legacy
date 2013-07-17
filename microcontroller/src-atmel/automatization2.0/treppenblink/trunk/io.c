@@ -4,6 +4,7 @@
 #include "io.h"
 #include "netvar/netvar.h"
 #include "netvar/netvar_io.h"
+#include "animationen.h"
 
 // the inverted parameter is used to normalize all inputs
 // before they are stored in the state parameter and passed to the changed event.
@@ -58,7 +59,7 @@ static netvar_desc *out_netvars[NUM_INPUTS];
 
 void switch_netvars_init() {
 	out_netvars[0] = netvar_register(0x0100, 0x2f, 1); // Taster Vortragsraum Licht
-//	out_netvars[1] = netvar_register(0x000A, 0x00, 1); // Bewegung
+//	out_netvars[1] = netvar_register(0x000A, 0x00, 1); // Taster Treppenblink
 }
 
 #define NV_IDX_LAMP_CONTROLLER_VORTRAG 0x0100
@@ -71,6 +72,18 @@ static void input_changed_event(uint8_t num, uint8_t val) {
 
 #ifndef NO_NETVAR
 	netvar_write(out_netvars[num], &val);
+#else
+// Taster Treppenblink
+	if (num && val) {
+		if (animation < 3)
+		{
+			animation++;
+		}
+		else
+		{
+			animation = 0;
+		}
+	}
 #endif
 }
 
