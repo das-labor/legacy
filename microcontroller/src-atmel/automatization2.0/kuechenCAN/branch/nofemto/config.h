@@ -25,9 +25,9 @@
 #define NO_NETVAR
 
 // RGB LED Taster Küchenlicht
-#define LED_R _BV(PC1)
-#define LED_G _BV(PC2)
-#define LED_B _BV(PC3)
+#define RGBLED_R _BV(PC1)
+#define RGBLED_G _BV(PC2)
+#define RGBLED_B _BV(PC3)
 #define PORT_RGBLED PORTC
 #define DDR_RGBLED DDRC
 
