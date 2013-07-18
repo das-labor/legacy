@@ -47,12 +47,16 @@ powermeter_t powermeter;
 
 ISR(DMA_CH0_vect)
 {
-	dma1_done++;	
+	dma1_done++;
+	// reenable the channel
+	DMA_EnableChannel(&DMA.CH0);	
 }
 
 ISR(DMA_CH1_vect)
 {
 	dma2_done++;
+	// reenable the channel
+	DMA_EnableChannel(&DMA.CH1);
 }
 
 
@@ -74,17 +78,17 @@ int powermeter_Start()
 	DMA_ResetChannel(&DMA.CH0);
 	DMA_SetIntLevel(&DMA.CH0, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
 	
-	DMA_SetupBlock( &DMA.CH0,			//channel 0
-		(void const *) &ADCA.CH0RES,		//source-addr
-		DMA_CH_SRCRELOAD_BLOCK_gc,		//srcDirection reload after each block
-		DMA_CH_SRCDIR_INC_gc,			//srcDirection increment after each byte
+	DMA_SetupBlock( &DMA.CH0,				//channel 0
+		(void const *) &ADCA.CH0RES,			//source-addr
+		DMA_CH_SRCRELOAD_BLOCK_gc,			//srcDirection reload after each block
+		DMA_CH_SRCDIR_INC_gc,				//srcDirection increment after each byte
 		(void *) &powermeter.samplebuffer.u[0],	//set destAddr
-		DMA_CH_DESTRELOAD_NONE_gc,		//reload destAddr after transaction,DMA_CH_DESTRELOAD_TRANSACTION_gc
-		DMA_CH_DESTDIR_INC_gc,			//destDirection increment destination memory addr
-		sizeof(int16_t) * 3,			//blockSize in bytes >= burstlen
-		DMA_CH_BURSTLEN_2BYTE_gc,		//burstMode 2byte per burst
-		0,					//repeat count times
-		true );					//repeat
+		DMA_CH_DESTRELOAD_TRANSACTION_gc,		//reload destAddr after transaction
+		DMA_CH_DESTDIR_INC_gc,				//destDirection increment destination memory addr
+		sizeof(int16_t) * 3,				//blockSize in bytes >= burstlen
+		DMA_CH_BURSTLEN_2BYTE_gc,			//burstMode 2byte per burst
+		ADCSAMPLESPERPERIOD,				//repeat ADCSAMPLESPERPERIOD times
+		true );						//repeat
 
 	DMA_SetTriggerSource(&DMA.CH0, DMA_CH_TRIGSRC_ADCA_CH4_gc);	//Trigger on ADCA_CH0 - 3
 	DMA_EnableSingleShot(&DMA.CH0);
@@ -93,17 +97,17 @@ int powermeter_Start()
 	DMA_DisableChannel(&DMA.CH1);
 	DMA_ResetChannel(&DMA.CH1);
 	DMA_SetIntLevel(&DMA.CH1, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
-	DMA_SetupBlock( &DMA.CH1,				//channel 1
-			(void const *) &ADCB.CH0RES,		//source-addr
-			DMA_CH_SRCRELOAD_BLOCK_gc,		//srcDirection reload after each block
-			DMA_CH_SRCDIR_INC_gc,			//srcDirection increment after each byte
-			(void *) &powermeter.samplebuffer.i1[0],//set destAddr
-			DMA_CH_DESTRELOAD_NONE_gc,		//reload destAddr after transaction
-			DMA_CH_DESTDIR_INC_gc,			//destDirection increment destination memory addr
-			sizeof(int16_t) * 3,			//blockSize in bytes >= burstlen
-			DMA_CH_BURSTLEN_2BYTE_gc,		//burstMode 2byte per burst
-			0,					//repeat count times
-			true );					//repeat
+	DMA_SetupBlock( &DMA.CH1,					//channel 1
+			(void const *) &ADCB.CH0RES,			//source-addr
+			DMA_CH_SRCRELOAD_BLOCK_gc,			//srcDirection reload after each block
+			DMA_CH_SRCDIR_INC_gc,				//srcDirection increment after each byte
+			(void *) &powermeter.samplebuffer.i1[0],	//set destAddr
+			DMA_CH_DESTRELOAD_TRANSACTION_gc,		//reload destAddr after transaction
+			DMA_CH_DESTDIR_INC_gc,				//destDirection increment destination memory addr
+			sizeof(int16_t) * 3,				//blockSize in bytes >= burstlen
+			DMA_CH_BURSTLEN_2BYTE_gc,			//burstMode 2byte per burst
+			ADCSAMPLESPERPERIOD,				//repeat ADCSAMPLESPERPERIOD times
+			true );						//repeat
 
 	DMA_SetTriggerSource(&DMA.CH1, DMA_CH_TRIGSRC_ADCB_CH4_gc);	//Trigger on ADCB_CH2
 	DMA_EnableSingleShot(&DMA.CH1);
