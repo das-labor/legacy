@@ -8,6 +8,11 @@ typedef struct
 	char 		outputname[255];
 	int 		pos_x;
 	int 		pos_y;
+	int 		hTotal;
+	int 		width;
+	int		height;
+	int 		vTotal;
+	int		dotClock;
 	int 		mode;
 } vga_t;
 
