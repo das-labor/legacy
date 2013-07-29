@@ -45,9 +45,7 @@
 #include "Timer.h"
 #include "fifo.h"
 
-#ifdef _WITH_XRANDR
 #include "xrandr.h"
-#endif
 
 using std::stringstream;
 using std::cout;
@@ -77,11 +75,7 @@ void *input_thread_func( void* in_ptr );
 const float  CAMERA_DISTANCE = sqrt(3.0f);
 const int    TEXT_WIDTH      = 8;
 const int    TEXT_HEIGHT     = 13;
-const int    IMAGE_WIDTH = 200;
-const int    IMAGE_HEIGHT = 800;
 const int    CHANNEL_COUNT = 2;
-const int    BYTE_PER_CHANNEL = 4;
-const int    DATA_SIZE = IMAGE_WIDTH * IMAGE_HEIGHT * CHANNEL_COUNT * BYTE_PER_CHANNEL;
 const GLenum PIXEL_FORMAT = GL_RG;
 #define PBO_COUNT 2
 
@@ -93,8 +87,7 @@ GLuint textureId;                   // ID of texture
 GLubyte* imageData = 0;             // pointer to texture buffer
 GLubyte* testpatternA = 0;
 GLubyte* testpatternB = 0;
-//char *inputfile = 0;
-
+    
 int dataready = 0;
 int screenWidth;
 int screenHeight;
@@ -102,15 +95,17 @@ int enableconvolutional;
 float cameraAngleX;
 float cameraAngleY;
 float cameraDistance;
-bool pboisSupported;
-bool fragmentisSupported;
-bool forcefragmentoff;
-bool beVerbose;
-bool testpattern;
-bool exit_now;
+bool pboisSupported = false;
+bool fragmentisSupported = false;
+bool forcefragmentoff = false;
+bool beVerbose = false;
+bool testpattern = false;
+bool exit_now = false;
 int pboMode = 0;
-int cutofright = 1;
+int cutofright = 3;
 int cutofbottom = 3;
+int datasize;
+int bytesperchannel=4;
 int fps = 0;
 float max_baseband_freq = 3810000.0f;
 int conv_depth = 17;
@@ -118,9 +113,7 @@ int conv_depth = 17;
 pthread_mutex_t exit_mutex;
 pthread_t 	input_thread;
 
-#ifdef _WITH_XRANDR
 vga_t initial_config;
-#endif
 
 Timer timer, t1, t2;
 float copyTime, updateTime;
@@ -157,21 +150,42 @@ PFNGLXSWAPINTERVALEXTPROC pglXSwapIntervalEXT = 0;
 int main(int argc, char **argv)
 {
     int i;
-    float msps = 64.0;
     
-#ifdef _WITH_XRANDR    
-    vga_t new_config;
-#endif
+#ifdef _WIN32
+	#warn modesetting not supported  
+#else
 
-    if( argc < 2 ){
-    	    cout << "No args given." << endl;
-    	    usage();
-    	    return -1;
+    if( init_xrandr() )
+    {
+    	cout << "failed to init xrandr" << endl;	    
+    	exit(1);
+    }
+    
+    if( find_VGA_output( &initial_config ) ){
+    	    cout << "Error: couldn't find VGA output" << endl;
+    	    exit(1);
+    }
+    
+    if( initial_config.width == 0 || initial_config.height == 0 ){
+    	    cout << "Error: VGA port seems to be unconfigured." << endl;
+    	    exit(1);
+    }
+    
+    if( beVerbose )
+    {
+    	    cout << "width " << initial_config.width << " height " << initial_config.height << endl;
+    	    cout << "hTotal " << initial_config.hTotal << " vTotal " << initial_config.vTotal << " dotClock " << initial_config.dotClock << endl;
+	    cout << "found port: " << initial_config.outputname << " @ " << initial_config.pos_x << "," << initial_config.pos_y << " mode: " << initial_config.mode << endl;
+        if( !strlen(initial_config.activemode) )
+            cout << "cannot detect mode. no mode set ?" << endl;
     }
 
-    initSharedMem();
-    // register exit callback
-    atexit(exitCB);
+#endif
+
+    cutofright = initial_config.hTotal - initial_config.width;
+    cutofbottom = initial_config.vTotal - initial_config.height;
+    fps = (float) initial_config.dotClock /  ((float) initial_config.hTotal * (float) initial_config.vTotal); 
+
   
     for(i=1; i < argc; i++)
     {
@@ -193,6 +207,16 @@ int main(int argc, char **argv)
         	}
         }
         
+        if( strcmp(argv[i],"--datasize")==0 || strcmp(argv[i],"-d")==0 ){
+        	if(argc > (i+1)){
+        	    if(!(argv[i+1][0] == '-')){
+        	        bytesperchannel=atoi(argv[i+1]);
+        	        i++;
+        	    }
+        	}
+        }
+        
+        
         if( strcmp(argv[i],"-v")==0 || strcmp(argv[i],"--verbose")==0){
         	beVerbose = true;
         }
@@ -205,7 +229,7 @@ int main(int argc, char **argv)
         if( strcmp(argv[i],"--pclk")==0 || strcmp(argv[i],"-p")==0 ){
         	if(argc > (i+1)){
         	    if(!(argv[i+1][0] == '-')){
-        	        msps=atof(argv[i+1]);
+        	        initial_config.dotClock=atoi(argv[i+1]);
         	        i++;
         	    }
         	}
@@ -230,60 +254,30 @@ int main(int argc, char **argv)
         }    
         
         if( strcmp(argv[i],"--nofilter")==0 || strcmp(argv[i],"-n")==0 ){
-        	forcefragmentoff = false;
+        	forcefragmentoff = true;
         }
         if( strcmp(argv[i],"-t")==0 || strcmp(argv[i],"--testpattern")==0 ){
         	testpattern = true; 
-        }
-#if 0
-        if( strcmp(argv[i],"-i")==0 ){
-        	if(argc > (i+1)){
-        	    if(!(argv[i+1][0] == '-')){
-        	        inputfile = strdup(argv[i+1]); 
-        	        i++;
-        	    }
-        	}
-        }
-#endif        
+        }       
     }
 
-    fps = (1000000.0f * msps) / (float)(IMAGE_WIDTH * 7 * IMAGE_HEIGHT);
+    datasize =  initial_config.hTotal * initial_config.vTotal * CHANNEL_COUNT * bytesperchannel / 7;
+        
+    initSharedMem();
+    // register exit callback
+    atexit(exitCB);
     
     if( beVerbose ){
     	cout << "hsync: " << cutofright << " vsync: " << cutofbottom << endl;
-	cout << "Pixelclock: " << msps << " fps: " << fps << endl;
+	cout << "Pixelclock: " << initial_config.dotClock  << " fps: " << fps << endl;
 	cout << "testpattern: " << testpattern << endl;
 	cout << "force fragment off: " << forcefragmentoff << endl;
 	cout << "convolutional depth: " << conv_depth << endl;
     }
-    screenWidth = (IMAGE_WIDTH - cutofright) * 7;
-    screenHeight = IMAGE_HEIGHT - cutofbottom;
-    
-#ifdef _WITH_XRANDR 
-#ifdef _WIN32
-	#warn modesetting not supported  
-	memset( &new_config, 0, sizeof(vga_t) );
-#else
+    screenWidth = initial_config.width;
+    screenHeight = initial_config.height;
 
-
-    if( init_xrandr() )
-    {
-    	cout << "failed to init xrandr" << endl;	    
-    	exit(1);
-    }
-    
-    if( find_VGA_output( &initial_config ) ){
-    	    cout << "couldn't find VGA port" << endl;
-    	    exit(1);
-    }
-    
-    if( beVerbose )
-    {
-    	    cout << "found port: " << initial_config.outputname << " @ " << initial_config.pos_x << "," << initial_config.pos_y << " mode: " << initial_config.mode << endl;
-        if( !strlen(initial_config.activemode) )
-            cout << "cannot detect mode. no mode set ?" << endl;
-    }
-    
+#if 0    
     memcpy( &new_config, &initial_config, sizeof(vga_t) );
 
     //test if newmode is active, if so remove it
@@ -301,7 +295,7 @@ int main(int argc, char **argv)
     }
 	
     // add new modeline 
-    add_custom_mode( &new_config, msps, screenHeight, cutofright, cutofbottom );
+    add_custom_mode( &new_config, initial_config.dotClock , screenHeight, cutofright, cutofbottom );
     
     if( beVerbose )
     	    cout << "added custom mode: newmode" << endl;
@@ -313,7 +307,7 @@ int main(int argc, char **argv)
     if( beVerbose )
     	    cout << "set mode \"newmode\" on VGA " << endl;
 #endif
-#endif
+
     // GLUT stuff for windowing
     // initialization openGL window.
     // it is called before any other GLUT routine
@@ -321,17 +315,13 @@ int main(int argc, char **argv)
     glutInit(&argc, argv);
 
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_ALPHA); // display mode
-
-    glutInitWindowSize(screenWidth, screenHeight);               // window size
-#ifdef _WITH_XRANDR
-    glutInitWindowPosition(new_config.pos_x, new_config.pos_y);           // window location
-#endif
-
+    glutInitWindowSize(initial_config.width, initial_config.height);               // window size
+    glutInitWindowPosition(initial_config.pos_x, initial_config.pos_y);           // window location
 
     // Window will not displayed until glutMainLoop() is called
     // it returns a unique ID
     glutCreateWindow(argv[0]);     // param is the title of window  
-    //glutFullScreen();
+    glutFullScreen();
 
     // register GLUT callback functions
     glutDisplayFunc(displayCB);
@@ -357,7 +347,14 @@ int main(int argc, char **argv)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, IMAGE_WIDTH, IMAGE_HEIGHT, 0, PIXEL_FORMAT, GL_FLOAT, (GLvoid*)imageData); //GL_RGBA12
+   if( bytesperchannel == 4 )
+   {
+   	   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, initial_config.hTotal/7, initial_config.vTotal, 0, PIXEL_FORMAT, GL_FLOAT, (GLvoid*)imageData); //GL_RGBA12 	   
+   }
+   else
+   {
+   	   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, initial_config.hTotal/7, initial_config.vTotal, 0, PIXEL_FORMAT, GL_BYTE, (GLvoid*)imageData); //GL_RGBA12 	   
+   }
     glBindTexture(GL_TEXTURE_2D, 0);
  
 #ifdef _WIN32
@@ -451,13 +448,13 @@ int main(int argc, char **argv)
 	for(i=0;i<PBO_COUNT;i++){
         	glGenBuffersARB(1, &pboID[i]);
         	glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, pboID[i]);
-        	glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB, DATA_SIZE, 0, GL_STREAM_DRAW_ARB);
+        	glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB, datasize, 0, GL_STREAM_DRAW_ARB);
 	}
         glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
     }
     
-    if( fragmentisSupported && !forcefragmentoff)
-    	    setShaders( screenWidth, screenHeight, beVerbose, max_baseband_freq, (float)msps*1000000.0f, conv_depth);
+    if( fragmentisSupported && !forcefragmentoff )
+    	    setShaders( screenWidth, screenHeight, beVerbose, max_baseband_freq, (float)initial_config.dotClock, conv_depth );
    
     pthread_mutex_init( &exit_mutex, NULL );
     pthread_create( &input_thread, NULL, input_thread_func, NULL ); 
@@ -479,7 +476,6 @@ int main(int argc, char **argv)
     return 0;
 }
 
-        
 ///////////////////////////////////////////////////////////////////////////////
 // print help message
 ///////////////////////////////////////////////////////////////////////////////
@@ -489,11 +485,10 @@ void usage(void)
 	cout << "\t-h , --help\t\t\tthis message" << endl;	
 	cout << "\t-v , --verbose\t\t\tbe verbose" << endl;	
 	cout << "\t-n , --nofilter\t\t\tturn off fragment-shader" << endl;
-	cout << "\t-p <f>, --pclk <f>\t\tset the pixel clock rate to x MSps" << endl;	
 	cout << "\t-f <f>, --freq <f>\t\tset the maximum baseband frequency" << endl;	 
 	cout << "\t-d <x>, --depth <x>\t\tset the convolutional filter depth" << endl;	 
-	  
-#ifdef _WITH_XRANDR
+#if 0
+	cout << "\t-p <f>, --pclk <x>\t\tset the pixel clock rate to x Sps" << endl;	
 	cout << "\t-r <x>, --cutofright <x>\t\tdo not display x elements at the right screen border\tdefault: 1 (7 pixel)" << endl;	
 	cout << "\t-b <x>, --cutofbottom <x>\t\tdo not display x elements at the bottom screen border\tdefault: 2" << endl;	
 #endif
@@ -507,105 +502,136 @@ void usage(void)
 ///////////////////////////////////////////////////////////////////////////////
 bool initSharedMem()
 {
-    float* ptr;
-    enableconvolutional = 0;
-
     cameraAngleX = cameraAngleY = 0;
     cameraDistance = CAMERA_DISTANCE;
     
-    beVerbose = false;
-    testpattern = false;
-    forcefragmentoff = false;
-    exit_now = false;
-    
-    if( BufferInit( DATA_SIZE ) )
+    if( BufferInit( datasize ) )
     {
-    	cout << "out of memory!" << endl;
+    	cout << "Error: out of memory!" << endl;
     	exit(1);
     }
-    //inputfile = new char(255);
-    //memset(inputfile, 0, 255);
-
     // allocate texture buffer
-    imageData = new GLubyte[DATA_SIZE];
-    memset(imageData, 0, DATA_SIZE);
+    imageData = new GLubyte[ datasize ];
+    memset(imageData, 0, datasize);
 
-    // allocate texture buffer
-    testpatternA = new GLubyte[DATA_SIZE];
-    
-    ptr = (float*)testpatternA;
-    for(int i = 0; i < IMAGE_HEIGHT; ++i)
+    if( testpattern )
     {
-	    for(int j = 0; j < IMAGE_WIDTH; ++j)
+    	    if( bytesperchannel == 4 )
+    	    {
+		    float* ptr; 
+		    // allocate texture buffer
+		    testpatternA = new GLubyte[ datasize ];
+		    
+		    ptr = (float*)testpatternA;
+		    for(int i = 0; i < initial_config.hTotal; ++i)
+		    {
+			    for(int j = 0; j < initial_config.vTotal; ++j)
+			    {
+				if(j == initial_config.hTotal - 4)
+				    {
+					    *ptr = float(1.0f);
+					    ++ptr;
+					    *ptr = float(1.0f);
+				    }
+				else if(j == initial_config.hTotal - 3)
+				    {
+					    *ptr = float(0.0f);
+					    ++ptr;
+					    *ptr = float(0.0f);
+				    }
+				else if(j == initial_config.hTotal - 2)
+				    {
+					    *ptr = float(1.0f);
+					    ++ptr;
+					    *ptr = float(1.0f);
+				    }
+				else if(j == 0)
+				    {
+					    *ptr = float(1.0f);
+					    ++ptr;
+					    *ptr = float(1.0f);
+				    }
+				else
+				    {
+					    *ptr = float(0.5f);
+					    ++ptr;
+					    *ptr = float(0.5f);
+				    }
+				    ++ptr;
+		
+			    } 
+		    }
+		    
+		    // allocate texture buffer
+		    testpatternB = new GLubyte[ datasize ];
+		    ptr = (float*)testpatternB;
+		    for(int i = 0; i < (initial_config.vTotal * initial_config.hTotal); i++)
+		    {
+			    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f)*0.25f+0.5f);
+			    ++ptr;
+			    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f + 3.1415928f/2.0f)*0.25f+0.5f);
+			    ++ptr; 
+		    }
+	    }
+	    else
 	    {
-#if 0
-		    if(j == IMAGE_WIDTH/2)
+		    unsigned char* ptr; 
+		    // allocate texture buffer
+		    testpatternA = new GLubyte[ datasize ];
+		    
+		    ptr = (unsigned char*)testpatternA;
+		    for(int i = 0; i < initial_config.hTotal; ++i)
 		    {
-			    *ptr = float(1.0f);
-			    ++ptr;
-			    *ptr = float(1.0f);
+			    for(int j = 0; j < initial_config.vTotal; ++j)
+			    {
+				if(j == initial_config.hTotal - 4)
+				    {
+					    *ptr = 0xff;
+					    ++ptr;
+					    *ptr = 0xff;
+				    }
+				else if(j == initial_config.hTotal - 3)
+				    {
+					    *ptr = 0;
+					    ++ptr;
+					    *ptr = 0;
+				    }
+				else if(j == initial_config.hTotal - 2)
+				    {
+					    *ptr = 0xff;
+					    ++ptr;
+					    *ptr = 0xff;
+				    }
+				else if(j == 0)
+				    {
+					    *ptr = 0xff;
+					    ++ptr;
+					    *ptr = 0xff;
+				    }
+				else
+				    {
+					    *ptr = 0x7f;
+					    ++ptr;
+					    *ptr = 0x7f;
+				    }
+				    ++ptr;
+		
+			    } 
 		    }
-		    else if(j == IMAGE_WIDTH/4 || j == 3*IMAGE_WIDTH/4 )
+		    
+		    // allocate texture buffer
+		    testpatternB = new GLubyte[ datasize ];
+		    ptr = (unsigned char*)testpatternB;
+		    for(int i = 0; i < (initial_config.vTotal * initial_config.hTotal); i++)
 		    {
-			    *ptr = float(0.0f);
+			    *ptr = sin(i*3.1415928f/180.0f*5.0f)*25 + sin(i*3.1415928f/180.0f)*50+128;
 			    ++ptr;
-			    *ptr = float(0.0f);
+			    *ptr = sin(i*3.1415928f/180.0f*5.0f)*25 + sin(i*3.1415928f/180.0f + 3.1415928f/2.0f)*50+128;
+			    ++ptr; 
 		    }
-		    else
-		    {
-			    *ptr = float(0.5f);
-			    ++ptr;
-			    *ptr = float(0.5f);
-		    }
-#else
-
-		if(j == IMAGE_WIDTH - 4)
-		    {
-			    *ptr = float(1.0f);
-			    ++ptr;
-			    *ptr = float(1.0f);
-		    }
-		else if(j == IMAGE_WIDTH - 3)
-		    {
-			    *ptr = float(0.0f);
-			    ++ptr;
-			    *ptr = float(0.0f);
-		    }
-		else if(j == IMAGE_WIDTH - 2)
-		    {
-			    *ptr = float(1.0f);
-			    ++ptr;
-			    *ptr = float(1.0f);
-		    }
-		else if(j == 0)
-		    {
-			    *ptr = float(1.0f);
-			    ++ptr;
-			    *ptr = float(1.0f);
-		    }
-		else
-		    {
-			    *ptr = float(0.5f);
-			    ++ptr;
-			    *ptr = float(0.5f);
-		    }
-#endif
-		    ++ptr;
-
-	    } 
+	    }
     }
-    
-    // allocate texture buffer
-    testpatternB = new GLubyte[DATA_SIZE];
-    ptr = (float*)testpatternB;
-    for(int i = 0; i < (IMAGE_HEIGHT * IMAGE_WIDTH); i++)
-    {
-    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f)*0.25f+0.5f);
-    	    ++ptr;
-    	    *ptr = float(sin(i*3.1415928f/180.0f*5.0f)*0.1f + sin(i*3.1415928f/180.0f + 3.1415928f/2.0f)*0.25f+0.5f);
-    	    ++ptr; 
-    }
-   	    
+	
     return true;
 }
 
@@ -632,9 +658,12 @@ void clearSharedMem()
         glDeleteBuffersARB(PBO_COUNT, &pboID[0]);
     }
     
-    if( !testpattern )
+    if( testpattern )
     {
-    	    
+    	 delete [] testpatternB;
+    	 testpatternB = 0;   
+    	 delete [] testpatternA;
+    	 testpatternA = 0;   
     }
 }
 
@@ -666,12 +695,12 @@ void *input_thread_func( void* in_ptr )
 			   cnt++;
 			   if(cnt < 300)
 			   {
-				memcpy( BufferIn_Start(), testpatternA, DATA_SIZE );
+				memcpy( BufferIn_Start(), testpatternA, datasize );
 				BufferIn_Finish();
 			   }
 			   else if ( (cnt >= 300) && (cnt < 600))
 			   {
-				memcpy( BufferIn_Start(), testpatternB, DATA_SIZE );
+				memcpy( BufferIn_Start(), testpatternB, datasize );
 				BufferIn_Finish();
 			   }
 			   else
@@ -679,48 +708,18 @@ void *input_thread_func( void* in_ptr )
 				cnt = 0;   
 			   }
 		}
-#if 0    
-	    	else if( strlen(inputfile) )	/* read from inputfile */
-	    	{
-		    unsigned char *ptr;
-		    int read_bytes;
-		    filestr.open (inputfile, ifstream::binary);
-		    if ( filestr.fail() ){
-			    pthread_mutex_lock (&exit_mutex);
-			    exit_now = true;
-			    pthread_mutex_unlock (&exit_mutex);
-			    cout << "Error opening file." << endl;
-			    break;
-		    }
-	
-		    ptr = (unsigned char*) BufferIn_Start();
-		    filestr.read ( (char*)ptr, DATA_SIZE );
-		    BufferIn_Finish();
-		    read_bytes = filestr.gcount();
-		    if( read_bytes < DATA_SIZE )
-		    {
-			    cout << "WARN: couldn't read enough" << endl;
-			    cout << "WARN: exit now ?" << endl;
-			    memset( ptr + read_bytes, 0 , DATA_SIZE - read_bytes );
-			    pthread_mutex_lock (&exit_mutex);
-			    exit_now = true;
-			    pthread_mutex_unlock (&exit_mutex);
-			    break;
-		    }
-	    }
-#endif
 	       else	/* read from stdin */
 	       {
 	    	    unsigned char *ptr;
 		    int read_bytes;
 		    ptr = (unsigned char*)BufferIn_Start();
-		    read_bytes = fread(ptr, 1, DATA_SIZE, stdin);
+		    read_bytes = fread(ptr, 1, datasize, stdin);
 		    BufferIn_Finish();
-		    if( read_bytes < DATA_SIZE )
+		    if( read_bytes < datasize )
 		    {
 		    	    if( beVerbose )
-		    	    	    cout << "read from stdin failed" << endl;
-			    memset( ptr + read_bytes, 0 , DATA_SIZE - read_bytes );
+		    	    	    cout << "Error: read from stdin failed" << endl;
+			    memset( ptr + read_bytes, 0 , datasize - read_bytes );
 			    pthread_mutex_lock (&exit_mutex);
 			    exit_now = true;
 			    pthread_mutex_unlock (&exit_mutex);
@@ -751,15 +750,15 @@ void printTransferRate()
 
     // loop until 1 sec passed
     elapsedTime = timer.getElapsedTime();
-    if(elapsedTime < 1.0)
+    if(count < fps)
     {
-        ++count;
+        count++;
     }
     else
     {
     	if( beVerbose ){
     		cout << std::fixed << std::setprecision(1);
-    		cout << "Transfer Rate: " << (count / elapsedTime) * DATA_SIZE * INV_MEGA << " MB/s. (" << count / elapsedTime << " FPS)\n";
+    		cout << "Transfer Rate: " << (count / elapsedTime) * datasize * INV_MEGA << " MB/s. (" << count / elapsedTime << " FPS)\n";
     		cout << std::resetiosflags(std::ios_base::fixed | std::ios_base::floatfield);
     	}
     	
@@ -822,7 +821,10 @@ void displayCB()
     // notify GLUT to exit after this function ends
     pthread_mutex_lock (&exit_mutex);
     if( exit_now && BufferEmpty() )
-    	    exit(0);
+    {
+    	    pthread_mutex_unlock (&exit_mutex);
+	    exit(0);	    
+    }
     pthread_mutex_unlock (&exit_mutex);
     
     if(pboMode > 0)
@@ -850,8 +852,15 @@ void displayCB()
 
         // copy pixels from PBO to texture object
         // Use offset instead of pointer.
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, PIXEL_FORMAT, GL_FLOAT, 0);
-
+        if( bytesperchannel == 4 )
+	{
+	   glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, initial_config.hTotal/7, initial_config.vTotal, PIXEL_FORMAT, GL_FLOAT, 0);
+	}
+	else
+	{
+	   glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, initial_config.hTotal/7, initial_config.vTotal, PIXEL_FORMAT, GL_BYTE, 0);
+	}
+       
         // measure the time copying data from PBO to texture object
         t1.stop();
         copyTime = t1.getElapsedTimeInMilliSec();
@@ -872,7 +881,7 @@ void displayCB()
         // If you do that, the previous data in PBO will be discarded and
         // glMapBufferARB() returns a new allocated pointer immediately
         // even if GPU is still working with the previous data.
-        glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB, DATA_SIZE, 0, GL_STREAM_DRAW_ARB);
+        glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB, datasize, 0, GL_STREAM_DRAW_ARB);
         GLubyte* ptr = (GLubyte*)glMapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB);
         if(ptr)
         {
@@ -886,18 +895,18 @@ void displayCB()
         		{
         			if( beVerbose )
         				cout << "Buffer underrun ! Skipping frame.\n" << endl;
-        			memset( ptr, 0, DATA_SIZE );
+        			memset( ptr, 0, datasize );
         			BufferSkip();
         		}
         		else
         		{
-        			memcpy( ptr, BufferOut_Start(), DATA_SIZE );
+        			memcpy( ptr, BufferOut_Start(), datasize );
         			BufferOut_Finish();
         		}
         	}
         	else
         	{
-        		memcpy( ptr, BufferOut_Start(), DATA_SIZE );
+        		memcpy( ptr, BufferOut_Start(), datasize );
         		BufferOut_Finish();
         	}
             glUnmapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB); // release pointer to mapping buffer
@@ -929,19 +938,19 @@ void displayCB()
         	if( BufferEmpty() )
         	{
         		cout << "Buffer underrun ! Skipping frame.\n" << endl;
-        		memset( imageData, 0, DATA_SIZE);
+        		memset( imageData, 0,  datasize );
         		
         		BufferSkip();
         	}
         	else
         	{
-        		memcpy( imageData, BufferOut_Start(), DATA_SIZE );
+        		memcpy( imageData, BufferOut_Start(),  datasize );
         		BufferOut_Finish();
         	}
         }
         else
         {
-        	memcpy( imageData, BufferOut_Start(), DATA_SIZE );
+        	memcpy( imageData, BufferOut_Start(), datasize );
         	BufferOut_Finish();	
         }
 
@@ -950,7 +959,16 @@ void displayCB()
         
         ///////////////////////////////////////////////////
         t1.start();
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, PIXEL_FORMAT, GL_FLOAT, (GLvoid*)imageData);
+        if( bytesperchannel == 4 )
+	{
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, initial_config.hTotal/7, initial_config.vTotal, PIXEL_FORMAT, GL_FLOAT, (GLvoid*)imageData);
+
+	}
+	else
+	{
+	   	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, initial_config.hTotal/7, initial_config.vTotal, PIXEL_FORMAT, GL_BYTE, (GLvoid*)imageData);
+	}        
+        
         t1.stop();
         updateTime = t1.getElapsedTimeInMilliSec();
     }
@@ -972,9 +990,9 @@ void displayCB()
     glBegin(GL_QUADS);
     glNormal3f(0, 0, 1);
 
-    glTexCoord2f(0.0f, 1.0f);   glVertex3f( -1.0f, -1.0f - 2.0f/IMAGE_HEIGHT * cutofbottom, 0.0f);
-    glTexCoord2f(1.0f, 1.0f);   glVertex3f( 1.0f + 2.0f/IMAGE_WIDTH * cutofright, -1.0f - 2.0f/IMAGE_HEIGHT * cutofbottom, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);   glVertex3f( 1.0f + 2.0f/IMAGE_WIDTH * cutofright,  1.0f, 0.0f);
+    glTexCoord2f(0.0f, 1.0f);   glVertex3f( -1.0f, -1.0f - 2.0f/initial_config.vTotal * cutofbottom, 0.0f);
+    glTexCoord2f(1.0f, 1.0f);   glVertex3f( 1.0f + 2.0f/initial_config.hTotal / 7 * cutofright, -1.0f - 2.0f/initial_config.hTotal / 7 * cutofbottom, 0.0f);
+    glTexCoord2f(1.0f, 0.0f);   glVertex3f( 1.0f + 2.0f/initial_config.hTotal / 7 * cutofright,  1.0f, 0.0f);
     glTexCoord2f(0.0f, 0.0f);   glVertex3f( -1.0f,  1.0f, 0.0f);
     glEnd();
 
@@ -994,7 +1012,6 @@ void reshapeCB(int width, int height)
 {
     screenWidth = width;
     screenHeight = height;
-
     toPerspective();
 }
 
@@ -1020,23 +1037,5 @@ void keyboardCB(unsigned char key, int x, int y)
 void exitCB()
 {
     clearSharedMem();
-#ifdef _WIN32
-	#warn modesetting not supported  
-#else
-#ifdef _WITH_XRANDR
-    if( strlen(initial_config.activemode) > 1)
-    {
-    	char initialmode[255];
-    	    
-        enable_output( &initial_config );
-        disable_output( &initial_config );
-        memcpy(initialmode, initial_config.activemode, sizeof(initial_config.activemode) );
-        memcpy(initial_config.activemode,"newmode", sizeof("newmode"));
-        rm_mode( &initial_config );
-        memcpy(initial_config.activemode, initialmode, sizeof(initial_config.activemode) );        
-        enable_output( &initial_config );
-    }
-#endif
-#endif
 }
 

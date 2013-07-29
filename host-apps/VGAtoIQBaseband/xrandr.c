@@ -1947,12 +1947,17 @@ int find_VGA_output( vga_t * vga_ptr )
 		    {
 			if (crtc_info) {
 			    vga_ptr->pos_x = crtc_info->x;
-			    vga_ptr->pos_y = crtc_info->y;
+			    vga_ptr->pos_y = crtc_info->y;   
 			} else {
 			    vga_ptr->pos_x = output->x;
 			    vga_ptr->pos_y = output->y;
 			}
-			
+			vga_ptr->width = output->mode_info->width;
+			vga_ptr->height = output->mode_info->height;
+			    
+			vga_ptr->hTotal = output->mode_info->hTotal;
+			vga_ptr->vTotal = output->mode_info->vTotal;
+			vga_ptr->dotClock = output->mode_info->dotClock;
 			memcpy(&vga_ptr->activemode,mode->name,strlen(mode->name));
 		    }
 
