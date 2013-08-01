@@ -14,6 +14,8 @@ import cgi
 import sys
 from string import Template
 
+import socket
+
 graph_header = """
 rrdtool graph -                   
     -a PNG -w $WIDTH -h $HEIGHT  
@@ -108,6 +110,24 @@ graph_templates = {
         'GPRINT:U2:LAST:U2=%5.2lf V, '        
         'GPRINT:U3:LAST:U3=%5.2lf V'        
     """,
+    "temp": """
+        --title="Temperature"
+        -E
+        -l 20
+        -u 100
+        DEF:coretemp2=$COLLECTDRRD/$HOST/sensors-coretemp-isa-0000/temperature-temp2.rrd:value:AVERAGE
+        DEF:coretemp3=$COLLECTDRRD/$HOST/sensors-coretemp-isa-0000/temperature-temp3.rrd:value:AVERAGE
+        DEF:coretemp4=$COLLECTDRRD/$HOST/sensors-coretemp-isa-0000/temperature-temp4.rrd:value:AVERAGE
+        DEF:coretemp5=$COLLECTDRRD/$HOST/sensors-coretemp-isa-0000/temperature-temp5.rrd:value:AVERAGE
+        DEF:temp1=$COLLECTDRRD/$HOST/sensors-it8718-isa-0290/temperature-temp1.rrd:value:AVERAGE
+        DEF:temp2=$COLLECTDRRD/$HOST/sensors-it8718-isa-0290/temperature-temp2.rrd:value:AVERAGE
+        LINE1:coretemp2#$LCOLOR1::               
+        LINE1:coretemp3#$LCOLOR2::               
+        LINE1:coretemp4#$LCOLOR3::               
+        LINE1:coretemp5#$LCOLOR4::               
+        LINE1:temp1#$LCOLOR1::               
+        LINE1:temp2#$LCOLOR2::               
+    """, 
     "memory": """
         --title="Speicherauslastung"
         -l 0
@@ -186,7 +206,6 @@ graph_templates = {
         LINE1:sdc_write_m#$LCOLOR1::STACK
         LINE1:sdd_write_m#$LCOLOR1::STACK
     """, 
- 
     "load": """
         --title="System Load"
         -l 0
@@ -421,9 +440,19 @@ themes = {
 }
 
 
+def collectd_flush(timeout=10, path="/var/run/collectd-unixsock"):
+    try:
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.connect(path)
+        sock.send("FLUSH timeout=%d\n" % timeout)
+        sock.recv(2048)
+        sock.close()
+    except IOError:
+        pass
 
 if __name__ == "__main__":
 
+    collectd_flush()
     subst = {
         "WIDTH":       "600",
         "HEIGHT":      "150",
