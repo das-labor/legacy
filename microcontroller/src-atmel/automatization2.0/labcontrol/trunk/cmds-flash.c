@@ -128,6 +128,8 @@ void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 		}
 	}
 	
+	free(msg);
+
 	uint8_t *ptr = buf;
 	int missing = size;
 
@@ -215,7 +217,12 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename)
 
 	printf("Flashing file: %s\n", filename);
 	FILE *fd = fopen(filename,"r");
-	
+	if(!fd)
+	{
+		printf("Error opening file %s\n", filename);
+		exit(1);
+	}
+
 	size_t size, offset;
 	uint8_t *buf;
 	while ((buf = read_line_from_hex(fd, &size, &offset)) != 0)

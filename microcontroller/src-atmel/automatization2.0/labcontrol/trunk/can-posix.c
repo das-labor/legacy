@@ -116,9 +116,7 @@ void can_transmit(can_message *cmsg)
 	}
 	can_message_raw raw_msg;	
 	can_message_raw_from_can_message(&raw_msg, cmsg);
-	
-	free(cmsg);
-	
+		
 	can_transmit_raw(&raw_msg);
 }
 
