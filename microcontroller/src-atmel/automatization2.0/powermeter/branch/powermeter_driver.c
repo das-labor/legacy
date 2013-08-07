@@ -47,15 +47,35 @@ powermeter_t powermeter;
 
 ISR(DMA_CH0_vect)
 {
-	dma1_done++;
-	// reenable the channel
-	DMA_EnableChannel(&DMA.CH0);	
+    if( DMA.CH0.CTRLB & 0x20 ) //test ERRIF flag 
+	{
+		DMA.CH0.CTRLB |= 0x20; //clear flag by hand
+		setERROR(1);
+	}
+	
+	if( DMA.CH0.CTRLB & 0x10 ) //test TRNIF flag 
+	{
+		DMA.CH0.CTRLB |= 0x10; //clear flag by hand
+		dma1_done++;
+	}
+	// re-enable the channel
+	DMA_EnableChannel(&DMA.CH0);
 }
 
 ISR(DMA_CH1_vect)
 {
-	dma2_done++;
-	// reenable the channel
+    if( DMA.CH1.CTRLB & 0x20 ) //test ERRIF flag 
+	{
+		DMA.CH1.CTRLB |= 0x20; //clear flag by hand
+		setERROR(1);
+	}
+	
+	if( DMA.CH1.CTRLB & 0x10 ) //test TRNIF flag 
+	{
+		DMA.CH1.CTRLB |= 0x10; //clear flag by hand
+		dma2_done++;
+	}
+	// re-enable the channel
 	DMA_EnableChannel(&DMA.CH1);
 }
 
@@ -243,16 +263,6 @@ void powermeter_docalculations( void )
 		LED_on();
 	}
 	
-	if ( (dma1_done > 1) && (dma2_done > 1) )
-	/* check for overrun */
-	{
-		setERROR(1);
-	}
-	else
-	{
-		setERROR(0);
-	}
-	
 }
 
 int checkforcanupdate( void )
@@ -287,6 +297,7 @@ int checkforcanupdate( void )
 		
 		memset(&powermeter.powerdrawPerSecond, 0x00, sizeof(powermeter_channel_t));
 		
+		setERROR(0);
 		powermeter.samplesPerSecondDone = 0;
 		return 1;
 	}
