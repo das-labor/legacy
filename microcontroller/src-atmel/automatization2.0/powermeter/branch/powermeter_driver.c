@@ -40,8 +40,8 @@
 #include "can_handler.h"
 #include "config.h"
 
-volatile char dma1_done=0;
-volatile char dma2_done=0;
+static volatile char dma1_done=0;
+static volatile char dma2_done=0;
 
 powermeter_t powermeter;
 
@@ -82,9 +82,9 @@ ISR(DMA_CH1_vect)
 
 int powermeter_Start()
 {
-	memset(&powermeter.powerdraw,0,sizeof(powermeter.powerdraw));
-	memset(&powermeter.powerdrawPerSecond,0,sizeof(powermeter.powerdrawPerSecond));
-
+	memset(&powermeter.powerdraw,0x00,sizeof(powermeter.powerdraw));
+	memset(&powermeter.powerdrawPerSecond,0x00,sizeof(powermeter.powerdrawPerSecond));
+	memset(&powermeter.samplebuffer.u[0],0x55,sizeof(powermeter.samplebuffer));
 	powermeter.isrunning = 1;
 	powermeter.samplesPerSecondDone = 0;
 	
@@ -96,7 +96,7 @@ int powermeter_Start()
 	DMA_SetPriority(DMA_PRIMODE_RR0123_gc); //dma mode round robin
 	DMA_DisableChannel(&DMA.CH0);
 	DMA_ResetChannel(&DMA.CH0);
-	DMA_SetIntLevel(&DMA.CH0, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
+	//DMA_SetIntLevel(&DMA.CH0, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
 	
 	DMA_SetupBlock( &DMA.CH0,				//channel 0
 		(void const *) &ADCA.CH0RES,			//source-addr
@@ -116,7 +116,7 @@ int powermeter_Start()
 
 	DMA_DisableChannel(&DMA.CH1);
 	DMA_ResetChannel(&DMA.CH1);
-	DMA_SetIntLevel(&DMA.CH1, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
+	//DMA_SetIntLevel(&DMA.CH1, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
 	DMA_SetupBlock( &DMA.CH1,					//channel 1
 			(void const *) &ADCB.CH0RES,			//source-addr
 			DMA_CH_SRCRELOAD_BLOCK_gc,			//srcDirection reload after each block
@@ -153,27 +153,27 @@ void powermeter_Stop()
 }
 
 
-static uint32_t isqrt32 (uint32_t n)
-{  
-    register uint32_t root, remainder, place;  
-  
-    root = 0;  
-    remainder = n;  
+static int32_t isqrt32 (int32_t n)
+{
+    register int32_t root, remainder, place;
+
+    root = 0;
+    remainder = n;
     place = 0x40000000;
-  
-    while (place > remainder)  
-        place = place >> 2;  
-    while (place)  
-    {  
-        if (remainder >= root + place)  
-        {  
-            remainder = remainder - root - place;  
-            root = root + (place << 1);  
-        }  
-        root = root >> 1;  
-        place = place >> 2;  
-    }  
-    return root;  
+
+    while (place > remainder)
+        place = place >> 2;
+    while (place)
+    {
+        if (remainder >= root + place)
+        {
+            remainder = remainder - root - place;
+            root = root + (place << 1);
+        }
+        root = root >> 1;
+        place = place >> 2;
+    }
+    return root;
 }
 
 void powermeter_docalculations( void )
@@ -184,8 +184,12 @@ void powermeter_docalculations( void )
 */
 {
 	//check if calculations has to be done
-	if (dma1_done && dma2_done)
+	//if (dma1_done > 0 && dma2_done > 0)
+	if(!(DMA.CH0.CTRLA & 0x80) && !(DMA.CH1.CTRLA & 0x80))	/* channel is beeing disable after transaction complete */
 	{
+		DMA.CH0.CTRLB &= ~0x10; /* clear TRNIF flag */
+		DMA.CH1.CTRLB &= ~0x10;
+		//DMA.INTFLAGS = 0xff; /* clear all flags */
 		register int32_t u;
 		register int32_t i;
 		register int16_t *up;		//points to start of array containing the sampled voltages: u1, u2, u3, u1, u2, u3, ....
@@ -195,9 +199,10 @@ void powermeter_docalculations( void )
 		ip = &powermeter.samplebuffer.i1[0];
 		
 		LED__cyan();	//set LED color cyan
-		dma1_done --;
-		dma2_done --;
-		
+		//dma1_done --;
+		//dma2_done --;
+
+		//debug
 		for(uint8_t x = 0; x < ADCSAMPLESPERPERIOD ; x++)
 		{
 			//load u & i
@@ -258,11 +263,14 @@ void powermeter_docalculations( void )
 
 		//clear powermeter.powerdraw
 		memset(&powermeter.powerdraw, 0x00, sizeof(powermeter_channel_t));
-		
+
 		//return to normal LED color
 		LED_on();
+		//DMA_Enable();
+		DMA_EnableChannel(&DMA.CH0);
+		DMA_EnableChannel(&DMA.CH1);
 	}
-	
+
 }
 
 int checkforcanupdate( void )
@@ -383,6 +391,7 @@ void ADC_init( void )
 	//ADC_Prescaler_Config(&ADCA, ADC_PRESCALER_DIV32_gc);	// 1 MSPs
 	ADC_Prescaler_Config(&ADCA, ADC_PRESCALER_DIV128_gc);	// 250ksps
 
+
 	/* Set reference voltage on ADC A to external reference pin on PORTA .*/
 	ADC_Reference_Config(&ADCA, ADC_REFSEL_AREFA_gc);
 
@@ -422,7 +431,7 @@ void ADC_init( void )
 	/* ADC_Ch_Interrupts_Config(&ADCA.CH0,ADC_CH_INTMODE_COMPLETE_gc, ADC_CH_INTLVL_LO_gc);
 	   Interrupts aren't used atm
 	 */
-	
+
 	/* Move stored calibration values to ADC B. */
 	ADC_CalibrationValues_Load(&ADCB);
 
