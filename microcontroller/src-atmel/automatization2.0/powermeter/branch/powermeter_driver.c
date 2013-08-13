@@ -21,17 +21,12 @@
 
 #include "tc_driver.h"
 #include "avr_compiler.h"
-#include "ursartC1_driver.h"
 #include "dma_driver.h"
 #include "adc_driver.h"
 #include "led_driver.h"
-#include "rtc_driver.h"
 #include "powermeter_driver.h"
-#include "error_handler.h"
-
+#include "wdt_driver.h"
 #include "config.h"
-
-#include "math.h"
 
 #include "can/can.h"
 #include "can/lap.h"
@@ -40,6 +35,11 @@
 #include "can_handler.h"
 #include "config.h"
 
+extern uint8_t error;
+
+static void TC1_init( volatile uint32_t eventsPerSecond );
+static void ADC_init( void );
+
 static volatile char dma1_done=0;
 static volatile char dma2_done=0;
 
@@ -47,13 +47,13 @@ powermeter_t powermeter;
 
 ISR(DMA_CH0_vect)
 {
-    if( DMA.CH0.CTRLB & 0x20 ) //test ERRIF flag 
+	if( DMA.CH0.CTRLB & 0x20 ) //test ERRIF flag
 	{
 		DMA.CH0.CTRLB |= 0x20; //clear flag by hand
-		setERROR(1);
+		error = 1;
 	}
-	
-	if( DMA.CH0.CTRLB & 0x10 ) //test TRNIF flag 
+
+	if( DMA.CH0.CTRLB & 0x10 ) //test TRNIF flag
 	{
 		DMA.CH0.CTRLB |= 0x10; //clear flag by hand
 		dma1_done++;
@@ -64,13 +64,13 @@ ISR(DMA_CH0_vect)
 
 ISR(DMA_CH1_vect)
 {
-    if( DMA.CH1.CTRLB & 0x20 ) //test ERRIF flag 
+	if( DMA.CH1.CTRLB & 0x20 ) //test ERRIF flag
 	{
 		DMA.CH1.CTRLB |= 0x20; //clear flag by hand
-		setERROR(1);
+		error = 1;
 	}
-	
-	if( DMA.CH1.CTRLB & 0x10 ) //test TRNIF flag 
+
+	if( DMA.CH1.CTRLB & 0x10 ) //test TRNIF flag
 	{
 		DMA.CH1.CTRLB |= 0x10; //clear flag by hand
 		dma2_done++;
@@ -82,9 +82,10 @@ ISR(DMA_CH1_vect)
 
 int powermeter_Start()
 {
-	memset(&powermeter.powerdraw,0x00,sizeof(powermeter.powerdraw));
-	memset(&powermeter.powerdrawPerSecond,0x00,sizeof(powermeter.powerdrawPerSecond));
-	memset(&powermeter.samplebuffer.u[0],0x55,sizeof(powermeter.samplebuffer));
+	memset(powermeter.samplebuffer.u, 0 ,sizeof(uint16_t) * 3 * ADCSAMPLESPERPERIOD);
+	memset(powermeter.samplebuffer.i1, 0 ,sizeof(uint16_t) * 3 * ADCSAMPLESPERPERIOD );
+
+	memset(&powermeter.powerdrawPerSecond,0x00,sizeof(powermeter_channel_t));
 	powermeter.isrunning = 1;
 	powermeter.samplesPerSecondDone = 0;
 	
@@ -96,8 +97,10 @@ int powermeter_Start()
 	DMA_SetPriority(DMA_PRIMODE_RR0123_gc); //dma mode round robin
 	DMA_DisableChannel(&DMA.CH0);
 	DMA_ResetChannel(&DMA.CH0);
-	//DMA_SetIntLevel(&DMA.CH0, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
-	
+	//DMA_SetIntLevel(&DMA.CH0, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_MED_gc);	//enable transfer interrupt, disable err interrupt
+	DMA_SetIntLevel(&DMA.CH0, DMA_CH_TRNINTLVL_OFF_gc, DMA_CH_ERRINTLVL_MED_gc);  //enable transfer interrupt, disable err interrupt
+
+
 	DMA_SetupBlock( &DMA.CH0,				//channel 0
 		(void const *) &ADCA.CH0RES,			//source-addr
 		DMA_CH_SRCRELOAD_BLOCK_gc,			//srcDirection reload after each block
@@ -107,7 +110,7 @@ int powermeter_Start()
 		DMA_CH_DESTDIR_INC_gc,				//destDirection increment destination memory addr
 		sizeof(int16_t) * 3,				//blockSize in bytes >= burstlen
 		DMA_CH_BURSTLEN_2BYTE_gc,			//burstMode 2byte per burst
-		ADCSAMPLESPERPERIOD,				//repeat ADCSAMPLESPERPERIOD times
+		ADCSAMPLESPERPERIOD,
 		true );						//repeat
 
 	DMA_SetTriggerSource(&DMA.CH0, DMA_CH_TRIGSRC_ADCA_CH4_gc);	//Trigger on ADCA_CH0 - 3
@@ -116,7 +119,9 @@ int powermeter_Start()
 
 	DMA_DisableChannel(&DMA.CH1);
 	DMA_ResetChannel(&DMA.CH1);
-	//DMA_SetIntLevel(&DMA.CH1, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_OFF_gc);	//enable transfer interrupt, disable err interrupt
+        //DMA_SetIntLevel(&DMA.CH1, DMA_CH_TRNINTLVL_MED_gc, DMA_CH_ERRINTLVL_MED_gc);  //enable transfer interrupt, disable err interrupt
+	DMA_SetIntLevel(&DMA.CH1, DMA_CH_TRNINTLVL_OFF_gc, DMA_CH_ERRINTLVL_MED_gc);	//enable transfer interrupt, disable err interrupt
+
 	DMA_SetupBlock( &DMA.CH1,					//channel 1
 			(void const *) &ADCB.CH0RES,			//source-addr
 			DMA_CH_SRCRELOAD_BLOCK_gc,			//srcDirection reload after each block
@@ -134,8 +139,7 @@ int powermeter_Start()
 	DMA_EnableChannel(&DMA.CH1);
 
 
-	LED_issampling();				//set blue LED
-	TC1_init( ADCSAMPLESPERPERIOD * NET_FREQ );	//set timer1 to trigger ADCSAMPLESPERPERIOD * NET_FREQ times per second
+	TC1_init( (uint32_t)ADCSAMPLESPERPERIOD * (uint32_t)NET_FREQ );	//set timer1 to trigger ADCSAMPLESPERPERIOD * NET_FREQ times per second
 	return 0;
 }
 
@@ -148,7 +152,6 @@ void powermeter_Stop()
 	DMA_ResetChannel(&DMA.CH1);	//stop DMA transf
 	ADC_Disable(&ADCA);		//disable ADC
 	ADC_Disable(&ADCB);		//disable ADC
-	LED_isrunning();		//set green LED
 	powermeter.isrunning = 0;
 }
 
@@ -185,20 +188,29 @@ void powermeter_docalculations( void )
 {
 	//check if calculations has to be done
 	//if (dma1_done > 0 && dma2_done > 0)
-	if(!(DMA.CH0.CTRLA & 0x80) && !(DMA.CH1.CTRLA & 0x80))	/* channel is beeing disable after transaction complete */
+	//INTFLAGS are set while block transfer may be in progress, so check BUSY and PENDING flag too
+	if((DMA.INTFLAGS & DMA_CH0TRNIF_bm) && !(DMA.CH0.CTRLB & (DMA_CH_CHBUSY_bm | DMA_CH_CHPEND_bm)) && (DMA.INTFLAGS & DMA_CH1TRNIF_bm) && !(DMA.CH1.CTRLB & (DMA_CH_CHBUSY_bm | DMA_CH_CHPEND_bm)))
 	{
-		DMA.CH0.CTRLB &= ~0x10; /* clear TRNIF flag */
-		DMA.CH1.CTRLB &= ~0x10;
-		//DMA.INTFLAGS = 0xff; /* clear all flags */
 		register int32_t u;
 		register int32_t i;
 		register int16_t *up;		//points to start of array containing the sampled voltages: u1, u2, u3, u1, u2, u3, ....
 		register int16_t *ip;		//points to start of array containing the sampled currents: i1, i2, i3, i1, i2 ,i3, ....
-		
+
+
+		//clear interrupt flags
+                DMA.INTFLAGS |= DMA_CH0TRNIF_bm;
+                DMA.INTFLAGS |= DMA_CH1TRNIF_bm;
+ 
+                // enable channel
+                DMA_EnableChannel(&DMA.CH1);
+                DMA_EnableChannel(&DMA.CH0);
+
+		memset(&powermeter.powerdraw, 0, sizeof(powermeter_channel_t));
+
 		up = &powermeter.samplebuffer.u[0];
 		ip = &powermeter.samplebuffer.i1[0];
-		
-		LED__cyan();	//set LED color cyan
+
+		LED__BLUE(1);	//set LED blue on
 		//dma1_done --;
 		//dma2_done --;
 
@@ -235,6 +247,8 @@ void powermeter_docalculations( void )
 			powermeter.powerdraw.c3.Ueff += u * u;
 			powermeter.powerdraw.c3.Ieff += i * i;
 			powermeter.powerdraw.c3.P += -u * i;
+
+			WDT_Reset();
 		}
 
 		// ADCSAMPLESSHIFT is defined in config.h
@@ -261,14 +275,8 @@ void powermeter_docalculations( void )
 
 		powermeter.samplesPerSecondDone++;
 
-		//clear powermeter.powerdraw
-		memset(&powermeter.powerdraw, 0x00, sizeof(powermeter_channel_t));
-
 		//return to normal LED color
-		LED_on();
-		//DMA_Enable();
-		DMA_EnableChannel(&DMA.CH0);
-		DMA_EnableChannel(&DMA.CH1);
+		LED__BLUE(0);
 	}
 
 }
@@ -299,20 +307,24 @@ int checkforcanupdate( void )
 		powermeter.powerdrawLastSecond.c2.Ieff = powermeter.powerdrawPerSecond.c2.Ieff / NET_FREQ;
 		powermeter.powerdrawLastSecond.c3.Ieff = powermeter.powerdrawPerSecond.c3.Ieff / NET_FREQ;
 
-		powermeter.powerdrawLastSecond.c1.E += powermeter.powerdrawPerSecond.c1.P;
-		powermeter.powerdrawLastSecond.c2.E += powermeter.powerdrawPerSecond.c2.P;
-		powermeter.powerdrawLastSecond.c3.E += powermeter.powerdrawPerSecond.c3.P;
+		powermeter.powerdrawLastSecond.c1.E += powermeter.powerdrawPerSecond.c1.P / NET_FREQ;
+		powermeter.powerdrawLastSecond.c2.E += powermeter.powerdrawPerSecond.c2.P / NET_FREQ;
+		powermeter.powerdrawLastSecond.c3.E += powermeter.powerdrawPerSecond.c3.P / NET_FREQ;
 		
 		memset(&powermeter.powerdrawPerSecond, 0x00, sizeof(powermeter_channel_t));
-		
-		setERROR(0);
+
+		if(powermeter.samplesPerSecondDone > NET_FREQ)
+			error = 1;
+		else
+			error = 0;
+
 		powermeter.samplesPerSecondDone = 0;
 		return 1;
 	}
 	return 0;
 }
 
-void TC1_init( volatile uint32_t eventsPerSecond )
+static void TC1_init( volatile uint32_t eventsPerSecond )
 /* init Timer 1, tries to find best value for given argument */
 {
 
@@ -365,7 +377,7 @@ void TC1_init( volatile uint32_t eventsPerSecond )
 		TC1_ConfigClockSource(&TCC1, TC_CLKSEL_DIV64_gc);
 		return;
 	}
-		if (F_CPU / (256 * eventsPerSecond) < 0xFFFF) {
+	if (F_CPU / (256 * eventsPerSecond) < 0xFFFF) {
 		TC1_TOP = ((F_CPU / 256) / eventsPerSecond);		//calculate nearest match
 		/* Set period ( TOP value ). */
 		TC_SetPeriod(&TCC1, TC1_TOP);
@@ -375,7 +387,7 @@ void TC1_init( volatile uint32_t eventsPerSecond )
 	}
 }
 
-void ADC_init( void )
+static void ADC_init( void )
 /* 	
 	init ADCA and ADCB, used 3 channels per ADC 
 	start conversion on Timer1 Event
@@ -495,4 +507,3 @@ void ADC_init( void )
 	 * therefore below the maximum frequency to use this function. */
 	ADC_Wait_32MHz(&ADCB);
 }
-

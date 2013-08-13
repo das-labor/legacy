@@ -13,62 +13,39 @@ void LED_initPORTC(void)
 	PORTC.DIRSET = LED_RED | LED_GREEN | LED_BLUE;
 }
 
-void LED_isrunning(void)
-{
-	LED_status = 1;
-	LED_on();
-}
-
 void LED_off(void)
 {
-	PORTC.OUT = LED_RED|LED_BLUE|LED_GREEN;
+	LED_status = PORTC.OUT & ( LED_RED | LED_GREEN | LED_BLUE );
+	PORTC.OUT |= LED_RED | LED_BLUE | LED_GREEN;
 }
 
 void LED_on(void)
 {
-	if (LED_status == 1)
-	{
-		PORTC.OUT = LED_RED | LED_BLUE;
-	}
-	if (LED_status == 2)
-	{
-		PORTC.OUT = LED_RED | LED_GREEN;
-	}
+	PORTC.OUT &= ~LED_status;
 }
 
-void LED_issampling(void)
+void LED__RED(uint8_t status)
 {
-	LED_status = 2;
-	LED_on();
+	if(status)
+		PORTC.OUT &= ~LED_RED;
+	else
+		PORTC.OUT |= LED_RED;
 }
 
-void LED__RED(void)
+void LED__GREEN(uint8_t status)
 {
-	PORTC.OUT = LED_GREEN | LED_BLUE;
+	if(status)
+		PORTC.OUT &= ~LED_GREEN;
+	else
+		PORTC.OUT |= LED_GREEN;
 }
 
-void LED__YELLOW(void)
+void LED__BLUE(uint8_t status)
 {
-	PORTC.OUT = LED_BLUE;
+	if(status)
+		PORTC.OUT &= ~LED_BLUE;
+	else
+		PORTC.OUT |= LED_BLUE;
 }
 
-void LED__PURPLE(void)
-{
-	PORTC.OUT = LED_GREEN;
-}
-
-void LED__GREEN(void)
-{
-	PORTC.OUT = LED_BLUE|LED_RED;
-}
-
-void LED__BLUE(void)
-{
-	PORTC.OUT = LED_GREEN|LED_RED;
-}
-
-void LED__cyan(void)
-{
-	PORTC.OUT = LED_RED;
-}
 
