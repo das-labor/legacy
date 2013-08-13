@@ -418,6 +418,4 @@ void TC1_SetCCBIntLevel( volatile TC1_t * tc, TC_CCBINTLVL_t intLevel );
 void TC1_SetCCCIntLevel( volatile TC1_t * tc, TC_CCCINTLVL_t intLevel );
 void TC1_SetCCDIntLevel( volatile TC1_t * tc, TC_CCDINTLVL_t intLevel );
 void TC1_Reset( volatile TC1_t * tc );
-
-void TC1_init(volatile uint32_t eventsPerSecond);
 #endif

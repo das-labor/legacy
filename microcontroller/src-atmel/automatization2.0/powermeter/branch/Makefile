@@ -1,4 +1,4 @@
-OBJ = main.o tc_driver.o wdt_driver.o powermeter_driver.o rtc_driver.o dma_driver.o event_system_driver.o error_handler.o ursartC1_driver.o adc_driver.o can/can.o can/spi.o can_handler.o led_driver.o
+OBJ = main.o tc_driver.o wdt_driver.o powermeter_driver.o rtc_driver.o dma_driver.o event_system_driver.o ursartC1_driver.o adc_driver.o can/can.o can/spi.o can_handler.o led_driver.o
 
 # Default values
 OUT           ?= image

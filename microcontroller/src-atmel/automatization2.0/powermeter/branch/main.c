@@ -12,15 +12,16 @@
 #include "powermeter_driver.h"
 #include "ursartC1_driver.h"
 #include "event_system_driver.h"
-#include "error_handler.h"
 #include "rtc_driver.h"
 #include "wdt_driver.h"
+
+uint8_t error = 0;
 
 void sync_osc()
 {
 	/*32 MHz Oszillator starten */
 	OSC.CTRL |= OSC_RC32MEN_bm;
-	
+
 	/*Wenn Oscillator stabil wird das Flag RC32MRDY
 	 * gesetzt und 32Mhz können benutzt werden*/
 	while (!(OSC.STATUS & OSC_RC32MRDY_bm));
@@ -110,48 +111,55 @@ ISR(RTC_OVF_vect)
 
 int main(void)
 {
-	LED_initPORTC();  // LED Ports als Ausgang
-	LED_isrunning();	//set green LED
+	sync_osc(); //start HSE osc
 
-	sync_osc();
+        LED_initPORTC();  // LED Ports als Ausgang
+        LED_off();
+        LED__GREEN(1);
+
 	start_mcp_clock();
 	spi_init();
 	can_init();
 	read_can_addr();
 
-	Eventsystem_init();
-	Interrupt_Init();
-
-	setERROR(0);
-
 	//init watchdog
 	WDT_EnableAndSetTimeout(WDT_PER_64CLK_gc);
-	
+
 	RTC_Init();					//enable 1sec interrupt
+
+        Eventsystem_init();
+        Interrupt_Init();
 	powermeter_Start();
 
 	uint16_t x = 0;
 	while (1) {
 		can_handler();
 		WDT_Reset();
-		
+
 		powermeter_docalculations();
 		WDT_Reset();
-		
+
 		can_handler();
 		WDT_Reset();
-		
+
 		if( checkforcanupdate() )
 		{
 			can_createDATAPACKET();
 		}
 		WDT_Reset();
-		
+
 		if ((RTC.CNT & 0x00ff) >= x)
 			x = RTC.CNT;
 		else
 		{		//this is executed 4 times per second
-			ERROR_blink();
+			if(error)
+			{
+				LED__RED(1);
+			}
+			else
+			{
+				LED__RED(0);
+			}
 		}
 	}
 }

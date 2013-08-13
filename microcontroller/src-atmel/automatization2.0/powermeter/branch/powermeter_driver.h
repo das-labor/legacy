@@ -77,8 +77,5 @@ int checkforcanupdate( void );
 
 extern powermeter_t powermeter;
 
-//helper functions
-void ADC_init();
-void TC1_init(volatile uint32_t eventsPerSecond);
 
 
