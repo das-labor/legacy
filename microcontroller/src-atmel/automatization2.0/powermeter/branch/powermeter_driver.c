@@ -201,6 +201,13 @@ void powermeter_docalculations( void )
                 DMA.INTFLAGS |= DMA_CH0TRNIF_bm;
                 DMA.INTFLAGS |= DMA_CH1TRNIF_bm;
  
+                // set repeat count
+                DMA.CH0.REPCNT = DMA.CH1.REPCNT = ADCSAMPLESPERPERIOD;
+                
+                // enable repeat
+                DMA.CH0.CTRLA |= DMA_CH_REPEAT_bm;
+                DMA.CH1.CTRLA |= DMA_CH_REPEAT_bm;
+                
                 // enable channel
                 DMA_EnableChannel(&DMA.CH1);
                 DMA_EnableChannel(&DMA.CH0);
