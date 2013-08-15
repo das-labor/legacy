@@ -187,25 +187,20 @@ void powermeter_docalculations( void )
 */
 {
 	//check if calculations has to be done
-	//INTFLAGS are set while block transfer may be in progress, so check BUSY and PENDING flag too
-	if((DMA.INTFLAGS & DMA_CH0TRNIF_bm) && !(DMA.CH0.CTRLB & (DMA_CH_CHBUSY_bm | DMA_CH_CHPEND_bm)) && (DMA.INTFLAGS & DMA_CH1TRNIF_bm) && !(DMA.CH1.CTRLB & (DMA_CH_CHBUSY_bm | DMA_CH_CHPEND_bm)))
+	if(DMA_CH_IsIdle(&DMA.CH0) && DMA_CH_IsIdle(&DMA.CH1))
 	{
 		register int32_t u;
 		register int32_t i;
-		psamplebuffer_t *up;		//points to start of array containing the sampled voltages: u1, u2, u3, u1, u2, u3, ....
-		psamplebuffer_t *ip;		//points to start of array containing the sampled currents: i1, i2, i3, i1, i2 ,i3, ....
-
+		psamplebuffer_t *up;
+		psamplebuffer_t *ip;
 
 		//clear interrupt flags
                 DMA.INTFLAGS |= DMA_CH0TRNIF_bm;
                 DMA.INTFLAGS |= DMA_CH1TRNIF_bm;
 
                 // set repeat count
-                DMA.CH0.REPCNT = DMA.CH1.REPCNT = ADCSAMPLESPERPERIOD;
-
-                // enable repeat
-                DMA.CH0.CTRLA |= DMA_CH_REPEAT_bm;
-                DMA.CH1.CTRLA |= DMA_CH_REPEAT_bm;
+                DMA_SetRepeatCount(&DMA.CH0, ADCSAMPLESPERPERIOD);
+                DMA_SetRepeatCount(&DMA.CH1, ADCSAMPLESPERPERIOD);
 
                 // enable channel
                 DMA_EnableChannel(&DMA.CH1);
@@ -222,7 +217,7 @@ void powermeter_docalculations( void )
 		{
 			//load u & i
 			u = up[x].c1 - powermeter.ADCoffset.offsetA;
-			i = ip[x].c1  - powermeter.ADCoffset.offsetB;
+			i = ip[x].c1 - powermeter.ADCoffset.offsetB;
 
 			powermeter.powerdraw.c1.Ueff += u * u;	//calculate Ueff
 			powermeter.powerdraw.c1.Ieff += i * i;	//calculate Ieff
@@ -232,17 +227,17 @@ void powermeter_docalculations( void )
 			u = up[x].c2 - powermeter.ADCoffset.offsetA;
 			i = ip[x].c2 - powermeter.ADCoffset.offsetB;
 
-			powermeter.powerdraw.c2.Ueff += u * u;
-			powermeter.powerdraw.c2.Ieff += i * i;
-			powermeter.powerdraw.c2.P += -u * i;
+			powermeter.powerdraw.c2.Ueff += u * u;  //calculate Ueff
+			powermeter.powerdraw.c2.Ieff += i * i;  //calculate Ieff
+			powermeter.powerdraw.c2.P += -u * i;	//calculate P
 
 			//load u & i
 			u = up[x].c3 - powermeter.ADCoffset.offsetA;
 			i = ip[x].c3 - powermeter.ADCoffset.offsetB;
 
-			powermeter.powerdraw.c3.Ueff += u * u;
-			powermeter.powerdraw.c3.Ieff += i * i;
-			powermeter.powerdraw.c3.P += -u * i;
+			powermeter.powerdraw.c3.Ueff += u * u;  //calculate Ueff
+			powermeter.powerdraw.c3.Ieff += i * i;  //calculate Ieff
+			powermeter.powerdraw.c3.P += -u * i;	//calculate P
 
 			WDT_Reset();
 		}
