@@ -94,7 +94,8 @@ void can_createDATAPACKET()
 
 	msg.addr_src = myaddr;
 	msg.dlc = 4;
-	*((uint16_t *)&msg.data[0]) = ADCSAMPLESPERPERIOD * NET_FREQ;
+	msg.data[0] = (uint16_t)(ADCSAMPLESPERPERIOD * NET_FREQ)>>8;
+	msg.data[1] = (uint16_t)(ADCSAMPLESPERPERIOD * NET_FREQ) & 0xff;
 	msg.data[2] = 0;
 	msg.data[3] = 0;
 
