@@ -388,3 +388,31 @@ void DMA_StartTransfer( volatile DMA_CH_t * channel )
 {
 	channel->CTRLA |= DMA_CH_TRFREQ_bm;
 }
+
+/*! \brief This function configures the repeat count registers.
+ *
+ *  \note This has to be set before each transfer, as it's not automaticaly 
+ *	  reloaded at the end of a transaction.
+ *
+ *  \param  channel        The channel to configure.
+ *  \param  repeatCount    Number of blocks, 0x00 if you want to repeat at infinitum.
+ */
+void DMA_SetRepeatCount( volatile DMA_CH_t * channel, uint8_t repeatCount )
+{
+	channel->REPCNT = repeatCount;
+	channel->CTRLA |= DMA_CH_REPEAT_bm;
+}
+
+
+/*! \brief This function checks if the channel has finished a transaction.
+ *
+ *  \param  channel Channel to check.
+ *
+ *  \return  Non-zero if the selected channel is idleing;
+ */
+uint8_t DMA_CH_IsIdle( volatile DMA_CH_t * channel )
+{
+	if( ((channel->CTRLB & (DMA_CH_CHBUSY_bm | DMA_CH_CHPEND_bm)) == 0) && (channel->CTRLB & (DMA_CH_ERRIF_bm | DMA_CH_TRNIF_bm)) )
+		return 1;
+	return 0;
+}

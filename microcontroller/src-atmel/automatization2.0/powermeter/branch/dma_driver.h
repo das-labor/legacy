@@ -108,5 +108,6 @@ void DMA_EnableSingleShot( volatile DMA_CH_t * channel );
 void DMA_DisableSingleShot( volatile DMA_CH_t * channel );
 void DMA_SetTriggerSource( volatile DMA_CH_t * channel, uint8_t trigger );
 void DMA_StartTransfer( volatile DMA_CH_t * channel );
-
+void DMA_SetRepeatCount( volatile DMA_CH_t * channel, uint8_t repeatCount );
+uint8_t DMA_CH_IsIdle( volatile DMA_CH_t * channel );
 #endif
