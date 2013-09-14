@@ -36,12 +36,16 @@ static struct t_pin_parameter {
 
 
 static void send_stat(uint8_t pos) {
-	can_message *msg = can_buffer_get();
-	//msg = {0x03, 0x00, 0x01, 0x01, 2, {0}};
-	msg->data[0] = stat_inputs.status_input;
-	msg->data[1] = pos;
-	msg->addr_src = myaddr;
-	can_transmit(msg);
+	if (pos != 1 && pos != 2) {
+		can_message *msg = can_buffer_get();
+		//msg = {0x03, 0x00, 0x01, 0x01, 2, {0}};
+		msg->addr_src = myaddr;
+		msg->port_src = 0x03;
+		msg->dlc = 2;
+		msg->data[0] = stat_inputs.status_input;
+		msg->data[1] = pos;
+		can_transmit(msg);
+	}
 }
 
 static uint8_t timeout_cnt;
@@ -128,15 +132,15 @@ static void get_inputs() {
 	for (i = 0; i < NUM_INPUTS; i++) {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_inputs.status_input >> i) & 1) == 0)) {
 			stat_inputs.status_input |= (1 << i);
-			//send_stat(i);
 			update_rgb_led();
 			exec(i);
+			send_stat(i);
 		}
-		if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input >> i) & 1)) {
+		else if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input >> i) & 1)) {
 			stat_inputs.status_input &= ~(1 << i);
-			//send_stat(i);
 			update_rgb_led();
 			exec(i);
+			send_stat(i);
 		}
 	}
 }
