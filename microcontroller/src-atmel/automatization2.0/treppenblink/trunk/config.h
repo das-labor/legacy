@@ -47,7 +47,6 @@
 #define LAMPS 50
 
 /* eeprom settings */
-#define EEPROM_LAP_ADDR 0x00
 #define EEPROM_MOTION_TRESH 0x01
 
 // TWI Adresse des Temperatursensors
