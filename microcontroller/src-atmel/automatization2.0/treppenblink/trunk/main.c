@@ -9,6 +9,7 @@
 #include "netvar/can_handler.h"
 #include "netvar/netvar.h"
 #include "io.h"
+#include "animationen.h"
 #include "ds1631.h"
 #include "motion.h"
 

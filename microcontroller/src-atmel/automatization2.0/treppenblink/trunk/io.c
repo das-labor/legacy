@@ -22,6 +22,10 @@ static struct t_pin_parameter {
 	{ 0, 1, (&(I_PIN_1)), I_BV_1}
 };
 
+#ifdef NO_NETVAR
+	void keypress(void);
+#endif
+
 void init_io()
 {
 	// Ausgänge für LED Stripe
@@ -125,7 +129,7 @@ void switch_handler() {
 
 #include "can/can.h"
 
-void keypress() {
+void keypress(void) {
 	static uint8_t counter_0;
 	static uint8_t clicked_0 = 0;
 	static uint8_t held_0    = 0;
