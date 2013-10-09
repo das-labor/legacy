@@ -41,6 +41,8 @@ static void send_stat(uint8_t pos) {
 		//msg = {0x03, 0x00, 0x01, 0x01, 2, {0}};
 		msg->addr_src = myaddr;
 		msg->port_src = 0x03;
+		msg->addr_dst = 0x00;
+		msg->port_dst = 0x00;
 		msg->dlc = 2;
 		msg->data[0] = stat_inputs.status_input;
 		msg->data[1] = pos;
