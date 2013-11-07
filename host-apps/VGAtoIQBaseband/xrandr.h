@@ -10,15 +10,15 @@ typedef struct
 	int 		pos_y;
 	int 		hTotal;
 	int 		width;
-	int		height;
+	int			height;
 	int 		vTotal;
-	int		dotClock;
+	int			dotClock;
 	int 		mode;
 } vga_t;
 
 int add_custom_mode ( vga_t *vga_ptr , int pixelclk, int height, int hsync, int vsync);
 int enable_output ( vga_t *vga_ptr );
-int find_VGA_output( vga_t *vga_ptr );
+int get_output_by_name( vga_t * vga_ptr, const char *name );
 int rm_mode ( vga_t *vga_ptr );
 void disable_output( vga_t *vga_ptr );
 int init_xrandr(void);

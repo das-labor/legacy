@@ -1,15 +1,6 @@
-#include <iostream>
-#include <sstream>
-#include <iomanip>
-#include <cstdlib>
-#include <cstring>
-#include <cmath>
-#include <fstream>
-
-using std::stringstream;
-using std::cout;
-using std::endl;
-using std::ends;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define GL_GLEXT_PROTOTYPES
 
@@ -75,7 +66,7 @@ const char text_fragment_3[] =
 
 //Got this from http://www.lighthouse3d.com/opengl/glsl/index.php?oglinfo
 // it prints out shader info (debugging!)
-void printShaderInfoLog(GLuint obj, bool beVerbose)
+void printShaderInfoLog(GLuint obj, int beVerbose)
 {
     int infologLength = 0;
     int charsWritten  = 0;
@@ -86,12 +77,12 @@ void printShaderInfoLog(GLuint obj, bool beVerbose)
         infoLog = (char *)malloc(infologLength);
         glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
         if( beVerbose && charsWritten ){
-		cout << "printShaderInfoLog:" << infoLog << endl;
+			fprintf( stdout, "WARN: printShaderInfoLog: %s\n", infoLog );
 	}
 	else
 	{
 		if( beVerbose )
-			cout << "Shader Info Log: OK" << endl;
+			fprintf( stdout, "INFO: Shader Info Log: OK\n" );
 	}
 	free(infoLog);
     }
@@ -99,7 +90,7 @@ void printShaderInfoLog(GLuint obj, bool beVerbose)
 
 //Got this from http://www.lighthouse3d.com/opengl/glsl/index.php?oglinfo
 // it prints out shader info (debugging!)
-void printProgramInfoLog(GLuint obj, bool beVerbose)
+void printProgramInfoLog(GLuint obj, int beVerbose)
 {
     int infologLength = 0;
     int charsWritten  = 0;
@@ -110,20 +101,20 @@ void printProgramInfoLog(GLuint obj, bool beVerbose)
         infoLog = (char *)malloc(infologLength);
         glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
         if( beVerbose && charsWritten )
-		cout << "printProgramInfoLog: " << infoLog << endl;
+			fprintf( stdout, "WARN: printProgramInfoLog: %s\n", infoLog );
     	free(infoLog);    
     }
     else
     {
-    	    if( beVerbose )
-		cout << "Program Info Log: OK" << endl;
+		if( beVerbose )
+			fprintf( stdout, "INFO: Program Info Log: OK\n" );
     }
 }
 
 GLuint f,p;			//Handlers for our programm and fragment shaders
 
 //Setup shaders
-void setShaders(float width, float height, bool beVerbose, float max_freq, float sample_rate, int conv_depth) 
+void setShaders(float width, float height, int beVerbose, float max_freq, float sample_rate, int conv_depth) 
 {
 
 #ifdef _WIN32
@@ -147,7 +138,7 @@ void setShaders(float width, float height, bool beVerbose, float max_freq, float
 		return;
 	
 	if( (conv_depth & 1) == 0 )
-		cout << "even conv_depth specified, this might not work" << endl;
+		fprintf( stdout, "even conv_depth specified, this might not work\n" );
 	
 	/* sinc(max_freq * pi * n) = 0, for n = 1,2,3... */
 	sinc[(conv_depth-1)/2]=1;
@@ -178,12 +169,12 @@ void setShaders(float width, float height, bool beVerbose, float max_freq, float
 	buf = (char *)calloc( len, 1 );
 
 	//dynamic fragment shader generation
-	std::strcat( buf, text_fragment_1 );
+	strcat( buf, text_fragment_1 );
 	for( i=0;i<conv_depth; i++ ){	
-		std::snprintf( tmp, (sizeof( text_fragment_2 )+40)*conv_depth, text_fragment_2, (float)i,(float)i,(float)i,sinc[i] );
-		std::strcat( buf, tmp );
+		snprintf( tmp, (sizeof( text_fragment_2 )+40)*conv_depth, text_fragment_2, (float)i,(float)i,(float)i,sinc[i] );
+		strcat( buf, tmp );
 	}
-	std::strcat( buf,text_fragment_3 );
+	strcat( buf,text_fragment_3 );
 
 	free( sinc );
 
