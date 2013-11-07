@@ -13,11 +13,11 @@ RANLIB = ranlib
 WINDRES = windres
 
 INC = -Iglut/include -I.
-CFLAGS = -Wall
+CFLAGS = -Wall -std=c99 -D_DEBUG=1
 RESINC = 
 RCFLAGS = 
 LIBDIR = -Lglut/lib
-LIB = -lglut -lGLU -lGL -lXrandr
+LIB = -lglut -lGLU -lGL -lXrandr -lX11 -lpthread
 LDFLAGS = 
 INC_RELEASE = $(INC)
 CFLAGS_RELEASE = $(CFLAGS) -O2 -g
@@ -30,7 +30,7 @@ OBJDIR_RELEASE = obj
 DEP_RELEASE = 
 OUT_RELEASE = vgatoiqbaseband
 
-OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/Timer.o $(OBJDIR_RELEASE)/shader.o $(OBJDIR_RELEASE)/fifo.o $(OBJDIR_RELEASE)/xrandr.o
+OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/timer.o $(OBJDIR_RELEASE)/shader.o $(OBJDIR_RELEASE)/fifo.o $(OBJDIR_RELEASE)/xrandr.o
 
 all: release
 
@@ -41,17 +41,14 @@ release: $(OUT_RELEASE)
 $(OUT_RELEASE): $(OBJ_RELEASE) $(DEP_RELEASE)
 	$(LD) $(LDFLAGS_RELEASE) $(LIBDIR_RELEASE) -o $(OUT_RELEASE) $(OBJ_RELEASE) $(LIB_RELEASE)
 
-$(OBJDIR_RELEASE)/glInfo.o: glInfo.cpp
-	$(CPP) $(CFLAGS_RELEASE) $(INC_RELEASE) -c -o $(OBJDIR_RELEASE)/glInfo.o glInfo.cpp
+$(OBJDIR_RELEASE)/main.o: main.c
+	$(CC) $(CFLAGS_RELEASE) $(INC_RELEASE) -c -o $(OBJDIR_RELEASE)/main.o main.c
 
-$(OBJDIR_RELEASE)/main.o: main.cpp
-	$(CPP) $(CFLAGS_RELEASE) $(INC_RELEASE) -c -o $(OBJDIR_RELEASE)/main.o main.cpp
+$(OBJDIR_RELEASE)/timer.o: timer.c
+	$(CC) $(CFLAGS_RELEASE) $(INC_RELEASE) -c -o $(OBJDIR_RELEASE)/timer.o timer.c
 
-$(OBJDIR_RELEASE)/Timer.o: Timer.cpp
-	$(CPP) $(CFLAGS_RELEASE) $(INC_RELEASE) -c -o $(OBJDIR_RELEASE)/Timer.o Timer.cpp
-
-$(OBJDIR_RELEASE)/shader.o: shader.cpp
-	$(CPP) $(CFLAGS_RELEASE) $(INC_RELEASE) -c -o $(OBJDIR_RELEASE)/shader.o shader.cpp
+$(OBJDIR_RELEASE)/shader.o: shader.c
+	$(CC) $(CFLAGS_RELEASE) $(INC_RELEASE) -c -o $(OBJDIR_RELEASE)/shader.o shader.c
 
 $(OBJDIR_RELEASE)/xrandr.o: xrandr.c
 	$(CC) $(CFLAGS_RELEASE) $(INC_RELEASE) -c -o $(OBJDIR_RELEASE)/xrandr.o xrandr.c

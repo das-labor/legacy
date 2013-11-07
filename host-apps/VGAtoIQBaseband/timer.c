@@ -12,121 +12,101 @@
 // Copyright (c) 2003 Song Ho Ahn
 //////////////////////////////////////////////////////////////////////////////
 
-#include "Timer.h"
+#include "timer.h"
 #include <stdlib.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // constructor
 ///////////////////////////////////////////////////////////////////////////////
-Timer::Timer()
+
+void Timer_init(mytimer_t *t)
 {
 #ifdef WIN32
-    QueryPerformanceFrequency(&frequency);
-    startCount.QuadPart = 0;
-    endCount.QuadPart = 0;
+    QueryPerformanceFrequency(&t->frequency);
+    t->startCount.QuadPart = 0;
+    t->endCount.QuadPart = 0;
 #else
-    startCount.tv_sec = startCount.tv_usec = 0;
-    endCount.tv_sec = endCount.tv_usec = 0;
+    t->startCount.tv_sec = t->startCount.tv_usec = 0;
+    t->endCount.tv_sec = t->endCount.tv_usec = 0;
 #endif
 
-    stopped = 0;
-    startTimeInMicroSec = 0;
-    endTimeInMicroSec = 0;
+    t->stopped = 0;
+    t->startTimeInMicroSec = 0;
+    t->endTimeInMicroSec = 0;
 }
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// distructor
-///////////////////////////////////////////////////////////////////////////////
-Timer::~Timer()
-{
-}
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // start timer.
 // startCount will be set at this point.
 ///////////////////////////////////////////////////////////////////////////////
-void Timer::start()
+void Timer_start(mytimer_t *t)
 {
-    stopped = 0; // reset stop flag
+    t->stopped = 0; // reset stop flag
 #ifdef WIN32
-    QueryPerformanceCounter(&startCount);
+    QueryPerformanceCounter(&t->startCount);
 #else
-    gettimeofday(&startCount, NULL);
+    gettimeofday(&t->startCount, NULL);
 #endif
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // stop the timer.
 // endCount will be set at this point.
 ///////////////////////////////////////////////////////////////////////////////
-void Timer::stop()
+void Timer_stop(mytimer_t *t)
 {
-    stopped = 1; // set timer stopped flag
+    t->stopped = 1; // set timer stopped flag
 
 #ifdef WIN32
-    QueryPerformanceCounter(&endCount);
+    QueryPerformanceCounter(&t->endCount);
 #else
-    gettimeofday(&endCount, NULL);
+    gettimeofday(&t->endCount, NULL);
 #endif
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // compute elapsed time in micro-second resolution.
 // other getElapsedTime will call this first, then convert to correspond resolution.
 ///////////////////////////////////////////////////////////////////////////////
-double Timer::getElapsedTimeInMicroSec()
+double Timer_getElapsedTimeInMicroSec(mytimer_t *t)
 {
 #ifdef WIN32
     if(!stopped)
-        QueryPerformanceCounter(&endCount);
+        QueryPerformanceCounter(&t->endCount);
 
-    startTimeInMicroSec = startCount.QuadPart * (1000000.0 / frequency.QuadPart);
-    endTimeInMicroSec = endCount.QuadPart * (1000000.0 / frequency.QuadPart);
+    t->startTimeInMicroSec = t->startCount.QuadPart * (1000000.0 / t->frequency.QuadPart);
+    t->endTimeInMicroSec = t->endCount.QuadPart * (1000000.0 / t->frequency.QuadPart);
 #else
-    if(!stopped)
-        gettimeofday(&endCount, NULL);
+    if(!t->stopped)
+        gettimeofday(&t->endCount, NULL);
 
-    startTimeInMicroSec = (startCount.tv_sec * 1000000.0) + startCount.tv_usec;
-    endTimeInMicroSec = (endCount.tv_sec * 1000000.0) + endCount.tv_usec;
+    t->startTimeInMicroSec = (t->startCount.tv_sec * 1000000.0) + t->startCount.tv_usec;
+    t->endTimeInMicroSec = (t->endCount.tv_sec * 1000000.0) + t->endCount.tv_usec;
 #endif
 
-    return endTimeInMicroSec - startTimeInMicroSec;
+    return t->endTimeInMicroSec - t->startTimeInMicroSec;
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // divide elapsedTimeInMicroSec by 1000
 ///////////////////////////////////////////////////////////////////////////////
-double Timer::getElapsedTimeInMilliSec()
+double Timer_getElapsedTimeInMilliSec(mytimer_t *t)
 {
-    return this->getElapsedTimeInMicroSec() * 0.001;
+    return Timer_getElapsedTimeInMicroSec(t) * 0.001;
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // divide elapsedTimeInMicroSec by 1000000
 ///////////////////////////////////////////////////////////////////////////////
-double Timer::getElapsedTimeInSec()
+double Timer_getElapsedTimeInSec(mytimer_t *t)
 {
-    return this->getElapsedTimeInMicroSec() * 0.000001;
+    return Timer_getElapsedTimeInMicroSec(t) * 0.000001;
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // same as getElapsedTimeInSec()
 ///////////////////////////////////////////////////////////////////////////////
-double Timer::getElapsedTime()
+double Timer_getElapsedTime(mytimer_t *t)
 {
-    return this->getElapsedTimeInSec();
+    return Timer_getElapsedTimeInSec(t);
 }
