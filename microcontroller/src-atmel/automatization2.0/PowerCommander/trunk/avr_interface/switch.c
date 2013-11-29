@@ -7,6 +7,7 @@
 #include "i2c_funktionen.h"
 #include "statusled.h"
 #include "virt_lamp.h"
+#include "switch.h"
 
 union {
 	struct {
@@ -35,23 +36,8 @@ static struct t_pin_parameter {
 };
 
 
-static void send_stat(uint8_t pos) {
-	if (pos != 1 && pos != 2) {
-		can_message *msg = can_buffer_get();
-		//msg = {0x03, 0x00, 0x01, 0x01, 2, {0}};
-		msg->addr_src = myaddr;
-		msg->port_src = 0x03;
-		msg->addr_dst = 0x00;
-		msg->port_dst = 0x00;
-		msg->dlc = 2;
-		msg->data[0] = stat_inputs.status_input;
-		msg->data[1] = pos;
-		can_transmit(msg);
-	}
-}
-
 static uint8_t timeout_cnt;
-void start_main_switch_timeout(void) {
+static void start_main_switch_timeout(void) {
 	/* 5 seconds timeout */
 	timeout_cnt = 250;
 }
@@ -98,7 +84,7 @@ static void exec(uint8_t index) {
 * Red blinking  : Error, rcd main failed
 * Blue blinking : Error, rcd licht failed
 */
-static void update_rgb_led() {
+static void update_rgb_led(void) {
 	if (!stat_inputs.inputs.power_ok) { /* Error case */
 		set_led( (rgb){ .r = 1, .g = 1, .b = 1, .fade = 0, .blink = 1} );
 		return;
@@ -129,20 +115,20 @@ static void update_rgb_led() {
 *  on change: call send_stat() and call exec()
 */
 
-static void get_inputs() {
+static void get_inputs(void) {
 	uint8_t i;
 	for (i = 0; i < NUM_INPUTS; i++) {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_inputs.status_input >> i) & 1) == 0)) {
 			stat_inputs.status_input |= (1 << i);
 			update_rgb_led();
 			exec(i);
-			send_stat(i);
+			can_send_input_stat(i, stat_inputs.status_input);
 		}
 		else if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input >> i) & 1)) {
 			stat_inputs.status_input &= ~(1 << i);
 			update_rgb_led();
 			exec(i);
-			send_stat(i);
+			can_send_input_stat(i, stat_inputs.status_input);
 		}
 	}
 }
@@ -155,8 +141,8 @@ typedef struct {
 	uint8_t dim_dir;
 	uint8_t bright;
 	uint8_t room;
-	void    (*sw_funct) ();
-	void    (*dim_funct) ();
+	void    (*sw_funct) (void);
+	void    (*dim_funct) (void);
 } taster_status;
 
 void virt_pwm_set_all(taster_status *tst, uint8_t min, uint8_t max)
@@ -272,7 +258,7 @@ static void lamp_dim(taster_status *tst) {
 }
 
 static uint8_t dimmdir_k;
-void dim_kueche() {
+void dim_kueche(void) {
 	uint8_t port_pwm_value = get_channel_brightness(SWL_KUECHE);
 
 	if (!(get_channel_status() & 16)) {
@@ -291,15 +277,15 @@ void dim_kueche() {
 	set_bright_all(ROOM_KUECHE, port_pwm_value);
 }
 
-void tog_dimdir_kueche() {
+void tog_dimdir_kueche(void) {
 	dimmdir_k ^= 1;
 }
 
-void toggle_vortrag() {
+void toggle_vortrag(void) {
 	set_lamp_all(ROOM_VORTRAG, (outputdata.ports >> SWL_VORTRAG) & 0x01 ? 0 : 1);
 }
 
-void toggle_lounge() {
+void toggle_lounge(void) {
 	set_lamp_all(ROOM_LOUNGE, (outputdata.ports >> SWL_LOUNGE) & 0x01 ? 0 : 1);
 }
 
@@ -308,23 +294,23 @@ void toggle_lounge() {
 #define CLICK_THRESHOLD 0
 #define NUM_TASTER 2
 
-void dim_vortrag();
-void dim_lounge();
+void dim_vortrag(void);
+void dim_lounge(void);
 static taster_status status[NUM_TASTER] = {{0, 0, 0, 0, 0, &toggle_vortrag, &dim_vortrag}, {0, 0, 0, 0, 1, &toggle_lounge, &dim_lounge}};
 
-void dim_vortrag() {
+void dim_vortrag(void) {
 	lamp_dim(&status[0]);
 }
 
-void dim_lounge() {
+void dim_lounge(void) {
 	lamp_dim(&status[1]);
 }
 
-void tog_dimdir_vortrag() {
+void tog_dimdir_vortrag(void) {
 	status[0].dim_dir ^= 1;
 }
 
-static void taster() {
+static void taster(void) {
 	uint8_t i;
 	for (i = 0; i < NUM_TASTER; i++)
 	{
@@ -362,7 +348,7 @@ static void taster() {
 }
 
 
-void switch_handler()
+void switch_handler(void)
 {
 	get_inputs();
 	taster();

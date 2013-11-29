@@ -12,8 +12,6 @@
 
 uint8_t myaddr;
 
-static void send_status(uint8_t addr);
-
 void can_handler()
 {
 	can_message *rx_msg;
@@ -21,173 +19,168 @@ void can_handler()
 	{
 		if (rx_msg->addr_dst == myaddr)
 		{
-			if (rx_msg->port_dst == PORT_MGT)
+			switch (rx_msg->port_dst)
 			{
-				switch (rx_msg->data[0])
-				{
-					case FKT_MGT_RESET:
-						wdt_enable(0);
-						while (1);
-					case FKT_MGT_PING:
-						{
-							can_message *tx_msg = can_buffer_get();
-							tx_msg->port_src = PORT_MGT;
-							tx_msg->port_dst = PORT_MGT;
-							tx_msg->addr_src = myaddr;
-							tx_msg->addr_dst = rx_msg->addr_src;
-							tx_msg->dlc = 1;
-							tx_msg->data[0] = FKT_MGT_PONG;
-							can_transmit(tx_msg);
-						}
-						break;
-				}
-			}
-			else if (rx_msg->port_dst == 1) // old proto
-			{
-				switch (rx_msg->data[0])
-				{
-					case C_SW: // SET LAMP
-						if (rx_msg->data[2] < F_SW_STATUS)
-						{
-							switch (rx_msg->data[1])
+				case PORT_MGT:
+					switch (rx_msg->data[0])
+					{
+						case FKT_MGT_RESET:
+							wdt_enable(0);
+							while (1);
+						case FKT_MGT_PING:
 							{
-								case SWL_TAFEL:
-									set_lamp(ROOM_VORTRAG, 0, rx_msg->data[2]);
-									break;
-								case SWL_BEAMER:
-									set_lamp(ROOM_VORTRAG, 1, rx_msg->data[2]);
-									break;
-								case SWL_SCHRANK:
-									set_lamp(ROOM_VORTRAG, 2, rx_msg->data[2]);
-									break;
-								case SWL_FLIPPER:
-									set_lamp(ROOM_VORTRAG, 3, rx_msg->data[2]);
-									break;
-								case SWL_LOUNGE:
-									set_lamp(ROOM_LOUNGE, 0, rx_msg->data[2]); // XXX rm
-									break;
-								case SWL_KUECHE:
-									set_lamp(ROOM_KUECHE, 0, rx_msg->data[2]);
-									break;
-								case SWA_BEAMER:
-									set_lamp(ROOM_VORTRAG, 4, rx_msg->data[2]);
-									break;
+								can_message *tx_msg = can_buffer_get();
+								tx_msg->port_src = PORT_MGT;
+								tx_msg->port_dst = PORT_MGT;
+								tx_msg->addr_src = myaddr;
+								tx_msg->addr_dst = rx_msg->addr_src;
+								tx_msg->dlc = 1;
+								tx_msg->data[0] = FKT_MGT_PONG;
+								can_transmit(tx_msg);
 							}
-						}
-						else if (rx_msg->data[2] == F_SW_TOGGLE && rx_msg->data[1] == SWL_KUECHE)
-						{
-							set_lamp_all(ROOM_KUECHE, ((outputdata.ports >> SWL_KUECHE) & 0x01)^1);
-						}
-						break;
-					case C_PWM: // PWM F_PWM_SET
-						switch (rx_msg->data[2])
-						{
-							case F_PWM_SET:
+							break;
+					}
+					break;
+				case 1: // old proto
+					switch (rx_msg->data[0])
+					{
+						case C_SW: // SET LAMP
+							if (rx_msg->data[2] < F_SW_STATUS)
+							{
 								switch (rx_msg->data[1])
 								{
-									case PWM_TAFEL:
-										set_bright(ROOM_VORTRAG, 0, rx_msg->data[3]);
+									case SWL_TAFEL:
+										set_lamp(ROOM_VORTRAG, 0, rx_msg->data[2]);
 										break;
-									case PWM_BEAMER:
-										set_bright(ROOM_VORTRAG, 1, rx_msg->data[3]);
+									case SWL_BEAMER:
+										set_lamp(ROOM_VORTRAG, 1, rx_msg->data[2]);
 										break;
-									case PWM_SCHRANK:
-										set_bright(ROOM_VORTRAG, 2, rx_msg->data[3]);
+									case SWL_SCHRANK:
+										set_lamp(ROOM_VORTRAG, 2, rx_msg->data[2]);
 										break;
-									case PWM_FLIPPER:
-										set_bright(ROOM_VORTRAG, 3, rx_msg->data[3]);
+									case SWL_FLIPPER:
+										set_lamp(ROOM_VORTRAG, 3, rx_msg->data[2]);
 										break;
-									case PWM_KUECHE:
-										set_bright(ROOM_KUECHE, 0, rx_msg->data[3]);
+									case SWL_LOUNGE:
+										set_lamp(ROOM_LOUNGE, 0, rx_msg->data[2]); // XXX rm
 										break;
-								}
-								break;
-							case F_PWM_MOD: // TODO
-								switch (rx_msg->data[1]) {
-									case PWM_KUECHE:
-										dim_kueche();
+									case SWL_KUECHE:
+										set_lamp(ROOM_KUECHE, 0, rx_msg->data[2]);
 										break;
-								}
-								break;
-							case F_PWM_DIR: // TODO
-								switch (rx_msg->data[1]) {
-									case PWM_KUECHE:
-										tog_dimdir_kueche();
+									case SWA_BEAMER:
+										set_lamp(ROOM_VORTRAG, 4, rx_msg->data[2]);
 										break;
 								}
-								break;
-						}
-						break;
-					case C_VIRT: // VIRT
-						switch (rx_msg->data[1])
-						{
-							case VIRT_VORTRAG:
-								if (rx_msg->data[2] < F_SW_STATUS)
-									set_lamp_all(ROOM_VORTRAG, rx_msg->data[2]);
-								else if (rx_msg->data[2] == F_SW_TOGGLE)
-									toggle_vortrag();
-								break;
-							case VIRT_VORTRAG_PWM:
-								switch (rx_msg->data[2])
-								{
-									case F_PWM_SET:
-										set_bright_all(ROOM_VORTRAG, rx_msg->data[3]);
-										break;
-									case F_PWM_MOD:
-										dim_vortrag();
-										break;
-									case F_PWM_DIR:
-										tog_dimdir_vortrag();
-										break;
-								}
-								break;
-						}
-						break;
-				}
-			}
-			else if (rx_msg->port_dst == 2)
-			{
-				switch (rx_msg->data[0])
-				{
-					case 0: // switch lamp
-						if (rx_msg->data[1] < 4)
-							set_lamp(ROOM_VORTRAG, rx_msg->data[1], rx_msg->data[2]);
-						else
-							set_lamp(ROOM_KUECHE, 0, rx_msg->data[2]);
-						send_status(rx_msg->addr_src);
-						break;
-					case 1: // set brightness lamp
-						if (rx_msg->data[1] < 4)
-							set_bright(ROOM_VORTRAG, rx_msg->data[1], rx_msg->data[2]);
-						else
-							set_bright(ROOM_KUECHE, 0, rx_msg->data[2]);
-						send_status(rx_msg->addr_src);
-						break;
-					case 2: // request status packet
-						send_status(rx_msg->addr_src);
-						break;
-					case 3: // set all lamps
-						set_lamp_all(ROOM_VORTRAG, rx_msg->data[2]);
-						set_lamp_all(ROOM_KUECHE, rx_msg->data[2]);
-						send_status(rx_msg->addr_src);
-						break;
-					case 4: // set brightness all lamps
-						set_bright_all(ROOM_VORTRAG, rx_msg->data[2]);
-						set_bright_all(ROOM_KUECHE, rx_msg->data[2]);
-						send_status(rx_msg->addr_src);
-						break;
-				}
-			}
-			else if (rx_msg->port_dst == 3)
-			{
-				if (rx_msg->addr_src == 0x61) /* lounge lamp 1 */
-					set_lounge_lamp_1(rx_msg->data[0]);
+							}
+							else if (rx_msg->data[2] == F_SW_TOGGLE && rx_msg->data[1] == SWL_KUECHE)
+							{
+								set_lamp_all(ROOM_KUECHE, ((outputdata.ports >> SWL_KUECHE) & 0x01)^1);
+							}
+							break;
+						case C_PWM: // PWM F_PWM_SET
+							switch (rx_msg->data[2])
+							{
+								case F_PWM_SET:
+									switch (rx_msg->data[1])
+									{
+										case PWM_TAFEL:
+											set_bright(ROOM_VORTRAG, 0, rx_msg->data[3]);
+											break;
+										case PWM_BEAMER:
+											set_bright(ROOM_VORTRAG, 1, rx_msg->data[3]);
+											break;
+										case PWM_SCHRANK:
+											set_bright(ROOM_VORTRAG, 2, rx_msg->data[3]);
+											break;
+										case PWM_FLIPPER:
+											set_bright(ROOM_VORTRAG, 3, rx_msg->data[3]);
+											break;
+										case PWM_KUECHE:
+											set_bright(ROOM_KUECHE, 0, rx_msg->data[3]);
+											break;
+									}
+									break;
+								case F_PWM_MOD: // TODO
+									switch (rx_msg->data[1]) {
+										case PWM_KUECHE:
+											dim_kueche();
+											break;
+									}
+									break;
+								case F_PWM_DIR: // TODO
+									switch (rx_msg->data[1]) {
+										case PWM_KUECHE:
+											tog_dimdir_kueche();
+											break;
+									}
+									break;
+							}
+							break;
+						case C_VIRT: // VIRT
+							switch (rx_msg->data[1])
+							{
+								case VIRT_VORTRAG:
+									if (rx_msg->data[2] < F_SW_STATUS)
+										set_lamp_all(ROOM_VORTRAG, rx_msg->data[2]);
+									else if (rx_msg->data[2] == F_SW_TOGGLE)
+										toggle_vortrag();
+									break;
+								case VIRT_VORTRAG_PWM:
+									switch (rx_msg->data[2])
+									{
+										case F_PWM_SET:
+											set_bright_all(ROOM_VORTRAG, rx_msg->data[3]);
+											break;
+										case F_PWM_MOD:
+											dim_vortrag();
+											break;
+										case F_PWM_DIR:
+											tog_dimdir_vortrag();
+											break;
+									}
+									break;
+							}
+							break;
+					}
+					break;
+				case 2:
+					switch (rx_msg->data[0])
+					{
+						case 0: // switch lamp
+							if (rx_msg->data[1] < 4)
+								set_lamp(ROOM_VORTRAG, rx_msg->data[1], rx_msg->data[2]);
+							else
+								set_lamp(ROOM_KUECHE, 0, rx_msg->data[2]);
+							break;
+						case 1: // set brightness lamp
+							if (rx_msg->data[1] < 4)
+								set_bright(ROOM_VORTRAG, rx_msg->data[1], rx_msg->data[2]);
+							else
+								set_bright(ROOM_KUECHE, 0, rx_msg->data[2]);
+							break;
+						case 2: // request status packet
+							can_send_output_status();
+							break;
+						case 3: // set all lamps
+							set_lamp_all(ROOM_VORTRAG, rx_msg->data[2]);
+							set_lamp_all(ROOM_KUECHE, rx_msg->data[2]);
+							break;
+						case 4: // set brightness all lamps
+							set_bright_all(ROOM_VORTRAG, rx_msg->data[2]);
+							set_bright_all(ROOM_KUECHE, rx_msg->data[2]);
+							break;
+					}
+					break;
+				case 3:
+					if (rx_msg->addr_src == 0x61) /* lounge lamp 1 */
+						set_lounge_lamp_1(rx_msg->data[0]);
 
-				if (rx_msg->addr_src == 0x60) /* lounge lamp 2 */
-					set_lounge_lamp_2(rx_msg->data[0]);
+					if (rx_msg->addr_src == 0x60) /* lounge lamp 2 */
+						set_lounge_lamp_2(rx_msg->data[0]);
+					break;
 			}
 		}
-		// sleepmode zustand abfangen
+		// sleepmode zustand abfangen vom hauptschalter gehäuse
 		else if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01)
 		{
 			// = rx_msg->data[1];
@@ -196,25 +189,41 @@ void can_handler()
 	}
 }
 
-static void send_status(uint8_t addr)
+void can_send_input_stat(uint8_t pos, uint8_t val) {
+	if (pos != 1 && pos != 2) {
+		can_message *msg = can_buffer_get();
+		msg->addr_src = myaddr;
+		msg->port_src = 0x03;
+		msg->addr_dst = 0x00;
+		msg->port_dst = 0x00;
+		msg->dlc = 2;
+		msg->data[0] = val;
+		msg->data[1] = pos;
+		can_transmit(msg);
+	}
+}
+
+void can_send_output_status()
 {
 	can_message *msg = can_buffer_get();
+	msg->addr_src = myaddr;
+	msg->port_src = 2;
+	msg->addr_dst = 0x00;
+	msg->port_dst = 0;
+	msg->dlc = 6;
 	msg->data[0] = get_channel_status();
 	msg->data[1] = get_channel_brightness(0); /* SWL_TAFEL */
 	msg->data[2] = get_channel_brightness(1); /* SWL_BEAMER */
 	msg->data[3] = get_channel_brightness(2); /* SWL_SCHRANK */
 	msg->data[4] = get_channel_brightness(3); /* SWL_FLIPPER */
 	msg->data[5] = get_channel_brightness(4); /* SWL_KUECHE */
-	msg->addr_src = myaddr;
-	msg->addr_dst = addr;
-	msg->port_dst = 3;
-	msg->port_src = 3;
-	msg->dlc = 6;
 	can_transmit(msg);
 }
 
-void read_can_addr()
+static const uint8_t EE_lap_addr EEMEM = EEPROM_LAP_ADDR;
+
+void read_can_addr(void)
 {
-	myaddr = eeprom_read_byte(EEPROM_LAP_ADDR);
+	myaddr = eeprom_read_byte(&EE_lap_addr);
 }
 

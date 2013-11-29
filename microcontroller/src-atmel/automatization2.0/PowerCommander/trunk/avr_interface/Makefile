@@ -1,3 +1,5 @@
+LAP_ADDR       = 0x02
+
 OBJ = main.o can/can.o can/spi.o can_handler.o twi_master/twi_master.o switch.o i2c_funktionen.o statusled.o virt_lamp.o
 
 # Default values
@@ -6,17 +8,17 @@ MCU_TARGET    ?= atmega32
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall -Winline -Wextra
-DEFS          ?= -DF_CPU=16000000UL
+WARNINGS      ?= -Wall -Winline -pedantic -Wstrict-prototypes -Wextra
+DEFS          ?= -DF_CPU=16000000UL -DEEPROM_LAP_ADDR=$(LAP_ADDR)
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
 ASFLAGS	      += -mmcu=avr5
-LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
+LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c avrisp2 -P usb -p $(MCU_TARGET) -U $(OUT).hex
-CANFLASHCMD    = lapcontrol -s kvm flash 0x02 $(OUT).hex
+FLASHCMD      ?= avrdude -p $(MCU_TARGET) -U $(OUT).hex
+CANFLASHCMD    = lapcontrol -s wl flash $(LAP_ADDR) $(OUT).hex
 
 #############################################################################
 # Rules

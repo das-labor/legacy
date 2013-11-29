@@ -3,6 +3,7 @@
 #include "twi_master/twi_master.h"
 #include "../include/PowerCommander.h"
 #include "i2c_funktionen.h"
+#include "can_handler.h"
 
 t_outputdata outputdata;
 
@@ -27,11 +28,10 @@ void twi_send()
 	{
 		TWIM_Write(outputdata.ports);
 		TWIM_Write(outputdata.ports >> 8);
-		uint8_t i;
-		for (i = 0; i < PWM_CHAN; i++)
+		for (uint8_t i = 0; i < PWM_CHAN; i++)
 			TWIM_Write(outputdata.pwmval[i]);
 	}
 	TWIM_Stop();
-	// XXX send as can
+	can_send_output_status();
 }
 

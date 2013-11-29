@@ -43,7 +43,6 @@
 #define RCD_POWER      (_BV(PC2))
 #define RCD_LICHT      (_BV(PD6))
 
-/* eeprom settings */
-#define EEPROM_LAP_ADDR 0x00
 
 #endif // ifndef CONFIG_H
+
