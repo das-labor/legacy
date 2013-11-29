@@ -13,6 +13,6 @@ typedef struct {
 } rgb;
 
 void set_led(rgb color);
-void rgb_led_animation();
+void rgb_led_animation(void);
 
 #endif

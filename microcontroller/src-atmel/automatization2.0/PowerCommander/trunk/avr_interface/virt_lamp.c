@@ -272,6 +272,8 @@ uint8_t get_channel_status(void)
 		tmp |= 8;
 	if(outputdata.ports & _BV(SWL_KUECHE))
 		tmp |= 16;
+	if(outputdata.ports & _BV(SWL_VORTRAG))
+		tmp |= 32;
 	return tmp;
 }
 
@@ -285,7 +287,7 @@ uint8_t get_channel_status(void)
 */
 uint8_t get_channel_brightness(uint8_t index)
 {
-	if(index > 4)
+	if (index > 4)
 		return 0;
 
 	return outputdata.pwmval[index];
@@ -297,7 +299,8 @@ uint8_t get_channel_brightness(uint8_t index)
 * only touch relais of ROOM_VORTRAG, ROOM_KUECHE, ROOM_LOUNGE
 */
 
-static void relais_control() {
+static void relais_control()
+{
 	if (lounge_lamp_status_1 || lounge_lamp_status_2) /* one or more lamps in lounge are on */
 		outputdata.ports |= _BV(SWL_LOUNGE);
 	else
