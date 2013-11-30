@@ -1,29 +1,27 @@
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <avr/interrupt.h>
 
 #include "config.h"
 #include "twi_master/twi_master.h"
-#include "can/can.h"
 #include "can/spi.h"
+#include "can/can.h"
 #include "can_handler.h"
-#include "i2c_temp.h"
-#include "temp_regler.h"
+#include "ds1631.h"
 #include "temp_read.h"
+#include "temp_regler.h"
+#include "switch_handler.h"
 
 // int regler_tick = true
 
-volatile uint8_t tickscounter;
+static volatile uint8_t tickscounter;
 
 ISR(TIMER1_OVF_vect)
 {
-	// 1 Hz
-	
-	// ueberlaeufe sind ok!	
 	tickscounter++;
 }
 
-void init(void)
+static void init(void)
 {
 	// Initiate TWI Master Interface
 
@@ -32,7 +30,7 @@ void init(void)
 		while (1);
 	}
 
-	init_sensor(I2C_ADRESSE_SENSOR);
+	init_ds1631(I2C_ADRESSE_DS1631);
 
 	//TCCR0 |= _BV(CS02) | _BV(CS00);
 	//TIMSK |= _BV(TOIE0);
