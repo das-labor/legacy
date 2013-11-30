@@ -29,25 +29,17 @@ static struct t_pin_parameter {
 	{SIGNAL_PIN, TUER}
 };
 
-void send_stat(uint8_t change) {
-	static can_message msg = {0x04, 0x00, 0x00, 0x01, 2, {0}};
-	msg.data[0] = stat_sw;
-	msg.data[1] = change;
-	msg.addr_src = myaddr;
-	can_transmit(&msg);
-}
-
-void get_switches() {
+static void get_switches(void) {
 	uint8_t i, msk = 0x01;
 
 	for (i = 0; i < 3; i++) {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (stat_sw & msk) == 0) {
 			stat_sw |= msk;
-			send_stat(i);
+			can_send_stat(stat_sw, i);
 		}
-		if ( !((*pin_matrix[i].pin) & pin_matrix[i].bit) && (stat_sw & msk)) {
+		else if ( !((*pin_matrix[i].pin) & pin_matrix[i].bit) && (stat_sw & msk)) {
 			stat_sw &= ~msk;
-			send_stat(i);
+			can_send_stat(stat_sw, i);
 		}
 		msk <<= 1;
 	}

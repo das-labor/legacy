@@ -1,21 +1,24 @@
-OBJ = main.o can_handler.o can/can.o can/spi.o twi_master/twi_master.o i2c_temp.o temp_regler.o switch_handler.o temp_read.o
+LAP_ADDR       = 0x10
+
+OBJ            = main.o can_handler.o can/can.o can/spi.o twi_master/twi_master.o ds1631.o temp_regler.o switch_handler.o temp_read.o
+
 # Default values
 OUT           ?= image
 MCU_TARGET    ?= atmega8
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall -Winline
-DEFS          ?= -DF_CPU=16000000UL
+WARNINGS      ?= -Wall -Winline -pedantic -Wstrict-prototypes -Wextra
+DEFS          ?= -DF_CPU=16000000UL -DEEPROM_LAP_ADDR=$(LAP_ADDR)
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
 ASFLAGS	      += -mmcu=avr5
-LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
+LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U $(OUT).hex
-CANFLASHCMD    = lapcontrol -s kvm flash 0x10 $(OUT).hex
+FLASHCMD      ?= avrdude -p $(MCU_TARGET) -U $(OUT).hex
+CANFLASHCMD    = lapcontrol -s wl flash $(LAP_ADDR) $(OUT).hex
 
 #############################################################################
 # Rules

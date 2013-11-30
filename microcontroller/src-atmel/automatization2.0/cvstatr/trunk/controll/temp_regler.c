@@ -27,7 +27,7 @@ void set_ventil(uint8_t stufe)
 	}
 }
 
-void set_reset()
+void reset_ventil()
 {
 	uint8_t i = 0;
 	while (i < 2)
