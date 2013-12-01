@@ -4,8 +4,10 @@
 extern uint8_t myaddr;
 
 extern void can_handler(void);
-extern void send_status(void);
-extern void read_can_addr(void);
+extern void can_read_addr(void);
+
+extern void can_send_status(void);
+extern void can_send_temp_data(uint8_t *data);
 
 #endif // _CAN_HANDLER
 

@@ -2,10 +2,13 @@
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 
+#include "config.h"
 #include "can/can.h"
 #include "can_handler.h"
 #include "can/lap.h"
 #include "animationen.h"
+#include "io.h"
+
 
 uint8_t myaddr;
 
@@ -16,12 +19,13 @@ void can_handler()
 	{
 		if (rx_msg->addr_dst == myaddr)
 		{
-			if (rx_msg->port_dst == PORT_MGT)
+			switch (rx_msg->port_dst)
 			{
+			case PORT_MGT:
 				switch (rx_msg->data[0])
 				{
 					case FKT_MGT_RESET:
-						wdt_enable(0);
+						wdt_enable(WDTO_15MS);
 						while (1);
 					case FKT_MGT_PING:
 						{
@@ -36,42 +40,62 @@ void can_handler()
 						}
 						break;
 				}
-			}
-			else if (rx_msg->port_dst == 0x0f)
-			{
+				break;
+			case 0x0f:
 				switch(rx_msg->data[0]) { // alte nummerierung in neue
-					case 4:
+					case 4: // aus
 						animation = 0;
 						break;
-					case 5:
+					case 2: // weiss
 						animation = 1;
 						break;
-					case 8:
+					case 8: // rgb
 						animation = 2;
 						break;
 				}
+				break;
 			}
+		}
+		if (rx_msg->addr_src == 0x02 && rx_msg->port_src == 0x02) // get relais status from powercommander for rgb led
+		{
+			if ((rx_msg->data[0]) & 0x20)
+				set_leds(1);
+			else if (!(rx_msg->data[0] & 0x20))
+				set_leds(2);
 		}
 		can_free(rx_msg);
 	}
 }
 
 
-void send_status(void)
+void can_send_status(void)
 {
 	can_message *msg = can_buffer_get();
+	msg->addr_src = myaddr;
+	msg->addr_dst = 0x00;
+	msg->port_src = 0x0f;
+	msg->port_dst = 0x00;
+	msg->dlc = 1;
 	msg->data[0] = animation;
+	can_transmit(msg);
+}
+
+void can_send_temp_data(uint8_t *data)
+{
+	can_message *msg = can_buffer_get();
+	msg->data[0] = data[0];
+	msg->data[1] = data[1];
 	msg->addr_src = myaddr;
 	msg->addr_dst = 0x00;
 	msg->port_dst = 0x00;
 	msg->port_src = 0x0f;
-	msg->dlc = 1;
+	msg->dlc = 2;
 	can_transmit(msg);
 }
 
-static const uint8_t EE_lap_addr EEMEM = EE_LAP_ADDR;
+static const uint8_t EE_lap_addr EEMEM = EEPROM_LAP_ADDR;
 
-void read_can_addr()
+void can_read_addr()
 {
 	myaddr = eeprom_read_byte(&EE_lap_addr);
 }

@@ -6,11 +6,23 @@
 #include "netvar/netvar_io.h"
 #include "animationen.h"
 
+static struct t_switch_parameter {
+	volatile uint8_t *port;
+	uint8_t pin;
+} out_matrix[] = {
+	{ O_OUT00_PORT , O_OUT00_BIT},
+	{ O_OUT01_PORT , O_OUT01_BIT},
+	{ O_OUT02_PORT , O_OUT02_BIT}
+};
+
+
 // the inverted parameter is used to normalize all inputs
 // before they are stored in the state parameter and passed to the changed event.
 // The normalized values are:
-// Taster            1 = pressed, 0 = released
-// Türkontakt        1 = on, 0 = off
+// Taster Licht Vortragsraum 1 = pressed, 0 = released
+// Taster Treppenblink       1 = on, 0 = off
+// Taster 3                  1 = on, 0 = off
+// Taster 4                  1 = on, 0 = off
 
 static struct t_pin_parameter {
 	uint8_t state;
@@ -26,14 +38,14 @@ static struct t_pin_parameter {
 	void keypress(void);
 #endif
 
-void init_io()
+void io_init(void)
 {
 	// Ausgänge für LED Stripe
-	RGB_DDR |= RGB_DATA | RGB_CLK;
-	RGB_PORT |= RGB_DATA | RGB_CLK;
+	RGB_STRING_DDR |= RGB_STRING_DATA | RGB_STRING_CLK;
+	RGB_STRING_PORT |= RGB_STRING_DATA | RGB_STRING_CLK;
 
 	// Ausgänge für RGB LED
-	DDR_LED |= R_LED | G_LED | B_LED;
+	RGB_LED_DDR |= RGBLED_R | RGBLED_G | RGBLED_B;
 
 	// Eingänge für Taster
 	DDRB &= ~(I_BV_0 | I_BV_1);
@@ -42,6 +54,21 @@ void init_io()
 	PORTB |= (I_BV_0 | I_BV_1);
 }
 
+static void output_set(uint8_t output, uint8_t value)
+{
+	if (value)
+		(*out_matrix[output].port) |= out_matrix[output].pin;
+	else
+		(*out_matrix[output].port) &= ~(out_matrix[output].pin);
+}
+
+void set_leds(uint8_t val)
+{
+	for (uint8_t i = 0; i < 6; i++)
+		output_set(i, (val >> i) & 0x01);
+}
+
+#ifndef NO_NETVAR
 #define F_LED 0
 
 static void lamp_out(void *num, uint8_t val) {
@@ -49,29 +76,26 @@ static void lamp_out(void *num, uint8_t val) {
 	switch (i) {
 		case F_LED:
 			if (val) {
-				PORT_LED |= R_LED;
-				PORT_LED &= ~(G_LED);
-			} else {
-				PORT_LED |= G_LED;
-				PORT_LED &= ~(R_LED);
-			}
+				set_leds(1);
+			} else
+				set_leds(2);
 			break;
 	}
 }
 
 static netvar_desc *out_netvars[NUM_INPUTS];
 
-void switch_netvars_init() {
+void switch_netvars_init(void) {
 	out_netvars[0] = netvar_register(0x0100, 0x2f, 1); // Taster Vortragsraum Licht
 //	out_netvars[1] = netvar_register(0x000A, 0x00, 1); // Taster Treppenblink
 }
 
 #define NV_IDX_LAMP_CONTROLLER_VORTRAG 0x0100
 
-void lamp_out_init() {
+void lamp_out_init(void) {
 	new_netvar_output_1(NV_IDX_LAMP_CONTROLLER_VORTRAG, 0x3f, lamp_out, (void *) F_LED);
 }
-
+#endif
 static void input_changed_event(uint8_t num, uint8_t val) {
 
 #ifndef NO_NETVAR
@@ -91,7 +115,7 @@ static void input_changed_event(uint8_t num, uint8_t val) {
 #endif
 }
 
-void switch_handler() {
+void switch_handler(void) {
 	uint8_t i;
 	for (i = 0; i < NUM_INPUTS; i++) {
 		if ((*pin_matrix[i].pin) & pin_matrix[i].bit) {
@@ -130,43 +154,35 @@ void switch_handler() {
 #include "can/can.h"
 
 void keypress(void) {
-	static uint8_t counter_0;
-	static uint8_t clicked_0 = 0;
-	static uint8_t held_0    = 0;
-	static uint8_t last_held_0;
+	static uint8_t counter;
+	static uint8_t clicked = 0;
+	static uint8_t held    = 0;
+	static uint8_t last_held;
 
-	clicked_0 = 0;
-	held_0 = 0;
+	clicked = 0;
+	held = 0;
 	if (pin_matrix[0].state)
 	{
-		counter_0++;
-		if (counter_0 > HOLD_THRESHOLD)
+		counter++;
+		if (counter > HOLD_THRESHOLD)
 		{
-			held_0 = 1;
-			counter_0 = HOLD_THRESHOLD;
+			held = 1;
+			counter = HOLD_THRESHOLD;
 		}
 	}
 	else
 	{
-		if (counter_0 > CLICK_THRESHOLD)
+		if (counter > CLICK_THRESHOLD)
 		{
-			if (counter_0 < HOLD_THRESHOLD)
+			if (counter < HOLD_THRESHOLD)
 			{
-				clicked_0 = 1;
+				clicked = 1;
 			}
 		}
-		counter_0 = 0;
+		counter = 0;
 	}
-	if (clicked_0 == 1)
+	if (clicked == 1)
 	{
-		if (PORT_LED & R_LED)
-		{
-			lamp_out(0, 0);
-		}
-		else
-		{
-			lamp_out(0, 1);
-		}
 		can_message *msg = can_buffer_get();
 		msg->data[0] = C_VIRT;
 		msg->data[1] = VIRT_VORTRAG;
@@ -178,7 +194,7 @@ void keypress(void) {
 		msg->dlc = 4;
 		can_transmit(msg);	/* send packet */
 	}
-	if (held_0)
+	if (held)
 	{
 		can_message *msg = can_buffer_get();
 		msg->data[0] = C_VIRT;
@@ -191,7 +207,7 @@ void keypress(void) {
 		msg->dlc = 4;
 		can_transmit(msg);	/* send packet */
 	}
-	else if (last_held_0)
+	else if (last_held)
 	{
 		can_message *msg = can_buffer_get();
 		msg->data[0] = C_VIRT;
@@ -204,7 +220,7 @@ void keypress(void) {
 		msg->dlc = 4;
 		can_transmit(msg);	/* send packet */
 	}
-	last_held_0 = held_0;
+	last_held = held;
 }
 #endif
 

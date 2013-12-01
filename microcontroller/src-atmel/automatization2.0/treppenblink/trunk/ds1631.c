@@ -5,7 +5,7 @@
 #include "config.h"
 
 // XXX error handling, init
-uint8_t init_ds1631(uint8_t addr)
+uint8_t ds1631_init(uint8_t addr)
 {
 	uint8_t ret = 1;
 	uint8_t temp = 0;
@@ -44,7 +44,7 @@ uint8_t init_ds1631(uint8_t addr)
 	return ret;
 }
 
-uint8_t get_temp_ds1631(uint8_t *p, uint8_t addr)
+uint8_t ds1631_get_temp(uint8_t *p, uint8_t addr)
 {
 	uint8_t ret = 1;
 	if (TWIM_Start(addr + TW_WRITE))
