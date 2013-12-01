@@ -79,7 +79,7 @@ uint8_t mcp_read(uint8_t reg);
 
 // Functions
 
-static uint8_t mcp_status()
+static uint8_t mcp_status(void)
 {
 	uint8_t d;
 	CLEAR_CS();
@@ -249,7 +249,7 @@ ISR (MCP_INT_VEC)
 #endif // CAN_INTERRUPT
 
 
-static void mcp_reset()
+static void mcp_reset(void)
 {
 	CLEAR_CS();
 	spi_send(RESET);
@@ -287,7 +287,7 @@ void mcp_setmode(uint8_t mode)
 }
 
 
-static void mcp_setfilter()
+static void mcp_setfilter(void)
 {
 	//RXM1   RXM0
 	//  0      0     receive matching filter
@@ -517,6 +517,7 @@ void can_transmit(can_message *msg)
 
 void can_free(can_message *msg)
 {
+	(void) msg; // silence warning
 }
 
 #endif //CAN_INTERRUPT
