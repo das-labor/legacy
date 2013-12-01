@@ -50,11 +50,11 @@ enum tetris_bucket_direction_e
 // status of the bucket
 enum tetris_bucket_status_e
 {
-	TETRIS_BUS_HOVERING = 0, /** piece is hovering */
-	TETRIS_BUS_GLIDING  = 1, /** piece is gliding on the dump */
-	TETRIS_BUS_DOCKED   = 2, /** piece has been docked */
-	TETRIS_BUS_READY    = 3, /** ready to get next piece */
-	TETRIS_BUS_GAMEOVER	= 4  /** bucket is filled up */
+	TETRIS_BUS_HOVERING = 0, /**< piece is hovering */
+	TETRIS_BUS_GLIDING  = 1, /**< piece is gliding on the dump */
+	TETRIS_BUS_DOCKED   = 2, /**< piece has been docked */
+	TETRIS_BUS_READY    = 3, /**< ready to get next piece */
+	TETRIS_BUS_GAMEOVER	= 4  /**< bucket is filled up */
 };
 #ifdef NDEBUG
 	typedef uint8_t tetris_bucket_status_t;
@@ -66,16 +66,16 @@ enum tetris_bucket_status_e
 // tetris_bucket_t
 typedef struct tetris_bucket_s
 {
-	int8_t nWidth;                  /** width of bucket */
-	int8_t nHeight;                 /** height of bucket */
-	tetris_piece_t *pPiece;         /** currently falling piece */
-	int8_t nColumn;                 /** horz. piece pos. (0 is left) */
-	int8_t nRow;                    /** vert. piece pos. (0 is top) */
-	uint8_t nRowMask;               /** removed lines relative to nRow */
-	tetris_bucket_status_t status;  /** status of the bucket */
-	int8_t nFirstTaintedRow;        /** top most row which has matter */
-	uint16_t nFullRow;              /** value of a full row */
-	uint16_t *dump;                 /** bucket itself */
+	int8_t nWidth;                  /**< width of bucket */
+	int8_t nHeight;                 /**< height of bucket */
+	tetris_piece_t *pPiece;         /**< currently falling piece */
+	int8_t nColumn;                 /**< horz. piece pos. (0 is left) */
+	int8_t nRow;                    /**< vert. piece pos. (0 is top) */
+	uint8_t nRowMask;               /**< removed lines relative to nRow */
+	tetris_bucket_status_t status;  /**< status of the bucket */
+	int8_t nFirstTaintedRow;        /**< top most row which has matter */
+	uint16_t nFullRow;              /**< value of a full row */
+	uint16_t *dump;                 /**< bucket itself */
 }
 tetris_bucket_t;
 
@@ -83,14 +83,14 @@ tetris_bucket_t;
 // iterator for predicted dump rows
 typedef struct tetris_bucket_iterator_s
 {
-	tetris_bucket_t *pBucket; /** bucket to be examined */
-	uint16_t nPieceMap;       /** piece bitmap */
-	int8_t nShift;            /** helper variable for shifting piece bitmaps */
-	int8_t nCurrentRow;       /** the actual row in the bucket */
-	int8_t nPieceTopRow;      /** the highest row index of the piece */
-	int8_t nPieceBottomRow;   /** the lowest row index of the piece */
-	int8_t nStopRow;          /** the last row to be examined */
-	uint16_t nRowBuffer;      /** buffer for returned row */
+	tetris_bucket_t *pBucket; /**< bucket to be examined */
+	uint16_t nPieceMap;       /**< piece bitmap */
+	int8_t nShift;            /**< helper variable for shifting piece bitmaps */
+	int8_t nCurrentRow;       /**< the actual row in the bucket */
+	int8_t nPieceTopRow;      /**< the highest row index of the piece */
+	int8_t nPieceBottomRow;   /**< the lowest row index of the piece */
+	int8_t nStopRow;          /**< the last row to be examined */
+	uint16_t nRowBuffer;      /**< buffer for returned row */
 }
 tetris_bucket_iterator_t;
 

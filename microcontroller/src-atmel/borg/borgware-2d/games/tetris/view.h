@@ -39,13 +39,13 @@ enum tetris_view_mode_e
 /** data structure that drives the view module */
 typedef struct tetris_view_s
 {
-	tetris_variant_t const *pVariantMethods; /** variant function pointers */
-	void *pVariant;                          /** associated variant object */
-	tetris_bucket_t *pBucket;                /** associated bucket */
-	tetris_view_mode_t modeCurrent;          /** current presentation mode */
-	tetris_view_mode_t modeOld;              /** old presentation mode */
-	uint8_t nOldLevel;                       /** for detecting level changes */
-	tetris_bearing_t nBearing;               /** bearing of the bucket */
+	tetris_variant_t const *pVariantMethods; /**< variant function pointers */
+	void *pVariant;                          /**< associated variant object */
+	tetris_bucket_t *pBucket;                /**< associated bucket */
+	tetris_view_mode_t modeCurrent;          /**< current presentation mode */
+	tetris_view_mode_t modeOld;              /**< old presentation mode */
+	uint8_t nOldLevel;                       /**< for detecting level changes */
+	tetris_bearing_t nBearing;               /**< bearing of the bucket */
 }
 tetris_view_t;
 
