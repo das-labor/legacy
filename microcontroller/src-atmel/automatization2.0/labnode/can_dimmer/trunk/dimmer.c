@@ -3,6 +3,7 @@
 #include <util/delay.h>
 
 #include "config.h"
+#include "dimmer.h"
 
 /*
 
