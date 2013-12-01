@@ -6,11 +6,14 @@
 #include "io.h"
 #include "motion.h"
 #include "Bastelcmd.h"
+#include "uart_handler.h"
 
 
-static struct t_pwm_parameter {
+static struct t_pwm_parameter
+{
 	volatile uint8_t *port;
-} pwm_matrix[] = {
+} pwm_matrix[] =
+{
 	{ O_PWM00_REG },
 	{ O_PWM01_REG },
 	{ O_PWM02_REG },
@@ -35,7 +38,7 @@ static uint8_t sreg = 0;
 
 static void change_shift_reg(uint8_t new_sreg)
 {
-	for (int i = 0; i < 8; i++)
+	for (uint8_t i = 0; i < 8; i++)
 	{
 		if (new_sreg & (1 << i))
 			SREG_PORT |= SREG_DATA;
@@ -45,12 +48,18 @@ static void change_shift_reg(uint8_t new_sreg)
 		_delay_us(10);
 		SREG_PORT |= SREG_CK;
 	}
-	PORTA &= ~SREG_STROBE;
+	SREG_STROBE_PORT &= ~SREG_STROBE;
 	_delay_us(10);
-	PORTA |= SREG_STROBE;
-	send_status();
+	SREG_STROBE_PORT |= SREG_STROBE;
+	uart_set_taster_led(sreg);
+	can_send_output_status();
 }
 
+void set_output_all(uint8_t val)
+{
+	sreg = val;
+	change_shift_reg(sreg);
+}
 
 void set_output(uint8_t port, uint8_t val)
 {
@@ -71,12 +80,12 @@ uint8_t get_outputs()
 }
 
 
-void init_io()
+void io_init()
 {
 	// Init shiftregister
-	DDRA |= SREG_STROBE;
-	PORTA |= SREG_STROBE;
-	DDRC |= SREG_CK | SREG_DATA;
+	SREG_STROBE_DDR |= SREG_STROBE;
+	SREG_STROBE_PORT |= SREG_STROBE;
+	SREG_DDR |= SREG_CK | SREG_DATA;
 	SREG_PORT |= SREG_CK;
 
 	change_shift_reg(0); // set default status
@@ -102,15 +111,23 @@ void init_io()
 
 	DDRA  &= ~(_BV(PA4) | _BV(PA7)); // Eingänge Türkontakt / Taster
 	PORTA |= _BV(PA4);	// PULLUP Türkontakt
-	send_status();
 }
 
 
 void set_pwm(uint8_t port, uint8_t value)
 {
 	if (port < F_PWM_COUNT)
+	{
 		(*pwm_matrix[port].port) = value;
-	send_status();
+		can_send_output_status();
+	}
+}
+
+void set_pwm_all(uint8_t value)
+{
+	for (uint8_t i = 0; i < F_PWM_COUNT; i++)
+		(*pwm_matrix[i].port) = value;
+	can_send_output_status();
 }
 
 
@@ -125,7 +142,7 @@ void switch_handler()
 	static uint8_t counter, last_held;
 	uint8_t clicked = 0, held = 0;
 
-	if (!(PINA & _BV(PA7)))
+	if (eingang_status & TASTER_LICHT)
 	{
 		counter ++;
 		if (counter > HOLD_THRESHOLD)
@@ -148,15 +165,13 @@ void switch_handler()
 	if (clicked)
 	{
 		if (sreg) {
-			sreg = 0;
-			change_shift_reg(0);
+			set_output_all(0);
 		}
 		else {
-			sreg = 212;
-			change_shift_reg(212);
 			set_pwm(F_PWM_FENSTER, 200);
 			set_pwm(F_PWM_MITTE, 200);
 			set_pwm(F_PWM_NISCHE, 200);
+			set_output_all(F_REG_BTISCHR_2 | F_REG_BTISCHL_2 | F_REG_MITTE | F_REG_NISCHE);
 		}
 	}
 	if (held)
@@ -165,7 +180,7 @@ void switch_handler()
 	}
 	else if (last_held)
 	{
-		// dimmdir
+		// change dimmdir
 	}
 	last_held = held;
 }

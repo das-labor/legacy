@@ -8,7 +8,8 @@
 #include "can/spi.h"
 #include "io.h"
 #include "motion.h"
-
+#include "uart/uart.h"
+#include "uart_handler.h"
 
 static volatile uint16_t tickscounter = 0;
 ISR(TIMER2_OVF_vect)
@@ -22,17 +23,15 @@ static void init(void)
 
 	motion_init();
 
-	DDRB |= _BV(PB0); // lapnode red LED out
+	DDRB |= _BV(PB0); // lapnode red LED output
 
-	init_io();
 
-	//initialize spi port
-	spi_init();
+	spi_init(); // initialize spi port
+	can_read_addr();
 
-	//initialize can communication
-	can_init();
-
-	read_can_addr();
+	can_init(); // initialize can communication
+	uart_init();
+	io_init();
 
 	//turn on interrupts
 	sei();
@@ -48,6 +47,7 @@ int main(void)
 	while (1)
 	{
 		can_handler();
+		uart_handler();
 		if (tickscounter > 15)
 		{
 			tickscounter = 0;

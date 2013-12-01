@@ -1,4 +1,6 @@
-OBJ = main.o can/can.o can/spi.o can_handler.o io.o motion.o
+LAP_ADDR       = 0xa9
+
+OBJ = main.o can/can.o can/spi.o can_handler.o io.o motion.o uart/uart.o uart_handler.o
 
 # Default values
 OUT           ?= image
@@ -6,24 +8,24 @@ MCU_TARGET    ?= atmega644
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall -Winline -Wextra
-DEFS          ?= -DF_CPU=20000000
+WARNINGS      ?= -Wall -Winline -pedantic -Wstrict-prototypes -Wextra
+DEFS          ?= -DF_CPU=20000000UL -DEEPROM_LAP_ADDR=$(LAP_ADDR)
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
 ASFLAGS	      += -mmcu=avr5
-LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
+LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U $(OUT).hex
-CANFLASHCMD    = lapcontrol -s kvm flash 0xa9 $(OUT).hex
+FLASHCMD      ?= avrdude -p $(MCU_TARGET) -U $(OUT).hex
+CANFLASHCMD    = lapcontrol -s wl flash $(LAP_ADDR) $(OUT).hex
 
 #############################################################################
 # Rules
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o uart/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
