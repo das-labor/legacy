@@ -24,7 +24,6 @@ ISR(TIMER1_OVF_vect)
 static void init(void)
 {
 	// Initiate TWI Master Interface
-
 	if (!TWIM_Init())
 	{
 		while (1);
@@ -37,39 +36,40 @@ static void init(void)
 
 	ACSR   = _BV(ACD); // Disable Analog Comparator (power save)
 
-	DDRD  &= ~(_BV(PD7) | _BV(PD5));
-	PORTD |= _BV(PD7) | _BV(PD5);
+	DDRD  &= ~(KLINGEL | TUER_KONTAKT | STANDBY);
+	PORTD |= KLINGEL | TUER_KONTAKT | STANDBY;
 
 	TCCR1B = _BV(CS12) | _BV(CS10);
 	TCCR1A = 0;
 	TIMSK |= _BV(TOIE1);
 
 
-	// initialize spi port
-	spi_init();
+	spi_init(); // initialize spi port
+	can_read_addr();
+	can_init(); // initialize can communication
 
-	// initialize can communication
-	can_init();
-	read_can_addr();
-	// turn on interrupts
-	sei();
-	wdt_enable(WDTO_250MS); // 250 ms
+	sei(); // turn on interrupts
+	wdt_enable(WDTO_250MS);
 }
 
 int main(void)
 {
-	//system initialization
-	init();
+	uint16_t send_temp_counter = 0;
 
-	//the main loop continuously handles can messages
+	init(); //system initialization
+
 	while (1)
 	{
 		can_handler();
 //		temp_regler();
 		if (tickscounter > 9) {
-			temp_sensor_read();
-			switch_handler();
 			tickscounter = 0;
+			switch_handler();
+			send_temp_counter++;
+			if (send_temp_counter > 1000) {
+				temp_sensor_read();
+				send_temp_counter = 0;
+			}
 		}
 		wdt_reset();
 	}

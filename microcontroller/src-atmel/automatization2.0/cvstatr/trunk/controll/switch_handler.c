@@ -26,13 +26,13 @@ static struct t_pin_parameter {
 } pin_matrix[] = {
 	{SIGNAL_PIN, KLINGEL},
 	{SIGNAL_PIN, STANDBY},
-	{SIGNAL_PIN, TUER}
+	{SIGNAL_PIN, TUER_KONTAKT}
 };
 
 static void get_switches(void) {
 	uint8_t i, msk = 0x01;
 
-	for (i = 0; i < 3; i++) {
+	for (i = 0; i < NUM_INPUTS; i++) {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (stat_sw & msk) == 0) {
 			stat_sw |= msk;
 			can_send_stat(stat_sw, i);
