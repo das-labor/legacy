@@ -57,8 +57,6 @@ static void nextrow(uint8_t row) {
 	if (row == 0) {
 		// row 0: initialize first shift register
 #ifndef INVERT_ROWS
-		ROWPORT &= ~(1 << PIN_MCLR);
-		ROWPORT |= (1 << PIN_MCLR);
 		ROWPORT |= (1 << PIN_DATA);
 		ROWPORT |= (1 << PIN_CLK);
 		ROWPORT &= ~(1 << PIN_CLK);
@@ -197,7 +195,7 @@ void borg_hw_init() {
 	COLDDR2 = 0xFF;
 
 	// switch pins of the row port to output mode
-	ROWDDR = (1 << PIN_MCLR) | (1 << PIN_CLK) | (1 << PIN_DATA);
+	ROWDDR = (1 << PIN_CLK) | (1 << PIN_DATA);
 
 	// switch off all columns for now
 	COLPORT1 = 0;
