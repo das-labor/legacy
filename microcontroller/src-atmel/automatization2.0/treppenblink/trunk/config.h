@@ -9,12 +9,12 @@
 #define SPI_PIN_MCP_INT      PD2
 
 #define CAN_INTERRUPT
-//#define CAN_INT_NOBLOCK
+#define CAN_INT_NOBLOCK
 
-#define   ENABLE_CAN_INT()    GIMSK |= _BV(INT0)
-#define   DISABLE_CAN_INT()   GIMSK &= ~_BV(INT0)
-#define   SETUP_CAN_INT()     MCUCR |= _BV(ISC01)
-#define   MCP_INT_VEC         INT0_vect
+#define ENABLE_CAN_INT()    GIMSK |= _BV(INT0)
+#define DISABLE_CAN_INT()   GIMSK &= ~_BV(INT0)
+#define SETUP_CAN_INT()     MCUCR |= _BV(ISC01)
+#define MCP_INT_VEC         INT0_vect
 
 #define CAN_TX_BUFFER_SIZE 4
 #define CAN_RX_BUFFER_SIZE 4
@@ -24,11 +24,11 @@
 #define NO_NETVAR
 
 // RGB LED Taster
-#define R_LED _BV(PD1)
-#define B_LED _BV(PD3)
-#define G_LED _BV(PD4)
-#define PORT_LED PORTD
-#define DDR_LED DDRD
+#define RGBLED_R (_BV(PD1))
+#define RGBLED_B (_BV(PD3))
+#define RGBLED_G (_BV(PD4))
+#define RGB_LED_PORT (&(PORTD))
+#define RGB_LED_DDR DDRD
 
 // Taster Eingänge
 #define NUM_INPUTS 2
@@ -38,13 +38,21 @@
 #define I_BV_1  _BV(PB1) // Treppenblink Mode Taster
 
 // Ausgänge LED String
-#define RGB_DATA _BV(PD6)
-#define RGB_CLK  _BV(PD7)
+#define RGB_STRING_DATA _BV(PD6)
+#define RGB_STRING_CLK  _BV(PD7)
+#define RGB_STRING_PORT PORTD
+#define RGB_STRING_DDR  DDRD
 #define MAXCOLORVALUE (0x0FFF)
-#define RGB_PORT PORTD
-#define RGB_DDR  DDRD
-#define BITSPERLAMP 12
-#define LAMPS 50
+#define BITSPERRGBDOT 12
+#define RGBDOTS 50
+
+#define O_OUT00_PORT RGB_LED_PORT
+#define O_OUT01_PORT RGB_LED_PORT
+#define O_OUT02_PORT RGB_LED_PORT
+
+#define O_OUT00_BIT RGBLED_R
+#define O_OUT01_BIT RGBLED_G
+#define O_OUT02_BIT RGBLED_B
 
 /* eeprom settings */
 #define EEPROM_MOTION_TRESH 0x01

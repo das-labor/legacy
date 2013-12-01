@@ -24,14 +24,14 @@ void pushDot(dot_t *dot)
 #else
 		uint16_t val = pgm_read_word(&gammatable[*(bla++)]);
 #endif
-		for (j = 0 ; j < BITSPERLAMP; j++)
+		for (j = 0 ; j < BITSPERRGBDOT; j++)
 		{
 			if (val & 0x0800) // if bit 11 is set
-				RGB_PORT |= RGB_DATA;
+				RGB_STRING_PORT |= RGB_STRING_DATA;
 			else
-				RGB_PORT &= ~RGB_DATA;
-			RGB_PORT |= RGB_CLK;
-			RGB_PORT &= ~RGB_CLK;
+				RGB_STRING_PORT &= ~RGB_STRING_DATA;
+			RGB_STRING_PORT |= RGB_STRING_CLK;
+			RGB_STRING_PORT &= ~RGB_STRING_CLK;
 			val <<= 1;
 		}
 	}
@@ -43,8 +43,8 @@ void updateDots()
 	_delay_us(6);
 	for (uint8_t i = 0; i < 5; i++)
 	{
-		RGB_PORT |= RGB_DATA;
-		RGB_PORT &= ~RGB_DATA;
+		RGB_STRING_PORT |= RGB_STRING_DATA;
+		RGB_STRING_PORT &= ~RGB_STRING_DATA;
 	}
 	_delay_ms(50);
 }

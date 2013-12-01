@@ -2,8 +2,8 @@
 #define _DS1631_H
 
 
-extern uint8_t init_ds1631(uint8_t addr);
-extern uint8_t get_temp_ds1631(uint8_t *p, uint8_t addr);
+extern uint8_t ds1631_init(uint8_t addr);
+extern uint8_t ds1631_get_temp(uint8_t *p, uint8_t addr);
 
 /* Initiates temperature conversions. If the part is in one-shot mode (1SHOT = 1), only one conversion is
  * performed. In continuous mode (1SHOT = 0), continuous temperature conversions are performed until a
