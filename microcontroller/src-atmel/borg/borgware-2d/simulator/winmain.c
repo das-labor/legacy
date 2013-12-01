@@ -31,6 +31,7 @@
 
 #include <windows.h>
 #include <setjmp.h>
+#include <stdio.h>
 #include "../config.h"
 #include "../display_loop.h"
 
@@ -41,7 +42,7 @@
 #define LED_MARGIN 1
 /** The diameter (in pixels) of a LED. */
 #define LED_DIAMETER 14
-/** The extend of the whole LED including its margin. */
+/** The extent of the whole LED including its margin. */
 #define LED_EXTENT (2 * LED_MARGIN + LED_DIAMETER)
 
 /** Width of the canvas. */
@@ -75,7 +76,7 @@ volatile unsigned char pixmap[NUMPLANE][NUM_ROWS][LINEBYTES];
 /** Jump buffer which leads directly the menu. */
 extern jmp_buf newmode_jmpbuf;
 
-/* forward declarations */
+/* forward declaration of window message handler */
 LRESULT CALLBACK simWndProc(HWND hWnd,
                             UINT msg,
                             WPARAM wParam,
@@ -83,61 +84,72 @@ LRESULT CALLBACK simWndProc(HWND hWnd,
 
 
 /**
- * Registers a window class (necessary for creating a window).
- * @param lpwc Pointer to WNDCLASS struct.
- * @param hInstance Handle of the instance where this window class belongs to.
+ * Creates a new window and makes it visible.
+ * @param hInstance Handle of the instance where this window should belong to.
+ * @param nCmdShow Flag for showing the window minimized, maximized etc.
  * @return TRUE if successful, otherwise FALSE.
  */
-BOOL simRegisterWindowClass(WNDCLASSA *const lpwc,
-                            HINSTANCE hInstance)
+HWND simCreateWindow(HINSTANCE hInstance,
+                     int nCmdShow)
 {
-	lpwc->style = 0;
-	lpwc->lpfnWndProc = simWndProc;
-	lpwc->cbClsExtra = 0;
-	lpwc->cbWndExtra = 0;
-	lpwc->hInstance = hInstance;
-	lpwc->hIcon = LoadIcon(NULL, IDI_WINLOGO);
-	lpwc->hCursor = LoadCursor(NULL, IDC_ARROW);
-	lpwc->hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	lpwc->lpszMenuName = NULL;
-	lpwc->lpszClassName = g_strWindowClass;
+	HWND hWnd = NULL;
 
-	return (RegisterClassA(lpwc) != 0);
+	/* register window class for an window with a neat black background */
+	WNDCLASSA lpwc;
+	lpwc.style = 0;
+	lpwc.lpfnWndProc = simWndProc;
+	lpwc.cbClsExtra = 0;
+	lpwc.cbWndExtra = 0;
+	lpwc.hInstance = hInstance;
+	lpwc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+	lpwc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	lpwc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+	lpwc.lpszMenuName = NULL;
+	lpwc.lpszClassName = g_strWindowClass;
+
+	if (RegisterClassA(&lpwc) != 0)
+	{
+		/* ensure that the client area has the right proportions */
+		RECT rect = {0, 0, WND_X_EXTENTS *  1.5 - 1, WND_Y_EXTENTS * 1.5 - 1};
+		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW & ~(WS_OVERLAPPED), FALSE);
+
+		/* create window and retrieve its handle */
+		hWnd = CreateWindow(g_strWindowClass, g_strWindowTitle,
+			WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+			rect.right - rect.left, rect.bottom - rect.top,
+			HWND_DESKTOP, NULL, hInstance, NULL);
+
+		/* if window was created successfully, make it visible */
+		if (hWnd != NULL)
+		{
+			ShowWindow(hWnd, nCmdShow);
+			UpdateWindow(hWnd);
+		}
+		/* otherwise clean up*/
+		else
+		{
+			UnregisterClass(g_strWindowClass, hInstance);
+		}
+	}
+	else
+	{
+		fprintf(stderr, g_strErrorRegisterWindow);
+	}
+
+	return hWnd;
 }
 
 
 /**
- * Creates a new window and makes it visible.
+ * Closes windows and unregisters its associated window class.
  * @param lphWnd Pointer to window handle.
  * @param hInstance Handle of the instance where this window belongs to.
- * @param nCmdShow Flag for showing the window minimized, maximized etc.
- * @return TRUE if successful, otherwise FALSE.
  */
-BOOL simCreateWindow(HWND *lphWnd,
-                     HINSTANCE hInstance,
-                     int nCmdShow)
+void simDestroyWindow(HWND hWnd,
+                      HINSTANCE hInstance)
 {
-	BOOL bSuccess = FALSE;
-
-	/* ensure that the client area has the right proportions */
-	RECT rectMin = {0, 0, WND_X_EXTENTS *  1.5 - 1, WND_Y_EXTENTS * 1.5 - 1};
-	AdjustWindowRect(&rectMin, WS_OVERLAPPEDWINDOW & ~(WS_OVERLAPPED), FALSE);
-
-	/* create window and retrieve its handle */
-	*lphWnd = CreateWindow(g_strWindowClass, g_strWindowTitle,
-		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-		rectMin.right - rectMin.left, rectMin.bottom - rectMin.top,
-		HWND_DESKTOP, NULL, hInstance, NULL);
-
-	/* make it visible */
-	if (*lphWnd != NULL)
-	{
-		ShowWindow(*lphWnd, nCmdShow);
-		UpdateWindow(*lphWnd);
-		bSuccess = TRUE;
-	}
-
-	return bSuccess;
+	DestroyWindow(hWnd);
+	UnregisterClassA(g_strWindowClass, hInstance);
 }
 
 
@@ -476,80 +488,63 @@ int APIENTRY WinMain(HINSTANCE hInstance,
                      LPSTR     lpCmdLine,
                      int       nCmdShow)
 {
-	WNDCLASS wc;
 	HWND hWnd;
 	MSG msg;
 	HANDLE hLoopThread;
 	UINT_PTR uTimerId;
 	int nExitCode = 0;
-	
-	/* register window class (with nice black background!) and create window */
-	if (simRegisterWindowClass(&wc, hInstance))
+
+	if ((hWnd = simCreateWindow(hInstance, nCmdShow)) != NULL)
 	{
-		if (simCreateWindow(&hWnd, hInstance, nCmdShow))
+		/* event handle for multimedia timer (for the wait() function) */
+		g_hWaitEvent = CreateEventA(NULL, TRUE, FALSE, "Local\\WaitEvent");
+		if (g_hWaitEvent != NULL)
 		{
-			/* event handle for multimedia timer (for the wait() function) */
-			g_hWaitEvent = CreateEventA(NULL, TRUE, FALSE, "Local\\WaitEvent");
-			if (g_hWaitEvent != NULL)
+			/* start the display loop thread */
+			hLoopThread = CreateThread(NULL, 0, simLoop, NULL, 0, NULL);
+			if (hLoopThread != NULL)
 			{
-				/* start the display loop thread */
-				hLoopThread = CreateThread(NULL, 0, simLoop, NULL, 0, NULL);
-				if (hLoopThread != NULL)
+				SetThreadPriority(hLoopThread, THREAD_PRIORITY_TIME_CRITICAL);
+
+				/* issue a UI timer message every 40 ms (roughly 25 fps) */
+				uTimerId = SetTimer(hWnd, 23, 40, NULL);
+				if (uTimerId != 0)
 				{
-					SetThreadPriority(hLoopThread,
-							THREAD_PRIORITY_TIME_CRITICAL);
-
-					/* issue a UI timer message every 40 ms (roughly 25 fps) */
-					uTimerId = SetTimer(hWnd, 23, 40, NULL);
-					if (uTimerId != 0)
+					/* standard Windows(R) message loop */
+					while (GetMessageA(&msg, NULL, 0, 0))
 					{
-						/* standard Windows(R) message loop */
-						while (GetMessageA(&msg, NULL, 0, 0))
-						{
-							TranslateMessage(&msg);
-							DispatchMessageA(&msg);
-						}
-						nExitCode = msg.wParam;
-
-						KillTimer(hWnd, uTimerId);
+						TranslateMessage(&msg);
+						DispatchMessageA(&msg);
 					}
-					else
-					{
-						MessageBoxA(HWND_DESKTOP, g_strErrorCreateUITimer,
-								g_strError, MB_OK | MB_ICONERROR);
-					}
+					nExitCode = msg.wParam;
 
-					TerminateThread(hLoopThread, 0);
+					KillTimer(hWnd, uTimerId);
 				}
 				else
 				{
-					MessageBoxA(HWND_DESKTOP, g_strErrorCreateThread,
-							g_strError, MB_OK | MB_ICONERROR);
+					fprintf(stderr, g_strErrorCreateUITimer);
 				}
 
-				/* relieve wait event object from its duties */
-				CloseHandle(g_hWaitEvent);
+				TerminateThread(hLoopThread, 0);
 			}
 			else
 			{
-				MessageBoxA(HWND_DESKTOP, g_strErrorCreateEvent,
-						g_strError,  MB_OK | MB_ICONERROR);
+				fprintf(stderr, g_strErrorCreateThread);
 			}
 
-			DestroyWindow(hWnd);
+			/* relieve wait event object from its duties */
+			CloseHandle(g_hWaitEvent);
 		}
 		else
 		{
-			MessageBoxA(HWND_DESKTOP, g_strErrorCreateWindow,
-					g_strError,  MB_OK | MB_ICONERROR);
+			fprintf(stderr, g_strErrorCreateEvent);
 		}
 
-		UnregisterClassA(g_strWindowClass, hInstance);
+		simDestroyWindow(hWnd, hInstance);
 	}
 	else
 	{
-		MessageBoxA(HWND_DESKTOP, g_strErrorRegisterWindow,
-				g_strError, MB_OK | MB_ICONERROR);
+		fprintf(stderr, g_strErrorCreateWindow);
 	}
 
 	return nExitCode;
