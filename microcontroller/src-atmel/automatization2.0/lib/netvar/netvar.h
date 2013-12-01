@@ -37,19 +37,19 @@ void netvar_write(netvar_desc *nd, void *data);
 
 //write to unregistered netvars. This is for elements, that only transmit
 //on specific netvars, but are not interested in receiving data on this netvar.
-void unregistered_netvar_write (uint16_t idx, uint8_t sidx, uint8_t size, void * data);
+void unregistered_netvar_write (uint16_t idx, uint8_t sidx, uint8_t size, void *data);
 
 //user api to read from previously registered netvars
 uint8_t netvar_read(netvar_desc *nd, void *data);
 
 #ifdef CAN_HANDLER_C
 	//called when can message on netvar port is received
-	void netvar_received(can_message * msg);
+	void netvar_received(can_message *msg);
 
 	//called when netvar on bulk port is received
-	void netvar_bulk_received(can_message * msg);
+	void netvar_bulk_received(can_message *msg);
 #endif
 
-void netvar_handle_events();
+void netvar_handle_events(void);
 
 #endif // _NETVAR_H
