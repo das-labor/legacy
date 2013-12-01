@@ -116,20 +116,21 @@ static void update_rgb_led(void) {
 */
 
 static void get_inputs(void) {
-	uint8_t i;
+	uint8_t i, msk = 0x01;
 	for (i = 0; i < NUM_INPUTS; i++) {
-		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && (((stat_inputs.status_input >> i) & 1) == 0)) {
-			stat_inputs.status_input |= (1 << i);
+		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input & msk) == 0)) {
+			stat_inputs.status_input |= msk;
 			update_rgb_led();
 			exec(i);
 			can_send_input_stat(i, stat_inputs.status_input);
 		}
-		else if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input >> i) & 1)) {
-			stat_inputs.status_input &= ~(1 << i);
+		else if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && (stat_inputs.status_input & msk)) {
+			stat_inputs.status_input &= ~msk;
 			update_rgb_led();
 			exec(i);
 			can_send_input_stat(i, stat_inputs.status_input);
 		}
+		msk <<= 1;
 	}
 }
 
