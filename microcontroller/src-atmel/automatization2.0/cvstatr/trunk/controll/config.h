@@ -8,7 +8,7 @@
 #define SPI_REG_PIN_MCP_INT  PIND
 #define SPI_PIN_MCP_INT      PD2
 
-//#define CAN_INTERRUPT
+#define CAN_INTERRUPT
 //#define CAN_INT_NOBLOCK
 
 #define ENABLE_CAN_INT()    GIMSK |= _BV(INT0)
@@ -24,8 +24,9 @@
 
 #define KLINGEL	_BV(PD6)
 #define STANDBY	_BV(PD5)
-#define TUER	_BV(PD7)
+#define TUER_KONTAKT	_BV(PD7)
 #define SCHLOSS _BV(PD0) //XXX
+#define NUM_INPUTS 3
 
 #define SIGNAL_PIN	(&(PIND))
 

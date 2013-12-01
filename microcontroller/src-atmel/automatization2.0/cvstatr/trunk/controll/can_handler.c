@@ -98,7 +98,7 @@ void can_send_temp_data(uint8_t *data)
 
 static const uint8_t EE_lap_addr EEMEM = EEPROM_LAP_ADDR;
 
-void read_can_addr(void)
+void can_read_addr(void)
 {
 	myaddr = eeprom_read_byte(&EE_lap_addr);
 }
