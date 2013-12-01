@@ -4,6 +4,20 @@
 #include "io.h"
 #include "netvar/netvar.h"
 #include "netvar/netvar_io.h"
+#include "can_handler.h"
+
+
+static struct t_switch_parameter {
+	volatile uint8_t *port;
+	uint8_t pin;
+} out_matrix[] = {
+	{ O_OUT00_PORT , O_OUT00_BIT},
+	{ O_OUT01_PORT , O_OUT01_BIT},
+	{ O_OUT02_PORT , O_OUT02_BIT},
+	{ O_OUT03_PORT , O_OUT03_BIT},
+	{ O_OUT04_PORT , O_OUT04_BIT},
+	{ O_OUT05_PORT , O_OUT05_BIT}
+};
 
 // the inverted parameter is used to normalize all inputs
 // before they are stored in the state parameter and passed to the changed event.
@@ -24,11 +38,11 @@ static struct t_pin_parameter {
 	{ 0, 0, 0, (&(I_PIN_1)), I_BV_1}
 };
 
-void init_io()
+void io_init()
 {
 	// ############ Küchenlicht ################
 	// RGB LED im Taster
-	DDR_RGBLED |= RGBLED_R | RGBLED_G | RGBLED_B; // Ausgang
+	RGB_LED_DDR |= RGBLED_R | RGBLED_G | RGBLED_B; // Ausgang
 	// Taster
 	DDRC &= ~_BV(PC0); // Eingang
 	PORTC |= _BV(PC0); // pullup
@@ -41,6 +55,21 @@ void init_io()
 	PORTB |= _BV(PB1);      // pullup
 }
 
+
+static void output_set(uint8_t output, uint8_t value)
+{
+	if (value)
+		(*out_matrix[output].port) |= out_matrix[output].pin;
+	else
+		(*out_matrix[output].port) &= ~(out_matrix[output].pin);
+}
+
+void set_leds(uint8_t val)
+{
+	for (uint8_t i = 0; i < 6; i++)
+		output_set(i, (val >> i) & 0x01);
+}
+#ifndef NO_NETVAR
 #define F_LED 0
 
 static void lamp_out(void *num, uint8_t val) {
@@ -48,15 +77,16 @@ static void lamp_out(void *num, uint8_t val) {
 	switch (i) {
 		case F_LED:
 			if (val) {
-				PORT_LED |= RGBLED_R;
-				PORT_LED &= ~(RGBLED_G);
+				output_set(0, 1);
+				output_set(1, 0);
 			} else {
-				PORT_LED |= RGBLED_G;
-				PORT_LED &= ~(RGBLED_R);
+				output_set(0, 0);
+				output_set(1, 1);
 			}
 			break;
 	}
 }
+
 
 static netvar_desc *out_netvars[NUM_INPUTS];
 
@@ -70,7 +100,7 @@ void switch_netvars_init() {
 void lamp_out_init() {
 	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_KUECHE, 0x3f, lamp_out, (void *) F_LED);
 }
-
+#endif
 static void input_changed_event(uint8_t num, uint8_t val) {
 	if (num == 1) {
 		if (val)
@@ -137,7 +167,7 @@ void switch_handler() {
 
 #include "can/can.h"
 
-void keypress(void) {
+static void keypress(void) {
 	static uint8_t counter_0;
 	static uint8_t clicked_0 = 0;
 	static uint8_t held_0    = 0;
@@ -167,19 +197,11 @@ void keypress(void) {
 	}
 	if (clicked_0 == 1)
 	{
-		if (PORTC & RGBLED_R)
-		{
-			lamp_out(0, 0);
-		}
-		else
-		{
-			lamp_out(0, 1);
-		}
 		can_message *msg = can_buffer_get();
 		msg->data[0] = C_SW;
 		msg->data[1] = SWL_KUECHE;
 		msg->data[2] = F_SW_TOGGLE;
-		msg->addr_src = 0x23;
+		msg->addr_src = myaddr;
 		msg->addr_dst = 0x02;
 		msg->port_dst = 1;
 		msg->port_src = LIGHTCANPORT;
@@ -192,7 +214,7 @@ void keypress(void) {
 		msg->data[0] = C_PWM;
 		msg->data[1] = PWM_KUECHE;
 		msg->data[2] = F_PWM_MOD;
-		msg->addr_src = 0x23;
+		msg->addr_src = myaddr;
 		msg->addr_dst = 0x02;
 		msg->port_dst = 1;
 		msg->port_src = LIGHTCANPORT;
@@ -205,7 +227,7 @@ void keypress(void) {
 		msg->data[0] = C_PWM;
 		msg->data[1] = PWM_KUECHE;
 		msg->data[2] = F_PWM_DIR;
-		msg->addr_src = 0x23;
+		msg->addr_src = myaddr;
 		msg->addr_dst = 0x02;
 		msg->port_dst = 1;
 		msg->port_src = LIGHTCANPORT;

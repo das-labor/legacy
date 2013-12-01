@@ -25,18 +25,32 @@
 #define NO_NETVAR
 
 // RGB LED Taster Küchenlicht
-#define RGBLED_R _BV(PC1)
-#define RGBLED_G _BV(PC2)
-#define RGBLED_B _BV(PC3)
-#define PORT_RGBLED PORTC
-#define DDR_RGBLED DDRC
+#define RGBLED_R (_BV(PC1))
+#define RGBLED_G (_BV(PC2))
+#define RGBLED_B (_BV(PC3))
+#define RGB_LED_PORT (&(PORTC))
+#define RGB_LED_DDR DDRC
 
-#define B_LED1 _BV(PD5)
-#define B_LED2 _BV(PD6)
-#define B_LED3 _BV(PD7)
-#define PORT_LED PORTD
+// Rote LEDs Taster
+#define B_LED1 (_BV(PD5))
+#define B_LED2 (_BV(PD6))
+#define B_LED3 (_BV(PD7))
+#define PORT_LED (&(PORTD))
 #define DDR_LED DDRD
 
+#define O_OUT00_PORT RGB_LED_PORT
+#define O_OUT01_PORT RGB_LED_PORT
+#define O_OUT02_PORT RGB_LED_PORT
+#define O_OUT03_PORT RGB_LED_PORT
+#define O_OUT04_PORT RGB_LED_PORT
+#define O_OUT05_PORT RGB_LED_PORT
+
+#define O_OUT00_BIT RGBLED_R
+#define O_OUT01_BIT RGBLED_G
+#define O_OUT02_BIT RGBLED_B
+#define O_OUT03_BIT B_LED1
+#define O_OUT04_BIT B_LED2
+#define O_OUT05_BIT B_LED3
 // Taster Eingänge
 #define NUM_INPUTS 2
 #define I_PIN_0 PINB
@@ -45,11 +59,8 @@
 #define I_BV_1  _BV(PC0) //
 
 
-/* eeprom settings */
-#define EEPROM_LAP_ADDR 0x00
-
 // TWI Adresse des Temperatursensors
 #define I2C_ADRESSE_DS1631 0x9e
 
-#endif //_CONFIG_H
+#endif // _CONFIG_H
 
