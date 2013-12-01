@@ -26,7 +26,7 @@ static volatile uint8_t mux_chan = 0;
 /* number of idle periods counted */
 static volatile uint8_t motion_idlecount = 0;
 
-static void timer0_init()
+static void timer0_init(void)
 {
 	TCCR0B = (_BV(CS00) | _BV(CS02)); /* clk/1024 */
 	TIMSK0 = _BV(TOIE0); /* overflow int. */
@@ -37,7 +37,7 @@ void motion_init()
 	timer0_init();
 }
 
-static void adc_disable()
+static void adc_disable(void)
 {
 	ADCSRA &= ~(_BV(ADEN));
 }
@@ -80,7 +80,7 @@ ISR(ADC_vect)
 
 /* initialize the ADC, enable the interrupt, select mux channel
  */
-static void adc_init()
+static void adc_init(void)
 {
 	mux_chan++;
 	if (mux_chan >= NUM_DETECTORS)
@@ -136,19 +136,14 @@ void motion_tick()
 	/* abschalten falls idlecount gleich IDLE_TRESHOLD und OFF_TRESHOLD ist */
 	if (motion_idlecount == M_IDLE_TRESHOLD + M_OFF_TRESHOLD)
 	{
-		set_output(F_REG_BTISCHR_1, 0);
-		set_output(F_REG_BTISCHR_2, 0);
-		set_output(F_REG_BTISCHL_1, 0);
-		set_output(F_REG_BTISCHL_2, 0);
-		set_output(F_REG_FENSTER, 0);
-		set_output(F_REG_MITTE, 0);
-		set_output(F_REG_NISCHE, 0);
+		set_output_all(0);
 		motion_idlecount = M_IDLE_TRESHOLD + M_OFF_TRESHOLD + 1; /* anti-overflow... */
 	}
 	/* keine bewegung erkannt licht zur warnung abdimmen */
 	else if (motion_idlecount == M_IDLE_TRESHOLD)
 	{
-		if (get_outputs()) {
+		if (get_outputs())
+		{
 			old_pwm[0] = get_pwm(F_PWM_FENSTER);
 			old_pwm[1] = get_pwm(F_PWM_MITTE);
 			old_pwm[2] = get_pwm(F_PWM_NISCHE);
