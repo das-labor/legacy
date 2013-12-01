@@ -39,13 +39,13 @@ void tetris(void);
 
 typedef struct tetris_standard_variant_s
 {
-	uint16_t nScore;               /** score of the player */
-	uint16_t nHighscore;           /** highscore */
-	uint16_t nHighscoreName;       /** champion's initials */
-	uint8_t nLevel;                /** current level */
-	uint16_t nLines;               /** number of completed lines */
-	tetris_piece_t *pPreviewPiece; /** the piece intended to be the next one */
-	tetris_bearing_t nBearing;     /** bearing of the bucket */
+	uint16_t nScore;               /**< score of the player */
+	uint16_t nHighscore;           /**< highscore */
+	uint16_t nHighscoreName;       /**< champion's initials */
+	uint8_t nLevel;                /**< current level */
+	uint16_t nLines;               /**< number of completed lines */
+	tetris_piece_t *pPreviewPiece; /**< the piece intended to be the next one */
+	tetris_bearing_t nBearing;     /**< bearing of the bucket */
 }
 tetris_standard_variant_t;
 

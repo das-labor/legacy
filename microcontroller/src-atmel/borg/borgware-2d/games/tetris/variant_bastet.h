@@ -51,17 +51,18 @@ tetris_bastet_scorepair_t;
 
 typedef struct tetris_bastet_variant_s
 {
-	uint16_t nScore;                          /** score of the player */
-	uint16_t nHighscore;                      /** high score */
-	uint16_t nHighscoreName;                  /** champion's initials */
-	uint8_t nLevel;                           /** current level */
-	uint16_t nLines;                          /** number of completed lines */
-	tetris_piece_t *pPreviewPiece;            /** the piece for the preview */
-	tetris_bucket_t *pBucket;                 /** bucket to be examined */
-	int16_t *pColScore;                       /** score impact of every column*/
-	int8_t *pStartingRow;                     /** starting point for collision*/
-	int8_t *pColHeights;                      /** predicted column heights */
-	tetris_bastet_scorepair_t nPieceScore[7]; /** score for every piece */
+	uint16_t nScore;                          /**< score of the player */
+	uint16_t nHighscore;                      /**< high score */
+	uint16_t nHighscoreName;                  /**< champion's initials */
+	uint8_t nLevel;                           /**< current level */
+	uint16_t nLines;                          /**< number of completed lines */
+	tetris_piece_t *pPreviewPiece;            /**< the piece for the preview */
+	tetris_bucket_t *pBucket;                 /**< bucket to be examined */
+	int16_t *pColScore;                       /**< score impact of each column*/
+	int8_t *pStartingRow;                     /**< starting point for
+	                                               collision detection */
+	int8_t *pColHeights;                      /**< predicted column heights */
+	tetris_bastet_scorepair_t nPieceScore[7]; /**< score for every piece */
 }
 tetris_bastet_variant_t;
 
