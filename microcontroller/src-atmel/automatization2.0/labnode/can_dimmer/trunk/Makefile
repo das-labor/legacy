@@ -1,22 +1,24 @@
+LAP_ADDR       = 0x60
+
 OBJ = main.o can/can.o can/spi.o can_handler.o dimmer.o
 
 # Default values
-OUT           ?= main
+OUT           ?= image
 MCU_TARGET    ?= atmega32
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall -Winline
-DEFS          ?= -DF_CPU=16000000
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=c99 -I.
+WARNINGS      ?= -Wall -Winline -pedantic -Wstrict-prototypes -Wextra
+DEFS          ?= -DF_CPU=16000000UL -DEEPROM_LAP_ADDR=$(LAP_ADDR)
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
 ASFLAGS	      += -mmcu=avr5
-LDFLAGS        = -Wl,-Map,$(OUT).map
+LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:image.hex
-ERASECMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -e
+FLASHCMD      ?= avrdude -p $(MCU_TARGET) -U $(OUT).hex
+CANFLASHCMD    = lapcontrol -s wl flash $(LAP_ADDR) $(OUT).hex
 
 #############################################################################
 # Rules
@@ -27,16 +29,18 @@ clean:
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
-	$(ERASECMD)
 	$(FLASHCMD)
 
+canflash: $(OUT).hex
+	$(CANFLASHCMD)
+
 #############################################################################
-# Building Rules 
+# Building Rules
 $(OUT).elf: $(OBJ)
 	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.c
-	$(MCU_CC) $(CFLAGS) -c $< -o $@ 
+	$(MCU_CC) $(CFLAGS) -c $< -o $@
 
 %.o: %.S
 	$(MCU_AS) $(ASFLAGS) -o $@ $<
