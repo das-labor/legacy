@@ -6,10 +6,11 @@
 #include "twi_master/twi_master.h"
 #include "can/spi.h"
 #include "can/can.h"
-#include "netvar/can_handler.h"
+#include "can_handler.h"
 #include "netvar/netvar.h"
 #include "io.h"
 #include "ds1631.h"
+#include "temp_read.h"
 
 
 static volatile uint8_t tickscounter;
@@ -26,7 +27,7 @@ static void init(void)
 	TCCR0 = _BV(CS01) | _BV(CS00); // clk / 64
 	TIMSK = _BV(TOIE0);
 
-	init_io();
+	io_init();
 
 	// init twi
 	if (!TWIM_Init())
@@ -34,20 +35,14 @@ static void init(void)
 		while (1);
 	}
 
-	// Init twi Tempearture Sensor
-	init_ds1631(I2C_ADRESSE_DS1631);
+	ds1631_init(I2C_ADRESSE_DS1631); // Init twi Tempearture Sensor
 
-	// initialize spi port
-	spi_init();
+	spi_init(); // initialize spi port
+	can_read_addr();
+	can_init(); // initialize can communication
 
-	// initialize can communication
-	can_init();
-
-	read_can_addr();
-
-	// turn on interrupts
-	sei();
-	wdt_enable(WDTO_250MS); // 250 ms
+	sei(); // turn on interrupts
+	wdt_enable(WDTO_250MS);
 
 #ifndef NO_NETVAR
 	switch_netvars_init();
@@ -57,8 +52,9 @@ static void init(void)
 
 int main(void)
 {
-	// system initialization
-	init();
+	uint16_t send_temp_counter = 0;
+
+	init(); // system initialization
 
 	while (1)
 	{
@@ -70,7 +66,11 @@ int main(void)
 #ifndef NO_NETVAR
 			netvar_handle_events();
 #endif
-			//temp_sensor_read();
+			send_temp_counter++;
+			if (send_temp_counter > 1000) {
+				temp_sensor_read();
+				send_temp_counter = 0;
+			}
 		}
 		wdt_reset();
 	}
