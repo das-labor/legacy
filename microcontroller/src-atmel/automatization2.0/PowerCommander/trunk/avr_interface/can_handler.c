@@ -25,7 +25,7 @@ void can_handler()
 					switch (rx_msg->data[0])
 					{
 						case FKT_MGT_RESET:
-							wdt_enable(0);
+							wdt_enable(WDTO_15MS);
 							while (1);
 						case FKT_MGT_PING:
 							{
