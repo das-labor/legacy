@@ -142,7 +142,7 @@ void switch_handler()
 	static uint8_t counter, last_held;
 	uint8_t clicked = 0, held = 0;
 
-	if (eingang_status & TASTER_LICHT)
+	if (!(eingang_status & _BV(TASTER_LICHT)))
 	{
 		counter ++;
 		if (counter > HOLD_THRESHOLD)
@@ -171,7 +171,7 @@ void switch_handler()
 			set_pwm(F_PWM_FENSTER, 200);
 			set_pwm(F_PWM_MITTE, 200);
 			set_pwm(F_PWM_NISCHE, 200);
-			set_output_all(F_REG_BTISCHR_2 | F_REG_BTISCHL_2 | F_REG_MITTE | F_REG_NISCHE);
+			set_output_all(_BV(F_REG_BTISCHR_2) | _BV(F_REG_BTISCHL_2) | _BV(F_REG_MITTE) | _BV(F_REG_NISCHE));
 		}
 	}
 	if (held)

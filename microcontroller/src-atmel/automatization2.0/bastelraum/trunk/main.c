@@ -28,22 +28,19 @@ static void init(void)
 
 	spi_init(); // initialize spi port
 	can_read_addr();
-
 	can_init(); // initialize can communication
+
 	uart_init();
 	io_init();
 
-	//turn on interrupts
-	sei();
-	wdt_enable(WDTO_250MS); // 250 ms
+	sei(); // turn on interrupts
+	wdt_enable(WDTO_250MS);
 }
 
 int main(void)
 {
-	//system initialization
-	init();
+	init(); // system initialization
 
-	//the main loop continuously handles can messages
 	while (1)
 	{
 		can_handler();
@@ -53,6 +50,7 @@ int main(void)
 			tickscounter = 0;
 			switch_handler();
 			motion_tick();
+			PORTB &= ~_BV(PB0);
 		}
 		wdt_reset();
 	}

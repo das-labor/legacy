@@ -31,10 +31,10 @@ void uart_handler()
 				{
 					case 's':
 						state = 2;
-						PORTB |= _BV(PB0);
 						uart_send_led_output();
 						break;
 					case 't':
+						PORTB |= _BV(PB0);
 						state = 1;
 						break;
 					default:
@@ -66,13 +66,13 @@ void uart_set_taster_led(uint8_t sreg)
 {
 	if (sreg)
 	{
-		led_status |= RGBLED_R;
-		led_status &= ~RGBLED_G;
+		led_status |= _BV(RGBLED_R);
+		led_status &= ~_BV(RGBLED_G);
 	}
 	else
 	{
-		led_status |= RGBLED_G;
-		led_status &= ~RGBLED_R;
+		led_status |= _BV(RGBLED_G);
+		led_status &= ~_BV(RGBLED_R);
 	}
 	uart_send_led_output();
 }
