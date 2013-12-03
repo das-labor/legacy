@@ -28,7 +28,7 @@
 #define SREG_DATA	_BV(PC5)
 #define SREG_STROBE	_BV(PA5)
 #define SREG_STROBE_DDR	DDRA
-#define SREG_STROBE_PORT	DDRA
+#define SREG_STROBE_PORT	PORTA
 
 // Hardware PWM Ausgänge
 #define O_PWM00_REG (&(OCR2A))
