@@ -15,7 +15,7 @@ uint8_t myaddr;
 void can_handler()
 {
 	can_message *rx_msg;
-	if ((rx_msg = can_get_nb()))			//get next canmessage in rx_msg
+	if ((rx_msg = can_get_nb()))	// get next canmessage in rx_msg
 	{
 		if (rx_msg->addr_dst == myaddr)
 		{
@@ -77,7 +77,7 @@ void can_handler()
 								set_lamp_all(ROOM_KUECHE, ((outputdata.ports >> SWL_KUECHE) & 0x01)^1);
 							}
 							break;
-						case C_PWM: // PWM F_PWM_SET
+						case C_PWM: // PWM 0x01
 							switch (rx_msg->data[2])
 							{
 								case F_PWM_SET:
@@ -100,15 +100,17 @@ void can_handler()
 											break;
 									}
 									break;
-								case F_PWM_MOD: // TODO
-									switch (rx_msg->data[1]) {
+								case F_PWM_MOD: // 0x02
+									switch (rx_msg->data[1])
+									{
 										case PWM_KUECHE:
 											dim_kueche();
 											break;
 									}
 									break;
-								case F_PWM_DIR: // TODO
-									switch (rx_msg->data[1]) {
+								case F_PWM_DIR: // 0x03
+									switch (rx_msg->data[1])
+									{
 										case PWM_KUECHE:
 											tog_dimdir_kueche();
 											break;
@@ -172,19 +174,18 @@ void can_handler()
 					}
 					break;
 				case 3:
-					if (rx_msg->addr_src == 0x61) /* lounge lamp 1 */
+					if (rx_msg->addr_src == 0x61 && rx_msg->port_src == 0x03) // lounge lamp 1
 						set_lounge_lamp_1(rx_msg->data[0]);
-
-					if (rx_msg->addr_src == 0x60) /* lounge lamp 2 */
+					if (rx_msg->addr_src == 0x60 && rx_msg->port_src == 0x03) // lounge lamp 2
 						set_lounge_lamp_2(rx_msg->data[0]);
 					break;
 			}
 		}
 		// sleepmode zustand abfangen vom hauptschalter gehäuse
-		else if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01)
+		/*else if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01)
 		{
 			// = rx_msg->data[1];
-		}
+		}*/
 		can_free(rx_msg);
 	}
 }
@@ -207,16 +208,17 @@ void can_send_output_status()
 {
 	can_message *msg = can_buffer_get();
 	msg->addr_src = myaddr;
-	msg->port_src = 2;
+	msg->port_src = 0x02;
 	msg->addr_dst = 0x00;
-	msg->port_dst = 0;
+	msg->port_dst = 0x00;
 	msg->dlc = 6;
 	msg->data[0] = get_channel_status();
-	msg->data[1] = get_channel_brightness(0); /* SWL_TAFEL */
-	msg->data[2] = get_channel_brightness(1); /* SWL_BEAMER */
-	msg->data[3] = get_channel_brightness(2); /* SWL_SCHRANK */
-	msg->data[4] = get_channel_brightness(3); /* SWL_FLIPPER */
-	msg->data[5] = get_channel_brightness(4); /* SWL_KUECHE */
+	msg->data[1] = get_channel_brightness(PWM_TAFEL);
+	msg->data[2] = get_channel_brightness(PWM_BEAMER);
+	msg->data[3] = get_channel_brightness(PWM_SCHRANK);
+	msg->data[4] = get_channel_brightness(PWM_FLIPPER);
+	msg->data[5] = get_channel_brightness(PWM_KUECHE);
+	//msg->data[6] = get_channel_brightness(PWM_LOUNGE);
 	can_transmit(msg);
 }
 

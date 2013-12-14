@@ -260,7 +260,7 @@ static void lamp_dim(taster_status *tst) {
 
 static uint8_t dimmdir_k;
 void dim_kueche(void) {
-	uint8_t port_pwm_value = get_channel_brightness(SWL_KUECHE);
+	uint8_t port_pwm_value = get_channel_brightness(PWM_KUECHE);
 
 	if (!(get_channel_status() & 16)) {
 		set_lamp_all(ROOM_KUECHE, 1);
