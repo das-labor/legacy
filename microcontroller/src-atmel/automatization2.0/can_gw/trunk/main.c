@@ -620,7 +620,7 @@ int main(void)
 		}
 #endif // POWER_MEASUREMENT
 		//schedule autoreport functions approx once a second
-		if ((ctrl_reg & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS))) > 0 || (sys_ticks - autoreport_last_schedule_time) > (SYS_TICK_FREQ))
+		if ((ctrl_reg & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS))) > 0 && (sys_ticks - autoreport_last_schedule_time) > (SYS_TICK_FREQ))
 		{
 			autoreport_last_schedule_time = sys_ticks;
 
