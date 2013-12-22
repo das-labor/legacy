@@ -1,4 +1,4 @@
-LAP_ADDR       = 0x10
+LAP_ADDR       = 0x04
 
 OBJ            = main.o can_handler.o can/can.o can/spi.o twi_master/twi_master.o ds1631.o temp_regler.o switch_handler.o temp_read.o
 
