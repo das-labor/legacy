@@ -1,8 +1,6 @@
 #include <avr/io.h>
 
 #include "switch_handler.h"
-#include "can/can.h"
-#include "can/lap.h"
 #include "can_handler.h"
 #include "config.h"
 

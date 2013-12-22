@@ -16,7 +16,7 @@
 
 static volatile uint8_t tickscounter;
 
-ISR(TIMER1_OVF_vect)
+ISR(TIMER0_OVF_vect)
 {
 	tickscounter++;
 }
@@ -31,18 +31,14 @@ static void init(void)
 
 	init_ds1631(I2C_ADRESSE_DS1631);
 
-	//TCCR0 |= _BV(CS02) | _BV(CS00);
-	//TIMSK |= _BV(TOIE0);
+	TCCR0 = _BV(CS02) | _BV(CS00); // clk / 256
+	TIMSK = _BV(TOIE0);
 
 	ACSR   = _BV(ACD); // Disable Analog Comparator (power save)
 
 	DDRD  &= ~(KLINGEL | TUER_KONTAKT | STANDBY);
 	PORTD |= KLINGEL | TUER_KONTAKT | STANDBY;
-
-	TCCR1B = _BV(CS12) | _BV(CS10);
-	TCCR1A = 0;
-	TIMSK |= _BV(TOIE1);
-
+	DDRB |= _BV(PB0);
 
 	spi_init(); // initialize spi port
 	can_read_addr();
@@ -66,7 +62,7 @@ int main(void)
 			tickscounter = 0;
 			switch_handler();
 			send_temp_counter++;
-			if (send_temp_counter > 1000) {
+			if (send_temp_counter > 9000) {
 				temp_sensor_read();
 				send_temp_counter = 0;
 			}

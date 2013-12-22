@@ -5,8 +5,8 @@
 #include "can_handler.h"
 #include "can/can.h"
 #include "can/lap.h"
-#include "ds1631.h"
 #include "temp_regler.h"
+
 
 uint8_t myaddr;
 
@@ -63,20 +63,24 @@ void can_handler()
 		{
 			temp_ist = rx_msg->data[0];
 		} */
-		if (rx_msg->addr_src == 0x02 && rx_msg->port_src == 0x02) // get hauptschalter status
+		if (rx_msg->addr_src == 0x02 && rx_msg->port_src == 0x03) // get hauptschalter status
 		{
-			//do_led_blink();
+			if (rx_msg->data[0] & 0x01 && rx_msg->data[1] == 0)
+				PORTB &= ~_BV(PB0);
+			else
+				PORTB |= _BV(PB0);
 		}
 		can_free(rx_msg);
 	}
 }
 
-void can_send_stat(uint8_t stat_sw, uint8_t change) {
+void can_send_status(uint8_t stat_sw, uint8_t change)
+{
 	can_message *msg = can_buffer_get();
 	msg->addr_src = myaddr;
 	msg->port_src = 0x01;
 	msg->addr_dst = 0x00;
-	msg->port_dst = 0x01;
+	msg->port_dst = 0x00;
 	msg->dlc = 2;
 	msg->data[0] = stat_sw;
 	msg->data[1] = change;
@@ -98,7 +102,7 @@ void can_send_temp_data(uint8_t *data)
 
 static const uint8_t EE_lap_addr EEMEM = EEPROM_LAP_ADDR;
 
-void can_read_addr(void)
+void can_read_addr()
 {
 	myaddr = eeprom_read_byte(&EE_lap_addr);
 }

@@ -34,5 +34,5 @@
 #define I2C_ADRESSE_DS1631 0x9e
 
 
-#endif // ifndef CONFIG_H
+#endif // _CONFIG_H
 
