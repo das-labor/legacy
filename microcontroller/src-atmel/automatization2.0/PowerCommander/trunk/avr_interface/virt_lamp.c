@@ -325,19 +325,19 @@ uint8_t get_channel_status(void)
 {
 	uint8_t tmp = 0;
 	if (outputdata.ports & _BV(SWL_TAFEL))
-		tmp |= _BV(0x01);
+		tmp |= _BV(0x00);
 	if (outputdata.ports & _BV(SWL_BEAMER))
-		tmp |= _BV(0x02);
+		tmp |= _BV(0x01);
 	if (outputdata.ports & _BV(SWL_SCHRANK))
-		tmp |= _BV(0x03);
+		tmp |= _BV(0x02);
 	if (outputdata.ports & _BV(SWL_FLIPPER))
-		tmp |= _BV(0x04;
+		tmp |= _BV(0x03);
 	if (outputdata.ports & _BV(SWL_KUECHE))
-		tmp |= _BV(0x05);
+		tmp |= _BV(0x04);
 	if (outputdata.ports & _BV(SWL_VORTRAG))
-		tmp |= _BV(0x06);
+		tmp |= _BV(0x05);
 	if (outputdata.ports & _BV(SWL_LOUNGE))
-		tmp |= _BV(0x07);
+		tmp |= _BV(0x06);
 	return tmp;
 }
 
