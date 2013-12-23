@@ -137,101 +137,56 @@ static void get_inputs(void) {
 uint8_t lamploungepwm[8];
 
 typedef struct {
+	uint8_t raum;
+	uint8_t anzahl_lampen;
+	uint8_t sw_funktion;
+	uint8_t *pwm_values;
+} raum_strukt;
+
+typedef struct {
 	uint8_t counter;
 	uint8_t last_held;
 	uint8_t dim_dir;
-	uint8_t bright;
-	uint8_t room;
-	void    (*sw_funct) (void);
-	void    (*dim_funct) (void);
-} taster_status;
+	raum_strukt *room;
+} taster_strukt;
 
-void virt_pwm_set_all(taster_status *tst, uint8_t min, uint8_t max)
+
+void virt_pwm_set_all(taster_strukt *tst, uint8_t min, uint8_t max)
 {
-	uint8_t x;
-	if (tst->room == 0)
+	for (uint8_t x = 0; x < (tst->room)->anzahl_lampen; x++)
 	{
-		for (x = 0; x < 4; x++)
-		{
-			if (outputdata.pwmval[x] < min)
-				set_bright(ROOM_VORTRAG, x, min);
-			if (outputdata.pwmval[x] > max)
-				set_bright(ROOM_VORTRAG, x, max);
-		}
-	}
-	else
-	{
-		for (x = 0; x < 8; x++)
-		{
-			if (lamploungepwm[x] < min)
-				set_bright(ROOM_LOUNGE, x, min);
-			if (lamploungepwm[x] > max)
-				set_bright(ROOM_LOUNGE, x, max);
-		}
+		if ((tst->room)->pwm_values[x] < min)
+			set_bright((tst->room)->raum, x, min);
+		if ((tst->room)->pwm_values[x] > max)
+			set_bright((tst->room)->raum, x, max);
 	}
 }
 
-static uint8_t pwm_get_min(taster_status *tst)
+static uint8_t pwm_get_min(taster_strukt *tst)
 {
 	uint8_t min = 255;
-	if (tst->room == 0)
-	{
-		for (uint8_t x = 0; x < 4; x++)
-		{
-			if (outputdata.pwmval[x] < min)
-				min = outputdata.pwmval[x];
-		}
-	}
-	else
-	{
-		for (uint8_t x = 0; x < 4; x++)
-			{
-				if (lamploungepwm[x] < min)
-					min = lamploungepwm[x];
-			}
-	}
+	for (uint8_t x = 0; x < (tst->room)->anzahl_lampen; x++)
+		if ((tst->room)->pwm_values[x] < min)
+			min = (tst->room)->pwm_values[x];
 	return min;
 }
 
-static uint8_t pwm_get_max(taster_status *tst)
+static uint8_t pwm_get_max(taster_strukt *tst)
 {
 	uint8_t max = 0;
-	if (tst->room == 0)
-	{
-
-		for (uint8_t x = 0; x < 4; x++)
-		{
-			if (outputdata.pwmval[x] > max)
-				max = outputdata.pwmval[x];
-		}
-	}
-	else
-	{
-		for (uint8_t x = 0; x < 4; x++)
-		{
-			if (lamploungepwm[x] > max)
-				max = lamploungepwm[x];
-		}
-	}
+	for (uint8_t x = 0; x < (tst->room)->anzahl_lampen; x++)
+		if ((tst->room)->pwm_values[x] > max)
+			max = (tst->room)->pwm_values[x];
 	return max;
 }
 
-static void lamp_dim(taster_status *tst) {
+static void lamp_dim(taster_strukt *tst) {
 	uint8_t val;
-	if (!tst->room) {
-		if (!((outputdata.ports >> SWL_VORTRAG) & 0x01))
-		{
-			set_lamp_all(ROOM_VORTRAG, 1);
-			virt_pwm_set_all(tst, 0, 0);
-		}
-	}
-	else
+
+	if (!((outputdata.ports >> (tst->room)->sw_funktion) & 0x01))
 	{
-		if (!((outputdata.ports >> SWL_LOUNGE) & 0x01))
-		{
-			set_lamp_all(ROOM_LOUNGE, 1);
-			virt_pwm_set_all(tst, 0, 0);
-		}
+		set_lamp_all((tst->room)->raum, 1);
+		virt_pwm_set_all(tst, 0, 0);
 	}
 
 	if (tst->dim_dir)
@@ -258,36 +213,8 @@ static void lamp_dim(taster_status *tst) {
 	}
 }
 
-static uint8_t dimmdir_k;
-void dim_kueche(void) {
-	uint8_t port_pwm_value = get_channel_brightness(PWM_KUECHE);
-
-	if (!(get_channel_status() & 16)) {
-		set_lamp_all(ROOM_KUECHE, 1);
-		port_pwm_value = 0;
-	}
-
-	if (port_pwm_value == 255)
-		dimmdir_k = 0;
-	if (port_pwm_value == 0)
-		dimmdir_k = 1;
-	if (dimmdir_k)
-		port_pwm_value += 1;
-	else
-		port_pwm_value -= 1;
-	set_bright_all(ROOM_KUECHE, port_pwm_value);
-}
-
-void tog_dimdir_kueche(void) {
-	dimmdir_k ^= 1;
-}
-
-void toggle_vortrag(void) {
-	set_lamp_all(ROOM_VORTRAG, (outputdata.ports >> SWL_VORTRAG) & 0x01 ? 0 : 1);
-}
-
-void toggle_lounge(void) {
-	set_lamp_all(ROOM_LOUNGE, (outputdata.ports >> SWL_LOUNGE) & 0x01 ? 0 : 1);
+static void toggle_raum_licht(taster_strukt *tst) {
+	set_lamp_all((tst->room)->raum, (outputdata.ports >> (tst->room)->sw_funktion) & 0x01 ? 0 : 1);
 }
 
 
@@ -295,21 +222,41 @@ void toggle_lounge(void) {
 #define CLICK_THRESHOLD 0
 #define NUM_TASTER 2
 
-void dim_vortrag(void);
-void dim_lounge(void);
-static taster_status taster[NUM_TASTER] = {{0, 0, 0, 0, 0, &toggle_vortrag, &dim_vortrag}, {0, 0, 0, 0, 1, &toggle_lounge, &dim_lounge}};
+static raum_strukt r_lounge  = {8, ROOM_LOUNGE, SWL_LOUNGE, lamploungepwm};
+static raum_strukt r_vortrag = {4, ROOM_VORTRAG, SWL_VORTRAG, outputdata.pwmval};
+static raum_strukt r_kueche  = {1, ROOM_KUECHE, SWL_KUECHE, &outputdata.pwmval[5]};
+
+static taster_strukt taster[3] = {{0, 0, 0, &r_lounge}, {0, 0, 0, &r_vortrag}, {0, 0, 0, &r_kueche}};
 
 void dim_vortrag(void) {
-	lamp_dim(&taster[0]);
-}
-
-void dim_lounge(void) {
 	lamp_dim(&taster[1]);
 }
 
-void tog_dimdir_vortrag(void) {
-	taster[0].dim_dir ^= 1;
+void dim_lounge(void) {
+	lamp_dim(&taster[0]);
 }
+
+
+void dim_kueche(void) {
+	lamp_dim(&taster[2]);
+}
+
+void tog_dimdir_kueche(void) {
+	taster[2].dim_dir ^= 1;
+}
+
+void tog_dimdir_vortrag(void) {
+	taster[1].dim_dir ^= 1;
+}
+
+void toggle_vortrag(void) {
+	toggle_raum_licht(&taster[1]);
+}
+
+void toggle_lounge(void) {
+	toggle_raum_licht(&taster[0]);
+}
+
 
 static void taster_auswertung(void) {
 	uint8_t i;
@@ -329,11 +276,11 @@ static void taster_auswertung(void) {
 		{
 			if (taster[i].counter > CLICK_THRESHOLD)
 				if (taster[i].counter < HOLD_THRESHOLD)
-					(*taster[i].sw_funct) (); // switch
+					toggle_raum_licht(&taster[i]);
 			taster[i].counter = 0;
 		}
 		if (held)
-			(*taster[i].dim_funct)(); // dim
+			lamp_dim(&taster[i]);
 		else if (taster[i].last_held)
 			taster[i].dim_dir ^= 1; // toggle dimdir
 		taster[i].last_held = held;
@@ -347,3 +294,4 @@ void switch_handler()
 	taster_auswertung();
 	handle_main_switch_timeout();
 }
+
