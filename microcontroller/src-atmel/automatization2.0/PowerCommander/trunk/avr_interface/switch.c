@@ -1,38 +1,38 @@
 #include <avr/io.h>
 
 #include "config.h"
-#include "can/can.h"
+#include "switch.h"
 #include "can_handler.h"
 #include "../include/PowerCommander.h"
 #include "i2c_funktionen.h"
 #include "statusled.h"
 #include "virt_lamp.h"
-#include "switch.h"
 
-union {
-	struct {
-		uint8_t hauptschalter:1;
-		uint8_t taster_lounge:1;
-		uint8_t taster_vortrag:1;
-		uint8_t power_ok:1;
-		uint8_t rcd_server:1;
-		uint8_t rcd_power:1;
-		uint8_t rcd_licht:1;
-	} inputs;
-	uint8_t status_input;
-} stat_inputs;
+
+enum {
+IN_HAUPTSCHALTER	= 0x00,
+IN_TASTER_LOUNGE	= 0x01,
+IN_TASTER_VORTRAG	= 0x02,
+IN_POWER_OK			= 0x03,
+IN_RCD_SERVER		= 0x04,
+IN_RCD_POWER		= 0x05,
+IN_RCD_LICHT		= 0x06
+} input_status_t;
+
+static uint8_t status_input;
+
 
 static struct t_pin_parameter {
 	volatile uint8_t *pin;
 	uint8_t bit;
 } pin_matrix[] = {
-	{ (&(PINA)), HAUPTSCHALTER},
-	{ (&(PINB)), TASTER_LOUNGE},
-	{ (&(PIND)), TASTER_VORTRAG},
-	{ (&(PIND)), POWER_OK},
-	{ (&(PINA)), RCD_SERVER},
-	{ (&(PINC)), RCD_POWER},
-	{ (&(PIND)), RCD_LICHT}
+	{ (&(PINA)), PIN_HAUPTSCHALTER},
+	{ (&(PINB)), PIN_TASTER_LOUNGE},
+	{ (&(PIND)), PIN_TASTER_VORTRAG},
+	{ (&(PIND)), PIN_POWER_OK},
+	{ (&(PINA)), PIN_RCD_SERVER},
+	{ (&(PINC)), PIN_RCD_POWER},
+	{ (&(PIND)), PIN_RCD_LICHT}
 };
 
 
@@ -59,7 +59,7 @@ static void handle_main_switch_timeout(void) {
 
 static void exec(uint8_t index) {
 	if (index == 0) {
-		if (stat_inputs.inputs.hauptschalter == 1) {
+		if ((status_input & _BV(IN_HAUPTSCHALTER)) == 1) {
 			timeout_cnt = 0;
 			outputdata.ports |= (1<<SWA_HS) | (1<<SWA_KLO) | (1<<SWA_STECKDOSEN);
 			twi_send();
@@ -85,27 +85,27 @@ static void exec(uint8_t index) {
 * Blue blinking : Error, rcd licht failed
 */
 static void update_rgb_led(void) {
-	if (!stat_inputs.inputs.power_ok) { /* Error case */
-		set_led( (rgb){ .r = 1, .g = 1, .b = 1, .fade = 0, .blink = 1} );
+	if (!(status_input & _BV(IN_POWER_OK))) { /* Error case */
+		set_led(_BV(RED) | _BV(GREEN) | _BV(BLUE) | _BV(BLINK));
 		return;
 	}
-	if (stat_inputs.inputs.rcd_server) { /* Error case */
-		set_led( (rgb){ .r = 0, .g = 1, .b = 0, .fade = 0, .blink = 1} );
+	if (status_input & _BV(IN_RCD_SERVER)) { /* Error case */
+		set_led(_BV(GREEN) | _BV(BLINK));
 		return;
 	}
-	if (stat_inputs.inputs.rcd_power) { /* Error case */
-		set_led( (rgb){ .r = 1, .g = 0, .b = 0, .fade = 0, .blink = 1} );
+	if (status_input & _BV(IN_RCD_POWER)) { /* Error case */
+		set_led(_BV(RED) | _BV(BLINK));
 		return;
 	}
-	if (stat_inputs.inputs.rcd_licht) { /* Error case */
-		set_led( (rgb){ .r = 0, .g = 0, .b = 1, .fade = 0, .blink = 1} );
+	if (status_input & _BV(IN_RCD_LICHT)) { /* Error case */
+		set_led(_BV(BLUE) | _BV(BLINK));
 		return;
 	}
-	if (stat_inputs.inputs.hauptschalter) { /* Switch on */
-		set_led( (rgb){ .r = 0, .g = 1, .b = 0, .fade = 0, .blink = 0} );
+	if (status_input & _BV(IN_HAUPTSCHALTER)) { /* Switch on */
+		set_led(_BV(GREEN));
 	}
 	else {
-		set_led( (rgb){ .r = 0, .g = 0, .b = 1, .fade = 0, .blink = 0} );
+		set_led(_BV(BLUE));
 	}
 }
 
@@ -118,17 +118,17 @@ static void update_rgb_led(void) {
 static void get_inputs(void) {
 	uint8_t i, msk = 0x01;
 	for (i = 0; i < NUM_INPUTS; i++) {
-		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((stat_inputs.status_input & msk) == 0)) {
-			stat_inputs.status_input |= msk;
+		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((status_input & msk) == 0)) {
+			status_input |= msk;
 			update_rgb_led();
 			exec(i);
-			can_send_input_stat(i, stat_inputs.status_input);
+			can_send_input_stat(i, status_input);
 		}
-		else if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && (stat_inputs.status_input & msk)) {
-			stat_inputs.status_input &= ~msk;
+		else if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && (status_input & msk)) {
+			status_input &= ~msk;
 			update_rgb_led();
 			exec(i);
-			can_send_input_stat(i, stat_inputs.status_input);
+			can_send_input_stat(i, status_input);
 		}
 		msk <<= 1;
 	}
@@ -297,62 +297,53 @@ void toggle_lounge(void) {
 
 void dim_vortrag(void);
 void dim_lounge(void);
-static taster_status status[NUM_TASTER] = {{0, 0, 0, 0, 0, &toggle_vortrag, &dim_vortrag}, {0, 0, 0, 0, 1, &toggle_lounge, &dim_lounge}};
+static taster_status taster[NUM_TASTER] = {{0, 0, 0, 0, 0, &toggle_vortrag, &dim_vortrag}, {0, 0, 0, 0, 1, &toggle_lounge, &dim_lounge}};
 
 void dim_vortrag(void) {
-	lamp_dim(&status[0]);
+	lamp_dim(&taster[0]);
 }
 
 void dim_lounge(void) {
-	lamp_dim(&status[1]);
+	lamp_dim(&taster[1]);
 }
 
 void tog_dimdir_vortrag(void) {
-	status[0].dim_dir ^= 1;
+	taster[0].dim_dir ^= 1;
 }
 
-static void taster(void) {
+static void taster_auswertung(void) {
 	uint8_t i;
 	for (i = 0; i < NUM_TASTER; i++)
 	{
 		uint8_t held = 0;
 
-		if (!(stat_inputs.status_input & _BV(i + 1)))
+		if (!(status_input & _BV(i + 1)))
 		{
-			status[i].counter ++;
-			if (status[i].counter > HOLD_THRESHOLD)
+			taster[i].counter ++;
+			if (taster[i].counter > HOLD_THRESHOLD)
 			{
 				held = 1;
-				status[i].counter = HOLD_THRESHOLD;
+				taster[i].counter = HOLD_THRESHOLD;
 			}
 		} else
 		{
-			if (status[i].counter > CLICK_THRESHOLD)
-			{
-				if (status[i].counter < HOLD_THRESHOLD)
-				{
-					(*status[i].sw_funct) (); // switch
-				}
-			}
-			status[i].counter = 0;
+			if (taster[i].counter > CLICK_THRESHOLD)
+				if (taster[i].counter < HOLD_THRESHOLD)
+					(*taster[i].sw_funct) (); // switch
+			taster[i].counter = 0;
 		}
 		if (held)
-		{
-			(*status[i].dim_funct)(); // dim
-		}
-		else if (status[i].last_held)
-		{
-			status[i].dim_dir ^= 1; // toggle dimdir
-		}
-		status[i].last_held = held;
+			(*taster[i].dim_funct)(); // dim
+		else if (taster[i].last_held)
+			taster[i].dim_dir ^= 1; // toggle dimdir
+		taster[i].last_held = held;
 	}
 }
 
 
-void switch_handler(void)
+void switch_handler()
 {
 	get_inputs();
-	taster();
-	rgb_led_animation();
+	taster_auswertung();
 	handle_main_switch_timeout();
 }

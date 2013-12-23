@@ -61,9 +61,9 @@ void can_handler()
 									case SWL_FLIPPER:
 										set_lamp(ROOM_VORTRAG, 3, rx_msg->data[2]);
 										break;
-									case SWL_LOUNGE:
+									/*case SWL_LOUNGE:
 										set_lamp(ROOM_LOUNGE, 0, rx_msg->data[2]); // XXX rm
-										break;
+										break;*/
 									case SWL_KUECHE:
 										set_lamp(ROOM_KUECHE, 0, rx_msg->data[2]);
 										break;
@@ -182,7 +182,7 @@ void can_handler()
 			}
 		}
 		// sleepmode zustand abfangen vom hauptschalter gehäuse
-		/*else if (rx_msg->addr_src == 0x04 && rx_msg->port_dst == 0x01 && rx_msg->data[1] == 0x01)
+		/*else if (rx_msg->addr_src == 0x04 && rx_msg->port_src == 0x01 && rx_msg->data[1] == 0x01)
 		{
 			// = rx_msg->data[1];
 		}*/
@@ -224,7 +224,7 @@ void can_send_output_status()
 
 static const uint8_t EE_lap_addr EEMEM = EEPROM_LAP_ADDR;
 
-void read_can_addr(void)
+void read_can_addr()
 {
 	myaddr = eeprom_read_byte(&EE_lap_addr);
 }

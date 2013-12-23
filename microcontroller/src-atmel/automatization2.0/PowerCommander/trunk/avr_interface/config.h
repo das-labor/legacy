@@ -38,13 +38,13 @@
 
 #define NUM_INPUTS 7
 
-#define HAUPTSCHALTER  (_BV(PA0))
-#define POWER_OK       (_BV(PD7))
-#define TASTER_LOUNGE  (_BV(PB2))
-#define TASTER_VORTRAG (_BV(PD3))
-#define RCD_SERVER     (_BV(PA1))
-#define RCD_POWER      (_BV(PC2))
-#define RCD_LICHT      (_BV(PD6))
+#define PIN_HAUPTSCHALTER  (_BV(PA0))
+#define PIN_POWER_OK       (_BV(PD7))
+#define PIN_TASTER_LOUNGE  (_BV(PB2))
+#define PIN_TASTER_VORTRAG (_BV(PD3))
+#define PIN_RCD_SERVER     (_BV(PA1))
+#define PIN_RCD_POWER      (_BV(PC2))
+#define PIN_RCD_LICHT      (_BV(PD6))
 
 
 #endif // ifndef CONFIG_H
