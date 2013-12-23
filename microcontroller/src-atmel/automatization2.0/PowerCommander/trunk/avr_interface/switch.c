@@ -214,7 +214,7 @@ static void lamp_dim(taster_strukt *tst) {
 }
 
 static void toggle_raum_licht(taster_strukt *tst) {
-	set_lamp_all((tst->room)->raum, (outputdata.ports >> (tst->room)->sw_funktion) & 0x01 ? 0 : 1);
+	set_lamp_all((tst->room)->raum, ((outputdata.ports >> (tst->room)->sw_funktion) & 0x01) ^ 1);
 }
 
 
@@ -222,39 +222,42 @@ static void toggle_raum_licht(taster_strukt *tst) {
 #define CLICK_THRESHOLD 0
 #define NUM_TASTER 2
 
-static raum_strukt r_lounge  = {8, ROOM_LOUNGE, SWL_LOUNGE, lamploungepwm};
-static raum_strukt r_vortrag = {4, ROOM_VORTRAG, SWL_VORTRAG, outputdata.pwmval};
-static raum_strukt r_kueche  = {1, ROOM_KUECHE, SWL_KUECHE, &outputdata.pwmval[5]};
+static raum_strukt r_vortrag = {ROOM_VORTRAG, 4, SWL_VORTRAG, outputdata.pwmval};
+static raum_strukt r_lounge  = {ROOM_LOUNGE, 8, SWL_LOUNGE, lamploungepwm};
+static raum_strukt r_kueche  = {ROOM_KUECHE, 1, SWL_KUECHE, &outputdata.pwmval[5]};
 
-static taster_strukt taster[3] = {{0, 0, 0, &r_lounge}, {0, 0, 0, &r_vortrag}, {0, 0, 0, &r_kueche}};
+static taster_strukt taster[3] = {{0, 0, 0, &r_vortrag}, {0, 0, 0, &r_lounge}, {0, 0, 0, &r_kueche}};
 
 void dim_vortrag(void) {
-	lamp_dim(&taster[1]);
-}
-
-void dim_lounge(void) {
 	lamp_dim(&taster[0]);
 }
 
+void dim_lounge(void) {
+	lamp_dim(&taster[1]);
+}
 
 void dim_kueche(void) {
 	lamp_dim(&taster[2]);
+}
+
+void tog_dimdir_vortrag(void) {
+	taster[0].dim_dir ^= 1;
 }
 
 void tog_dimdir_kueche(void) {
 	taster[2].dim_dir ^= 1;
 }
 
-void tog_dimdir_vortrag(void) {
-	taster[1].dim_dir ^= 1;
-}
-
 void toggle_vortrag(void) {
-	toggle_raum_licht(&taster[1]);
+	toggle_raum_licht(&taster[0]);
 }
 
 void toggle_lounge(void) {
-	toggle_raum_licht(&taster[0]);
+	toggle_raum_licht(&taster[1]);
+}
+
+void toggle_kueche(void) {
+	toggle_raum_licht(&taster[2]);
 }
 
 

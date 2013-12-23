@@ -74,7 +74,7 @@ void can_handler()
 							}
 							else if (rx_msg->data[2] == F_SW_TOGGLE && rx_msg->data[1] == SWL_KUECHE)
 							{
-								set_lamp_all(ROOM_KUECHE, ((outputdata.ports >> SWL_KUECHE) & 0x01)^1);
+								toggle_kueche();
 							}
 							break;
 						case C_PWM: // PWM 0x01
