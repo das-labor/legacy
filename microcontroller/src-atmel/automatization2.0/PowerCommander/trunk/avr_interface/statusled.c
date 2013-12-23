@@ -141,12 +141,13 @@ void rgb_led_animation() {
 		}
 		else if (rgb_led_counter > 30) {
 			rgb_led_counter = 0;
-			if(rgb_led_color.r)
+			if (rgb_led_color.r)
 				LED_ROT_AN();
-			if(rgb_led_color.g)
+			if (rgb_led_color.g)
 				LED_GRUEN_AN();
-			if(rgb_led_color.b)
+			if (rgb_led_color.b)
 				LED_BLAU_AN();
 		}
 	}
 }
+
