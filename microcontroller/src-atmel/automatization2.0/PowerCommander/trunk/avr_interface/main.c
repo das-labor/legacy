@@ -83,6 +83,7 @@ int main(void)
 		if (tickscounter >= 20) {
 			tickscounter = 0;
 			switch_handler();
+			rgb_led_animation();
 		}
 		wdt_reset();
 	}
