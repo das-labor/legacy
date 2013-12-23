@@ -43,7 +43,18 @@ extern uint8_t ds1631_get_temp(uint8_t *p, uint8_t addr);
  * 1SHOT*—Conversion Mode (Read/Write)          factory = 0
  * *EEPROM BACKED
  */
-#define DS1631_I2CDEFAULTCONFIG		0b10001100
+ 
+enum {
+	ONESHOT	= 0x00,
+	POL		= 0x01,
+	R0		= 0x02,
+	R1		= 0x03,
+	NVB		= 0x04,
+	TLF		= 0x05,
+	THF		= 0x06,
+	DONE	= 0x07
+	} ds1631_config_reg;
+#define DS1631_I2CDEFAULTCONFIG		(_BV(DONE) | _BV(R1) | _BV(R0))
 
 #endif // _DS1631_H
 
