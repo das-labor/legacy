@@ -151,7 +151,7 @@ typedef struct {
 } taster_strukt;
 
 
-void virt_pwm_set_all(taster_strukt *tst, uint8_t min, uint8_t max)
+static void virt_pwm_set_all(taster_strukt *tst, uint8_t min, uint8_t max)
 {
 	for (uint8_t x = 0; x < (tst->room)->anzahl_lampen; x++)
 	{
