@@ -21,7 +21,7 @@ uint8_t lounge_lamp_status_1, lounge_lamp_status_2;
 void init_lamp_control()
 {
 	lounge_lamp_status_1 = lounge_lamp_status_2 = 0;
-	/*{
+	{
 		can_message *msg = can_buffer_get();
 		msg->addr_src = myaddr;
 		msg->port_src = 2;
@@ -40,7 +40,7 @@ void init_lamp_control()
 		msg->dlc = 1;
 		msg->data[0] = 2; // get lamp status
 		can_transmit(msg);	// send packet to can_dimmer
-	}*/
+	}
 }
 
 void set_lounge_lamp_1(uint8_t val)
@@ -53,6 +53,14 @@ void set_lounge_lamp_2(uint8_t val)
 {
 	lounge_lamp_status_2 = val;
 	relais_control();
+}
+
+static void output_set(uint8_t output, uint8_t enable)
+{
+	if (enable)
+		outputdata.ports |= _BV(output);
+	else
+		outputdata.ports &= ~_BV(output);
 }
 
 /*
@@ -74,136 +82,106 @@ void set_lounge_lamp_2(uint8_t val)
 
 void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 {
-	if (room > 2)
-		return;
 	if (index > 7)
 		return;
 
-	if (room == ROOM_VORTRAG)
+	switch (room)
 	{
-		if (index == 0) { /* SWL_TAFEL */
-			if (enable)
-				outputdata.ports |= (1<<SWL_TAFEL);
-			else
-				outputdata.ports &= ~(1<<SWL_TAFEL);
-		}
-		else if (index == 1) { /* SWL_BEAMER */
-			if (enable)
-				outputdata.ports |= (1<<SWL_BEAMER);
-			else
-				outputdata.ports &= ~(1<<SWL_BEAMER);
-		}
-		else if (index == 2) { /* SWL_SCHRANK */
-			if (enable)
-				outputdata.ports |= (1<<SWL_SCHRANK);
-			else
-				outputdata.ports &= ~(1<<SWL_SCHRANK);
-		}
-		else if (index == 3){ /* SWL_FLIPPER */
-			if (enable)
-				outputdata.ports |= (1<<SWL_FLIPPER);
-			else
-				outputdata.ports &= ~(1<<SWL_FLIPPER);
-		}
-		else if (index == 4){ /* SWL_FLIPPER */
-			if (enable)
-				outputdata.ports |= (1<<SWA_BEAMER);
-			else
-				outputdata.ports &= ~(1<<SWA_BEAMER);
-		}
+		case ROOM_VORTRAG:
+			switch (index) { // SWL_TAFEL
+				case 0:
+					output_set(SWL_TAFEL, enable);
+					break;
+				case 1: // SWL_BEAMER
+					output_set(SWL_BEAMER, enable);
+					break;
+				case 2: // SWL_SCHRANK
+					output_set(SWL_SCHRANK, enable);
+					break;
+				case 3: // SWL_FLIPPER 
+					output_set(SWL_FLIPPER, enable);
+					break;
+				case 4: // SWL_BEAMER - beamer steckdose
+					output_set(SWA_BEAMER, enable);
+					break;
+			}
+			relais_control();	// update relais status, will call twi_send()
+			break;
+		case ROOM_LOUNGE:
+			/*{
+				can_message *msg = can_buffer_get();
+				msg->addr_src = myaddr;
+				msg->port_src = 2;
+				msg->addr_dst = 0x60;
+				msg->port_dst = 2;
+				msg->dlc = 3;
+				msg->data[0] = 0; // switch lamp
+				msg->data[1] = index;
+				msg->data[2] = enable;
+				can_transmit(msg);	// send packet to can_dimmer
+			}
+			{
+				can_message *msg = can_buffer_get();
+				msg->addr_src = myaddr;
+				msg->port_src = 2;
+				msg->addr_dst = 0x61;
+				msg->port_dst = 2;
+				msg->dlc = 3;
+				msg->data[0] = 0; // switch lamp
+				msg->data[1] = index;
+				msg->data[2] = enable;
+				can_transmit(msg);	// send packet to can_dimmer
+			}*/
+			break;
+		case ROOM_KUECHE:
+			output_set(SWL_KUECHE, enable);
+			relais_control();	// update relais status, will call twi_send()
+			break;
 	}
-
-	else if (room == ROOM_LOUNGE)
-	{
-		/*{
-			can_message *msg = can_buffer_get();
-			msg->addr_src = myaddr;
-			msg->port_src = 2;
-			msg->addr_dst = 0x60;
-			msg->port_dst = 2;
-			msg->dlc = 3;
-			msg->data[0] = 0; // switch lamp
-			msg->data[1] = index;
-			msg->data[2] = enable;
-			can_transmit(msg);	// send packet to can_dimmer
-		}
-		{
-			can_message *msg = can_buffer_get();
-			msg->addr_src = myaddr;
-			msg->port_src = 2;
-			msg->addr_dst = 0x61;
-			msg->port_dst = 2;
-			msg->dlc = 3;
-			msg->data[0] = 0; // switch lamp
-			msg->data[1] = index;
-			msg->data[2] = enable;
-			can_transmit(msg);	// send packet to can_dimmer
-		}*/
-	}
-	else if (room == ROOM_KUECHE)
-	{
-		if (enable)
-			outputdata.ports |= (1<<SWL_KUECHE);
-		else
-			outputdata.ports &= ~(1<<SWL_KUECHE);
-	}
-
-	relais_control();	/* update relays status */
 }
 
 void set_lamp_all(uint8_t room, uint8_t enable)
 {
-	if (room > 2)
-		return;
-
-	if (room == ROOM_VORTRAG)
+	switch (room)
 	{
-		if (enable)
-		{
-			outputdata.ports |= (1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK);
-		}
-		else
-		{
-			outputdata.ports &= ~((1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK));
-		}
-
+		case ROOM_VORTRAG:
+			if (enable)
+				outputdata.ports |= (1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK);
+			else
+				outputdata.ports &= ~((1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK));
+			relais_control();	/* update relais status, will call twi_send() */
+			break;
+		case ROOM_LOUNGE:
+			{
+				can_message *msg = can_buffer_get();
+				msg->addr_src = myaddr;
+				msg->port_src = 2;
+				msg->addr_dst = 0x60;
+				msg->port_dst = 2;
+				msg->dlc = 3;
+				msg->data[0] = 3; // switch lamp all
+				msg->data[1] = 0;
+				msg->data[2] = enable;
+				can_transmit(msg);	// send packet to can_dimmer
+			}
+			{
+				can_message *msg = can_buffer_get();
+				msg->addr_src = myaddr;
+				msg->port_src = 2;
+				msg->addr_dst = 0x61;
+				msg->port_dst = 2;
+				msg->dlc = 3;
+				msg->data[0] = 3; // switch lamp all
+				msg->data[1] = 0;
+				msg->data[2] = enable;
+				can_transmit(msg);	// send packet to can_dimmer
+			}
+			break;
+		case ROOM_KUECHE:
+			output_set(SWL_KUECHE, enable);
+			relais_control();	// update relais status, will call twi_send()
+			break;
 	}
-	else if (room == ROOM_LOUNGE)
-	{
-		{
-			can_message *msg = can_buffer_get();
-			msg->addr_src = myaddr;
-			msg->port_src = 2;
-			msg->addr_dst = 0x60;
-			msg->port_dst = 2;
-			msg->dlc = 3;
-			msg->data[0] = 3; // switch lamp all
-			msg->data[1] = 0;
-			msg->data[2] = enable;
-			can_transmit(msg);	// send packet to can_dimmer
-		}
-		{
-			can_message *msg = can_buffer_get();
-			msg->addr_src = myaddr;
-			msg->port_src = 2;
-			msg->addr_dst = 0x61;
-			msg->port_dst = 2;
-			msg->dlc = 3;
-			msg->data[0] = 3; // switch lamp all
-			msg->data[1] = 0;
-			msg->data[2] = enable;
-			can_transmit(msg);	// send packet to can_dimmer
-		}
-	}
-	else if (room == ROOM_KUECHE)
-	{
-		if (enable)
-			outputdata.ports |= (1<<SWL_KUECHE);
-		else
-			outputdata.ports &= ~(1<<SWL_KUECHE);
-	}
-
-	relais_control();	/* update relais status, will call twi_send() */
 }
 
 /*
@@ -225,96 +203,92 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 
 void set_bright(uint8_t room, uint8_t index, uint8_t value)
 {
-	if (room > 2)
-		return;
 	if (index > 7)
 		return;
 
-	if (room == ROOM_VORTRAG)
+	switch (room)
 	{
-		if (index < 4)
-			outputdata.pwmval[index] = value;
+		case ROOM_VORTRAG:
+			if (index < 4) {
+				outputdata.pwmval[index] = value;
+				twi_send();	// push outputdata
+			}
+			break;
+		case ROOM_LOUNGE:
+			/*{
+				can_message *msg = can_buffer_get();
+				msg->addr_src = myaddr;
+				msg->port_src = 0;
+				msg->addr_dst = 0x60;
+				msg->port_dst = 2;
+				msg->dlc = 3;
+				msg->data[0] = 1; // set brightness lamp
+				msg->data[1] = index;
+				msg->data[2] = value;
+				can_transmit(msg);	// send packet to can_dimmer
+			}
+			{
+				can_message *msg = can_buffer_get();
+				msg->addr_src = myaddr;
+				msg->port_src = 0;
+				msg->addr_dst = 0x61;
+				msg->port_dst = 2;
+				msg->dlc = 3;
+				msg->data[0] = 1; // set brightness lamp
+				msg->data[1] = index;
+				msg->data[2] = value;
+				can_transmit(msg);	// send packet to can_dimmer
+			}*/
+			break;
+		case ROOM_KUECHE:
+			outputdata.pwmval[PWM_KUECHE] = value;	// PWM_KUECHE is 5
+			twi_send();	// push outputdata
+			break;
 	}
-	else if(room == ROOM_LOUNGE)
-	{
-		/*{
-			can_message *msg = can_buffer_get();
-			msg->addr_src = myaddr;
-			msg->port_src = 2;
-			msg->addr_dst = 0x60;
-			msg->port_dst = 2;
-			msg->dlc = 3;
-			msg->data[0] = 1; // set brightness lamp
-			msg->data[1] = index;
-			msg->data[2] = value;
-			can_transmit(msg);	// send packet to can_dimmer
-		}
-		{
-			can_message *msg = can_buffer_get();
-			msg->addr_src = myaddr;
-			msg->port_src = 2;
-			msg->addr_dst = 0x61;
-			msg->port_dst = 2;
-			msg->dlc = 3;
-			msg->data[0] = 1; // set brightness lamp
-			msg->data[1] = index;
-			msg->data[2] = value;
-			can_transmit(msg);	// send packet to can_dimmer
-		}*/
-	}
-	else if (room == ROOM_KUECHE)
-	{
-		outputdata.pwmval[PWM_KUECHE] = value;	/* PWM_KUECHE is 5 */
-	}
-
-	relais_control();	/* update relais status, will call twi_send() */
 }
 
 void set_bright_all(uint8_t room, uint8_t value)
 {
-	if (room > 2)
-		return;
-
-	if (room == ROOM_VORTRAG)
+	switch (room)
 	{
-		outputdata.pwmval[PWM_TAFEL] = value;
-		outputdata.pwmval[PWM_BEAMER] = value;
-		outputdata.pwmval[PWM_SCHRANK] = value;
-		outputdata.pwmval[PWM_FLIPPER] = value;
+		case ROOM_VORTRAG:
+			outputdata.pwmval[PWM_TAFEL] = value;
+			outputdata.pwmval[PWM_BEAMER] = value;
+			outputdata.pwmval[PWM_SCHRANK] = value;
+			outputdata.pwmval[PWM_FLIPPER] = value;
+			twi_send();	// push outputdata
+			break;
+		case ROOM_LOUNGE:
+			/*{
+				can_message *msg = can_buffer_get();
+				msg->addr_src = myaddr;
+				msg->port_src = 2;
+				msg->addr_dst = 0x60;
+				msg->port_dst = 2;
+				msg->dlc = 3;
+				msg->data[0] = 4; // set brightness lamp all
+				msg->data[1] = 0;
+				msg->data[2] = value;
+				can_transmit(msg);	// send packet to can_dimmer
+			}
+			{
+				can_message *msg = can_buffer_get();
+				msg->addr_src = myaddr;
+				msg->port_src = 2;
+				msg->addr_dst = 0x61;
+				msg->port_dst = 2;
+				msg->dlc = 3;
+				msg->data[0] = 4; // set brightness lamp all
+				msg->data[1] = 0;
+				msg->data[2] = value;
+				can_transmit(msg);	// send packet to can_dimmer
+			}*/
+			break;
+		case ROOM_KUECHE:
+			outputdata.pwmval[PWM_KUECHE] = value;	// PWM_KUECHE is 5
+			twi_send();	// push outputdata
+			break;
 	}
-	else if (room == ROOM_LOUNGE)
-	{
-		/*{
-			can_message *msg = can_buffer_get();
-			msg->addr_src = myaddr;
-			msg->port_src = 2;
-			msg->addr_dst = 0x60;
-			msg->port_dst = 2;
-			msg->dlc = 3;
-			msg->data[0] = 4; // set brightness lamp all
-			msg->data[1] = 0;
-			msg->data[2] = value;
-			can_transmit(msg);	// send packet to can_dimmer
-		}
-		{
-			can_message *msg = can_buffer_get();
-			msg->addr_src = myaddr;
-			msg->port_src = 2;
-			msg->addr_dst = 0x61;
-			msg->port_dst = 2;
-			msg->dlc = 3;
-			msg->data[0] = 4; // set brightness lamp all
-			msg->data[1] = 0;
-			msg->data[2] = value;
-			can_transmit(msg);	// send packet to can_dimmer
-		}*/
-	}
-	else if (room == ROOM_KUECHE)
-	{
-		outputdata.pwmval[PWM_KUECHE] = value;	/* PWM_KUECHE is 5 */
-	}
-
-	relais_control();	/* update relais status, will call twi_send() */
 }
 
 
@@ -360,23 +334,17 @@ uint8_t get_channel_brightness(uint8_t index)
 /*
 * Disable relais that are not used at the moment
 * PWM values are ignored
-* only touch relais of ROOM_VORTRAG, ROOM_KUECHE, ROOM_LOUNGE
+* only touch relais of ROOM_VORTRAG, ROOM_LOUNGE
 */
 
-static void relais_control()
+static void relais_control(void)
 {
-	if (lounge_lamp_status_1 || lounge_lamp_status_2) // one or more lamps in lounge are on
-		outputdata.ports |= _BV(SWL_LOUNGE);
-	else
-		outputdata.ports &= ~_BV(SWL_LOUNGE);
+	// one or more lamps in lounge are on
+	output_set(SWL_LOUNGE, lounge_lamp_status_1 || lounge_lamp_status_2);
 
-	if (outputdata.ports & _BV(SWL_TAFEL) || outputdata.ports & _BV(SWL_BEAMER) || outputdata.ports & _BV(SWL_SCHRANK) || outputdata.ports & _BV(SWL_FLIPPER))	// one ore more are on
-		outputdata.ports |= _BV(SWL_VORTRAG);
-	else
-		outputdata.ports &= ~_BV(SWL_VORTRAG);
-
+	// one ore more lamps in vortrag raum are on
+	output_set(SWL_VORTRAG, outputdata.ports & (_BV(SWL_TAFEL) | _BV(SWL_BEAMER) | _BV(SWL_SCHRANK) | _BV(SWL_FLIPPER)));
 
 	twi_send();	// push outputdata
 }
-
 
