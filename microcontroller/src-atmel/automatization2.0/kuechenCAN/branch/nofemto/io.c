@@ -22,20 +22,23 @@ static struct t_switch_parameter {
 // the inverted parameter is used to normalize all inputs
 // before they are stored in the state parameter and passed to the changed event.
 // The normalized values are:
-// Taster            1 = pressed, 0 = released
-// Türkontakt        1 = on, 0 = off
+// Taster Küchenlicht            1 = pressed, 0 = released
+// Taster Alarm                  1 = on, 0 = off
 
-static void keypress(void);
+#ifdef NO_NETVAR
+#ifndef NEW_PROTO
+	static void keypress(void);
+#endif
+#endif
 
 static struct t_pin_parameter {
 	uint8_t state;
-	int8_t debounce_count;
 	uint8_t inverted;
 	volatile uint8_t *pin;
 	uint8_t bit;
 } pin_matrix[] = {
-	{ 0, 0, 1, (&(I_PIN_0)), I_BV_0},
-	{ 0, 0, 0, (&(I_PIN_1)), I_BV_1}
+	{ 0, 1, (&(I_PIN_0)), I_BV_0},
+	{ 0, 1, (&(I_PIN_1)), I_BV_1}
 };
 
 void io_init()
@@ -101,19 +104,22 @@ void lamp_out_init() {
 	new_netvar_output_8(NV_IDX_LAMP_CONTROLLER_KUECHE, 0x3f, lamp_out, (void *) F_LED);
 }
 #endif
+
 static void input_changed_event(uint8_t num, uint8_t val) {
 	if (num == 1) {
 		if (val)
-			PORTD |= _BV(PD5) | _BV(PD6) | _BV(PD7);
+			PORTD |= B_LED1 | B_LED2 | B_LED3;
 		else
-			PORTD &= ~(_BV(PD5) | _BV(PD6) | _BV(PD7));
+			PORTD &= ~(B_LED1 | B_LED2 | B_LED3);
 	}
 #ifndef NO_NETVAR
 	netvar_write(out_netvars[num], &val);
 #endif
+#ifdef NEW_PROTO
+	can_send_input_status(num, val);
+#endif
 }
 
-#define DEBOUNCE_CYCLES 2
 
 /*
 *  debounce monitored inputs, invert them if wanted, and check for changes
@@ -124,32 +130,28 @@ void switch_handler() {
 	uint8_t i;
 	for (i = 0; i < NUM_INPUTS; i++) {
 		if ((*pin_matrix[i].pin) & pin_matrix[i].bit) {
-			pin_matrix[i].debounce_count++;
-			if (pin_matrix[i].debounce_count > DEBOUNCE_CYCLES) {
-				pin_matrix[i].debounce_count = DEBOUNCE_CYCLES;
-				if (pin_matrix[i].state == pin_matrix[i].inverted) {
-					pin_matrix[i].state = pin_matrix[i].inverted ^ 1;
-					input_changed_event(i, pin_matrix[i].state);
-				}
+			if (pin_matrix[i].state == pin_matrix[i].inverted) {
+				pin_matrix[i].state = pin_matrix[i].inverted ^ 1;
+				input_changed_event(i, pin_matrix[i].state);
 			}
 		} else {
-			pin_matrix[i].debounce_count--;
-			if (pin_matrix[i].debounce_count < 0) {
-				pin_matrix[i].debounce_count = 0;
-				if (pin_matrix[i].state == (pin_matrix[i].inverted ^ 1)) {
-					pin_matrix[i].state = pin_matrix[i].inverted;
-					input_changed_event(i, pin_matrix[i].state);
-				}
+			if (pin_matrix[i].state == (pin_matrix[i].inverted ^ 1)) {
+				pin_matrix[i].state = pin_matrix[i].inverted;
+				input_changed_event(i, pin_matrix[i].state);
 			}
 		}
 	}
 #ifdef NO_NETVAR
+#ifndef NEW_PROTO
 	keypress();
+#endif
 #endif
 }
 
 
 #ifdef NO_NETVAR
+#ifndef NEW_PROTO
+
 #define HOLD_THRESHOLD 30
 #define CLICK_THRESHOLD 0
 
@@ -187,54 +189,51 @@ static void keypress(void) {
 	else
 	{
 		if (counter_0 > CLICK_THRESHOLD)
-		{
 			if (counter_0 < HOLD_THRESHOLD)
-			{
 				clicked_0 = 1;
-			}
-		}
 		counter_0 = 0;
 	}
 	if (clicked_0 == 1)
 	{
 		can_message *msg = can_buffer_get();
+		msg->addr_src = myaddr;
+		msg->port_src = LIGHTCANPORT;
+		msg->addr_dst = 0x02;
+		msg->port_dst = 1;
+		msg->dlc = 3;
 		msg->data[0] = C_SW;
 		msg->data[1] = SWL_KUECHE;
 		msg->data[2] = F_SW_TOGGLE;
-		msg->addr_src = myaddr;
-		msg->addr_dst = 0x02;
-		msg->port_dst = 1;
-		msg->port_src = LIGHTCANPORT;
-		msg->dlc = 4;
-		can_transmit(msg);	/* send packet */
+		can_transmit(msg);	// send packet
 	}
 	if (held_0)
 	{
 		can_message *msg = can_buffer_get();
-		msg->data[0] = C_PWM;
-		msg->data[1] = PWM_KUECHE;
-		msg->data[2] = F_PWM_MOD;
 		msg->addr_src = myaddr;
+		msg->port_src = LIGHTCANPORT;
 		msg->addr_dst = 0x02;
 		msg->port_dst = 1;
-		msg->port_src = LIGHTCANPORT;
-		msg->dlc = 4;
-		can_transmit(msg);	/* send packet */
+		msg->dlc = 3;
+		msg->data[0] = C_PWM; // 0
+		msg->data[1] = PWM_KUECHE; // 5
+		msg->data[2] = F_PWM_MOD; // 2
+		can_transmit(msg);	// send packet
 	}
 	else if (last_held_0)
 	{
 		can_message *msg = can_buffer_get();
-		msg->data[0] = C_PWM;
-		msg->data[1] = PWM_KUECHE;
-		msg->data[2] = F_PWM_DIR;
 		msg->addr_src = myaddr;
+		msg->port_src = LIGHTCANPORT;
 		msg->addr_dst = 0x02;
 		msg->port_dst = 1;
-		msg->port_src = LIGHTCANPORT;
-		msg->dlc = 4;
-		can_transmit(msg);	/* send packet */
+		msg->dlc = 3;
+		msg->data[0] = C_PWM; // 
+		msg->data[1] = PWM_KUECHE;
+		msg->data[2] = F_PWM_DIR;
+		can_transmit(msg);	// send packet
 	}
 	last_held_0 = held_0;
 }
+#endif
 #endif
 

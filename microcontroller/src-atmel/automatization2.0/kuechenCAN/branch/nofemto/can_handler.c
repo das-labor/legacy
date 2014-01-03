@@ -52,22 +52,35 @@ void can_handler()
 	}
 }
 
+void can_send_input_status(uint8_t stat_sw, uint8_t change)
+{
+	can_message *msg = can_buffer_get();
+	msg->addr_src = myaddr;
+	msg->port_src = 0x02;
+	msg->addr_dst = 0x00;
+	msg->port_dst = 0x00;
+	msg->dlc = 2;
+	msg->data[0] = stat_sw;
+	msg->data[1] = change;
+	can_transmit(msg);
+}
+
 void can_send_temp_data(uint8_t *data)
 {
 	can_message *msg = can_buffer_get();
-	msg->data[0] = data[0];
-	msg->data[1] = data[1];
 	msg->addr_src = myaddr;
+	msg->port_src = 0x0f;
 	msg->addr_dst = 0x00;
 	msg->port_dst = 0x00;
-	msg->port_src = 0x0f;
 	msg->dlc = 2;
+	msg->data[0] = data[0];
+	msg->data[1] = data[1];
 	can_transmit(msg);
 }
 
 static const uint8_t EE_lap_addr EEMEM = EEPROM_LAP_ADDR;
 
-void can_read_addr(void)
+void can_read_addr()
 {
 	myaddr = eeprom_read_byte(&EE_lap_addr);
 }
