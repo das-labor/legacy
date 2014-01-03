@@ -6,7 +6,7 @@
 #include "twi_master/twi_master.h"
 #include "can/spi.h"
 #include "can/can.h"
-#include "netvar/can_handler.h"
+#include "can_handler.h"
 #include "netvar/netvar.h"
 #include "io.h"
 #include "animationen.h"
@@ -28,7 +28,7 @@ static void init(void)
 
 	//motion_init();
 
-	TCCR0 = _BV(CS01) | _BV(CS00); // clk / 64
+	TCCR0 = _BV(CS02) | _BV(CS00); // clk / 256 
 	TIMSK = _BV(TOIE0);
 
 	io_init();
@@ -72,7 +72,7 @@ int main(void)
 			netvar_handle_events();
 #endif
 			send_temp_counter++;
-			if (send_temp_counter > 1000) {
+			if (send_temp_counter > 9000) {
 				temp_sensor_read();
 				send_temp_counter = 0;
 			}

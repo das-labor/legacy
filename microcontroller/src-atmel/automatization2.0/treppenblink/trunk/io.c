@@ -5,6 +5,7 @@
 #include "netvar/netvar.h"
 #include "netvar/netvar_io.h"
 #include "animationen.h"
+#include "can_handler.h"
 
 static struct t_switch_parameter {
 	volatile uint8_t *port;
@@ -35,7 +36,9 @@ static struct t_pin_parameter {
 };
 
 #ifdef NO_NETVAR
-	void keypress(void);
+#ifndef NEW_PROTO
+	static void keypress(void);
+#endif
 #endif
 
 void io_init(void)
@@ -111,7 +114,11 @@ static void input_changed_event(uint8_t num, uint8_t val) {
 		{
 			animation = 0;
 		}
+		can_send_ani_status();
 	}
+#ifdef NEW_PROTO
+	can_send_input_status(num, val);
+#endif
 #endif
 }
 
@@ -131,12 +138,17 @@ void switch_handler(void) {
 		}
 	}
 #ifdef NO_NETVAR
+#ifndef NEW_PROTO
 	keypress();
+#endif
 #endif
 }
 
 
 #ifdef NO_NETVAR
+
+#ifndef NEW_PROTO
+
 #define HOLD_THRESHOLD 18
 #define CLICK_THRESHOLD 0
 
@@ -187,7 +199,7 @@ void keypress(void) {
 		msg->data[0] = C_VIRT;
 		msg->data[1] = VIRT_VORTRAG;
 		msg->data[2] = F_SW_TOGGLE;
-		msg->addr_src = 0x23;
+		msg->addr_src = myaddr;
 		msg->addr_dst = 0x02;
 		msg->port_dst = 1;
 		msg->port_src = LIGHTCANPORT;
@@ -200,7 +212,7 @@ void keypress(void) {
 		msg->data[0] = C_VIRT;
 		msg->data[1] = VIRT_VORTRAG_PWM;
 		msg->data[2] = F_PWM_MOD;
-		msg->addr_src = 0x23;
+		msg->addr_src = myaddr;
 		msg->addr_dst = 0x02;
 		msg->port_dst = 1;
 		msg->port_src = LIGHTCANPORT;
@@ -213,7 +225,7 @@ void keypress(void) {
 		msg->data[0] = C_VIRT;
 		msg->data[1] = VIRT_VORTRAG_PWM;
 		msg->data[2] = F_PWM_DIR;
-		msg->addr_src = 0x23;
+		msg->addr_src = myaddr;
 		msg->addr_dst = 0x02;
 		msg->port_dst = 1;
 		msg->port_src = LIGHTCANPORT;
@@ -222,5 +234,6 @@ void keypress(void) {
 	}
 	last_held = held;
 }
+#endif
 #endif
 
