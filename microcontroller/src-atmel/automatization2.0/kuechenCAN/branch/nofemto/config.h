@@ -23,6 +23,7 @@
 #define MCP2510
 
 #define NO_NETVAR
+//#define NEW_PROTO
 
 // RGB LED Taster Küchenlicht
 #define RGBLED_R (_BV(PC1))
