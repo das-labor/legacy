@@ -2,6 +2,7 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 #include <string.h>
+#include <util/delay.h>
 
 #include "config.h"
 #include "canlib/spi.h"
@@ -10,7 +11,7 @@
 #include "uart/uart.h"
 #include "usbdrv/usbdrv.h"
 #include "requests.h"
-#include "util/delay.h"
+
 
 typedef enum {
 	RS232CAN_RESET=0x00,
@@ -94,7 +95,7 @@ void can_message_encap(char *dest, can_message *cmsg) {
 	*dest++ = (len);           //length
 
 	uint8_t i;
-	uint8_t * buf = (uint8_t *) cmsg;
+	uint8_t *buf = (uint8_t *) cmsg;
 	for (i = 0; i < len; i++) {
 		*dest++ = (*buf++);
 	}
@@ -239,12 +240,12 @@ uchar usbFunctionWrite(uchar *data, uchar len)
 
 typedef enum {STATE_START, STATE_LEN, STATE_PAYLOAD} canu_rcvstate_t;
 
-rs232can_msg	canu_rcvpkt;
-canu_rcvstate_t	canu_rcvstate = STATE_START;
-unsigned char	canu_rcvlen   = 0;
+static rs232can_msg	canu_rcvpkt;
+static canu_rcvstate_t	canu_rcvstate = STATE_START;
+static unsigned char	canu_rcvlen   = 0;
 
 
-rs232can_msg *canu_get_nb() {
+static rs232can_msg *canu_get_nb(void) {
 	static char *uartpkt_data;
 	char c;
 
@@ -285,15 +286,15 @@ rs232can_msg *canu_get_nb() {
 /*****************************************************************************/
 
 
-void process_cantun_msg(rs232can_msg *msg)
+static void process_cantun_msg(rs232can_msg *msg)
 {
 	can_message *cmsg;
 
-	switch(msg->cmd) {
+	switch (msg->cmd) {
 		case RS232CAN_SETFILTER:
 			break;
 		case RS232CAN_SETMODE:
-			can_setmode(msg->data[0]);
+			mcp_setmode(msg->data[0]);
 			break;
 		case RS232CAN_PKT:
 			cmsg = can_buffer_get();                      //alocate buffer
@@ -304,7 +305,7 @@ void process_cantun_msg(rs232can_msg *msg)
 }
 
 
-void usb_init()
+static void usb_init(void)
 {
 	uchar i;
 
@@ -324,7 +325,7 @@ void usb_init()
 	usbDeviceConnect();
 }
 
-int main() {
+int main(void) {
 	DDR_LED |= (1<<BIT_LED); //LED-Pin to output
 	PORT_LED |= (1<<BIT_LED); //LED on during init
 
@@ -338,17 +339,13 @@ int main() {
 	spi_init();
 	can_init();
 
-
 	sei();
-
-	can_setmode(NORMAL);
 
 	PORT_LED &= ~(1<<BIT_LED); //LED off after init
 
-
 	uint16_t led_count = 0;
 
-	while(1) {
+	while (1) {
 		can_message *cmsg;
 
 		usbPoll();
