@@ -4,6 +4,6 @@
 #include "../include/PowerCommander.h"
 
 extern t_outputdata outputdata;
-extern void set_outputs();
+extern void set_outputs(void);
 #endif
 
