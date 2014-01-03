@@ -142,7 +142,7 @@ void can_handler()
 							break;
 						case 1://C_PWM:	set LAMP rx_msg->data[1] to rx_msg->data[2] 
 
-							if (rx_msg->data[1] < NUM_CHANNELS)
+							if (rx_msg->data[1] < NUM_DIMMER_CHANNELS)
 							{
 								if (rx_msg->data[1] == 3)	//channel 3
 									set_dimmer(3, 255-rx_msg->data[2]);	//invert neon tube
@@ -181,7 +181,7 @@ void can_handler()
 								virt_pwm_dir = 1;
 							break;
 						case 4: //C_TOGGLE
-							if (rx_msg->data[1] < NUM_CHANNELS)
+							if (rx_msg->data[1] < NUM_DIMMER_CHANNELS)
 							{
 									if (rx_msg->data[2])	//lamp on
 										enable_channel((rx_msg->data[1]), 1);
@@ -195,26 +195,26 @@ void can_handler()
 							break;
 					}
 				break;
-				case 2:	/* Port 2 for lamp control */
-					if (rx_msg->data[1] >= NUM_CHANNELS)		/* skip if lamp index out of range */
+				case 2:	// Port 2 for lamp control
+					if (rx_msg->data[1] >= NUM_DIMMER_CHANNELS)	// skip if lamp index out of range
 						return;
 
 					switch (rx_msg->data[0]) {
-						case 0: //Lamp ON/OFF
+						case 0: // Lamp ON/OFF
 							enable_channel(rx_msg->data[1],rx_msg->data[2]);
 							can_send_status(rx_msg->addr_src);
 							break;
 
-						case 1: //Lamp brightness
+						case 1: // Lamp brightness
 							set_dimmer(rx_msg->data[1], rx_msg->data[2]);
 							can_send_status(rx_msg->addr_src);
 							break;
 
-						case 2: //send status
+						case 2: // send status
 							can_send_status(rx_msg->addr_src);
 							break;
 
-						case 3: //All Lamp ON/OFF
+						case 3: // All Lamp ON/OFF
 							enable_channel(0,rx_msg->data[2]);
 							enable_channel(1,rx_msg->data[2]);
 							enable_channel(2,rx_msg->data[2]);
@@ -222,12 +222,20 @@ void can_handler()
 							can_send_status(rx_msg->addr_src);
 							break;
 
-						case 4: //All Lamp brightness
+						case 4: // All Lamp brightness
 							set_dimmer(0, rx_msg->data[2]);
 							set_dimmer(1, rx_msg->data[2]);
 							set_dimmer(2, rx_msg->data[2]);
-							set_dimmer(3, (255 - pgm_read_byte(exptab + 255 - rx_msg->data[2]))); /* gamma correction for neon tube */
+							set_dimmer(3, (255 - pgm_read_byte(exptab + 255 - rx_msg->data[2]))); // gamma correction for neon tube
 							can_send_status(rx_msg->addr_src);
+							break;
+
+						case 5: // set all bright diff
+							set_dimmer(0, rx_msg->data[2]);
+							set_dimmer(1, rx_msg->data[3]);
+							set_dimmer(2, rx_msg->data[4]);
+							set_dimmer(3, rx_msg->data[5]);
+							can_send_status(0);
 							break;
 
 						case 255: //received status packet
@@ -247,7 +255,7 @@ void can_send_status(uint8_t addr)
 	msg->addr_src = myaddr;
 	msg->port_src = 0x03;
 	msg->addr_dst = addr;
-	msg->port_dst = 0x03;
+	msg->port_dst = 0x00;
 	msg->dlc = 5;
 	msg->data[0] = get_channel_status();
 	msg->data[1] = dim_vals_8bit[0];

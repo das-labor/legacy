@@ -15,10 +15,10 @@ static volatile uint16_t time_cnt;
 //simple timer counting down
 ISR(TIMER0_OVF_vect)
 {
-	if(time_cnt)
+	if (time_cnt)
 			time_cnt--;
 	else
-			TCCR0=0;	//stop counting
+			TCCR0 = 0;	//stop counting
 }
 
 void start_counter(uint16_t countdown)
@@ -52,13 +52,8 @@ static void init(void)
 	can_init(); // initialize can communication
 
 	wdt_enable(WDTO_250MS);
-}
 
-int main(void)
-{
-	init(); //system initialization
-
-/*	
+	/*
 	DDRA |= (1<<PA4)|(1<<PA5);
 	DDRC |= (1<<PC4)|(1<<PC5);
 	PORTA |= (1<<PA4)|(1<<PA5);
@@ -71,10 +66,14 @@ int main(void)
 	set_dimmer(1, 127);
 	set_dimmer(2, 127);
 	set_dimmer(3, 127); //neon tube is inverted
+	can_send_status(0);
 
+	sei(); // enable global interrupts
+}
 
-	//allow interrupts
-	sei();
+int main(void)
+{
+	init(); //system initialization
 
 	//the main loop continuously handles can messages
 	while (1)
