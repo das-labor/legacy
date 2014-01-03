@@ -4,10 +4,10 @@
 
 #include "config.h"
 
-#include "can.h"
-#include "can-encap.h"
-#include "can-tcp.h"
-#include "can-uart.h"
+#include "lib-host/can.h"
+#include "lib-host/can-encap.h"
+#include "lib-host/can-tcp.h"
+#include "lib-host/can-uart.h"
 
 /***************************************************************************
  * Implement can.h for posix systems

@@ -4,8 +4,8 @@
 #include <string.h>
 #include <time.h>
 
-#include "can.h"
-#include "lap.h"
+#include "lib-host/can.h"
+#include "lib/lap.h"
 
 #include "cmds-flash.h"
 #include "lib-host/debug.h"

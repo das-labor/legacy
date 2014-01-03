@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "can.h"
+#include "lib-host/can.h"
 
 #define LOOPBACK_MSGCOUNT 100
 

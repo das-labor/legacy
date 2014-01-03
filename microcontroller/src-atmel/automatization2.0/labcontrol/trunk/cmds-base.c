@@ -5,12 +5,11 @@
 #include <unistd.h>
 
 
-#include "can.h"
-#include "lap.h"
+#include "lib-host/can.h"
 #include "lib-host/debug.h"
 
+#include "lib/lap.h"
 #include "cmds-base.h"
-#include "proto_lampe.h"
 
 
 void cmd_loopback(int argc, char *argv[])
@@ -211,8 +210,19 @@ void cmd_lamp(int argc,char *argv[])
 	sscanf(argv[2],"%x",&lamp);
 	sscanf(argv[3],"%x",&value);
 
-	lampe_set_lampe((can_addr)dst, lamp, value);
 
+	pdo_message * msg  = (pdo_message *) can_buffer_get();
+
+	msg->port_dst = PORT_LAMPE;
+	msg->port_src = PORT_MGT;
+	msg->addr_dst = (can_addr)dst;
+	msg->addr_src =	0x00;
+	msg->dlc      = 0x03;
+	msg->cmd      = FKT_LAMPE_SET;
+	msg->data[0]  = lamp;
+	msg->data[1]  = value;	
+
+	can_transmit((can_message *)msg);
 	return;
 
 argerror:
