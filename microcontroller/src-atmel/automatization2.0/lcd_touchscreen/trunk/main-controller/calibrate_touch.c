@@ -170,7 +170,7 @@ void calibrate_touch() {
 	yl = p[0].y + p[1].y;
 	yh = p[2].y + p[3].y;
 
-	uint16_t xd = xh-xl;
+	uint16_t xd = xh - xl;
 	uint16_t xg = 300ul * 1024ul * 2ul / xd;
 	uint16_t xz = (xl - xd / 30) / 2 ;
 

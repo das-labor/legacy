@@ -126,7 +126,7 @@ void navigation_bar_init() {
 	main_button->box.h = 30;
 	main_button->text = "main";
 	main_button->icon = &main_icon;
-	main_button->click_handler =onclick;
+	main_button->click_handler = onclick;
 
 	status_label = new_gui_button();
 	status_label->touch_handler = 0;

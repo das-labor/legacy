@@ -14,7 +14,7 @@ OUT           ?= image
 MCU_TARGET    ?= atmega128
 MCU_CC        ?= avr-gcc
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall -pedantic
+WARNINGS      ?= -Wall -pedantic -Wextra
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -std=gnu99 -I. -ffunction-sections -fdata-sections
 LDFLAGS        = -Wl,-Map,$(OUT).map,--gc-sections,--relax,--print-gc-sections
 

@@ -30,7 +30,7 @@ lap_button_t *new_lap_button(uint16_t idx, uint8_t sidx) {
 	b->touch_handler = gui_button_touch_handler;
 	b->update_position = gui_button_update_position;
 	b->delete = lap_button_delete;
-	b->box = (rectangle_t){0, 0, 32, 30};
+	b->box = (rectangle_t) {0, 0, 32, 30};
 	b->icon = 0;
 	b->state = 0;
 	b->frame_size = 0x80;
@@ -39,7 +39,7 @@ lap_button_t *new_lap_button(uint16_t idx, uint8_t sidx) {
 	b->click_handler = lap_button_click_handler;
 
 	b->tx_nv = netvar_register(idx, 0x20 + sidx, 1);
-	
+
 	b->rx_nv = netvar_register(idx, 0x30 + sidx, 1);
 	netvar_add_handler(b->rx_nv, lap_button_nv_handler, b);
 

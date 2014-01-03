@@ -1,6 +1,5 @@
-#include <avr/io.h>
-#include <util/delay.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "touchscreen.h"
 #include "dc_com.h"
@@ -34,6 +33,7 @@ pixel read_touch_screen_coordinates() {
 	} else {
 		p.y = ((uint32_t)(p.y-calibration_values.yz) * calibration_values.yg) / 1024;
 	}
+
 	return p;
 }
 
