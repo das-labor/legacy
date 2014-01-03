@@ -2,9 +2,8 @@
 #include <avr/wdt.h>
 #include <avr/eeprom.h>
 
-#include "config.h"
-#include "can/can.h"
 #include "can_handler.h"
+#include "can/can.h"
 #include "can/lap.h"
 #include "animationen.h"
 #include "io.h"
@@ -45,12 +44,15 @@ void can_handler()
 				switch(rx_msg->data[0]) { // alte nummerierung in neue
 					case 4: // aus
 						animation = 0;
+						can_send_ani_status();
 						break;
 					case 2: // weiss
 						animation = 1;
+						can_send_ani_status();
 						break;
 					case 8: // rgb
 						animation = 2;
+						can_send_ani_status();
 						break;
 				}
 				break;
@@ -67,13 +69,25 @@ void can_handler()
 	}
 }
 
-
-void can_send_status(void)
+void can_send_input_status(uint8_t stat_sw, uint8_t change)
 {
 	can_message *msg = can_buffer_get();
 	msg->addr_src = myaddr;
+	msg->port_src = 0x02;
 	msg->addr_dst = 0x00;
-	msg->port_src = 0x0f;
+	msg->port_dst = 0x00;
+	msg->dlc = 2;
+	msg->data[0] = stat_sw;
+	msg->data[1] = change;
+	can_transmit(msg);
+}
+
+void can_send_ani_status(void)
+{
+	can_message *msg = can_buffer_get();
+	msg->addr_src = myaddr;
+	msg->port_src = 0x03;
+	msg->addr_dst = 0x00;
 	msg->port_dst = 0x00;
 	msg->dlc = 1;
 	msg->data[0] = animation;
@@ -83,13 +97,13 @@ void can_send_status(void)
 void can_send_temp_data(uint8_t *data)
 {
 	can_message *msg = can_buffer_get();
-	msg->data[0] = data[0];
-	msg->data[1] = data[1];
 	msg->addr_src = myaddr;
+	msg->port_src = 0x0f;
 	msg->addr_dst = 0x00;
 	msg->port_dst = 0x00;
-	msg->port_src = 0x0f;
 	msg->dlc = 2;
+	msg->data[0] = data[0];
+	msg->data[1] = data[1];
 	can_transmit(msg);
 }
 

@@ -22,6 +22,7 @@
 #define F_MCP F_CPU
 
 #define NO_NETVAR
+//#define NEW_PROTO
 
 // RGB LED Taster
 #define RGBLED_R (_BV(PD1))
