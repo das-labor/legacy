@@ -6,6 +6,7 @@
 #include "can/can.h"
 #include "can/lap.h"
 #include "temp_regler.h"
+#include "switch_handler.h"
 
 
 uint8_t myaddr;
@@ -63,12 +64,29 @@ void can_handler()
 		{
 			temp_ist = rx_msg->data[0];
 		} */
-		if (rx_msg->addr_src == 0x02 && rx_msg->port_src == 0x03) // get hauptschalter status
+		if (rx_msg->addr_src == 0x02) // get powercommander status
 		{
-			if (rx_msg->data[0] & 0x01 && rx_msg->data[1] == 0)
-				PORTB &= ~_BV(PB0);
-			else
-				PORTB |= _BV(PB0);
+			static uint8_t status = 0;
+			switch (rx_msg->port_src) {
+				case 0x02:
+					if ((rx_msg->data[1] & 0x01)) { // Hauptschütz an
+						status |= _BV(1);
+						set_led(status);
+					} else {
+						status &= ~_BV(1);
+						set_led(status);
+					}
+					break;
+				case 0x03:
+					if (rx_msg->data[0] & 0x01 && rx_msg->data[1] == 0) { // Hauptschalter an
+						status |= _BV(0);
+						set_led(status); // labor an
+					} else {
+						status &= ~_BV(0);
+						set_led(status);  // blink
+					}
+					break;
+			}
 		}
 		can_free(rx_msg);
 	}
