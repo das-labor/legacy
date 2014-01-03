@@ -199,17 +199,15 @@ void can_handler()
 }
 
 void can_send_input_stat(uint8_t pos, uint8_t val) {
-	if (pos != 1 && pos != 2) {
-		can_message *msg = can_buffer_get();
-		msg->addr_src = myaddr;
-		msg->port_src = 0x03;
-		msg->addr_dst = 0x00;
-		msg->port_dst = 0x00;
-		msg->dlc = 2;
-		msg->data[0] = val;
-		msg->data[1] = pos;
-		can_transmit(msg);
-	}
+	can_message *msg = can_buffer_get();
+	msg->addr_src = myaddr;
+	msg->port_src = 0x03;
+	msg->addr_dst = 0x00;
+	msg->port_dst = 0x00;
+	msg->dlc = 2;
+	msg->data[0] = val;
+	msg->data[1] = pos;
+	can_transmit(msg);
 }
 
 void can_send_output_status()
@@ -219,14 +217,15 @@ void can_send_output_status()
 	msg->port_src = 0x02;
 	msg->addr_dst = 0x00;
 	msg->port_dst = 0x00;
-	msg->dlc = 6;
+	msg->dlc = 7;
 	msg->data[0] = get_channel_status();
-	msg->data[1] = get_channel_brightness(PWM_TAFEL);
-	msg->data[2] = get_channel_brightness(PWM_BEAMER);
-	msg->data[3] = get_channel_brightness(PWM_SCHRANK);
-	msg->data[4] = get_channel_brightness(PWM_FLIPPER);
-	msg->data[5] = get_channel_brightness(PWM_KUECHE);
-	//msg->data[6] = get_channel_brightness(PWM_LOUNGE);
+	msg->data[1] = get_output_status();
+	msg->data[2] = get_channel_brightness(PWM_TAFEL);
+	msg->data[3] = get_channel_brightness(PWM_BEAMER);
+	msg->data[4] = get_channel_brightness(PWM_SCHRANK);
+	msg->data[5] = get_channel_brightness(PWM_FLIPPER);
+	msg->data[6] = get_channel_brightness(PWM_KUECHE);
+	msg->data[7] = get_channel_brightness(PWM_LOUNGE);
 	can_transmit(msg);
 }
 
