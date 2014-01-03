@@ -7,6 +7,7 @@
 #include "can/can.h"
 #include "netvar/can_handler.h"
 #include "netvar/netvar.h"
+#include "netvar/netvar_io.h"
 #include "dimmer/dimmer.h"
 
 
@@ -18,7 +19,7 @@ ISR(TIMER1_COMPA_vect)
 }
 
 
-static void init()
+static void init(void)
 {
 	DDRB |= _BV(PB0); // Labnode LED output
 	//DDRD |= _BV(PD5); // EVG: 0-10V
@@ -38,8 +39,13 @@ static void init()
 	wdt_enable(WDTO_250MS); // 250 ms
 	dimmer_init();
 
-	//allow interrupts
+	// enable interrupts global
 	sei();
+
+	new_netvar_output_8(0x0102, 0x50, set_dimmer, (void *) 0);
+	new_netvar_output_8(0x0102, 0x51, set_dimmer, (void *) 1);
+	new_netvar_output_8(0x0102, 0x52, set_dimmer, (void *) 2);
+	new_netvar_output_8(0x0102, 0x53, set_dimmer, (void *) 3);
 }
 
 int main(void)
@@ -47,7 +53,6 @@ int main(void)
 	// system initialization
 	init();
 
-	//the main loop continuously handles can messages
 	while (1)
 	{
 		can_handler();

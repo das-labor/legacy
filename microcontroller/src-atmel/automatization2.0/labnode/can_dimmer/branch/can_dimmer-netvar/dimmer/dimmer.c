@@ -2,6 +2,7 @@
 #include <avr/interrupt.h>
 
 #include "../config.h"
+#include "dimmer.h"
 
 /*
 
@@ -44,18 +45,18 @@ Output3
 
 #define MAX_VAL 550
 
-
-//synchronize to zero cross
-ISR(TIMER1_CAPT_vect) {
-	TCNT1 = 620;
-}
-
 volatile uint8_t update_in_progress;
 uint8_t dim_max[NUM_DIMMER_CHANNELS];
 
 uint16_t dim_vals_sorted[NUM_DIMMER_CHANNELS];
 uint8_t channels_sorted[NUM_DIMMER_CHANNELS];
 
+
+
+//synchronize to zero cross
+ISR(TIMER1_CAPT_vect) {
+	TCNT1 = 620;
+}
 
 ISR(TIMER1_COMPB_vect) {
 	static uint8_t state;
@@ -65,6 +66,7 @@ ISR(TIMER1_COMPB_vect) {
 	static uint16_t dim_vals[NUM_DIMMER_CHANNELS];
 
 	if (state == 0) { //state = 0 means the timer is at MAX_VAL
+		//load new soft-PWM values if no update is in progress
 		if (!update_in_progress) {
 			//transfer the control information from main programm to interrupt
 			//if it is not being updated from the main programm at the moment.
@@ -83,10 +85,10 @@ ISR(TIMER1_COMPB_vect) {
 		if (dim_max[2]) PORTC |= _BV(PC4); else PORTC &= ~_BV(PC4);
 		if (dim_max[3]) PORTC |= _BV(PC5); else PORTC &= ~_BV(PC5);
 
+		//set next value to interrupt
 		OCR1B = dim_vals[0]; //set timer to the first time an output needs changing
-		if (dim_vals[0] != MAX_VAL) { //exept case where all lamps are off
+		if (dim_vals[0] != MAX_VAL) //exept case where all lamps are off
 			state = 1;
-		}
 	} else {
 		handle_next:
 		//since the dim_vals are sorted, we need to find out the channel,
@@ -97,10 +99,11 @@ ISR(TIMER1_COMPB_vect) {
 			case 2: PORTC |= _BV(PC4); break;
 			case 3: PORTC |= _BV(PC5); break;
 		}
+
 		next++;
 		if ((next != NUM_DIMMER_CHANNELS) && (dim_vals[next] != MAX_VAL)) {
 			OCR1B = dim_vals[next];
-			if (TCNT1 >= OCR1B){   //if allready time for next
+			if (TCNT1 >= OCR1B) {   //if allready time for next
 				TIFR = _BV(OCF1B); //reset flag in case it was set allready
 				goto handle_next;   //and handle now
 			}
