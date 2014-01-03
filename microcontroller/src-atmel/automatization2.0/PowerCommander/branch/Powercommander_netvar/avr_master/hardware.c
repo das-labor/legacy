@@ -3,6 +3,6 @@
 
 void hardware_reset() {
 	cli();
-	wdt_enable(0);
+	wdt_enable(WDTO_15MS);
 	while (1);
 }
