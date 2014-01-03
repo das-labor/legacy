@@ -11,6 +11,7 @@
 
 #include "can.h"
 #include "can-tcp.h"
+#include "can-uart.h"
 #include "debug.h"
 
 #include "cmds-base.h"

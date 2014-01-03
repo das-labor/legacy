@@ -2,13 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
-#include <can.h>
-#include <lap.h>
+
+#include "can.h"
+#include "lap.h"
+#include "lib-host/debug.h"
 
 #include "cmds-base.h"
 #include "proto_lampe.h"
-void cmd_loopback(int argc, char *argv[]) 
+
+
+void cmd_loopback(int argc, char *argv[])
 {
 	int mode;
 
@@ -32,14 +37,14 @@ argerror:
 }
 
 
-void cmd_ping(int argc, char *argv[]) 
+void cmd_ping(int argc, char *argv[])
 {
 	int addr;
 	can_message *msg;
 
 	if (argc != 2) goto argerror;
-       	if (sscanf(argv[1], "%i", &addr) != 1)
-		goto argerror;
+		if (sscanf(argv[1], "%i", &addr) != 1)
+			goto argerror;
 
 	lap_ping(addr);
 
@@ -58,28 +63,28 @@ void cmd_ping(int argc, char *argv[])
 	return;
 argerror:
 	debug(0, "ping <addr>");
-};
+}
 
-void cmd_reset(int argc, char *argv[]) 
+void cmd_reset(int argc, char *argv[])
 {
 	int addr;
 
 	if (argc != 2) goto argerror;
-       	if (sscanf(argv[1], "%i", &addr) != 1)
-		goto argerror;
+		if (sscanf(argv[1], "%i", &addr) != 1)
+			goto argerror;
 
 	lap_reset(addr);
 	return;
 argerror:
 	debug(0, "reset <addr>");
-};
+}
 
 
 
-void hexdump(unsigned char * addr, int size)
+void hexdump(unsigned char *addr, int size)
 {
-	unsigned char x=0, sbuf[3];
-	
+	unsigned char x = 0;
+
 	while (size--)
 	{
 		printf("%02x ", *addr++);
@@ -92,9 +97,8 @@ void hexdump(unsigned char * addr, int size)
 }
 
 
-extern unsigned int debug_level;
-
-void dump_packet_v2(can_message_v2 *msg){
+void dump_packet_v2(can_message_v2 *msg)
+{
 	time_t muh = time(0);
 	struct tm *tme = localtime(&muh);
 	printf( "%02d:%02d.%02d:  %03x,%x:  %02x -> %02x    ",
@@ -105,7 +109,8 @@ void dump_packet_v2(can_message_v2 *msg){
 	printf("\n");
 }
 
-void dump_packet(can_message *msg){
+void dump_packet(can_message *msg)
+{
 	time_t muh = time(0);
 	struct tm *tme = localtime(&muh);
 	printf( "%02d:%02d.%02d:  %02x:%02x -> %02x:%02x    ",
@@ -116,9 +121,8 @@ void dump_packet(can_message *msg){
 	printf("\n");
 }
 
-void cmd_dump(int argc, char *argv[]) 
+void cmd_dump(int argc, char *argv[])
 {
-	
 	if (argc > 1)
 	{
 		can_message_v2 *msg;
@@ -149,7 +153,7 @@ void cmd_dump(int argc, char *argv[])
 			}
 		}
 	}
-};
+}
 
 
 void cmd_packet(int argc, char *argv[]) 
@@ -197,9 +201,9 @@ argerror:
 void cmd_lamp(int argc,char *argv[])
 {
 
-	if (argc != 4) 
+	if (argc != 4)
 		goto argerror;
-	
+
 	int dst;
 	int lamp;
 	int value;

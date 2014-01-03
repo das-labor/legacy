@@ -8,6 +8,7 @@
 #include <lap.h>
 
 #include "cmds-cantemp.h"
+#include "lib-host/debug.h"
 
 
 
@@ -50,16 +51,8 @@ void cmd_cantemp(int argc, char *argv[])
 
 		if ((result != NULL) && result->addr_src == addr && result->addr_dst == 0x00)
 		{
-			if (!mode)
-			{
-				temp_msb = result->data[0];
-				temp_lsb = result->data[1];
-			}
-			else
-			{
-				temp_msb = result->data[1];
-				temp_lsb = result->data[2];
-			}
+			temp_msb = result->data[0];
+			temp_lsb = result->data[1];
 
 			temperatur = ((temp_msb << 4) + (temp_lsb >> 4));
 			if (temp_msb >= 0x80) //if sign bit is set, then temp is negative
@@ -72,5 +65,5 @@ void cmd_cantemp(int argc, char *argv[])
 
 argerror:
 	debug(0, "cantemp <addr> [mode]");
-};
+}
 
