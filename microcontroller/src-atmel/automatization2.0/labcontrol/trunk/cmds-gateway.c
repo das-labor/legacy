@@ -4,8 +4,8 @@
 #include <time.h>
 #include <errno.h>
 
-#include "can-encap.h"
-#include "can.h"
+#include "lib-host/can-encap.h"
+#include "lib-host/can.h"
 
 #define DEFAULT_TIMEOUT 2000
 #define ADC_RES ((double)(1<<10))

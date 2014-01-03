@@ -4,7 +4,6 @@
 #include <string.h>
 #include <signal.h>
 
-#include "can.h"
 #include "cansole/client/termio.h"
 
 void cmd_cansole (int argc, char* argv[]);

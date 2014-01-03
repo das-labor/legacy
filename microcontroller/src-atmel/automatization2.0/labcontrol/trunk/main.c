@@ -9,18 +9,19 @@
 #include <sys/socket.h>
 
 
-#include "can.h"
-#include "can-tcp.h"
-#include "can-uart.h"
-#include "debug.h"
+#include "config.h"
+#include "lib-host/can.h"
+#include "lib-host/can-tcp.h"
+#include "lib-host/can-uart.h"
+#include "lib-host/debug.h"
 
+#include "cansole.h"
 #include "cmds-base.h"
 #include "cmds-test.h"
 #include "cmds-borg.h"
 #include "cmds-mood.h"
 #include "cmds-musicd.h"
 #include "cmds-flash.h"
-#include "cansole.h"
 #include "cmds-treppenblink.h"
 #include "cmds-canir.h"
 #include "cmds-cantemp.h"
