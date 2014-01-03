@@ -331,6 +331,16 @@ uint8_t get_channel_brightness(uint8_t index)
 	return outputdata.pwmval[index];
 }
 
+uint8_t get_output_status()
+{
+	uint8_t tmp = 0;
+	if (outputdata.ports & _BV(SWA_HS))
+		tmp |= _BV(0x00);
+	if (outputdata.ports & _BV(SWA_BEAMER))
+		tmp |= _BV(0x01);
+	return tmp;
+}
+
 /*
 * Disable relais that are not used at the moment
 * PWM values are ignored
@@ -339,11 +349,15 @@ uint8_t get_channel_brightness(uint8_t index)
 
 static void relais_control(void)
 {
-	// one or more lamps in lounge are on
-	output_set(SWL_LOUNGE, lounge_lamp_status_1 || lounge_lamp_status_2);
+	if (lounge_lamp_status_1 || lounge_lamp_status_2) // one or more lamps in lounge are on
+		outputdata.ports |= _BV(SWL_LOUNGE);
+	else
+		outputdata.ports &= ~_BV(SWL_LOUNGE);
 
-	// one ore more lamps in vortrag raum are on
-	output_set(SWL_VORTRAG, outputdata.ports & (_BV(SWL_TAFEL) | _BV(SWL_BEAMER) | _BV(SWL_SCHRANK) | _BV(SWL_FLIPPER)));
+	if (outputdata.ports & (_BV(SWL_TAFEL) | _BV(SWL_BEAMER) | _BV(SWL_SCHRANK) | _BV(SWL_FLIPPER))) // one ore more lamps in vortrag raum are on
+		outputdata.ports |= _BV(SWL_VORTRAG);
+	else
+		outputdata.ports &= ~_BV(SWL_VORTRAG);
 
 	twi_send();	// push outputdata
 }

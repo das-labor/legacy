@@ -7,8 +7,6 @@
 
 #define TWI_ADDRESS 42 // I2C Adresse
 
-#define HASDATA (0x01)
-#define HASNDATA (0x00)
 
 // immer wieder der gleiche scheiss!
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))

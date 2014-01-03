@@ -57,24 +57,6 @@ static void handle_main_switch_timeout(void) {
 	}
 }
 
-static void exec(uint8_t index) {
-	if (index == 0) {
-		if ((status_input & _BV(IN_HAUPTSCHALTER)) == 1) {
-			timeout_cnt = 0;
-			outputdata.ports |= (1<<SWA_HS) | (1<<SWA_KLO) | (1<<SWA_STECKDOSEN);
-			twi_send();
-		}
-		else {
-			set_bright_all(ROOM_VORTRAG, 178);
-			set_bright_all(ROOM_KUECHE, 178);
-			set_bright_all(ROOM_LOUNGE, 178);
-			/* start timeout, shutdown after 5 seconds */
-			start_main_switch_timeout();
-		}
-	}
-}
-
-
 /*
 * set the rgb led according to the current state
 * Green         : No Error - Labor On
@@ -109,6 +91,25 @@ static void update_rgb_led(void) {
 	}
 }
 
+static void exec(uint8_t index) {
+	update_rgb_led();
+	if (index == 0) {
+		if ((status_input & _BV(IN_HAUPTSCHALTER)) == 1) {
+			timeout_cnt = 0;
+			outputdata.ports |= (1<<SWA_HS) | (1<<SWA_KLO) | (1<<SWA_STECKDOSEN);
+			twi_send();
+		}
+		else {
+			set_bright_all(ROOM_VORTRAG, 178);
+			set_bright_all(ROOM_KUECHE, 178);
+			set_bright_all(ROOM_LOUNGE, 178);
+			/* start timeout, shutdown after 5 seconds */
+			start_main_switch_timeout();
+		}
+	}
+	if (index != IN_TASTER_VORTRAG && index != IN_TASTER_LOUNGE)
+		can_send_input_stat(index, status_input);
+}
 
 /* 
 *  check for changes on monitored inputs
@@ -120,15 +121,11 @@ static void get_inputs(void) {
 	for (i = 0; i < NUM_INPUTS; i++) {
 		if (((*pin_matrix[i].pin) & pin_matrix[i].bit) && ((status_input & msk) == 0)) {
 			status_input |= msk;
-			update_rgb_led();
 			exec(i);
-			can_send_input_stat(i, status_input);
 		}
 		else if (!((*pin_matrix[i].pin) & pin_matrix[i].bit) && (status_input & msk)) {
 			status_input &= ~msk;
-			update_rgb_led();
 			exec(i);
-			can_send_input_stat(i, status_input);
 		}
 		msk <<= 1;
 	}
@@ -147,45 +144,44 @@ typedef struct {
 	uint8_t counter;
 	uint8_t last_held;
 	uint8_t dim_dir;
-	raum_strukt *room;
+	raum_strukt *s_raum;
 } taster_strukt;
 
 
 static void virt_pwm_set_all(taster_strukt *tst, uint8_t min, uint8_t max)
 {
-	for (uint8_t x = 0; x < (tst->room)->anzahl_lampen; x++)
+	for (uint8_t x = 0; x < (tst->s_raum)->anzahl_lampen; x++)
 	{
-		if ((tst->room)->pwm_values[x] < min)
-			set_bright((tst->room)->raum, x, min);
-		if ((tst->room)->pwm_values[x] > max)
-			set_bright((tst->room)->raum, x, max);
+		if ((tst->s_raum)->pwm_values[x] < min)
+			set_bright((tst->s_raum)->raum, x, min);
+		if ((tst->s_raum)->pwm_values[x] > max)
+			set_bright((tst->s_raum)->raum, x, max);
 	}
 }
 
 static uint8_t pwm_get_min(taster_strukt *tst)
 {
 	uint8_t min = 255;
-	for (uint8_t x = 0; x < (tst->room)->anzahl_lampen; x++)
-		if ((tst->room)->pwm_values[x] < min)
-			min = (tst->room)->pwm_values[x];
+	for (uint8_t x = 0; x < (tst->s_raum)->anzahl_lampen; x++)
+		if ((tst->s_raum)->pwm_values[x] < min)
+			min = (tst->s_raum)->pwm_values[x];
 	return min;
 }
 
 static uint8_t pwm_get_max(taster_strukt *tst)
 {
 	uint8_t max = 0;
-	for (uint8_t x = 0; x < (tst->room)->anzahl_lampen; x++)
-		if ((tst->room)->pwm_values[x] > max)
-			max = (tst->room)->pwm_values[x];
+	for (uint8_t x = 0; x < (tst->s_raum)->anzahl_lampen; x++)
+		if ((tst->s_raum)->pwm_values[x] > max)
+			max = (tst->s_raum)->pwm_values[x];
 	return max;
 }
 
 static void lamp_dim(taster_strukt *tst) {
 	uint8_t val;
 
-	if (!((outputdata.ports >> (tst->room)->sw_funktion) & 0x01))
-	{
-		set_lamp_all((tst->room)->raum, 1);
+	if (!((outputdata.ports >> (tst->s_raum)->sw_funktion) & 0x01)) {
+		set_lamp_all((tst->s_raum)->raum, 1);
 		virt_pwm_set_all(tst, 0, 0);
 	}
 
@@ -193,28 +189,22 @@ static void lamp_dim(taster_strukt *tst) {
 	{
 		val = pwm_get_min(tst);
 		if (val == 255)
-		{
 			tst->dim_dir = 0;
-		} else
-		{
+		else
 			virt_pwm_set_all(tst, val + 1, 255);
-		}
 	}
 	else
 	{
 		val = pwm_get_max(tst);
 		if (val == 0)
-		{
 			tst->dim_dir = 1;
-		} else
-		{
+		else
 			virt_pwm_set_all(tst, 0, val - 1);
-		}
 	}
 }
 
 static void toggle_raum_licht(taster_strukt *tst) {
-	set_lamp_all((tst->room)->raum, ((outputdata.ports >> (tst->room)->sw_funktion) & 0x01) ^ 1);
+	set_lamp_all((tst->s_raum)->raum, ((outputdata.ports >> (tst->s_raum)->sw_funktion) & 0x01) ^ 1);
 }
 
 
