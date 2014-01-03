@@ -169,6 +169,18 @@ enum {
 	MERRF	= 0x07
 } mcp2515_CANINTF_t;
 
+// READ STATUS
+enum {
+	CANINTF_RX0IF	= 0x00,
+	CANINTFL_RX1IF	= 0x01,
+	TXB0CNTRL_TXREQ	= 0x02,
+	CANINTF_TX0IF	= 0x03,
+	TXB1CNTRL_TXREQ	= 0x04,
+	CANINTF_TX1IF	= 0x05,
+	TXB2CNTRL_TXREQ	= 0x06,
+	CANINTF_TX2IF	= 0x07
+} mcp2515_READ_STATUS_t;
+
 // EFLG
 enum {
 	EWARN	= 0x00,
@@ -227,7 +239,7 @@ enum {
 	TXB2	= 0x02
 } mcp2515_RTSCMD_t;
 
-//Command Bytes
+// Command Bytes
 enum {
 	RESET			= 0xC0,
 	READ			= 0x03,

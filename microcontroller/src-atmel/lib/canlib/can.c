@@ -188,29 +188,29 @@ ISR (MCP_INT_VEC)
 #endif
 {
 	#ifdef CAN_INT_NOBLOCK
-		DISABLE_CAN_INT(); //if global interrupts are enabled during handler, disable our own interrupt so it doesn't nest
+		DISABLE_CAN_INT(); // if global interrupts are enabled during handler, disable our own interrupt so it doesn't nest
 	#endif
 	uint8_t status;
 	do {
 		status = mcp_status();
 
-		if (status & 0x01) // Message in RX0
+		if (status & _BV(CANINTF_RX0IF)) // Message in RX0
 		{
-			if (    (((rx_head + 1) % CAN_RX_BUFFER_SIZE) != rx_tail)         //avoid overflow
-			    && !(((can_message_x *) &rx_buffer[rx_head])->flags & 0x01)  ) //don't overwrite message that is still in use
+			if (    (((rx_head + 1) % CAN_RX_BUFFER_SIZE) != rx_tail)         // avoid overflow
+			    && !(((can_message_x *) &rx_buffer[rx_head])->flags & 0x01)  ) // don't overwrite message that is still in use
 			{
 				message_fetch(&rx_buffer[rx_head]);
-				rx_buffer[rx_head].flags |= 0x01;//mark buffer as used
+				rx_buffer[rx_head].flags |= 0x01; // mark buffer as used
 				if (++rx_head == CAN_RX_BUFFER_SIZE)
 					rx_head = 0;
 			} else
 			{
-				//buffer overflow
-				//just clear the Interrupt condition, and lose the message
+				// buffer overflow
+				// just clear the Interrupt condition, and lose the message
 				mcp_bitmod(CANINTF, (1 << RX0IF), 0x00);
 			}
 		}
-		if (status & 0x08) {	// TX0 empty
+		if (status & _BV(CANINTF_TX0IF)) {	// TX0 empty
 			if (((can_message_x *) &tx_buffer[tx_tail])->flags & 0x01)
 			{
 				((can_message_x *) &tx_buffer[tx_tail])->flags &= ~0x01;
@@ -225,7 +225,7 @@ ISR (MCP_INT_VEC)
 			mcp_bitmod(CANINTF, (1 << TX0IF), 0x00);
 		}
 #ifdef CAN_HANDLEERROR
-		if (status & ~0x09)
+		if (status & ~0x09) // there is no error information in read_status
 		{
 			status = mcp_read(EFLG);
 
