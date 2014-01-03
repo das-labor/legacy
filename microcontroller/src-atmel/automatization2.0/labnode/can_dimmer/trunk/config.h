@@ -21,7 +21,7 @@
 
 #define F_MCP F_CPU
 
-#define NUM_CHANNELS 4
+#define NUM_DIMMER_CHANNELS 4
 
 
 #endif // ifndef CONFIG_H
