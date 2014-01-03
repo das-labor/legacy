@@ -10,10 +10,10 @@
 #include "cmds-canir.h"
 
 
-void cmd_canir_teufel(int argc, char *argv[]) 
+void cmd_canir_teufel(int argc, char *argv[])
 {
 	can_message *msg;
-	int i;
+	unsigned int i;
 	if (argc != 2) goto argerror;
 	
 	// dst
@@ -52,7 +52,7 @@ argerror:
 void cmd_canir_beamer(int argc, char *argv[]) 
 {
 	can_message *msg;
-	int i;
+	unsigned int i;
 	if (argc != 2) goto argerror;
 
 	// dst
@@ -98,31 +98,31 @@ typedef struct {
 
 
 cmd_t canir_cmds[] = {
-  { &cmd_canir_beamer, "beamer", "beamer", "control beamer" },
-  { &cmd_canir_teufel, "teufel", "teufel", "control teufelamp" },
-  { NULL, NULL, NULL, NULL }
+	{ &cmd_canir_beamer, "beamer", "beamer", "control beamer" },
+	{ &cmd_canir_teufel, "teufel", "teufel", "control teufelamp" },
+	{ NULL, NULL, NULL, NULL }
 };
 
 
 void cmd_canir(int argc, char **argv)
 {
 
-  char *arg;
+	char *arg;
 	cmd_t *cmd;
 	cmd = canir_cmds;
 	arg = argv[1];
 	if (argc > 1)
-	  {
-		    while(cmd->fkt) 
-	      {
-			if (strcmp(arg, cmd->cmd) == 0) 
-		  {
-			    (*(cmd->fkt))(argc-1, &(argv[1]));
-		    goto done;
-		  }
-		cmd++;
-	      }
-	  }
+	{
+		while(cmd->fkt)
+		{
+			if (strcmp(arg, cmd->cmd) == 0)
+			{
+				(*(cmd->fkt))(argc-1, &(argv[1]));
+				goto done;
+			}
+			cmd++;
+		}
+	}
 	/* show help */
 	printf( "\nUsage: lapcontrol [OPTIONS] canir <SUBCOMMAND>\n\n" );
 	printf( "Available Subcommands:\n\n" );
@@ -138,5 +138,4 @@ void cmd_canir(int argc, char **argv)
 done: 
 	return;
 }
-
 

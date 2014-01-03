@@ -8,6 +8,7 @@
 #include "lap.h"
 
 #include "cmds-flash.h"
+#include "lib-host/debug.h"
 
 /*
     * : is the colon that starts every Intel HEX record.
@@ -33,7 +34,7 @@ uint8_t *read_line_from_hex(FILE *f, size_t *size, size_t *offset)
 	uint8_t *buf;
 
 	uint8_t checksum = 0;
-	
+
 	//for 64-bit systems the fscanf below will only fill
 	//the lower 32bit, so use temporary int
 
@@ -45,7 +46,7 @@ uint8_t *read_line_from_hex(FILE *f, size_t *size, size_t *offset)
 	if (fscanf(f, "%4x", &tmp) != 1)
 		goto error;
 	*offset = tmp;
-	checksum += tmp;	
+	checksum += tmp;
 	checksum += tmp>>8;
 
 	if (fscanf(f, "%2x", &tmp) != 1)
@@ -57,27 +58,27 @@ uint8_t *read_line_from_hex(FILE *f, size_t *size, size_t *offset)
 		*size  = 0;
 		return 0;
 	}
-	
+
 	buf = malloc( *size * sizeof(uint8_t) );
 	debug_assert(buf != 0, "Could not allocate hex image data buffer!");
 
 	size_t i = *size;
 	uint8_t *ptr = buf;
-	
+
 	for (;i > 0; i--)
 	{
-		if (fscanf(f, "%2hx", &tmp) != 1)
+		if (fscanf(f, "%2hx", (uint16_t *) &tmp) != 1)
 			goto error;
-	
-		checksum += tmp;		
+
+		checksum += tmp;
 		*ptr++ = tmp;
 	}
 
 	if (fscanf(f, "%2x", &tmp) != 1)	 // checksum  //XXX: checksumm is only fetched and not checked
 		goto error;
-	
+
 	checksum = -checksum;
-	
+
 	debug_assert(checksum == tmp, "Checksum Error while reading hex file, offset = 0x%x, 0x%02x != 0x%02x", *offset, checksum, tmp);
 
 	fscanf(f, "\n"); // XXX fetch error
@@ -92,7 +93,7 @@ error:
 void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 {
 	time_t timeout;
-	
+
 	can_message *msg = can_buffer_get();
 
 	msg->addr_src = 0x00;
@@ -107,11 +108,11 @@ void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 	msg->data[4]  = size>>8;
 	msg->data[5]  = offset & (0xff);
 	msg->data[6]  = offset>>8;
-	
+
 	can_transmit(msg);
 
 	timeout = time (NULL);
-	
+
 	while (1)
 	{
 		can_message *incoming = can_get();
@@ -127,7 +128,7 @@ void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 			timeout = time (NULL);
 		}
 	}
-	
+
 	free(msg);
 
 	uint8_t *ptr = buf;
@@ -135,7 +136,6 @@ void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 
 	while (missing > 0)
 	{
-		
 		can_message *to_transmit = can_buffer_get();
 		to_transmit->addr_src = 0x00;
 		to_transmit->addr_dst = dst;
@@ -150,11 +150,11 @@ void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 		ptr += to_transmit->dlc;
 		missing -= to_transmit->dlc;
 
-		
+
 		can_transmit(to_transmit);
 
 		timeout = time (NULL);
-	
+
 		while (1)
 		{
 			can_message *incoming = can_get();
@@ -170,14 +170,11 @@ void push_page(can_addr dst, uint8_t *buf, size_t offset, size_t size)
 			timeout = time (NULL);
 			}
 		}
-		
 	}
-
-	
 }
 
 
-void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename)
+void flash_atmel(unsigned char addr, unsigned int pagesize, char *filename)
 {
 	sdo_message *smsg = (sdo_message *)can_buffer_get();
 	smsg->addr_dst = addr;
@@ -249,13 +246,12 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename)
 			}
 		}
 	}
-	
+
 	fclose(fd);
 
 	free(mem);
 	free(mask);
 
-	
 	printf("Sendig reset\n");
 	smsg = (sdo_message *)can_buffer_get();
 	smsg->addr_dst = addr;
@@ -267,12 +263,11 @@ void flash_atmel(unsigned char addr, unsigned int pagesize, char * filename)
 	smsg->index    = 0xff02;
 
 	can_transmit((can_message *)smsg);
-	
 }
 
 
 
-void flash_commodore(unsigned char addr, char * filename)
+void flash_commodore(unsigned char addr, char *filename)
 {
 	sdo_message *smsg = (sdo_message *)can_buffer_get();
 	smsg->addr_dst = addr;
@@ -298,21 +293,21 @@ void flash_commodore(unsigned char addr, char * filename)
 	can_message *msg3 = (can_message *)smsg;
 	uint16_t flashsize = (uint16_t)(msg3->data[3]<<8) + (uint16_t)msg3->data[2];
 	printf("Free Memory Size: 0x%x\n",flashsize);
-	
+
 	printf( "Flashing file: %s\n", filename );
 	FILE *fd = fopen(filename,"r");
-	
+
 	if (!fd) goto fileerror;
-	
+
 	struct stat mystat;
 	stat(filename, &mystat);
-	
+
 	unsigned int size = mystat.st_size-2;
 	unsigned int offset = 0;
 	fread(&offset, 2, 1, fd);
-	
+
 	printf("uploading from %X to %X\n", offset, offset+size-1);
-	
+
 	can_message *msg = can_buffer_get();
 
 	msg->addr_src = 0x00;
@@ -327,7 +322,7 @@ void flash_commodore(unsigned char addr, char * filename)
 	msg->data[4]  = size>>8;
 	msg->data[5]  = offset & (0xff);
 	msg->data[6]  = offset>>8;
-	
+
 	can_transmit(msg);
 
 	unsigned int missing = size;
@@ -372,7 +367,6 @@ void flash_commodore(unsigned char addr, char * filename)
 		    incoming->addr_src == addr)
 			break;
 	}
-	
 
 	printf("Sendig boot command\n");
 	smsg->addr_dst = addr;
@@ -394,7 +388,7 @@ fileerror:
 }
 
 
-void cmd_flash(int argc, char *argv[]) 
+void cmd_flash(int argc, char *argv[])
 {
 	can_addr addr = 0;
 
@@ -403,7 +397,7 @@ void cmd_flash(int argc, char *argv[])
 	if (argc != 3)
 		goto argerror;
 
-       	if (sscanf(argv[1], "%i", (int*)&addr) != 1)
+	if (sscanf(argv[1], "%i", (int*)&addr) != 1)
 		goto argerror;
 
 	lap_reset(addr);
@@ -422,7 +416,7 @@ void cmd_flash(int argc, char *argv[])
 	}
 
 	printf("Awake from %d...\n", msg->addr_src);
-	
+
 	free(msg);
 
 	sdo_message *smsg = (sdo_message *)can_buffer_get();
@@ -457,7 +451,7 @@ void cmd_flash(int argc, char *argv[])
 
 	if (msg2->data[5] == 0)
 	{
-		printf("Hardware: ATMEGA %d\n", msg2->data[4]);
+		printf("Real Flashsize %d KByte\n", msg2->data[4]);
 		printf("Pagesize: 0x%x\n", pagesize);
 		flash_atmel(addr, pagesize, argv[2]);
 	} else if (msg2->data[5] == 1)
@@ -467,7 +461,7 @@ void cmd_flash(int argc, char *argv[])
 	} else goto wronghardware;
 	free(smsg);
 	return;
-	
+
 argerror:
 	debug(0, "flash <addr> file.hex");
 	return;
@@ -475,3 +469,4 @@ wronghardware:
 	debug(0, "Hardware unkonown");
 	return;
 }
+

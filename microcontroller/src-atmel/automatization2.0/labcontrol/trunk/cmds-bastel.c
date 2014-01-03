@@ -5,8 +5,8 @@
 #include <time.h>
 #include <errno.h>
 
-#include <can.h>
-#include <lap.h>
+#include "can.h"
+#include "lap.h"
 
 #include "cmds-bastel.h"
 #include "Bastelcmd.h"
@@ -86,7 +86,7 @@ void cmd_bastel(int argc, char **argv) {
 				msg->cmd = nametovalue2[k].value;
 			}
 		}
-		
+
 		for (k = 0;  strcmp(nametovalue2[k].name, "NDEF") !=0 ; k++) {
 				//printf("%s %s - res %d \n\n", argv[2], nametovalue2[k].name, strcmp(nametovalue2[k].name, argv[2]));
 			if (strcmp(nametovalue2[k].name, argv[2]) == 0) {
