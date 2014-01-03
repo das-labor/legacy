@@ -119,7 +119,7 @@ void parse_dir_to_main_container(uint8_t *dir_data) {
 				gui_container_add(akt_container, (gui_element_t *) b);
 			} break;
 			case V_SLIDER: {
-				gui_slider_t * b = new_gui_slider();
+				gui_slider_t *b = new_gui_slider();
 				b->box.w = V_SLIDER_WIDTH;
 				b->box.h = V_SLIDER_HEIGHT;
 				b->text = (char *) dir_data;
@@ -130,7 +130,7 @@ void parse_dir_to_main_container(uint8_t *dir_data) {
 				b->value = 30;
 			} break;
 			case H_SLIDER: {
-				gui_slider_t * b = new_gui_slider();
+				gui_slider_t *b = new_gui_slider();
 				b->orientation = ORIENTATION_HORIZONTAL;
 				b->box.w = 80;
 				b->box.h = 32;

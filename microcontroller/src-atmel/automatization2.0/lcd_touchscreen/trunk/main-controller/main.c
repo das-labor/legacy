@@ -108,7 +108,7 @@ int main(void) {
 		calibrate_touch();
 
 
-	can_setled(0, 1);
+	mcp_setled(0, 1);
 
 	init_main_window();
 	init_buttons();
