@@ -166,11 +166,11 @@ int main(int argc, char *argv[])
 			if (serial) {
 				debug(1, "Trying to establish CAN communication via serial %s", serial);
 				canu_init(serial);
-				can_init(NULL);		// use serial
+				can_init_posix(NULL);		// use serial
 			} else {
 				debug(1, "Trying to establish CAN communication via cand (%s:%s)", server, tcpport);
 				conn = cann_connect(server, tcpport);
-				can_init(conn);		// use specified connection to cand
+				can_init_posix(conn);		// use specified connection to cand
 			}
 
 			(*(cmd->fkt))(argc-optind, &(argv[optind]));
