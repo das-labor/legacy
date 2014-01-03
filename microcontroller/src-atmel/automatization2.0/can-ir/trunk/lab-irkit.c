@@ -31,13 +31,13 @@
 
 
 //infrared current code array
-uint16_t *volatile ir_curCode;
+static uint16_t *volatile ir_curCode;
 //length of current code
-volatile uint8_t ir_curCodeLen;
+static volatile uint8_t ir_curCodeLen;
 //index into current code
-volatile uint8_t ir_curCodeIdx;
+static volatile uint8_t ir_curCodeIdx;
 //ir tick counter
-volatile uint16_t ir_tickCnt;
+static volatile uint16_t ir_tickCnt;
 
 
 
