@@ -69,12 +69,12 @@ int main(void) {
 
 
 	while (1) {
+		can_handler();
 		if (ticks_in_ms >= 10) {
 			cli();
 			ticks_in_ms -= 10;
 			sei();
 
-			can_handler();
 			netvar_handle_events();
 		}
 	}
