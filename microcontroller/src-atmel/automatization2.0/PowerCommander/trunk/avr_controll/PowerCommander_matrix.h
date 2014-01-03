@@ -6,7 +6,7 @@
 static struct t_switch_parameter {
 	volatile uint8_t *port;
 	uint8_t pin;
-} sw_matrix[] = {
+} out_matrix[] = {
 	{ O_SW00_PORT , O_SW00_PIN},
 	{ O_SW01_PORT , O_SW01_PIN},
 	{ O_SW02_PORT , O_SW02_PIN},

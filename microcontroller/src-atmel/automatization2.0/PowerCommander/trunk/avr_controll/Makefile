@@ -6,7 +6,7 @@ MCU_TARGET    ?= atmega168
 MCU_CC        ?= avr-gcc
 MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall -Winline -pedantic
+WARNINGS      ?= -Wall -Winline -pedantic -Wstrict-prototypes -Wextra
 DEFS          ?= -DF_CPU=16000000UL
 CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections
 ASFLAGS	      += -mmcu=avr5
