@@ -18,10 +18,10 @@
 #include "usb_id.h"
 #include "opendevice.h"
 #include "can.h"
-#include "can-tcp.h"
-#include "uart-host.h"
-#include "can-uart.h"
-#include "debug.h"
+#include "lib-host/can-tcp.h"
+#include "lib-host/uart-host.h"
+#include "lib-host/can-uart.h"
+#include "lib-host/debug.h"
 
 // Atmel ; LAP includes
 #include "config.h"
