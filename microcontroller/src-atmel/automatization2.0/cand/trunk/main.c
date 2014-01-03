@@ -60,7 +60,6 @@ char *serial;
 char *usb_parm;
 char *logfile = NULL;
 char *scriptfile = NULL;
-char *debugfile = NULL;
 
 usb_dev_handle *udhandle = NULL;
 
@@ -711,7 +710,7 @@ int main(int argc, char *argv[])
 				scriptfile = optarg;
 				break;
 			case 'D':
-				debugfile = optarg;
+				debug_file = optarg;
 				break;
 			default:
 				help();
@@ -720,7 +719,7 @@ int main(int argc, char *argv[])
 	} // while
 
 
-	debug_init(debugfile);
+	debug_init();
 	debug(0, "Starting Cand");
 
 	if (!serial && !usb_parm) {
