@@ -27,21 +27,21 @@ typedef struct {
 /*****************************************************************************
  * CAN to UART
  */
-void write_buffer_to_uart(char* buf, uint8_t len)
+static void write_buffer_to_uart(char* buf, uint8_t len)
 {
 	uint8_t i;
 
-	for (i=0; i<len; i++) {
+	for (i = 0; i < len; i++) {
 		uart_putc( *buf++);
 	}
 }
 
-void write_can_message_to_uart(can_message * cmsg){
-	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
+static void write_can_message_to_uart(can_message * cmsg) {
+	uint8_t len = sizeof(can_message) + cmsg->dlc - 8; //actual size of can message
 
 	uart_putc(RS232CAN_PKT);  //command
 	uart_putc(len);           //length
-	
+
 	write_buffer_to_uart((char*)cmsg, len); //data
 
 	uart_putc(0x23);		// XXX CRC
@@ -57,15 +57,15 @@ void write_can_message_to_uart(can_message * cmsg){
 
 typedef enum {STATE_START, STATE_LEN, STATE_PAYLOAD} canu_rcvstate_t;
 
-rs232can_msg	canu_rcvpkt;
-canu_rcvstate_t	canu_rcvstate = STATE_START;
-unsigned char 	canu_rcvlen   = 0;
+static rs232can_msg	canu_rcvpkt;
+static canu_rcvstate_t	canu_rcvstate = STATE_START;
+static unsigned char	canu_rcvlen   = 0;
 
 
-rs232can_msg * canu_get_nb(){
+static rs232can_msg *canu_get_nb() {
 	static char *uartpkt_data;
 	char c;
-	
+
 	while (uart_getc_nb(&c)) {
 		#ifdef DEBUG
 		printf("canu_get_nb received: %02x\n", c);
@@ -84,7 +84,7 @@ rs232can_msg * canu_get_nb(){
 			uartpkt_data      = &canu_rcvpkt.data[0];
 			break;
 		case STATE_PAYLOAD:
-			if(canu_rcvlen--){
+			if (canu_rcvlen--) {
 				*(uartpkt_data++) = c;
 			} else {
 				canu_rcvstate = STATE_START;
@@ -103,15 +103,15 @@ rs232can_msg * canu_get_nb(){
 /*****************************************************************************/
 
 
-void process_cantun_msg(rs232can_msg *msg)
+static void process_cantun_msg(rs232can_msg *msg)
 {
 	can_message *cmsg;
 
-	switch(msg->cmd) {
+	switch (msg->cmd) {
 		case RS232CAN_SETFILTER:
 			break;
 		case RS232CAN_SETMODE:
-			can_setmode(msg->data[0]);
+			mcp_setmode(msg->data[0]);
 			break;
 		case RS232CAN_PKT:
 			cmsg = can_buffer_get();                      //alocate buffer
@@ -121,7 +121,7 @@ void process_cantun_msg(rs232can_msg *msg)
 	}
 }
 
-int main(){
+int main(void) {
 	DDRB |= (1<<PB0); //LED-Pin to output
 
 	uart_init();
@@ -130,26 +130,22 @@ int main(){
 
 	sei();
 
-	can_setmode(normal);
-
-	while(1) {
+	while (1) {
 		rs232can_msg  *rmsg;
 		can_message *cmsg;
 
 
 		rmsg = canu_get_nb();
-		if (rmsg){
+		if (rmsg) {
 			PORTB ^= 0x01;
 			process_cantun_msg(rmsg);
 		}
-		
+
 		cmsg = can_get_nb();
-		if (cmsg){
+		if (cmsg) {
 			PORTB ^= 0x01;
 			write_can_message_to_uart(cmsg);
 			can_free(cmsg);
 		}
 	}
-
-	return 0;
 }
