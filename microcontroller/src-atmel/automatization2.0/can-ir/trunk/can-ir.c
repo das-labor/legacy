@@ -29,12 +29,12 @@
 #include "lab-irkit.h"
 
 //having these arrays global seems to solve problems
-uint16_t code[128];
-uint8_t codeLen;
-uint8_t myaddr;
+static uint16_t code[128];
+static uint8_t codeLen;
+static uint8_t myaddr;
 
 //these are the commando codes for the teufel system
-uint16_t teufelCodes[] =
+static uint16_t teufelCodes[] =
 {
 	//volume down
 	0b010100010000,
@@ -61,106 +61,111 @@ uint16_t teufelCodes[] =
 
 //message handler
 //(to be beautified [with lookup tables])
-void can_handler()
+static void can_handler(void)
 {
-	static can_message msg = {0, 0, PORT_MGT, PORT_MGT, 1, {FKT_MGT_PONG}};
 	can_message *rx_msg;
 
 	//get next canmessage in rx_msg that is destined for us
-	if (((rx_msg = can_get_nb()) != 0) && (rx_msg->addr_dst == myaddr))
+	if ((rx_msg = can_get_nb()))
 	{
-		PORTD |= _BV(PD7);
-		//handle management functions
-		if (rx_msg->port_dst == PORT_MGT)
+		if (rx_msg->addr_dst == myaddr)
 		{
-			switch (rx_msg->data[0])
+			PORTD |= _BV(PD7); // Enable debug LED
+			//handle management functions
+			if (rx_msg->port_dst == PORT_MGT)
 			{
-				case FKT_MGT_RESET:
-					TCCR2 = 0;
-					wdt_enable(0);
-					while (1);
-		
-				case FKT_MGT_PING:
+				switch (rx_msg->data[0])
+				{
+					case FKT_MGT_RESET:
+						wdt_enable(WDTO_15MS);
+						while (1);
+					case FKT_MGT_PING:
+						{
+							can_message *tx_msg = can_buffer_get();
+							tx_msg->port_src = PORT_MGT;
+							tx_msg->port_dst = PORT_MGT;
+							tx_msg->addr_src = myaddr;
+							tx_msg->addr_dst = rx_msg->addr_src;
+							tx_msg->dlc = 1;
+							tx_msg->data[0] = FKT_MGT_PONG;
+							can_transmit(tx_msg);
+						}
+						break;
+					default:
+						break;
+				}
+			}
+			//handle ir commands
+			else if (rx_msg->port_dst == PORT_REMOTE)
+			{
+				//switch the remote device type
+				switch (rx_msg->data[0])
+				{
+					//this is a message for the teufel system
+					case 0:
+						//verify if command number is within bounds
+						if (rx_msg->data[1] < TEUFEL_CODE_CNT)
+						{
+							//lookup command and generate the pulse length array
+							codeLen = ir_genCode(code, PT_ON, PT_OFF, teufelCodes[rx_msg->data[1]], 12);
 
-					msg.addr_src = myaddr;
-					msg.addr_dst = rx_msg->addr_src;
-					can_transmit(&msg);
-					break;
+							//send code and repeat it after 35ms
+							//to please the teufel system
+							ir_sendCode(code, codeLen);
+							_delay_ms(40); //is in reality 35ms
+							ir_sendCode(code, codeLen);
+						}
+						break;
+					//this is a message for the acer beamer
+					case 1:
+						//see which code we need to send
+						switch (rx_msg->data[1])
+						{
+							//power
+							case 0:
+								codeLen = ir_genENEC(code, 0b00010000110010001110000100011110, 32);
+								ir_sendCode(code, codeLen);
+								break;
+							case 1: // source
+								codeLen = ir_genENEC(code, 0b00010000110010000011000111001110, 32);
+								ir_sendCode(code, codeLen);
+								break;
+							case 2: // vga
+								codeLen = ir_genENEC(code, 0b00010000110010001010011001011001, 32);
+								ir_sendCode(code, codeLen);
+								break;
+							case 3: // dvi
+								codeLen = ir_genENEC(code, 0b00010000110010000101011010101001, 32);
+								ir_sendCode(code, codeLen);
+								break;
+							case 4: // s-video
+								codeLen = ir_genENEC(code, 0b00010000110010000001011011101001, 32);
+								ir_sendCode(code, codeLen);
+								break;
+							case 5: // composite
+								codeLen = ir_genENEC(code, 0b00010000110010001110011000011001, 32);
+								ir_sendCode(code, codeLen);
+								break;
+							case 6: // blank
+								codeLen = ir_genENEC(code, 0b00010000110010001111000100001110, 32);
+								ir_sendCode(code, codeLen);
+								break;
+							default:
+								break;
+						}
+						break;
 
-				default:
-					break;
+					default:
+						break;
+				}
 			}
 		}
-		//handle ir commands
-		else if (rx_msg->port_dst == PORT_REMOTE)
-		{
-			//switch the remote device type
-			switch (rx_msg->data[0])
-			{
-				//this is a message for the teufel system
-				case 0:
-					//verify if command number is within bounds
-					if (rx_msg->data[1] < TEUFEL_CODE_CNT)
-					{
-						//lookup command and generate the pulse length array
-						codeLen = ir_genCode(code, PT_ON, PT_OFF, teufelCodes[rx_msg->data[1]], 12);
-
-						//send code and repeat it after 35ms
-						//to please the teufel system
-						ir_sendCode(code, codeLen);
-						_delay_ms(40); //is in reality 35ms
-						ir_sendCode(code, codeLen);
-					}
-					break;
-				//this is a message for the acer beamer
-				case 1:
-					//see which code we need to send
-					switch (rx_msg->data[1])
-					{
-						//power
-						case 0:
-							codeLen = ir_genENEC(code, 0b00010000110010001110000100011110, 32);
-							ir_sendCode(code, codeLen);
-							break;
-						case 1: // source
-							codeLen = ir_genENEC(code, 0b00010000110010000011000111001110, 32);
-							ir_sendCode(code, codeLen);
-							break;
-						case 2: // vga
-							codeLen = ir_genENEC(code, 0b00010000110010001010011001011001, 32);
-							ir_sendCode(code, codeLen);
-							break;
-						case 3: // dvi
-							codeLen = ir_genENEC(code, 0b00010000110010000101011010101001, 32);
-							ir_sendCode(code, codeLen);
-							break;
-						case 4: // s-video
-							codeLen = ir_genENEC(code, 0b00010000110010000001011011101001, 32);
-							ir_sendCode(code, codeLen);
-							break;
-						case 5: // composite
-							codeLen = ir_genENEC(code, 0b00010000110010001110011000011001, 32);
-							ir_sendCode(code, codeLen);
-							break;
-						case 6: // blank
-							codeLen = ir_genENEC(code, 0b00010000110010001111000100001110, 32);
-							ir_sendCode(code, codeLen);
-							break;
-
-						default:
-							break;
-					}
-					break;
-
-				default:
-					break;
-			}
-		}
+		can_free(rx_msg);
 	}
 }
 
 //system initialization
-void init()
+static void init(void)
 {
 	//disable analog comparator (to save power)
 	ACSR |= _BV(ACD);
@@ -191,7 +196,7 @@ int main(void)
 	while (1)
 	{	
 		can_handler();
-		PORTD &= ~_BV(PD7);
+		PORTD &= ~_BV(PD7); // Disable debug LED
 	}
 }
 
