@@ -29,7 +29,7 @@ static void init(void)
 		while (1);
 	}
 
-	init_ds1631(I2C_ADRESSE_DS1631);
+	ds1631_init(I2C_ADRESSE_DS1631);
 
 	TCCR0 = _BV(CS02) | _BV(CS00); // clk / 256
 	TIMSK = _BV(TOIE0);
