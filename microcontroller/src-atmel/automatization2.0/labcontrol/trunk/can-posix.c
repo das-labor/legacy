@@ -23,7 +23,7 @@ static cann_conn_t *conn;
  * Management
  */
 
-void can_init(cann_conn_t *aconn) {
+void can_init_posix(cann_conn_t *aconn) {
 	conn = aconn;
 }
 
