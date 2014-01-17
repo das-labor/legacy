@@ -66,7 +66,7 @@ static void init(void)
 	set_dimmer(1, 127);
 	set_dimmer(2, 127);
 	set_dimmer(3, 127); //neon tube is inverted
-	can_send_status(0);
+	can_send_status();
 
 	sei(); // enable global interrupts
 }

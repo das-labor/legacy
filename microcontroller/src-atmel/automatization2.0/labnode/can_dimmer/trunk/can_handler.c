@@ -118,15 +118,15 @@ void can_handler()
 									break;
 								}
 							}
-							can_send_status(rx_msg->addr_src);
+							can_send_status();
 							start_counter(305);	//countdown 5 seconds
 							break;
 						case 1://C_PWM:	set LAMP rx_msg->data[1] to rx_msg->data[2] 
 
 							if (rx_msg->data[1] < NUM_DIMMER_CHANNELS)
 							{
-                                set_dimmer(rx_msg->data[1], rx_msg->data[2]);
-								can_send_status(rx_msg->addr_src);
+								set_dimmer(rx_msg->data[1], rx_msg->data[2]);
+								can_send_status();
 							}
 							break;
 						case 2://PWM_MOD
@@ -150,7 +150,7 @@ void can_handler()
 									virt_pwm_set_all(--virt_pwm_val);
 								}
 							}
-							can_send_status(rx_msg->addr_src);
+							can_send_status();
 							break;
 						case 3: //PWM_DIR
 							if (virt_pwm_dir)
@@ -165,44 +165,44 @@ void can_handler()
 										enable_channel((rx_msg->data[1]), 1);
 									else
 										enable_channel((rx_msg->data[1]), 0);
-								can_send_status(rx_msg->addr_src);
+								can_send_status();
 							}
 							break;
 						case 5: //request state
-							can_send_status(rx_msg->addr_src);
+							can_send_status();
 							break;
 					}
-				break;
+					break;
 				case 2:	// Port 2 for lamp control
 					if (rx_msg->data[1] >= NUM_DIMMER_CHANNELS)	// skip if lamp index out of range
 						return;
 
 					switch (rx_msg->data[0]) {
 						case 0: // Lamp ON/OFF
-							enable_channel(rx_msg->data[1],rx_msg->data[2]);
-							can_send_status(rx_msg->addr_src);
+							enable_channel(rx_msg->data[1], rx_msg->data[2]);
+							can_send_status();
 							break;
 
 						case 1: // Lamp brightness
-                            set_dimmer(rx_msg->data[1], rx_msg->data[2]); 
-							can_send_status(rx_msg->addr_src);
+							set_dimmer(rx_msg->data[1], rx_msg->data[2]);
+							can_send_status();
 							break;
 
 						case 2: // send status
-							can_send_status(rx_msg->addr_src);
+							can_send_status();
 							break;
 
 						case 3: // All Lamp ON/OFF
-							enable_channel(0,rx_msg->data[2]);
-							enable_channel(1,rx_msg->data[2]);
-							enable_channel(2,rx_msg->data[2]);
-							enable_channel(3,rx_msg->data[2]);
-							can_send_status(rx_msg->addr_src);
+							enable_channel(0, rx_msg->data[2]);
+							enable_channel(1, rx_msg->data[2]);
+							enable_channel(2, rx_msg->data[2]);
+							enable_channel(3, rx_msg->data[2]);
+							can_send_status();
 							break;
 
 						case 4: // All Lamp brightness
-                            virt_pwm_set_all(rx_msg->data[2]);
-							can_send_status(rx_msg->addr_src);
+							virt_pwm_set_all(rx_msg->data[2]);
+							can_send_status();
 							break;
 
 						case 5: // set all bright diff
@@ -210,7 +210,7 @@ void can_handler()
 							set_dimmer(1, rx_msg->data[3]);
 							set_dimmer(2, rx_msg->data[4]);
 							set_dimmer(3, rx_msg->data[5]);
-							can_send_status(0);
+							can_send_status();
 							break;
 
 						case 255: //received status packet
@@ -224,12 +224,12 @@ void can_handler()
 	}
 }
 
-void can_send_status(uint8_t addr)
+void can_send_status()
 {
 	can_message *msg = can_buffer_get();
 	msg->addr_src = myaddr;
 	msg->port_src = 0x03;
-	msg->addr_dst = addr;
+	msg->addr_dst = 0x00;
 	msg->port_dst = 0x00;
 	msg->dlc = 5;
 	msg->data[0] = get_channel_status();
