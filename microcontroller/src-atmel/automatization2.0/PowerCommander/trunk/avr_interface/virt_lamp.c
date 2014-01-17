@@ -152,6 +152,9 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 			relais_control();	/* update relais status, will call twi_send() */
 			break;
 		case ROOM_LOUNGE:
+            /* XXX: FIXME: HACK !!! */
+            /* switch relais here, the lamp status packet is ignored whenever powercommander sents the packet */
+            set_lounge_lamp_1(enable);
 			{
 				can_message *msg = can_buffer_get();
 				msg->addr_src = myaddr;
@@ -164,6 +167,9 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 				msg->data[2] = enable;
 				can_transmit(msg);	// send packet to can_dimmer
 			}
+            /* XXX: FIXME: HACK !!! */ 
+            /* switch relais here, the lamp status packet is ignored whenever powercommander sents the packet */
+            set_lounge_lamp_2(enable);
 			{
 				can_message *msg = can_buffer_get();
 				msg->addr_src = myaddr;
@@ -338,6 +344,10 @@ uint8_t get_output_status()
 		tmp |= _BV(0x00);
 	if (outputdata.ports & _BV(SWA_BEAMER))
 		tmp |= _BV(0x01);
+	if (outputdata.ports & _BV(SWL_LOUNGE))
+		tmp |= _BV(0x02);
+	if (outputdata.ports & _BV(SWL_VORTRAG))
+		tmp |= _BV(0x04);
 	return tmp;
 }
 
