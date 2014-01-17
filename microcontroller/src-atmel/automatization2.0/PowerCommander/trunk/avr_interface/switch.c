@@ -204,6 +204,7 @@ static void lamp_dim(taster_strukt *tst) {
 }
 
 static void toggle_raum_licht(taster_strukt *tst) {
+    /* toggle all lamps by current relais status */
 	set_lamp_all((tst->s_raum)->raum, ((outputdata.ports >> (tst->s_raum)->sw_funktion) & 0x01) ^ 1);
 }
 
