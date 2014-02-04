@@ -67,7 +67,7 @@ int main(void)
 			netvar_handle_events();
 #endif
 			send_temp_counter++;
-			if (send_temp_counter > 1000) {
+			if (send_temp_counter > 5000) {
 				temp_sensor_read();
 				send_temp_counter = 0;
 			}
