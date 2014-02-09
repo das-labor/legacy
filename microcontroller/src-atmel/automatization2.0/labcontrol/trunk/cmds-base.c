@@ -51,7 +51,7 @@ void cmd_ping(int argc, char *argv[])
 	{
 		msg = can_get();
 
-		if ((msg != NULL) && msg->addr_src == addr)
+		if ((msg != NULL) && msg->addr_src == addr && msg->port_src == PORT_MGT && msg->data[0] == FKT_MGT_PONG)
 		{
 			printf("Pong from 0x%x\n", addr);
 			free(msg);
