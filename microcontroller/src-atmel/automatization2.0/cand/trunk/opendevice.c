@@ -21,96 +21,95 @@ libusb or libusb-win32.
 
 int usbOpenDevice(usb_dev_handle **device, int vendorID, int productID)
 {
-    struct usb_bus      *bus;
-    struct usb_device   *dev;
-    usb_dev_handle      *handle = NULL;
-    int                 errorCode = USBOPEN_ERR_NOTFOUND;
+	struct usb_bus      *bus;
+	struct usb_device   *dev;
+	usb_dev_handle      *handle = NULL;
+	int                 errorCode = USBOPEN_ERR_NOTFOUND;
 
-    usb_find_busses();
-    usb_find_devices();
-	
+	usb_find_busses();
+	usb_find_devices();
+
 	/* iterate over all devices on all busses */
-    for(bus = usb_get_busses(); bus; bus = bus->next)
+	for (bus = usb_get_busses(); bus; bus = bus->next)
 	{
-        for(dev = bus->devices; dev; dev = dev->next)
+		for (dev = bus->devices; dev; dev = dev->next)
 		{
-            if((vendorID == 0 || dev->descriptor.idVendor == vendorID)
-                        && (productID == 0 || dev->descriptor.idProduct == productID))
+			if ((vendorID == 0 || dev->descriptor.idVendor == vendorID)
+				 && (productID == 0 || dev->descriptor.idProduct == productID))
 			{
-                handle = usb_open(dev); /* we need to open the device in order to query strings */
-                if(!handle)
+				handle = usb_open(dev); /* we need to open the device in order to query strings */
+				if (!handle)
 				{
-                    errorCode = USBOPEN_ERR_ACCESS;
-                    fprintf(stderr, "Warning: cannot open VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
-                    continue;
-                }
+					errorCode = USBOPEN_ERR_ACCESS;
+					fprintf(stderr, "Warning: cannot open VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
+					continue;
+				}
 				else break;
-            }
-        }
-		
-        if(handle)  /* we have found a device */
-		{
-            break;
+			}
 		}
-    }
-	
-    if(handle != NULL){
-        errorCode = 0;
-        *device = handle;
-    }
-	
-    return errorCode;
+
+		if (handle)  /* we have found a device */
+		{
+			break;
+		}
+	}
+
+	if (handle != NULL){
+		errorCode = 0;
+		*device = handle;
+	}
+
+	return errorCode;
 }
 
 
 int usbCountDevices(int vendorID, int productID)
 {
-    struct usb_bus      *bus;
-    struct usb_device   *dev;
-    int                 dev_cnt = 0;
+	struct usb_bus      *bus;
+	struct usb_device   *dev;
+	int                 dev_cnt = 0;
 
-    usb_find_busses();
-    usb_find_devices();
-	
+	usb_find_busses();
+	usb_find_devices();
+
 	/* iterate over all devices on all busses */
-    for(bus = usb_get_busses(); bus; bus = bus->next)
+	for (bus = usb_get_busses(); bus; bus = bus->next)
 	{
-        for(dev = bus->devices; dev; dev = dev->next)
-		{  
-            if((vendorID == 0 || dev->descriptor.idVendor == vendorID)
-                        && (productID == 0 || dev->descriptor.idProduct == productID))
+		for (dev = bus->devices; dev; dev = dev->next)
+		{
+			if ((vendorID == 0 || dev->descriptor.idVendor == vendorID)
+				 && (productID == 0 || dev->descriptor.idProduct == productID))
 			{
-                
 				dev_cnt++;
-            }
-        }
-    }
-	
-    return dev_cnt;
+			}
+		}
+	}
+
+	return dev_cnt;
 }
 
 int usbListDevices(struct usb_device **devices, int vendorID, int productID)
 {
-    struct usb_bus      *bus;
-    struct usb_device   *dev;
-    int                 dev_cnt = 0;
+	struct usb_bus      *bus;
+	struct usb_device   *dev;
+	int                 dev_cnt = 0;
 
-    usb_find_busses();
-    usb_find_devices();
-	
-    for(bus = usb_get_busses(); bus; bus = bus->next)
+	usb_find_busses();
+	usb_find_devices();
+
+	for (bus = usb_get_busses(); bus; bus = bus->next)
 	{
-        for(dev = bus->devices; dev; dev = dev->next)
-		{  
-            if((vendorID == 0 || dev->descriptor.idVendor == vendorID)
-                        && (productID == 0 || dev->descriptor.idProduct == productID))
+		for (dev = bus->devices; dev; dev = dev->next)
+		{
+			if ((vendorID == 0 || dev->descriptor.idVendor == vendorID)
+				 && (productID == 0 || dev->descriptor.idProduct == productID))
 			{
 				devices[dev_cnt++] = dev;
-            }
-        }
-    }
+			}
+		}
+	}
 
-    return dev_cnt;
+	return dev_cnt;
 }
 
 /* ------------------------------------------------------------------------- */
