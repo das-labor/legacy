@@ -15,16 +15,15 @@
 #include <errno.h>
 #include <usb.h>
 
+#include "config.h"
 #include "usb_id.h"
 #include "opendevice.h"
-#include "can.h"
+#include "lib-host/can.h"
 #include "lib-host/can-tcp.h"
 #include "lib-host/uart-host.h"
 #include "lib-host/can-uart.h"
 #include "lib-host/debug.h"
 
-// Atmel ; LAP includes
-#include "config.h"
 
 #ifndef max
  #define max(a,b) (((a) > (b)) ? (a) : (b))
@@ -94,7 +93,7 @@ void help()
 }
 
 
-void hexdump(unsigned char * addr, int size)
+void hexdump(unsigned char *addr, int size)
 {
 	unsigned char x = 0;
 
@@ -131,8 +130,8 @@ void customscripts(rs232can_msg *msg)
 
 	char line[300];
 	can_message_raw *in_msg = (can_message_raw*)(msg->data);
-	can_message_match match_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
-	can_message_match dec_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
+	can_message match_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
+	can_message dec_msg = {0x00,0x00,0x00,0x00,0x00,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}};
 
 
 	// decoding in_msg to readable format
@@ -196,7 +195,7 @@ void customscripts(rs232can_msg *msg)
 	// 'scriptfile' is global
 	if ( scriptfile != NULL)
 	{
-		if ( (scriptFP=fopen(scriptfile,"r")) != NULL)
+		if ( (scriptFP = fopen(scriptfile,"r")) != NULL)
 		{
 			// we only support full match - on src/dst and dlc
 			// example:
@@ -205,12 +204,12 @@ void customscripts(rs232can_msg *msg)
 			while (fgets(line, 300, scriptFP) != NULL)
 			{
 			// read instructions
-				memset(tmpstr,0,80);
-				memset(tmpstr2,0,80);
+				memset(tmpstr, 0, 80);
+				memset(tmpstr2, 0, 80);
 
 				result = sscanf(line,"0x%hhx:0x%hhx 0x%hhx:0x%hhx 0x%hhx -> %s",
-					 &(match_msg.addr_src),&(match_msg.port_src),
-					 &(match_msg.addr_dst),&(match_msg.port_dst),
+					 &(match_msg.addr_src), &(match_msg.port_src),
+					 &(match_msg.addr_dst), &(match_msg.port_dst),
 					 &(match_msg.dlc),
 					 tmpstr2);
 				memset(line,0,300);
@@ -242,19 +241,19 @@ void customscripts(rs232can_msg *msg)
 						}
 						else
 						{
-							snprintf(as_args[0],5,"0x%.2x",dec_msg.dlc);
-							snprintf(as_args[1],5,"0x%.2x",dec_msg.data[0]);
-							snprintf(as_args[2],5,"0x%.2x",dec_msg.data[1]);
-							snprintf(as_args[3],5,"0x%.2x",dec_msg.data[2]);
-							snprintf(as_args[4],5,"0x%.2x",dec_msg.data[3]);
-							snprintf(as_args[5],5,"0x%.2x",dec_msg.data[4]);
-							snprintf(as_args[6],5,"0x%.2x",dec_msg.data[5]);
-							snprintf(as_args[7],5,"0x%.2x",dec_msg.data[6]);
-							snprintf(as_args[8],5,"0x%.2x",dec_msg.data[7]);
-							execl(tmpstr2,tmpstr2,
+							snprintf(as_args[0], 5, "0x%.2x", dec_msg.dlc);
+							snprintf(as_args[1], 5, "0x%.2x", dec_msg.data[0]);
+							snprintf(as_args[2], 5, "0x%.2x", dec_msg.data[1]);
+							snprintf(as_args[3], 5, "0x%.2x", dec_msg.data[2]);
+							snprintf(as_args[4], 5, "0x%.2x", dec_msg.data[3]);
+							snprintf(as_args[5], 5, "0x%.2x", dec_msg.data[4]);
+							snprintf(as_args[6], 5, "0x%.2x", dec_msg.data[5]);
+							snprintf(as_args[7], 5, "0x%.2x", dec_msg.data[6]);
+							snprintf(as_args[8], 5, "0x%.2x", dec_msg.data[7]);
+							execl(tmpstr2, tmpstr2,
 							as_args[0],
-							as_args[1],as_args[2],as_args[3],as_args[4],
-							as_args[5],as_args[6],as_args[7],as_args[8],NULL);
+							as_args[1], as_args[2], as_args[3], as_args[4],
+							as_args[5], as_args[6], as_args[7], as_args[8], NULL);
 						}
 					}
 				}
@@ -265,6 +264,7 @@ void customscripts(rs232can_msg *msg)
 
 }
 
+//send a message to all network clients
 void msg_to_clients(rs232can_msg *msg)
 {
 	cann_conn_t *ac;
@@ -281,7 +281,7 @@ void msg_to_clients(rs232can_msg *msg)
 }
 
 
-#define MEGA8_RESETCAUSE_PORF 	1
+#define MEGA8_RESETCAUSE_PORF	1
 #define MEGA8_RESETCAUSE_EXTRF	2
 #define MEGA8_RESETCAUSE_BORF	4
 #define MEGA8_RESETCAUSE_WDRF	8
@@ -293,17 +293,17 @@ void msg_to_clients(rs232can_msg *msg)
 void sprint_atmega8_resetcause(char *buf, unsigned char reset_flags)
 {
 	sprintf(buf, "%s%s%s%s",
-		(reset_flags & MEGA8_RESETCAUSE_PORF)?RESETCAUSE_PORF_STR:"",
-		(reset_flags & MEGA8_RESETCAUSE_EXTRF)?RESETCAUSE_EXTRF_STR:"",
-		(reset_flags & MEGA8_RESETCAUSE_BORF)?RESETCAUSE_BORF_STR:"",
-		(reset_flags & MEGA8_RESETCAUSE_WDRF)?RESETCAUSE_WDRF_STR:"");
+		(reset_flags & MEGA8_RESETCAUSE_PORF) ? RESETCAUSE_PORF_STR : "",
+		(reset_flags & MEGA8_RESETCAUSE_EXTRF) ? RESETCAUSE_EXTRF_STR : "",
+		(reset_flags & MEGA8_RESETCAUSE_BORF) ? RESETCAUSE_BORF_STR : "",
+		(reset_flags & MEGA8_RESETCAUSE_WDRF) ? RESETCAUSE_WDRF_STR : "");
 }
 
 
 void process_msg(rs232can_msg *msg)
 {
 	char buf[sizeof(RESETCAUSE_PORF_STR) + sizeof(RESETCAUSE_EXTRF_STR) + sizeof(RESETCAUSE_BORF_STR) + sizeof(RESETCAUSE_WDRF_STR)];
-	
+
 	switch (msg->cmd)
 	{
 		case RS232CAN_PKT:
@@ -339,7 +339,7 @@ void process_msg(rs232can_msg *msg)
 			msg_to_clients(msg);	//pipe reply to network clients
 			break;
 		default:
-			debug(0, "Whats going on? Received unknown type 0x%02x on Uart", msg->cmd);
+			debug(0, "Whats going on? Received unknown type 0x%02x from gateway", msg->cmd);
 			break;
 	}
 }
@@ -353,7 +353,7 @@ void process_uart_msg()
 
 	if (!msg)
 		return;
-	else if(canu_failcnt > CANU_FAILTHRESH)
+	else if (canu_failcnt > CANU_FAILTHRESH)
 	{
 		debug(0, "UART failure threshold exceeded (%u), resyncing gateway.", canu_failcnt);
 		canu_reset();
@@ -372,7 +372,7 @@ void canusb_transmit(rs232can_msg *msg)
 {
 	(void) usb_control_msg (udhandle,
 		USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
-		0x18, 0, 0, (char *)msg, msg->len + 2, 100);
+		0x18, 0, 0, (char *) msg, msg->len + 2, 100);
 
 }
 
@@ -387,7 +387,7 @@ void process_client_msg(cann_conn_t *client)
 
 	debug(3, "Processing message from network..." );
 	if (debug_level >= 3)
-		hexdump((void *)msg, msg->len + 2);
+		hexdump((void *) msg, msg->len + 2);
 
 	customscripts(msg);
 
@@ -398,8 +398,10 @@ void process_client_msg(cann_conn_t *client)
 			break;
 		case RS232CAN_PKT:
 			// to UART
-			if (serial) canu_transmit(msg);		//send to client on the can
-			if (usb_parm) canusb_transmit(msg); //same via usb
+			if (serial)
+				canu_transmit(msg);		//send to client on the can
+			if (usb_parm)
+				canusb_transmit(msg);	//same via usb
 			msg_to_clients(msg);				//send to all network clients
 			break;
 		case RS232CAN_PING_GATEWAY:
@@ -446,12 +448,12 @@ int poll_usb()
 
 	r = usb_control_msg (udhandle,
 	    USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_IN,
-	    0x17, 0, 0, (char *)packetBuffer, 1000, 100);
+	    0x17, 0, 0, (char *) packetBuffer, 1000, 100);
 
 
 	if (r > 0) {
 		debug( 8, "RECEIVED DATA FROM USB" );
-		
+
 		if (debug_level >= 8) {
 			hexdump((unsigned char *) packetBuffer, r);
 		}
@@ -463,7 +465,7 @@ int poll_usb()
 			debug(11, "p=%x\n", p);
 			process_msg((rs232can_msg *) &packetBuffer[p]);
 
-			p += packetBuffer[p+1] + 2;
+			p += packetBuffer[p + 1] + 2;
 		}
 	}
 	return 0;
@@ -487,11 +489,11 @@ void event_loop()
 			FD_SET(uart_fd, &rset);
 		};
 
-		//add network connections to rset
+		//add cann connections to rset
 		highfd = max(highfd, cann_fdset(&rset));
 
 
-		debug( 9, "VOR SELECT" );
+		debug(12, "VOR SELECT");
 		cann_dumpconn();
 
 
@@ -514,25 +516,29 @@ void event_loop()
 				default:
 					debug_perror(0, "select: help, it's all broken, giving up!");
 					return;
+				case 0: //NO_ERROR
+					debug_perror(0, "select: process was suspended");
+					continue;
+					
 			}
 		}
-		debug(10, "Select returned %d", ret);
+		debug(12, "Select returned %d", ret);
 
 		// check activity on uart_fd
 		if (serial && FD_ISSET(uart_fd, &rset))
 			process_uart_msg();
 
-		debug( 9, "AFTER UART" );
+		debug(12, "AFTER UART");
 		cann_dumpconn();
 
 		// check client activity
 		//
 		while ( (client = cann_activity(&rset)) ) {
-			debug(5, "CANN actiity found" );
+			debug(5, "CANN activity found");
 			process_client_msg(client);
 		}
 
-		debug( 9, "AFTER CANN ACTIVITY" );
+		debug(12, "AFTER CANN ACTIVITY");
 		cann_dumpconn();
 
 		// new connections
@@ -540,28 +546,34 @@ void event_loop()
 			debug( 2, "===> New connection (fd=%d)", client->fd );
 		}
 
-		debug( 9, "AFTER CANN NEWCONN" );
+		debug(12, "AFTER CANN NEWCONN");
 		cann_dumpconn();
 
 
 		// close errorous connections
 		cann_close_errors();
 
-		debug( 9, "AFTER CANN CLOSE" );
+		debug(12, "AFTER CANN CLOSE");
 		cann_dumpconn();
 	}
 }
 
-unsigned int running = 0;
+volatile unsigned int running = 0;
 
 void shutdown_all()
 {
 	if (running)
 	{
+		running = 0;
 		cann_close_errors();
 		cann_close(NULL);
 		shutdown(listen_socket, SHUT_RDWR);
 		close(listen_socket);
+
+		if (udhandle)
+			usb_close(udhandle);
+		if (serial)
+			canu_close();
 		debug_close();
 	}
 }
@@ -571,7 +583,8 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 {
 	extern FILE *debugFP;
 	extern int debug_time;
-	int i;
+
+	(void) sig;
 
 	debug_time = 1;
 	if (debugFP == NULL)
@@ -612,7 +625,8 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 #ifdef SHOW_UCONTEXT_INFO
 	{
 		ucontext_t *context = c;
-	
+		int i;
+
 		fprintf(debugFP,
 			"uc_flags:  0x%lx\n"
 			"ss_sp:     %p\n"
@@ -620,12 +634,12 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 			"ss_flags:  0x%X\n",
 			context->uc_flags,
 			context->uc_stack.ss_sp,
-			context->uc_stack.ss_size,
+			(int) context->uc_stack.ss_size,
 			context->uc_stack.ss_flags
 		);
 		fprintf(debugFP, "General Registers:\n");
 		for (i = 0; i < 19; i++)
-			fprintf(debugFP, "\t%7s: 0x%x\n", gregs[i], context->uc_mcontext.gregs[i]);
+			fprintf(debugFP, "\t%7s: 0x%x\n", gregs[i], (unsigned int) context->uc_mcontext.gregs[i]);
 		//fprintf(debugFP, "\tOLDMASK: 0x%lx\n", context->uc_mcontext.oldmask);
 		//fprintf(debugFP, "\t    CR2: 0x%lx\n", context->uc_mcontext.cr2);
 	}
@@ -640,8 +654,10 @@ static void signal_handler(int sig, siginfo_t *si, void *unused)
 	debug(0, "Caught signal (%s), shutting down..", strsignal(sig));
 	shutdown_all();
 	signal(sig, SIG_DFL);
+	(void) unused;
+	(void) si;
 
-	switch(sig)
+	switch (sig)
 	{
 		case SIGINT:
 		case SIGQUIT:
@@ -723,8 +739,8 @@ int main(int argc, char *argv[])
 	debug(0, "Starting Cand");
 
 	if (!serial && !usb_parm) {
-		debug(0, "No interface for CAN-Gateway");
-		exit(EXIT_FAILURE);
+		debug(0, "Warning: No interface for CAN-Gateway");
+		//exit(EXIT_FAILURE);
 	}
 
 	// setup serial communication
