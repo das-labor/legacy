@@ -33,8 +33,11 @@
 // Hardware PWM Ausgänge
 #define O_PWM00_REG (&(OCR2A))
 #define O_PWM01_REG (&(OCR2B))
-#define O_PWM02_REG (&(OCR1AL))
-#define O_PWM03_REG (&(OCR1BL))
+#define O_PWM02_REG (&(OCR1BL))
+#define O_PWM03_REG (&(OCR1AL))
+
+
+
 
 
 /* eeprom settings */

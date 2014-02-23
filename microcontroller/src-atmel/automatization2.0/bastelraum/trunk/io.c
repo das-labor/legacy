@@ -153,20 +153,15 @@ void switch_handler()
 	} else
 	{
 		if (counter > CLICK_THRESHOLD)
-		{
 			if (counter < HOLD_THRESHOLD)
-			{
 				clicked = 1;
-			}
-		}
 		counter = 0;
 	}
 
 	if (clicked)
 	{
-		if (sreg) {
+		if (sreg)
 			set_output_all(0);
-		}
 		else {
 			set_pwm(F_PWM_FENSTER, 200);
 			set_pwm(F_PWM_MITTE, 200);
