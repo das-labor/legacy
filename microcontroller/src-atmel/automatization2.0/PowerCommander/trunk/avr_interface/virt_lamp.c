@@ -102,7 +102,8 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 					output_set(SWL_FLIPPER, enable);
 					break;
 				case 4: // SWL_BEAMER - beamer steckdose
-					output_set(SWA_BEAMER, enable);
+					if (enable) // allow only power on
+						output_set(SWA_BEAMER, enable);
 					break;
 			}
 			relais_control();	// update relais status, will call twi_send()
