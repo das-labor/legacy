@@ -21,9 +21,9 @@ typedef enum {
 
 typedef enum {
 	F_PWM_FENSTER,
-	F_PWM_UNUSED,
 	F_PWM_MITTE,
 	F_PWM_NISCHE,
+	F_PWM_UNUSED,
 	F_PWM_COUNT
 } f_pwm_funct_def;
 
