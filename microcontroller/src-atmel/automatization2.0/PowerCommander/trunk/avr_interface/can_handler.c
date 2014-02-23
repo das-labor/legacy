@@ -149,7 +149,7 @@ void can_handler()
 					switch (rx_msg->data[0])
 					{
 						case 0: // switch lamp
-							if (rx_msg->data[1] < 4)
+							if (rx_msg->data[1] < 5)
 								set_lamp(ROOM_VORTRAG, rx_msg->data[1], rx_msg->data[2]);
 							else
 								set_lamp(ROOM_KUECHE, 0, rx_msg->data[2]);
