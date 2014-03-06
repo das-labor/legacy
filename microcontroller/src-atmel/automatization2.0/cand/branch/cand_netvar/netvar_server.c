@@ -34,7 +34,8 @@ typedef struct {
 char *read_line(line_buffer_t *buf, int fd) {
 	char *d = buf->data;
 
-	int h, t, i;
+	unsigned int i, h, t;
+	int ret;
 begin:
 	h = buf->head;
 	t = buf->tail;
@@ -74,10 +75,11 @@ begin:
 	}
 
 	// read data
-	i = read(fd, &d[buf->tail], LINE_BUFFER_SIZE - 1 - buf->tail);
-	if (i == 0) return (char *) 0xFFFFFFFF; //eof = connection closed
+	ret = read(fd, &d[buf->tail], LINE_BUFFER_SIZE - 1 - buf->tail);
+	if (ret == 0)
+		return (char *) 0xFFFFFFFF; //eof = connection closed
 	
-	if (i < 0) {
+	if (ret < 0) {
 		if ((errno == EAGAIN) || (errno == 0))
 			return 0; //no data read -> no new strings
 		else

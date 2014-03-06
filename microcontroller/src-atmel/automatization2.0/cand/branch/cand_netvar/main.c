@@ -192,7 +192,7 @@ void customscripts(rs232can_msg *msg)
 	// 'scriptfile' is global
 	if ( scriptfile != NULL)
 	{
-		if ( (scriptFP=fopen(scriptfile,"r")) != NULL)
+		if ( (scriptFP = fopen(scriptfile,"r")) != NULL)
 		{
 			// we only support full match - on src/dst and dlc
 			// example:
@@ -376,9 +376,11 @@ void canusb_transmit(rs232can_msg *msg)
 
 void transmit_message_to_network_and_can(rs232can_msg *msg)
 {
-	if (serial) canu_transmit(msg);		//send to client on the can
-	if (usb_parm) canusb_transmit(msg); //same via usb
-	msg_to_clients(msg);				//send to all network clients
+	if (serial)
+		canu_transmit(msg);		//send to client on the can
+	if (usb_parm)
+		canusb_transmit(msg);	//same via usb
+	msg_to_clients(msg);		//send to all network clients
 }
 
 void process_client_msg(cann_conn_t *client)
@@ -401,8 +403,10 @@ void process_client_msg(cann_conn_t *client)
 		case RS232CAN_PKT:
 			customscripts(msg);//log / run scripts
 			// to UART
-			if (serial) canu_transmit(msg);		//send to client on the can
-			if (usb_parm) canusb_transmit(msg); //same via usb
+			if (serial)
+				canu_transmit(msg);		//send to client on the can
+			if (usb_parm)
+				canusb_transmit(msg);	//same via usb
 			msg_to_clients(msg);				//send to all network clients
 			netvar_can_handler(msg);
 			break;
@@ -492,7 +496,7 @@ void event_loop()
 		//add netvar connections to rset
 		highfd = max(highfd, tcp_server_fdset(netvar_server, &rset));
 
-		debug( 9, "VOR SELECT" );
+		debug(12, "VOR SELECT");
 		cann_dumpconn();
 
 
@@ -521,23 +525,23 @@ void event_loop()
 					
 			}
 		}
-		debug(10, "Select returned %d", ret);
+		debug(12, "Select returned %d", ret);
 
 		// check activity on uart_fd
 		if (serial && FD_ISSET(uart_fd, &rset))
 			process_uart_msg();
 
-		debug( 9, "AFTER UART" );
+		debug(12, "AFTER UART");
 		cann_dumpconn();
 
 		// check client activity
 		//
 		while ( (client = cann_activity(&rset)) ) {
-			debug(5, "CANN activity found" );
+			debug(5, "CANN activity found");
 			process_client_msg(client);
 		}
 
-		debug( 9, "AFTER CANN ACTIVITY" );
+		debug(12, "AFTER CANN ACTIVITY");
 		cann_dumpconn();
 
 		// new connections
@@ -545,14 +549,14 @@ void event_loop()
 			debug( 2, "===> New connection (fd=%d)", client->fd );
 		}
 
-		debug( 9, "AFTER CANN NEWCONN" );
+		debug(12, "AFTER CANN NEWCONN");
 		cann_dumpconn();
 
 
 		// close errorous connections
 		cann_close_errors();
 
-		debug( 9, "AFTER CANN CLOSE" );
+		debug(12, "AFTER CANN CLOSE");
 		cann_dumpconn();
 
 		tcp_server_handle_activity(netvar_server, &rset);
@@ -575,6 +579,8 @@ void shutdown_all()
 
 		if (udhandle)
 			usb_close(udhandle);
+		if (serial)
+			canu_close();
 		debug_close();
 	}
 }
@@ -584,6 +590,8 @@ void handle_segv(int sig, siginfo_t *info, void *c)
 {
 	extern FILE *debugFP;
 	extern int debug_time;
+
+	(void) sig;
 
 	debug_time = 1;
 	if (debugFP == NULL)
@@ -653,6 +661,8 @@ static void signal_handler(int sig, siginfo_t *si, void *unused)
 	debug(0, "Caught signal (%s), shutting down..", strsignal(sig));
 	shutdown_all();
 	signal(sig, SIG_DFL);
+	(void) unused;
+	(void) si;
 
 	switch (sig)
 	{
