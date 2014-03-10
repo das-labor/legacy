@@ -169,7 +169,7 @@ void dimmer_init() {
 
 	OCR1B = MAX_VAL;
 
-	TIMSK |= _BV(TICIE1) | _BV(OCIE1B);//Input capture int on, output compare 1B on
+	TIMSK |= _BV(TICIE1) | _BV(OCIE1B); //Input capture int on, output compare 1B on
 }
 
 
@@ -185,15 +185,15 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 	//  255        2         1
 	if (channel > (NUM_DIMMER_CHANNELS - 1))
 		return;
-    
-    dim_vals_8bit[channel] = bright;
 
-    if (channel == 3)
-    {
-        // do gamma correction on neon tube
-        bright = pgm_read_byte(exptab + bright);
-    }
-    
+	dim_vals_8bit[channel] = bright;
+
+	if (channel == 3)
+	{
+		// do gamma correction on neon tube
+		bright = pgm_read_byte(exptab + bright);
+	}
+
 	uint16_t dimval = 512 - bright * 2;
 
 	if (!bright)
@@ -205,10 +205,10 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 		//enable port if max_brightness == always on
 
 		switch (channel) {
-			case 0: if(channels_active[0])PORTA |= _BV(PA4); break;
-			case 1: if(channels_active[1])PORTA |= _BV(PA5); break;
-			case 2: if(channels_active[2])PORTC |= _BV(PC4); break;
-			case 3: if(channels_active[3])PORTD |= _BV(PD5); break;
+			case 0: if (channels_active[0])PORTA |= _BV(PA4); break;
+			case 1: if (channels_active[1])PORTA |= _BV(PA5); break;
+			case 2: if (channels_active[2])PORTC |= _BV(PC4); break;
+			case 3: if (channels_active[3])PORTD |= _BV(PD5); break;
 		}
 		dimval = MAX_VAL;	//no need for soft-PWM, ports are always on
 	}
