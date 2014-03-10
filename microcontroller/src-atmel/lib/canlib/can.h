@@ -27,20 +27,26 @@
 		uint8_t dlc;
 		uint8_t data[8];
 	} can_message;
-
 #else
 	typedef uint8_t can_addr;
 	typedef uint8_t can_port;
+	typedef
+#ifdef OPTIMISED_LAP
+		union {
+		uint8_t can_msg_array[13];
+#endif // OPTIMISED_LAP
+		struct {
+			can_port port_src;
+			can_port port_dst;
+			can_addr addr_src;
+			can_addr addr_dst;
 
-	typedef struct {
-		can_addr      addr_src;
-		can_addr      addr_dst;
-		can_port      port_src;
-		can_port      port_dst;
-		uint8_t dlc;
-		uint8_t data[8];
+			uint8_t dlc;
+			uint8_t data[8];
+#ifdef OPTIMISED_LAP
+		};
+#endif // OPTIMISED_LAP
 	} can_message;
-
 #endif
 
 
