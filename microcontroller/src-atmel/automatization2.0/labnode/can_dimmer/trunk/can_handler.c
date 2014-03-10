@@ -11,32 +11,24 @@
 
 uint8_t myaddr;
 
-uint8_t status[10][10];
-
-#define VIRT_PWM_MAXVAL 255 //4096
-
-static uint8_t virt_pwm_dir = 0;
-static uint8_t virt_pwm_val = VIRT_PWM_MAXVAL;
-static uint8_t virt_stat = 0;
-
-extern void start_counter(uint16_t countdown);
-extern uint8_t get_counter_status(void);
-
-static void virt_pwm_set_all(uint8_t val) {
+static void virt_pwm_set_all(uint8_t val)
+{
 	set_dimmer(0, val);
 	set_dimmer(1, val);
 	set_dimmer(2, val);
 	set_dimmer(3, val);
 }
 
+
 void can_handler()
 {
 	can_message *rx_msg;
-	if ((rx_msg = can_get_nb()))			//get next canmessage in rx_msg
+
+	if ((rx_msg = can_get_nb()))			// get next canmessage in rx_msg
 	{
-		if ((rx_msg->addr_dst == myaddr))
+		if (rx_msg->addr_dst == myaddr)
 		{
-			PORTB ^= _BV(PB0);		//LAPNODE LED blink
+			PORTB ^= _BV(PB0);		// LAPNODE LED blink on packet
 			switch (rx_msg->port_dst)
 			{
 				case PORT_MGT:
@@ -62,109 +54,14 @@ void can_handler()
 				case 1:
 					switch (rx_msg->data[0]) {
 						case 0: //C_SW: ALL ON/ ALL OFF
-							//check if the button was pressed in the last $seconds
-							//if yes continue, if not just toggle the lights
-							if (!get_counter_status()) {	//button wasn't pressed in the last $seconds
-								//if virt_stat == 1 lights are on
-								//if virt_stat == 2 lights are on
-								//if virt_stat == 3 lights are on
-								//if virt_stat == 0 lights are off
-								if (virt_stat)	//turn all lamps off
-								{
-									enable_channel(0, 0);
-									enable_channel(1, 0);
-									enable_channel(2, 0);
-									enable_channel(3, 0);
-									virt_stat = 0;
-								}
-								else	//turn all lamps on
-								{
-									enable_channel(0, 1);
-									enable_channel(1, 1);
-									enable_channel(2, 1);
-									enable_channel(3, 1);
-									virt_stat = 3;
-								}
-							} else {
-								switch (virt_stat++) {
-								case 0:
-								
-									enable_channel(0, 1);
-									enable_channel(1, 1);
-									enable_channel(2, 1);
-									enable_channel(3, 0);
-									break;
-								case 1:
-							
-									enable_channel(0, 0);
-									enable_channel(1, 0);
-									enable_channel(2, 0);
-									enable_channel(3, 1);
-									break;
-								case 2:
-								
-									enable_channel(0, 1);
-									enable_channel(1, 1);
-									enable_channel(2, 1);
-									enable_channel(3, 1);
-									break;
-								case 3:
-								
-									enable_channel(0, 0);
-									enable_channel(1, 0);
-									enable_channel(2, 0);
-									enable_channel(3, 0);
-									virt_stat = 0;
-									break;
-								}
-							}
+							virt_pwm_set_all(rx_msg->data[2]);
 							can_send_status();
-							start_counter(305);	//countdown 5 seconds
 							break;
 						case 1://C_PWM:	set LAMP rx_msg->data[1] to rx_msg->data[2] 
 
 							if (rx_msg->data[1] < NUM_DIMMER_CHANNELS)
 							{
 								set_dimmer(rx_msg->data[1], rx_msg->data[2]);
-								can_send_status();
-							}
-							break;
-						case 2://PWM_MOD
-
-							if (virt_pwm_dir == 1)
-							{
-								if (virt_pwm_val == VIRT_PWM_MAXVAL)
-								{
-									virt_pwm_dir = 0;
-								} else
-								{
-									virt_pwm_set_all(++virt_pwm_val);
-								}
-							} else
-							{
-								if (virt_pwm_val == 0)
-								{
-									virt_pwm_dir = 1;
-								} else
-								{
-									virt_pwm_set_all(--virt_pwm_val);
-								}
-							}
-							can_send_status();
-							break;
-						case 3: //PWM_DIR
-							if (virt_pwm_dir)
-								virt_pwm_dir = 0;
-							else
-								virt_pwm_dir = 1;
-							break;
-						case 4: //C_TOGGLE
-							if (rx_msg->data[1] < NUM_DIMMER_CHANNELS)
-							{
-									if (rx_msg->data[2])	//lamp on
-										enable_channel((rx_msg->data[1]), 1);
-									else
-										enable_channel((rx_msg->data[1]), 0);
 								can_send_status();
 							}
 							break;
