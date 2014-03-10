@@ -10,42 +10,17 @@
 #include "can/lap.h"
 
 
-static volatile uint16_t time_cnt;
-
-//simple timer counting down
-ISR(TIMER0_OVF_vect)
-{
-	if (time_cnt)
-			time_cnt--;
-	else
-			TCCR0 = 0;	//stop counting
-}
-
-void start_counter(uint16_t countdown)
-{
-	TCCR0 = _BV(CS02) | _BV(CS00);	//1:1024 prescaler
-	TCNT0 = 0;
-	time_cnt = countdown;
-}
-
-uint8_t get_counter_status(void)
-{
-		if (time_cnt)
-			return 1;
-		return 0;
-}
-
 static void init(void)
 {
 	DDRB |= _BV(PB0); // LED out
 	//DDRD |= _BV(PD5); // EVG: 0-10V
 
-	TCCR0 = 0; //stop counting
+	//TCCR0 = 0; //stop counting
 	//TCCR0 = _BV(CS02)|_BV(CS00);	//1:1024 prescaler
-	TCNT0 = 0;
-	TIMSK |= _BV(TOIE0);	//Overflow Interrupt enable
-	OCR0 = 0;
-	time_cnt = 0;
+	//TCNT0 = 0;
+	//TIMSK |= _BV(TOIE0);	//Overflow Interrupt enable
+	//OCR0 = 0;
+
 
 	spi_init(); // initialize spi port
 	can_read_addr();
