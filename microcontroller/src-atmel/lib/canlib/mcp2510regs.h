@@ -46,7 +46,7 @@ enum {
 	CNF1		= 0x2a,
 	CANINTE		= 0x2b,		// INTERRUPT ENABLE
 	CANINTF		= 0x2c,		// INTERRUPT FLAG
-	EFLG		= 0x2d,			// ERROR FLAG
+	EFLG		= 0x2d,		// ERROR FLAG
 	TXB0CTRL	= 0x30,
 	TXB0SIDH	= 0x31,
 	TXB0SIDL	= 0x32,
@@ -230,7 +230,7 @@ enum {
 } mcp2515_RXB1CTRL_t;
 
 // Extended Identifier Enable bit
-	#define EXIDE 3
+#define EXIDE 3
 
 
 enum {

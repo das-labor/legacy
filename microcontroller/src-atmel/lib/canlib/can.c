@@ -66,8 +66,12 @@ typedef struct
 	volatile uint8_t flags;
 } can_message_x;
 
+#ifdef OPTIMISED_LAP
+static void lap_message_from_can_message(can_message *cmsg);
+static void can_message_from_lap_message(can_message *cmsg);
+#endif // OPTIMISED_LAP
 
-/* MCP */
+// MCP
 static uint8_t mcp_status(void);
 static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val);
 static void mcp_reset(void);
@@ -99,7 +103,7 @@ static void mcp_bitmod(uint8_t reg, uint8_t mask, uint8_t val)
 	SET_CS();
 }
 
-//load a message to mcp2515 and start transmission
+// load a message to mcp2515 and start transmission
 static void message_load(can_message_x *msg)
 {
 	uint8_t x;
@@ -117,17 +121,20 @@ static void message_load(can_message_x *msg)
 	spi_send(((uint8_t) ((uint32_t) msg->msg.id >> 13) & 0xE0) | (1 << EXIDE) | ((uint8_t) ((uint32_t) msg->msg.id >> 16) & 0x03));
 	spi_send((uint8_t)(msg->msg.id >> 8));
 	spi_send((uint8_t)(msg->msg.id));
+#elif defined(OPTIMISED_LAP)
+	for (x = 0; x < 5 + msg->msg.dlc; x++)
+		spi_send(msg->msg.can_msg_array[x]);
 #else
 	spi_send(((uint8_t) (msg->msg.port_src << 2)) | (msg->msg.port_dst >> 4));
 	spi_send((uint8_t) ((msg->msg.port_dst & 0x0C) << 3) | (1 << EXIDE) | (msg->msg.port_dst & 0x03));
 	spi_send(msg->msg.addr_src);
 	spi_send(msg->msg.addr_dst);
 #endif
-	
+#ifndef OPTIMISED_LAP
 	spi_send(msg->msg.dlc);
-	for (x = 0; x < msg->msg.dlc; x++) {
+	for (x = 0; x < msg->msg.dlc; x++)
 		spi_send(msg->msg.data[x]);
-	}
+#endif // OPTIMISED_LAP
 	SET_CS();
 	CLEAR_CS();
 	spi_send(RTS | _BV(TXB0)); // base addr + TXB0
@@ -137,7 +144,9 @@ static void message_load(can_message_x *msg)
 //get a message from mcp2515 and disable RX interrupt Condition
 static void message_fetch(can_message_x *msg)
 {
+#ifndef OPTIMISED_LAP
 	uint8_t tmp1, tmp2, tmp3;
+#endif
 	uint8_t x;
 
 	CLEAR_CS();
@@ -155,6 +164,9 @@ static void message_fetch(can_message_x *msg)
 
 	msg->msg.id = ((uint32_t) tmp1 << 21) | ((uint32_t) ((uint8_t) tmp2 & 0xE0) << 13) 
 			| ((uint32_t) ((uint8_t) tmp2 & 0x03) << 16) | ((uint16_t) tmp3 << 8) | spi_send(0);
+#elif defined(OPTIMISED_LAP)
+	for (x = 0; x < 5 + (msg->msg.dlc & 0x0f); x++)
+		msg->msg.can_msg_array[x] = spi_send(0);
 #else
 	tmp1 = spi_send(0);
 	msg->msg.port_src = tmp1 >> 2;
@@ -164,11 +176,11 @@ static void message_fetch(can_message_x *msg)
 	msg->msg.addr_src = spi_send(0);
 	msg->msg.addr_dst = spi_send(0);
 #endif
+#ifndef OPTIMISED_LAP
 	msg->msg.dlc = spi_send(0) & 0x0F;
 	for (x = 0; x < msg->msg.dlc; x++)
-	{
 		msg->msg.data[x] = spi_send(0);
-	}
+#endif // OPTIMISED_LAP
 	SET_CS();
 #ifdef MCP2510 // CANINTF is cleard by Read RX Buffer instruction
 	mcp_bitmod(CANINTF, (1 << RX0IF), 0x00);
@@ -394,6 +406,9 @@ can_message *can_get_nb()
 		p = &rx_buffer[rx_tail];
 		if (++rx_tail == CAN_RX_BUFFER_SIZE)
 			rx_tail = 0;
+#ifdef OPTIMISED_LAP
+		lap_message_from_can_message(&(p->msg));
+#endif // OPTIMISED_LAP
 		return &(p->msg);
 	}
 }
@@ -402,12 +417,14 @@ can_message *can_get()
 {
 	can_message_x *p;
 
-	while (rx_head == rx_tail) { };
+	while (rx_head == rx_tail);
 
 	p = &rx_buffer[rx_tail];
 	if (++rx_tail == CAN_RX_BUFFER_SIZE)
 		rx_tail = 0;
-
+#ifdef OPTIMISED_LAP
+	lap_message_from_can_message(&(p->msg));
+#endif // OPTIMISED_LAP
 	return &(p->msg);
 }
 
@@ -435,6 +452,9 @@ can_message *can_buffer_get()
 //start transmitting can messages, and mark message msg as transmittable
 void can_transmit(can_message *msg2)
 {
+#ifdef OPTIMISED_LAP
+	can_message_from_lap_message(msg2);
+#endif // OPTIMISED_LAP
 	can_message_x *msg = (can_message_x *) msg2;
 	if (msg2)
 	{
@@ -446,7 +466,7 @@ void can_transmit(can_message *msg2)
 		{
 			((can_message_x *) &tx_buffer[tx_tail])->flags &= ~0x01;
 			tx_int = 1;
-			DISABLE_CAN_INT();
+			DISABLE_CAN_INT(); // no INT with SPI transfer in msg_load
 			message_load(&tx_buffer[tx_tail]);
 			ENABLE_CAN_INT();
 			if (++tx_tail == CAN_TX_BUFFER_SIZE)
@@ -477,7 +497,9 @@ can_message *can_get_nb()
 		{
 			//So the MCP Generates an RX Interrupt
 			message_fetch(&rx_message);
-
+#ifdef OPTIMISED_LAP
+			lap_message_from_can_message((can_message *) &rx_message);
+#endif // OPTIMISED_LAP
 			return &(rx_message.msg);
 		}
 		else
@@ -494,10 +516,13 @@ can_message *can_get()
 	while (SPI_REG_PIN_MCP_INT    & _BV(SPI_PIN_MCP_INT));
 #endif
 	message_fetch(&rx_message);
+#ifdef OPTIMISED_LAP
+	lap_message_from_can_message((can_message *) &rx_message);
+#endif // OPTIMISED_LAP
 	return &(rx_message.msg);
 }
 
-	//only for compatibility with Interrupt driven Version
+// only for compatibility with Interrupt driven Version
 can_message *can_buffer_get()
 {
 	return &(tx_message.msg);
@@ -507,11 +532,14 @@ void can_transmit(can_message *msg)
 {
 	static uint8_t not_first;
 	if (!not_first) {
-		not_first = 1; //first call: no message to wait for
+		not_first = 1; // first call: no message to wait for
 	} else {
-		while ((mcp_status() & 0x08) == 0); //wait until last packet transmitted
-		mcp_bitmod(CANINTF, (1 << TX0IF), 0x00);//clear interrupt
+		while ((mcp_status() & 0x08) == 0); // wait until last packet transmitted
+		mcp_bitmod(CANINTF, (1 << TX0IF), 0x00); // clear interrupt
 	}
+#ifdef OPTIMISED_LAP
+	can_message_from_lap_message(msg);
+#endif // OPTIMISED_LAP
 	message_load((can_message_x *) msg);
 }
 
@@ -522,3 +550,18 @@ void can_free(can_message *msg)
 
 #endif //CAN_INTERRUPT
 
+#ifdef OPTIMISED_LAP
+static void lap_message_from_can_message(can_message *cmsg)
+{
+	uint8_t temp1 = cmsg->port_src, temp2 = cmsg->port_dst;
+	cmsg->port_src = temp1 >> 2;
+	cmsg->port_dst = ((uint8_t) (temp1 << 4 ) & 0x30) | ((uint8_t) (temp2 >> 3) & 0x0C) | ((uint8_t) (temp2 & 0x03));
+}
+
+static void can_message_from_lap_message(can_message *cmsg)
+{
+	uint8_t temp1 = cmsg->port_src, temp2 = cmsg->port_dst;
+	cmsg->port_src = ((uint8_t) (temp1 << 2)) | (temp2 >> 4);
+	cmsg->port_dst = (uint8_t) ((temp2 & 0x0C) << 3) | (1 << EXIDE) | (temp2 & 0x03);
+}
+#endif // OPTIMISED_LAP
