@@ -227,7 +227,9 @@ uint8_t char_width(char ch) {
 int16_t g_get_string_width(const char *str) {
 	char c;
 	int16_t width = 0;
-	while ((c = *str++) != 0) {
+	while (1){
+		c = *str++;
+		if(c==0 || c == '\n') break;
 		width += char_width(c) + 1;
 	}
 	return width;
