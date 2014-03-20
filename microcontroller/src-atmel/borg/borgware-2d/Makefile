@@ -26,6 +26,18 @@ all: compile-$(TARGET)
 	@echo "size is: "
 	@$(CONFIG_SHELL) ${TOPDIR}/scripts/size $(TARGET)
 	@echo "==============================="
+	@echo ""
+	@echo "The subversion repository of this project is NOT MAINTAINED anymore!"
+	@echo "Borgware-2D is now hosted on GitHub. To get the latest version,"
+	@echo "install git on your system and type:"
+	@echo ""
+	@echo "  git clone https://github.com/das-labor/borgware-2d.git"
+	@echo "  git submodules init"
+	@echo "  git submodules update"
+	@echo ""
+	@echo "The last two commands incorporate the rfm12 repo into this project."
+	@echo ""
+	@echo "BTW: You will get rid of this warning if you switch to the git repo ;)"
 
 ##############################################################################
 # generic fluff

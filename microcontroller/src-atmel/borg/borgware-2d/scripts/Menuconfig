@@ -1699,6 +1699,26 @@ fi
 # Fresh new log.
 >.menuconfig.log
 
+# obsolete tree
+cat <<EOM >help.out
+
+The subversion repository of this project is NOT MAINTAINED anymore!
+Borgware-2D is now hosted on GitHub. To get the latest version,
+install git on your system and type:
+
+  git clone https://github.com/das-labor/borgware-2d.git
+  git submodules init
+  git submodules update
+
+The last two commands incorporate the rfm12 repo into this project.
+
+BTW: You will get rid of this warning if you switch to the git repo ;)
+
+EOM
+$DIALOG	--backtitle "$backtitle"\
+	--title "WARNING! Old and busted!"\
+	--textbox help.out 18 75
+
 # Load the functions used by the config.in files.
 echo -n "Preparing scripts: functions" 
 load_functions
