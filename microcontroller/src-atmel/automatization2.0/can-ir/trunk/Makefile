@@ -1,6 +1,6 @@
 LAP_ADDR       = 0x10
 
-OBJ            = can-ir.o lab-irkit.o can/can.o can/spi.o
+OBJ            = can-ir.o lab-irkit.o can/can.o can/spi.o uart/uart.o beamer_rs232.o twi_master/twi_master.o teufel-i2c.o
 
 # Default values
 OUT           ?= image
@@ -25,7 +25,7 @@ CANFLASHCMD    = lapcontrol -s wl flash $(LAP_ADDR) $(OUT).hex
 all: $(OUT).elf lst text eeprom
 
 clean:
-	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o
+	rm -rf $(OUT) *.o *.lst *.map *.hex *.bin *.srec can/*.o uart/*.o twi_master/*.o
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
@@ -82,4 +82,3 @@ esrec: $(OUT)_eeprom.srec
 
 %_eeprom.bin: %.elf
 	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O binary $< $@
-
