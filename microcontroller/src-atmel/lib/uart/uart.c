@@ -85,10 +85,10 @@
 
 
 #ifdef UART_INTERRUPT
-volatile static char rxbuf[UART_RXBUFSIZE];
-volatile static char txbuf[UART_TXBUFSIZE];
-volatile static char *volatile rxhead, *volatile rxtail;
-volatile static char *volatile txhead, *volatile txtail;
+static volatile char rxbuf[UART_RXBUFSIZE];
+static volatile char txbuf[UART_TXBUFSIZE];
+static volatile char *volatile rxhead, *volatile rxtail;
+static volatile char *volatile txhead, *volatile txtail;
 
 ISR(UART_UDRE_VECTOR)
 {
