@@ -8,6 +8,7 @@
 #include "lib-host/can-encap.h"
 #include "lib-host/can-tcp.h"
 #include "lib-host/can-uart.h"
+#include "lib/can_message_converters.h"
 
 /***************************************************************************
  * Implement can.h for posix systems
@@ -135,7 +136,7 @@ rs232can_msg * can_get_raw_gateway_message_nb()
 // XXX must free messages
 
 //returns next can message
-can_message * can_get_nb()
+can_message *can_get_nb()
 {
 	rs232can_msg *rs232_msg;
 	can_message_raw  raw_msg;
@@ -162,7 +163,8 @@ can_message * can_get_nb()
 	can_message_raw_from_rs232can_msg(&raw_msg, rs232_msg);
 	can_message_from_can_message_raw(can_msg, &raw_msg);
 	
-	free(rs232_msg);
+	if (conn)
+		free(rs232_msg);
 
 	return can_msg;
 }
@@ -255,10 +257,12 @@ can_message_v2 * can_get_v2_nb()
 	return retmsg;
 }
 
-void can_free(can_message *msg){
+void can_free(can_message *msg)
+{
 	free(msg);
 }
 
-void can_free_v2(can_message_v2 *msg){
+void can_free_v2(can_message_v2 *msg)
+{
 	free(msg);
 }

@@ -30,8 +30,8 @@ static void send_gateway_command(uint8_t cmd, uint8_t *data, uint8_t len)
 {
 	rs232can_msg rmsg;
 	rmsg.cmd = cmd;
-	rmsg.len = (len > RS232CAN_MAXLENGTH)?RS232CAN_MAXLENGTH:len;
-	if(len > 0 && data != NULL)
+	rmsg.len = (len > RS232CAN_MAXLENGTH) ? RS232CAN_MAXLENGTH : len;
+	if (len > 0 && data != NULL)
 		memcpy((void *)rmsg.data, (void *)data, rmsg.len);
 	can_transmit_raw_gateway_message(&rmsg);
 }
@@ -42,8 +42,8 @@ static rs232can_msg* anticipate_gateway_reply(uint8_t cmd)
 	rs232can_msg *rmsg_in;
 	unsigned int i = 0;
 	//anticipate reply and timeout after 2s
-	while(((rmsg_in = can_get_raw_gateway_message_nb()) == NULL || rmsg_in->cmd != cmd) && i++ < DEFAULT_TIMEOUT) usleep(1000);
-	return (i<DEFAULT_TIMEOUT)?rmsg_in:NULL;
+	while (((rmsg_in = can_get_raw_gateway_message_nb()) == NULL || rmsg_in->cmd != cmd) && i++ < DEFAULT_TIMEOUT) usleep(1000);
+	return (i < DEFAULT_TIMEOUT) ? rmsg_in : NULL;
 }
 
 
@@ -57,7 +57,7 @@ static void cmd_gateway_ping(int argc, char *argv[])
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_PING_GATEWAY);
-	printf(rmsg?"and got a reply!\n":"but timed out after 2 seconds :-(\n");
+	printf(rmsg ? "and got a reply!\n" : "but timed out after 2 seconds :-(\n");
 }
 
 
@@ -73,7 +73,7 @@ static void cmd_gateway_version(int argc, char *argv[])
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_VERSION);
-	if(!rmsg) goto timeout;
+	if (!rmsg) goto timeout;
 
 	//store values
 	maj = (unsigned char)rmsg->data[0];
@@ -86,10 +86,10 @@ static void cmd_gateway_version(int argc, char *argv[])
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_IDSTRING);
-	if(!rmsg) goto timeout;
+	if (!rmsg) goto timeout;
 
 	//store string
-	rmsg->len = (rmsg->len < sizeof(idstring))?rmsg->len:20;
+	rmsg->len = (rmsg->len < sizeof(idstring)) ? rmsg->len : 20;
 	memcpy(idstring, rmsg->data, rmsg->len);
 	idstring[rmsg->len] = 0;
 
@@ -114,7 +114,7 @@ static void cmd_gateway_packetstats(int argc, char *argv[])
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_PACKETCOUNTERS);
-	if(!rmsg) goto timeout;
+	if (!rmsg) goto timeout;
 
 	//print answers
 	printf("TX Packets:\t\t%u\n", *((uint32_t *)&rmsg->data[0]));
@@ -127,10 +127,46 @@ timeout:
 	printf(" but timed out after 2 seconds :-(\n");
 }
 
+#define MCP251X_ERRFLG_EWARN	1
+#define MCP251X_ERRFLG_RXWAR	2
+#define MCP251X_ERRFLG_TXWAR	4
+#define MCP251X_ERRFLG_RXEP	8
+#define MCP251X_ERRFLG_TXEP	16
+#define MCP251X_ERRFLG_TXBO	32
+#define MCP251X_ERRFLG_RX0OVR	64
+#define MCP251X_ERRFLG_RX1OVR	128
+
+#define MCP251X_ERRFLG_EWARN_STR	"Error Warning "
+#define MCP251X_ERRFLG_RXWAR_STR	"Receive Error Warning "
+#define MCP251X_ERRFLG_TXWAR_STR	"Transmit Error Warning "
+#define MCP251X_ERRFLG_RXEP_STR		"Receive Error-Passive "
+#define MCP251X_ERRFLG_TXEP_STR		"Transmit Error-Passive "
+#define MCP251X_ERRFLG_TXBO_STR		"Bus-Off Error "
+#define MCP251X_ERRFLG_RX0OVR_STR	"Receive Buffer 0 Overflow "
+#define MCP251X_ERRFLG_RX1OVR_STR	"Receive Buffer 1 Overflow "
+
+
+static void sprint_mcp251x_errorflags(char *buf, unsigned char error_flags)
+{
+	sprintf(buf, "%s%s%s%s%s%s%s%s",
+		(error_flags & MCP251X_ERRFLG_EWARN) ? MCP251X_ERRFLG_EWARN_STR : "",
+		(error_flags & MCP251X_ERRFLG_RXWAR) ? MCP251X_ERRFLG_RXWAR_STR : "",
+		(error_flags & MCP251X_ERRFLG_TXWAR) ? MCP251X_ERRFLG_TXWAR_STR : "",
+		(error_flags & MCP251X_ERRFLG_RXEP) ? MCP251X_ERRFLG_RXEP_STR : "",
+		(error_flags & MCP251X_ERRFLG_TXEP) ? MCP251X_ERRFLG_TXEP_STR : "",
+		(error_flags & MCP251X_ERRFLG_TXBO) ? MCP251X_ERRFLG_TXBO_STR : "",
+		(error_flags & MCP251X_ERRFLG_RX0OVR) ? MCP251X_ERRFLG_RX0OVR_STR : "",
+		(error_flags & MCP251X_ERRFLG_RX1OVR) ? MCP251X_ERRFLG_RX1OVR_STR : "");
+		
+}
 
 static void cmd_gateway_errorstats(int argc, char *argv[])
 {
 	rs232can_msg *rmsg;
+	char buf[sizeof(MCP251X_ERRFLG_EWARN_STR) + sizeof(MCP251X_ERRFLG_RXWAR_STR) +
+	     sizeof(MCP251X_ERRFLG_TXWAR_STR) + sizeof(MCP251X_ERRFLG_RXEP_STR) +
+	     sizeof(MCP251X_ERRFLG_TXEP_STR) + sizeof(MCP251X_ERRFLG_TXBO_STR) +
+	     sizeof(MCP251X_ERRFLG_RX0OVR_STR) + sizeof(MCP251X_ERRFLG_RX1OVR_STR)];
 
 	//create and send gateway request
 	printf("Requesting error counters..\n");
@@ -138,12 +174,13 @@ static void cmd_gateway_errorstats(int argc, char *argv[])
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_ERRORCOUNTERS);
-	if(!rmsg) goto timeout;
+	if (!rmsg) goto timeout;
 
 	//print answers
 	printf("TX Errors:\t%u\n", (unsigned char)rmsg->data[0]);
 	printf("RX Errors:\t%u\n", (unsigned char)rmsg->data[1]);
-	printf("Error Flags:\t%u\n", (unsigned char)rmsg->data[2]);
+	sprint_mcp251x_errorflags(buf, rmsg->data[2]);
+	printf("Error Flags:\t%s\n", buf);
 	return;
 
 timeout:
@@ -176,7 +213,7 @@ static void cmd_gateway_powerdraw(int argc, char *argv[])
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_POWERDRAW);
-	if(!rmsg) goto timeout;
+	if (!rmsg) goto timeout;
 
 	//print answers
 	v = voltage_divider_mv_in(VOLTAGE_DIVIDER_R1, VOLTAGE_DIVIDER_R2, adc_to_mv(ADC_RES, ADC_REF_MV, *((uint16_t *)&rmsg->data[0]))) / 1000.0;
@@ -196,7 +233,7 @@ static void cmd_gateway_control(int argc, char *argv[])
 {
 	rs232can_msg *rmsg;
 
-	if(argc == 2)
+	if (argc == 2)
 	{
 		uint8_t val = atoi(argv[1]);
 
@@ -217,7 +254,7 @@ static void cmd_gateway_control(int argc, char *argv[])
 		rmsg = anticipate_gateway_reply(RS232CAN_READ_CTRL_REG);
 	}
 
-	if(!rmsg) goto timeout;
+	if (!rmsg) goto timeout;
 
 	//print new value
 	printf("Control register value:\t%02x\n", (unsigned char)rmsg->data[0]);
@@ -240,10 +277,10 @@ timeout:
 static void sprint_atmega8_resetcause(char *buf, unsigned char reset_flags)
 {
 	sprintf(buf, "%s%s%s%s",
-		(reset_flags & MEGA8_RESETCAUSE_PORF)?RESETCAUSE_PORF_STR:"",
-		(reset_flags & MEGA8_RESETCAUSE_EXTRF)?RESETCAUSE_EXTRF_STR:"",
-		(reset_flags & MEGA8_RESETCAUSE_BORF)?RESETCAUSE_BORF_STR:"",
-		(reset_flags & MEGA8_RESETCAUSE_WDRF)?RESETCAUSE_WDRF_STR:"");
+		(reset_flags & MEGA8_RESETCAUSE_PORF) ? RESETCAUSE_PORF_STR : "",
+		(reset_flags & MEGA8_RESETCAUSE_EXTRF) ? RESETCAUSE_EXTRF_STR : "",
+		(reset_flags & MEGA8_RESETCAUSE_BORF) ? RESETCAUSE_BORF_STR : "",
+		(reset_flags & MEGA8_RESETCAUSE_WDRF) ? RESETCAUSE_WDRF_STR : "");
 }
 
 
@@ -258,7 +295,7 @@ static void cmd_gateway_resetcause(int argc, char *argv[])
 
 	//anticipate reply and timeout after 2s
 	rmsg = anticipate_gateway_reply(RS232CAN_GET_RESETCAUSE);
-	if(!rmsg) goto timeout;
+	if (!rmsg) goto timeout;
 
 	//print answer
 	sprint_atmega8_resetcause(buf, rmsg->data[0]);
@@ -269,16 +306,23 @@ timeout:
 	printf(" but timed out after 2 seconds :-(\n");
 }
 
+static void cmd_gateway_reset(int argc, char *argv[])
+{
+	//create and send gateway request
+	printf("Reseting gateway ...\n");
+	send_gateway_command(RS232CAN_RESET, NULL, 0);
+}
 
 static cmd_t gateway_cmds[] = {
-  { &cmd_gateway_ping, "ping", "ping", "ping the gateway itself (not a CAN ping)" },
-  { &cmd_gateway_version, "version", "version", "show firmware version" },
-  { &cmd_gateway_packetstats, "pstats", "pstats", "show packet counters" },
-  { &cmd_gateway_errorstats, "estats", "estats", "show MCP2515 error counters" },
-  { &cmd_gateway_powerdraw, "powerdraw", "powerdraw", "show current bus power draw" },
-  { &cmd_gateway_resetcause, "resetcause", "resetcause", "question gateway about the cause of its last reset" },
-  { &cmd_gateway_control, "control", "control [value]", "read or write control register (advanced users only!)" },
-  { NULL, NULL, NULL, NULL }
+	{ &cmd_gateway_ping, "ping", "ping", "ping the gateway itself (not a CAN ping)" },
+	{ &cmd_gateway_version, "version", "version", "show firmware version" },
+	{ &cmd_gateway_packetstats, "pstats", "pstats", "show packet counters" },
+	{ &cmd_gateway_errorstats, "estats", "estats", "show MCP2515 error counters" },
+	{ &cmd_gateway_powerdraw, "powerdraw", "powerdraw", "show current bus power draw" },
+	{ &cmd_gateway_resetcause, "resetcause", "resetcause", "question gateway about the cause of its last reset" },
+	{ &cmd_gateway_control, "control", "control [value]", "read or write control register (advanced users only!)" },
+	{ &cmd_gateway_reset, "reset", "reset", "reset gateway" },
+	{ NULL, NULL, NULL, NULL }
 };
 
 
@@ -288,7 +332,7 @@ void cmd_gateway(int argc, char **argv)
 	cmd_t *cmd;
 
 	cmd = gateway_cmds;
-	while(cmd->fkt && argc > 1) {
+	while (cmd->fkt && argc > 1) {
 		fflush(stdout);
 		if (strcmp(arg, cmd->cmd) == 0) {
 			(*(cmd->fkt))(argc-1, &(argv[1]));
@@ -302,7 +346,7 @@ void cmd_gateway(int argc, char **argv)
 	printf( "Available Subcommands:\n\n" );
 
 	cmd = gateway_cmds;
-	while(cmd->fkt) {
+	while (cmd->fkt) {
 		printf( "   %-30s %s\n", cmd->sig, cmd->desc );
 		cmd++;
 	}
