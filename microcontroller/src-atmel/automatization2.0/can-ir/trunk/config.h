@@ -21,6 +21,7 @@
 
 #define F_MCP F_CPU
 
+#define UART_BAUD_RATE 9600
 
 #endif // _CONFIG_H
 

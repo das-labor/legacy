@@ -182,7 +182,7 @@ void ir_sendCode(uint16_t *code, uint8_t codeLen)
 	//-> the frequency generation would give a carrier for one timer
 	//   overflow after the last bit has been sent
 	//this makes even numbers the next smaller uneven ones
-	ir_curCodeLen = (codeLen-1) | 0x01;
+	ir_curCodeLen = (codeLen - 1) | 0x01;
 
 	//save code pointer
 	ir_curCode = code;

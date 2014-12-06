@@ -1,17 +1,17 @@
 //      can-ir.c
-//      
+//
 //      Authors: Hans-Gert Dahmen  <sexyludernatascha@gmail.com>
-//      
+//
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
 //      the Free Software Foundation; either version 2 of the License, or
 //      (at your option) any later version.
-//      
+//
 //      This program is distributed in the hope that it will be useful,
 //      but WITHOUT ANY WARRANTY; without even the implied warranty of
 //      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //      GNU General Public License for more details.
-//      
+//
 //      You should have received a copy of the GNU General Public License
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -27,6 +27,10 @@
 #include "can/spi.h"
 #include "can/lap.h"
 #include "lab-irkit.h"
+#include "uart/uart.h"
+#include "beamer_rs232.h"
+#include "twi_master/twi_master.h"
+#include "teufel-i2c.h"
 
 //having these arrays global seems to solve problems
 static uint16_t code[128];
@@ -66,21 +70,15 @@ static void can_handler(void)
 	can_message *rx_msg;
 
 	//get next canmessage in rx_msg that is destined for us
-	if ((rx_msg = can_get_nb()))
-	{
-		if (rx_msg->addr_dst == myaddr)
-		{
-			PORTD |= _BV(PD7); // Enable debug LED
+	if ((rx_msg = can_get_nb())) {
+		if (rx_msg->addr_dst == myaddr) {
 			//handle management functions
-			if (rx_msg->port_dst == PORT_MGT)
-			{
-				switch (rx_msg->data[0])
-				{
+			if (rx_msg->port_dst == PORT_MGT) {
+				switch (rx_msg->data[0]) {
 					case FKT_MGT_RESET:
 						wdt_enable(WDTO_15MS);
 						while (1);
-					case FKT_MGT_PING:
-						{
+					case FKT_MGT_PING: {
 							can_message *tx_msg = can_buffer_get();
 							tx_msg->port_src = PORT_MGT;
 							tx_msg->port_dst = PORT_MGT;
@@ -96,16 +94,13 @@ static void can_handler(void)
 				}
 			}
 			//handle ir commands
-			else if (rx_msg->port_dst == PORT_REMOTE)
-			{
+			else if (rx_msg->port_dst == PORT_REMOTE) { // 0x21
 				//switch the remote device type
-				switch (rx_msg->data[0])
-				{
+				switch (rx_msg->data[0]) {
 					//this is a message for the teufel system
 					case 0:
 						//verify if command number is within bounds
-						if (rx_msg->data[1] < TEUFEL_CODE_CNT)
-						{
+						if (rx_msg->data[1] < TEUFEL_CODE_CNT) {
 							//lookup command and generate the pulse length array
 							codeLen = ir_genCode(code, PT_ON, PT_OFF, teufelCodes[rx_msg->data[1]], 12);
 
@@ -118,44 +113,15 @@ static void can_handler(void)
 						break;
 					//this is a message for the acer beamer
 					case 1:
-						//see which code we need to send
-						switch (rx_msg->data[1])
-						{
-							//power
-							case 0:
-								codeLen = ir_genENEC(code, 0b00010000110010001110000100011110, 32);
-								ir_sendCode(code, codeLen);
-								break;
-							case 1: // source
-								codeLen = ir_genENEC(code, 0b00010000110010000011000111001110, 32);
-								ir_sendCode(code, codeLen);
-								break;
-							case 2: // vga
-								codeLen = ir_genENEC(code, 0b00010000110010001010011001011001, 32);
-								ir_sendCode(code, codeLen);
-								break;
-							case 3: // dvi
-								codeLen = ir_genENEC(code, 0b00010000110010000101011010101001, 32);
-								ir_sendCode(code, codeLen);
-								break;
-							case 4: // s-video
-								codeLen = ir_genENEC(code, 0b00010000110010000001011011101001, 32);
-								ir_sendCode(code, codeLen);
-								break;
-							case 5: // composite
-								codeLen = ir_genENEC(code, 0b00010000110010001110011000011001, 32);
-								ir_sendCode(code, codeLen);
-								break;
-							case 6: // blank
-								codeLen = ir_genENEC(code, 0b00010000110010001111000100001110, 32);
-								ir_sendCode(code, codeLen);
-								break;
-							default:
-								break;
-						}
+						PORTD |= _BV(PD7); // Enable debug LED
+						rs232_send_command(rx_msg->data[1]);
 						break;
-
-					default:
+					// 2 was beamer IR
+					case 3:
+						setAllChannels(rx_msg->data[1]);
+						break;
+					case 4:
+						setSingleChannel(rx_msg->data[1], rx_msg->data[2]);
 						break;
 				}
 			}
@@ -163,6 +129,8 @@ static void can_handler(void)
 		can_free(rx_msg);
 	}
 }
+
+static volatile uint8_t tickscounter;
 
 //system initialization
 static void init(void)
@@ -179,6 +147,15 @@ static void init(void)
 	//initialize spi port
 	spi_init();
 
+	// initialize uart
+	uart_init();
+
+	// initialize twi
+	if (!TWIM_Init())
+	{
+		while (1);
+	}
+
 	myaddr = eeprom_read_byte(0x00);
 	//initialize can communication
 	can_init();
@@ -188,15 +165,20 @@ static void init(void)
 }
 
 int main(void)
-{	
+{
 	//system initialization
 	init();
 
+	setDefaultAfterPoweron();
+
 	//the main loop continuously handles can messages
-	while (1)
-	{	
+	while (1) {
 		can_handler();
+		rs232_receive_handler();
+		if (tickscounter > 10) {
+			tickscounter = 0;
+			poll_beamer_state();
+		}
 		PORTD &= ~_BV(PD7); // Disable debug LED
 	}
 }
-
