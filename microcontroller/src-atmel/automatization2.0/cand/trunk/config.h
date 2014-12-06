@@ -2,9 +2,7 @@
 #define CONFIG_H
 
 // uart.[ch] defines
-#define UART_BAUD_RATE B230400
-//#define UART_BAUD_RATE B57600
-
+#define DEFAULT_UART_BAUD_RATE B230400
 
 #ifndef __CYGWIN__
 	#define SIGINFO_HAS_SI_BAND
