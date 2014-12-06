@@ -179,7 +179,7 @@ enum {
 	CANINTF_TX1IF	= 0x05,
 	TXB2CNTRL_TXREQ	= 0x06,
 	CANINTF_TX2IF	= 0x07
-} mcp2515_READ_STATUS_t;
+} mcp2515_READ_STATUS_flags_t;
 
 // EFLG
 enum {
