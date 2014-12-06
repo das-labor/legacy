@@ -1,116 +1,63 @@
-/* Name: opendevice.c
- * Project: AVR-USB host-side library
- * Author: Christian Starkjohann
- * Creation Date: 2008-04-10
- * Tabsize: 4
- * Copyright: (c) 2008 by OBJECTIVE DEVELOPMENT Software GmbH
- * License: GNU GPL v2 (see License.txt) or proprietary (CommercialLicense.txt)
- * This Revision: $Id: opendevice.c 553 2008-04-17 19:00:20Z cs $
- */
+#include <stdio.h>
+#include <stdlib.h>
+#include <libusb-1.0/libusb.h>
+#include "opendevice.h"
+#include "lib-host/debug.h"
+
 
 /*
-General Description:
-The functions in this module can be used to find and open a device based on
-libusb or libusb-win32.
+	int vid, pid;
+	const unsigned char rawVid[2] =
+	{
+		USB_CFG_VENDOR_ID
+	},
+	rawPid[2] =
+	{
+		USB_CFG_DEVICE_ID
+	};
+
+	vid = rawVid[1] * 256 + rawVid[0];
+	pid = rawPid[1] * 256 + rawPid[0];
 */
-
-#include <stdio.h>
-#include "opendevice.h"
-
-/* ------------------------------------------------------------------------- */
-
-int usbOpenDevice(usb_dev_handle **device, int vendorID, int productID)
-{
-	struct usb_bus      *bus;
-	struct usb_device   *dev;
-	usb_dev_handle      *handle = NULL;
-	int                 errorCode = USBOPEN_ERR_NOTFOUND;
-
-	usb_find_busses();
-	usb_find_devices();
-
-	/* iterate over all devices on all busses */
-	for (bus = usb_get_busses(); bus; bus = bus->next)
-	{
-		for (dev = bus->devices; dev; dev = dev->next)
-		{
-			if ((vendorID == 0 || dev->descriptor.idVendor == vendorID)
-				 && (productID == 0 || dev->descriptor.idProduct == productID))
-			{
-				handle = usb_open(dev); /* we need to open the device in order to query strings */
-				if (!handle)
-				{
-					errorCode = USBOPEN_ERR_ACCESS;
-					fprintf(stderr, "Warning: cannot open VID=0x%04x PID=0x%04x: %s\n", dev->descriptor.idVendor, dev->descriptor.idProduct, usb_strerror());
-					continue;
-				}
-				else break;
-			}
-		}
-
-		if (handle)  /* we have found a device */
-		{
-			break;
-		}
-	}
-
-	if (handle != NULL){
-		errorCode = 0;
-		*device = handle;
-	}
-
-	return errorCode;
+static unsigned int is_interesting(libusb_device *device) {
+	struct libusb_device_descriptor desc;
+	int r = libusb_get_device_descriptor(device, &desc);
+	debug_assert(r >= 0, "USB: failed to get device descriptor: %s\r\n", libusb_error_name(r));
+	if (desc.idVendor == 0x16c0 && desc.idProduct == 0x05dc)
+		return 1;
+	else
+		return 0;
 }
 
+libusb_device_handle *usbGetDeviceHandle(int usb_param) {
+	libusb_device **list, **listMatch;
+	libusb_device_handle *handle = NULL;
+	int err = 0;
+	unsigned labDevCount = 0;
 
-int usbCountDevices(int vendorID, int productID)
-{
-	struct usb_bus      *bus;
-	struct usb_device   *dev;
-	int                 dev_cnt = 0;
+	int r = libusb_init(NULL);
+	debug_assert(r >= 0, "USB_init error: %s\r\n", libusb_error_name(r));
 
-	usb_find_busses();
-	usb_find_devices();
+	ssize_t devcnt = libusb_get_device_list(NULL, &list);
+	debug_assert(devcnt >= 0, "USB_get_device_list error: %s\r\n", libusb_error_name(devcnt));
+	listMatch = calloc(devcnt, sizeof(struct libusb_device *));
+	debug_assert(listMatch != NULL, "Can't allocate memory.\r\n");
+	for (unsigned i = 0; i < devcnt; i++) {
+		libusb_device *device = list[i];
 
-	/* iterate over all devices on all busses */
-	for (bus = usb_get_busses(); bus; bus = bus->next)
-	{
-		for (dev = bus->devices; dev; dev = dev->next)
-		{
-			if ((vendorID == 0 || dev->descriptor.idVendor == vendorID)
-				 && (productID == 0 || dev->descriptor.idProduct == productID))
-			{
-				dev_cnt++;
-			}
+		if (is_interesting(device)) {
+			listMatch[labDevCount++] = device;
 		}
 	}
+	debug_assert(labDevCount != 0, "Can't find RfmUSB / CANGW Device\r\n");
+	printf("Found %i devices, using device %i\n", labDevCount, usb_param);
+	debug_assert(usb_param >= labDevCount, "usb_param to big\r\n");
 
-	return dev_cnt;
-}
-
-int usbListDevices(struct usb_device **devices, int vendorID, int productID)
-{
-	struct usb_bus      *bus;
-	struct usb_device   *dev;
-	int                 dev_cnt = 0;
-
-	usb_find_busses();
-	usb_find_devices();
-
-	for (bus = usb_get_busses(); bus; bus = bus->next)
-	{
-		for (dev = bus->devices; dev; dev = dev->next)
-		{
-			if ((vendorID == 0 || dev->descriptor.idVendor == vendorID)
-				 && (productID == 0 || dev->descriptor.idProduct == productID))
-			{
-				devices[dev_cnt++] = dev;
-			}
-		}
+	if (labDevCount) {
+		err = libusb_open(listMatch[usb_param - 1], &handle);
+		debug_assert(err >= 0, "Can't open RfmUSB / CANGW Device\r\n");
 	}
-
-	return dev_cnt;
+	libusb_free_device_list(list, 1);
+	libusb_free_device_list(listMatch, 0);
+	return handle;
 }
-
-/* ------------------------------------------------------------------------- */
-
