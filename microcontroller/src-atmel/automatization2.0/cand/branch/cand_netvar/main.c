@@ -61,23 +61,25 @@ static const char *gregs[] = {
 char *progname;
 char *serial;
 char *usb_parm;
+char *baudrate;
 char *logfile = NULL;
 char *scriptfile = NULL;
 
 usb_dev_handle *udhandle = NULL;
 
 
-static char *optstring = "hdv::S:U:p:l:s:D:";
+static char *optstring = "hdv::S:U:b:p:l:s:D:";
 struct option longopts[] =
 {
-	{ "help", no_argument, NULL, 'h' },
-	{ "verbose", optional_argument, NULL, 'v' },
-	{ "serial", required_argument, NULL, 'S' },
-	{ "usb", required_argument, NULL, 'U' },
-	{ "port", required_argument, NULL, 'p' },
-	{ "logfile", required_argument, NULL, 'l'},
-	{ "scriptfile", required_argument, NULL, 's'},
-	{ "debugfile", optional_argument, NULL, 'D'},
+	{ "help",	no_argument, NULL, 'h' },
+	{ "verbose",	optional_argument, NULL, 'v' },
+	{ "serial",	required_argument, NULL, 'S' },
+	{ "usb",	required_argument, NULL, 'U' },
+	{ "baudrate",	optional_argument, NULL, 'b' },
+	{ "port",	required_argument, NULL, 'p' },
+	{ "logfile",	required_argument, NULL, 'l' },
+	{ "scriptfile", required_argument, NULL, 's' },
+	{ "debugfile",	optional_argument, NULL, 'D' },
 	{ NULL, 0, NULL, 0 }
 };
 
@@ -717,6 +719,9 @@ int main(int argc, char *argv[])
 			case 'S':
 				serial = optarg;
 				break;
+			case 'b':
+				baudrate = optarg;
+				break;
 			case 'U':
 				usb_parm = optarg;
 				break;
@@ -752,7 +757,7 @@ int main(int argc, char *argv[])
 
 	// setup serial communication
 	if (serial) {
-		canu_init(serial);
+		canu_init(serial, baudrate);
 	}
 
 	if (usb_parm) {
