@@ -1,17 +1,17 @@
 LAP_ADDR       = 0x25
 
-OBJ            = main.o can/spi.o can/can.o twi_master/twi_master.o can_handler.o netvar/netvar.o netvar/netvar_io.o util_lib/list.o io.o ds1631.o led_driver.o animationen.o temp_read.o
+OBJ            = main.o can/spi.o can/can.o twi_master/twi_master.o can_handler.o io.o ds1631.o led_driver.o animationen.o temp_read.o
 
 # Default values
 OUT           ?= image
 MCU_TARGET    ?= atmega8
 MCU_CC        ?= avr-gcc
-MCU_AS	      ?= avr-as
+MCU_AS        ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline -pedantic -Wstrict-prototypes -Wextra
 DEFS          ?= -DF_CPU=16000000UL -DEEPROM_LAP_ADDR=$(LAP_ADDR)
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
-ASFLAGS	      += -mmcu=avr5
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu11 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
+ASFLAGS       += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 
 # External Tools
