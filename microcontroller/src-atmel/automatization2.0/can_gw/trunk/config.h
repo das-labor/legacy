@@ -29,10 +29,11 @@
 #define UART_TXBUFSIZE 50
 //#define UART_LEDS
 
+// can.[ch] defines
+
 // if mcp2510 is used
 //#define MCP2510
 
-// can.[ch] defines
 #define CAN_RAW
 
 #define F_MCP 16000000UL
@@ -46,7 +47,7 @@
 
 
 #define CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
-//#define CAN_INT_NOBLOCK
+#define CAN_INT_NOBLOCK
 #define CAN_RX_BUFFER_SIZE 8	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 8	//only used for Interrupt
 

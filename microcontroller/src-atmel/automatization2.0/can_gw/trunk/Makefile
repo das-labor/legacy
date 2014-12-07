@@ -7,7 +7,7 @@ MCU_TARGET    ?= atmega8
 MCU_CC        ?= avr-gcc
 MCU_AS        ?= avr-as
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall -Winline
+WARNINGS      ?= -Wall -Winline -Wextra -Wpedantic
 SVN_REVISION  ?= `svn --trust-server-cert --non-interactive info | grep "Revision:" | cut -d : -f 2 | tr -d '\n '`
 ID_STRING     ?=  \"`pwd | awk -F / '{print $$NF}' | cut -c 1-20 | tr -d '\n '`\"
 DEFS          ?= -DF_CPU=18432000UL -DFW_SVNREVISION=$(SVN_REVISION) -DFW_IDSTRING=$(ID_STRING)
@@ -18,7 +18,7 @@ LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U $(OUT).hex
+FLASHCMD      ?= avrdude -p $(MCU_TARGET) -U $(OUT).hex
 
 #############################################################################
 # Rules
