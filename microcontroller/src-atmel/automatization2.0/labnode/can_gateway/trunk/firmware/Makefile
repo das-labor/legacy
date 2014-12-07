@@ -2,22 +2,23 @@
 OBJ            = main.o uart/uart.o canlib/can.o canlib/spi.o usbdrv/usbdrv.o usbdrv/usbdrvasm.o usbdrv/oddebug.o
 
 # Default values
-OUT           ?= main
+OUT           ?= image
 MCU_TARGET    ?= atmega32
 MCU_CC        ?= avr-gcc
-MCU_AS	      ?= avr-as
+MCU_AS        ?= avr-as
 OPTIMIZE      ?= -Os
-WARNINGS      ?= -Wall -Winline
-DEFS          ?= -DF_CPU=16000000
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I.
-ASFLAGS	      += -mmcu=avr5
-LDFLAGS        = -Wl,-Map,$(OUT).map
+WARNINGS      ?= -Wall -Winline -Wextra -Wpedantic
+SVN_REVISION  ?= `svn --trust-server-cert --non-interactive info | grep "Revision:" | cut -d : -f 2 | tr -d '\n '`
+ID_STRING     ?=  \"`pwd | awk -F / '{print $$NF}' | cut -c 1-20 | tr -d '\n '`\"
+DEFS          ?= -DF_CPU=16000000UL -DFW_SVNREVISION=$(SVN_REVISION) -DFW_IDSTRING=$(ID_STRING)
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
+ASFLAGS       += -mmcu=avr5
+LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 
 # External Tools
 OBJCOPY       ?= avr-objcopy
 OBJDUMP       ?= avr-objdump
-FLASHCMD      ?= avrdude -c usbasp -p $(MCU_TARGET) -U flash:w:main.hex
-ERASECMD      ?=
+FLASHCMD      ?= avrdude -p $(MCU_TARGET) -U $(OUT).hex
 
 #############################################################################
 # Rules
@@ -28,16 +29,15 @@ clean:
 	rm -rf *.srec $(OUT).elf
 
 flash: $(OUT).hex
-	$(ERASECMD)
 	$(FLASHCMD)
 
 #############################################################################
-# Building Rules 
+# Building Rules
 $(OUT).elf: $(OBJ)
 	$(MCU_CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.c
-	$(MCU_CC) $(CFLAGS) -c $< -o $@ 
+	$(MCU_CC) $(CFLAGS) -c $< -o $@
 
 #%.o: %.S
 #	$(MCU_AS) $(ASFLAGS) -o $@ $<
