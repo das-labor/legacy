@@ -205,10 +205,10 @@ void set_dimmer(uint8_t channel, uint8_t bright) {
 		//enable port if max_brightness == always on
 
 		switch (channel) {
-			case 0: if (channels_active[0])PORTA |= _BV(PA4); break;
-			case 1: if (channels_active[1])PORTA |= _BV(PA5); break;
-			case 2: if (channels_active[2])PORTC |= _BV(PC4); break;
-			case 3: if (channels_active[3])PORTD |= _BV(PD5); break;
+			case 0: if (channels_active[0]) PORTA |= _BV(PA4); break;
+			case 1: if (channels_active[1]) PORTA |= _BV(PA5); break;
+			case 2: if (channels_active[2]) PORTC |= _BV(PC4); break;
+			case 3: if (channels_active[3]) PORTD |= _BV(PD5); break;
 		}
 		dimval = MAX_VAL;	//no need for soft-PWM, ports are always on
 	}
