@@ -1,22 +1,13 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <getopt.h>
-#include <sys/select.h>
 #include <sys/wait.h>
-#include <sys/time.h>
-#include <sys/types.h>
-//#include <linux/limits.h>
-#include <time.h>
 #include <locale.h>
-#include <langinfo.h>
-#include <signal.h>
 #include <errno.h>
 #include <libusb-1.0/libusb.h>
 
 #include "config.h"
-#include "usb_id.h"
 #include "opendevice.h"
 #include "lib-host/can.h"
 #include "lib-host/can-tcp.h"
@@ -54,14 +45,13 @@ static const char *gregs[] = {
 	"SS"
 };
 
-char *progname;
-char *serial;
-char *usb_parm;
-char *baudrate;
-char *logfile = NULL;
-char *scriptfile = NULL;
-
-libusb_device_handle *udhandle = NULL;
+static char *progname;
+static char *serial;
+static char *usb_parm;
+static char *baudrate;
+static char *logfile = NULL;
+static char *scriptfile = NULL;
+static libusb_device_handle *udhandle = NULL;
 
 
 static char *optstring = "hdv::S:U:b:p:l:s:D:";
