@@ -25,9 +25,7 @@ static void init(void)
 {
 	// Initiate TWI Master Interface
 	if (!TWIM_Init())
-	{
 		while (1);
-	}
 
 	ds1631_init(I2C_ADRESSE_DS1631);
 
@@ -54,8 +52,7 @@ int main(void)
 
 	init(); //system initialization
 
-	while (1)
-	{
+	while (1) {
 		can_handler();
 //		temp_regler();
 		if (tickscounter > 9) {
@@ -70,4 +67,3 @@ int main(void)
 		wdt_reset();
 	}
 }
-
