@@ -2,9 +2,9 @@ PRG            = bootloader
 SRC            = canboot_lib/bootloader.c canboot_lib/util.c canboot_lib/can.c canboot_lib/main.c $(USER_SRC)
 OPTIMIZE      ?= -Os -fshort-enums -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args -fno-tree-loop-optimize -fno-move-loop-invariants
 
-FLASHCMD       = avrdude -p $(MCU_TARGET) -c usbasp -V -U bootloader.hex
-FUSECMD        = avrdude -p $(MCU_TARGET) -c usbasp -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m -U efuse:w:$(EFUSE):m
-LOCKCMD        = avrdude -p $(MCU_TARGET) -c usbasp -U lock:w:$(LOCKBYTE):m
+FLASHCMD       = avrdude -p $(MCU_TARGET) -V -U bootloader.hex
+FUSECMD        = avrdude -p $(MCU_TARGET) -U hfuse:w:$(HFUSE):m -U lfuse:w:$(LFUSE):m -U efuse:w:$(EFUSE):m
+LOCKCMD        = avrdude -p $(MCU_TARGET) -U lock:w:$(LOCKBYTE):m
 
 LIBS           =
 
