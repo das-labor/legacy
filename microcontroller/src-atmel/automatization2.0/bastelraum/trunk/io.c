@@ -22,8 +22,8 @@ static struct t_pwm_parameter
 
 static uint8_t sreg = 0;
 
-#define HOLD_THRESHOLD 26
-#define CLICK_THRESHOLD 0
+#define HOLD_THRESHOLD 50
+#define CLICK_THRESHOLD 2
 
 /*
   -
@@ -179,4 +179,3 @@ void switch_handler()
 	}
 	last_held = held;
 }
-

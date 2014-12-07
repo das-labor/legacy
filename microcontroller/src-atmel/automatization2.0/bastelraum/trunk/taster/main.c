@@ -18,7 +18,7 @@ static void init(void)
 {
 	ACSR = _BV(ACD); // Disable Analog Comparator (power save)
 
-	TCCR0 = _BV(CS02); // clk / 256 - 125000
+	TCCR0 = _BV(CS02); // clk / 256 - 125000 
 	TIMSK = _BV(TOIE0);
 
 	uart_init();
@@ -36,7 +36,7 @@ int main(void)
 	while (1)
 	{
 		uart_handler();
-		if (tickscounter > 10)
+		if (tickscounter > 6) // 20 mal pro sec
 		{
 			tickscounter = 0;
 			input_handler();
@@ -44,4 +44,3 @@ int main(void)
 		wdt_reset();
 	}
 }
-
