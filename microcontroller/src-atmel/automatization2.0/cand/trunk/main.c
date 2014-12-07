@@ -17,11 +17,11 @@
 
 
 #ifndef max
- #define max(a,b) (((a) > (b)) ? (a) : (b))
+	#define max(a,b) (((a) > (b)) ? (a) : (b))
 #endif
 
 #define QUIT_EARLY(msg) \
-    do { perror(msg); exit(EXIT_FAILURE); } while (0)
+	do { perror(msg); exit(EXIT_FAILURE); } while (0)
 
 static const char *gregs[] = {
 	"GS",
@@ -133,9 +133,7 @@ static void customscripts(rs232can_msg *msg)
 	dec_msg.port_dst = (uint8_t) (((in_msg->id >> 16) & 0x0f) | ((in_msg->id >> 17) & 0x30));
 	dec_msg.dlc = in_msg->dlc;
 	for (i = 0; i < dec_msg.dlc; i++)
-	{
 		dec_msg.data[i] = in_msg->data[i];
-	}
 
 	// logging to file - 'logfile' is global
 
@@ -260,13 +258,10 @@ static void customscripts(rs232can_msg *msg)
 static void msg_to_clients(rs232can_msg *msg)
 {
 	cann_conn_t *ac;
-	if (msg->cmd == RS232CAN_PKT)
-		customscripts(msg);
 
 	// foreach client
 	ac = cann_conns_head;
 	while (ac) {
-//XXX		if ( cann_match_filter(ac, msg) )
 		cann_transmit(ac, msg);		//send to each client on the network
 		ac = ac->next;
 	}
@@ -292,7 +287,7 @@ static void sprint_atmega8_resetcause(char *buf, unsigned char reset_flags)
 }
 
 
-static void process_msg(rs232can_msg *msg)
+static void process_msg_from_gateway(rs232can_msg *msg)
 {
 	char buf[sizeof(RESETCAUSE_PORF_STR) + sizeof(RESETCAUSE_EXTRF_STR) + sizeof(RESETCAUSE_BORF_STR) + sizeof(RESETCAUSE_WDRF_STR)];
 
@@ -300,6 +295,7 @@ static void process_msg(rs232can_msg *msg)
 	{
 		case RS232CAN_PKT:
 			msg_to_clients(msg);
+			customscripts(msg);
 			break;
 		case RS232CAN_ERROR:
 			debug(0, "GATEWAY: error");
@@ -354,7 +350,9 @@ static void process_uart_msg(void)
 	}
 
 	debug(8, "Processing message from uart..." );
-	process_msg(msg);
+	if (debug_level >= 3)
+		hexdump((void *) msg, msg->len + 2);
+	process_msg_from_gateway(msg);
 	canu_free(msg);
 	debug(8, "...processing done.");
 }
@@ -385,14 +383,13 @@ static void process_client_msg(cann_conn_t *client)
 	if (debug_level >= 3)
 		hexdump((void *) msg, msg->len + 2);
 
-	customscripts(msg);
-
 	switch (msg->cmd) {
 		case RS232CAN_SETFILTER:
 		case RS232CAN_SETMODE:
 			/* XXX */
 			break;
 		case RS232CAN_PKT:
+			customscripts(msg);//log / run scripts
 			// to UART
 			if (serial)
 				canu_transmit(msg);	//send to client on the can
@@ -457,7 +454,7 @@ static void poll_usb()
 
 		while ((p < r) && ((p + packetBuffer[p + 1] + 2) <= r)) {
 			debug(11, "p=%x\n", p);
-			process_msg((rs232can_msg *) &packetBuffer[p]);
+			process_msg_from_gateway((rs232can_msg *) &packetBuffer[p]);
 
 			p += packetBuffer[p + 1] + 2;
 		}
