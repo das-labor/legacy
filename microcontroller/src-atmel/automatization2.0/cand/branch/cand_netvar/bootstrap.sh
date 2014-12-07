@@ -2,6 +2,6 @@
 
 aclocal
 automake -a -c -f
-autoconf 
+autoconf
 ./configure
 make
