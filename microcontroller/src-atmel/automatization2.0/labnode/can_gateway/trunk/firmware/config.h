@@ -1,8 +1,26 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// util.[ch] defines
-// #define F_CPU 16000000         // Oszillator-Frequenz in Hz
+
+//firmware version defines
+#define FW_VERSION_MAJOR 1
+#define FW_VERSION_MINOR 1
+
+//firmware svn revision is set via -D compiler option
+#ifndef FW_SVNREVISION
+	#define FW_SVNREVISION 0
+#endif
+
+//firmware id string is set via -D compiler option
+#ifndef FW_IDSTRING
+	#define FW_IDSTRING "unknown"
+#endif
+
+
+//#define BUSPOWER_SWITCH
+//#define POWER_MEASUREMENT
+//#define LED_SUPPORT
+//#define LED_SUPPORT_MCP
 
 // uart.[ch] defines
 #define UART_INTERRUPT
@@ -34,7 +52,6 @@
 //#define CAN_INTERRUPT		//set this to enable interrupt driven and buffering version
 #define CAN_RX_BUFFER_SIZE 8	//only used for Interrupt
 #define CAN_TX_BUFFER_SIZE 8	//only used for Interrupt
-
 
 #define   ENABLE_CAN_INT()    GICR |= _BV(INT2)
 #define   DISABLE_CAN_INT()   GICR &= ~_BV(INT2)

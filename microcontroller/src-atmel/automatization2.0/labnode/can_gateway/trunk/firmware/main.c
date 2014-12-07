@@ -7,7 +7,7 @@
 #include "config.h"
 #include "canlib/spi.h"
 #include "canlib/can.h"
-
+#include "canlib/mcp2510regs.h"
 #include "uart/uart.h"
 #include "usbdrv/usbdrv.h"
 #include "requests.h"
