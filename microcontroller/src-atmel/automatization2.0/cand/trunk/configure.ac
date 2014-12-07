@@ -4,14 +4,11 @@
 AC_PREREQ([2.63])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
 AM_INIT_AUTOMAKE
-#AC_CONFIG_SRCDIR([uart-host.h])
-
 
 AC_PROG_CC
 AC_PROG_MAKE_SET
 
 # Checks for libraries.
-#AC_CHECK_LIB(usb,usb_control_msg)
 AC_CHECK_LIB([usb-1.0],[main])
 AC_CHECK_HEADERS([libusb-1.0/libusb.h],[],[AC_MSG_ERROR([Missing a required header, please install it])])
 

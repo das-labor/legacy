@@ -29,7 +29,7 @@ static unsigned int is_interesting(libusb_device *device) {
 		return 0;
 }
 
-libusb_device_handle *usbGetDeviceHandle(int usb_param) {
+libusb_device_handle *usbGetDeviceHandle(unsigned int usb_param) {
 	libusb_device **list, **listMatch;
 	libusb_device_handle *handle = NULL;
 	int err = 0;
