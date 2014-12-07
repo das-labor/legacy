@@ -89,6 +89,9 @@ static uint8_t ctrl_reg = 0;
 //schedule counters
 static uint16_t adc_last_schedule_time, autoreport_last_schedule_time;
 
+// reset cause
+static uint8_t reset_cause = 0;
+
 //commands
 typedef enum
 {
@@ -133,7 +136,7 @@ static uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char *buf, uint8_t le
 	for (i = 0; i < len; i++)
 	{
 		crc = _crc16_update(crc, *buf);
-		uart_putc( *buf++);
+		uart_putc(*buf++);
 	}
 
 	return crc;
@@ -141,7 +144,7 @@ static uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char *buf, uint8_t le
 
 static void write_can_message_to_uart(can_message *cmsg)
 {
-	uint8_t len = sizeof(can_message) + cmsg->dlc - 8;//actual size of can message
+	uint8_t len = sizeof(can_message) + cmsg->dlc - 8; // actual size of can message
 	uint16_t crc;
 
 	crc = _crc16_update(0, RS232CAN_PKT);
@@ -150,7 +153,7 @@ static void write_can_message_to_uart(can_message *cmsg)
 	uart_putc(RS232CAN_PKT);  //command
 	uart_putc(len);           //length
 
-	crc = write_buffer_to_uart_and_crc(crc, (char*)cmsg, len); //data
+	crc = write_buffer_to_uart_and_crc(crc, (char *) cmsg, len); //data
 
 	uart_putc(crc >> 8);      //crc16
 	uart_putc(crc & 0xFF);
@@ -260,7 +263,7 @@ void canu_reset(void)
 {
 	unsigned char i;
 	for (i = sizeof(rs232can_msg) + 2; i > 0; i--)
-		uart_putc( (char) 0x00 );
+		uart_putc('\0');
 }
 
 
@@ -270,6 +273,9 @@ void process_cantun_msg(rs232can_msg *msg)
 
 	switch (msg->cmd)
 	{
+		case RS232CAN_RESET:
+			wdt_enable(WDTO_15MS);
+			while (1);
 		case RS232CAN_SETFILTER:
 			break;
 		case RS232CAN_SETMODE:
@@ -314,8 +320,7 @@ void process_cantun_msg(rs232can_msg *msg)
 			write_cmd_to_uart(RS232CAN_WRITE_CTRL_REG, (char *) &ctrl_reg, sizeof(ctrl_reg));
 			break;
 		case RS232CAN_GET_RESETCAUSE:
-			msg->data[0] = REG_RESETCAUSE & MSK_RESETCAUSE;
-			write_cmd_to_uart(RS232CAN_GET_RESETCAUSE, (char*) &msg->data[0], 1);
+			write_cmd_to_uart(RS232CAN_GET_RESETCAUSE, (char *) &reset_cause, 1);
 			break;
 		default:
 			write_cmd_to_uart(RS232CAN_ERROR, 0, 0);  //send error
@@ -544,17 +549,21 @@ void syscontrol(uint8_t ctrl_reg_new)
 		buspower(ctrl_reg_new & _BV(FLAG_BUSPOWER));
 #endif // BUSPOWER_SWITCH
 	if (ctrl_reg_new & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS)))
-	{
 		autoreport_last_schedule_time = 0;
-	}
 
 	if (changes)
 		ctrl_reg = ctrl_reg_new;
 }
 
+can_message test = {0xffffffff, 8, {1,2,3,4,5,6,7,8}};
 
 int main(void)
 {
+	// get reset cause
+	reset_cause = REG_RESETCAUSE & MSK_RESETCAUSE;
+	// after read reset MCU Control and Status Register Flags else reset cause get unclear
+	REG_RESETCAUSE = 0;
+
 #if defined(LED_SUPPORT) || defined(LED_SUPPORT_MCP)
 	static uint16_t leds, leds_old;
 #endif // LED_SUPPORT
@@ -563,8 +572,7 @@ int main(void)
 	sys_init();
 
 	//notify host that we had a reset
-	adc_last_schedule_time = REG_RESETCAUSE & MSK_RESETCAUSE;
-	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, (char *) &adc_last_schedule_time, 1);
+	write_cmd_to_uart(RS232CAN_NOTIFY_RESET, (char *) &reset_cause, 1);
 
 	//store system counter
 	adc_last_schedule_time = autoreport_last_schedule_time = sys_ticks;
@@ -593,6 +601,7 @@ int main(void)
 			pkt_cnt.tx_count ++;
 			pkt_cnt.tx_size += cmsg->dlc;
 			write_can_message_to_uart(cmsg);
+			//write_can_message_to_uart(&test);
 			can_free(cmsg);
 		}
 
@@ -604,22 +613,24 @@ int main(void)
 			leds_old = leds;
 #ifdef LED_SUPPORT_MCP
 			mcp_setled(0, leds & 1);
+#elif LED_SUPPORT_LABNODE
+			PORT_LED ^= (1 << BIT_LED);
 #else
 			led_set(leds);
-#endif // LED_SUPPORT
+#endif // LED_SUPPORT_MCP
 		}
 #endif // LED_SUPPORT
 #ifdef POWER_MEASUREMENT
-		//schedule adc measurements, approx. twice a second
-		//the timer frequency is approx. 61Hz @ 16MHz cpu. freq
-		//so our delta should be around SYS_TICK_FREQ/2
+		// schedule adc measurements, approx. twice a second
+		// the timer frequency is approx. 61Hz @ 16MHz cpu. freq
+		// so our delta should be around SYS_TICK_FREQ / 2
 		if ((sys_ticks - adc_last_schedule_time) > (SYS_TICK_FREQ / 2))
 		{
 			adc_last_schedule_time = sys_ticks;
 			ADC_START();
 		}
 #endif // POWER_MEASUREMENT
-		//schedule autoreport functions approx once a second
+		// schedule autoreport functions approx once a second
 		if ((ctrl_reg & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS))) > 0 && (sys_ticks - autoreport_last_schedule_time) > (SYS_TICK_FREQ))
 		{
 			autoreport_last_schedule_time = sys_ticks;
@@ -632,8 +643,6 @@ int main(void)
 #endif // POWER_MEASUREMENT
 		}
 	}
-
-	return 0;
 }
 
 //early watchdog disable function
