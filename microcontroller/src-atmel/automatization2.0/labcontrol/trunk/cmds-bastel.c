@@ -48,7 +48,7 @@ void cmd_bastel_help() {
 	printf("im folgendem sind alle Klassen mit (C) , alle Objekte mit (O) und alle Funktionen mit (F) markiert\n\n");
 	printf("es findet keine logische ueberpruefung statt... d.h. man kann das auch falsch zusammenstellen, also bitte die eigene logik ueberpruefen. Es macht beispielsweise keinen Sinn die Klasse PWMs auszuwaehlen und dann ein Switchobjekt zu definiern und dieses am ende setzen zu wollen auf einen wert von 0xff oder so.\n\n");
 	printf("Was aber geht ist in etwa folgendes: alle switche haben ein, aus, status; alle pwms haben set, get; virtuelle Objekte sind eigenstaendig definiert\n\n");
-	
+
 	for (i = 0; strcmp(nametovalue2[i].name, "NDEF") !=0; i++) {
 		printf("%s \t%s\n", nametovalue2[i].name, nametovalue2[i].desc);
 	}
@@ -64,13 +64,12 @@ void cmd_bastel_help() {
 	printf("");
 }
 void cmd_bastel(int argc, char **argv) {
-	char *arg = argv[1];
 	
 	pdo_message *msg;
 
 	int i = 0;
 	int k = 0;
-	
+
 	if (argc == 4) {
 		msg = (pdo_message *)can_buffer_get();
 		msg->addr_src = BASTELCMD_SENDER_ADDR;
@@ -109,7 +108,7 @@ void cmd_bastel(int argc, char **argv) {
 			cmd_bastel_help();
 			return;
 		}
-		
+
 		can_transmit((can_message*)msg);
 	} else {
 		cmd_bastel_help();

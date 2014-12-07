@@ -48,26 +48,26 @@ typedef struct {
 } cmd_t;
 
 cmd_t cmds[] = {
-  { &cmd_loopback,   "loopback", "loopback [0|1]", "Enable/disable loopback mode" },
-  { &cmd_test, "test", "test <subcommand>", "Test commands" },
-  { &cmd_packet, "packet", "packet <src> <dst> <data>", "Send arbitrary packets" },
-  { &cmd_dump,   "dump", "dump", "Packet dump from CAN bus" },
-  { &cmd_reset,  "reset", "reset <addr>", "Send reset to <addr>" },
-  { &cmd_ping,   "ping", "ping <addr>", "Send ping to <addr>" },
-  { &cmd_flash,  "flash", "flash <addr> <file>" ,"flash file to device"},
-  { &cmd_lamp,  "lamp", "lamp <addr> <lamp> <value>" ,"set lamp on device to value"},
-  { &cmd_borg,  "borg", "borg <subcommand>" ,"control bord device"},
-  { &cmd_mood,  "mood", "mood <subcommand>" ,"control mood device"},
-  { &cmd_cansole, "cansole", "cansole <addr> <chan> <subchannel>", "connect to cansole at given address, channel and subchannel" },
-  { &cmd_musicd, "musicd", "musicd", "starts a music control daemon in foreground" },
-  { &cmd_treppenblink, "treppenblink", "treppenblink", "mode des treppenblinks" },
-  { &cmd_canir, "canir", "canir", "control thinks supposed to accept ir-commands only via can" },
-  { &cmd_powercommander, "powercommander", "powercommander", "powercommander class object function value ... wiki->Powercommander" },
-  { &cmd_cantemp, "cantemp", "cantemp", "Temperatur fuer Sensor" },
-  { &cmd_bastel, "bastelcmd", "bastelcmd", "bastelcontrol class object function value ... wiki->Bastelraum" },
-  { &cmd_canpowermeter, "powermeter", "powermeter", "Energieverbrauch des Labors" },
-  { &cmd_gateway, "gw", "gw <subcommand>", "CAN-Gateway Control (ping currently)" },
-  { NULL, NULL, NULL, NULL }
+	{ &cmd_loopback,	 "loopback", "loopback [0|1]", "Enable/disable loopback mode" },
+	{ &cmd_test, "test", "test <subcommand>", "Test commands" },
+	{ &cmd_packet, "packet", "packet <src> <dst> <data>", "Send arbitrary packets" },
+	{ &cmd_dump,	 "dump", "dump", "Packet dump from CAN bus" },
+	{ &cmd_reset,	"reset", "reset <addr>", "Send reset to <addr>" },
+	{ &cmd_ping,	 "ping", "ping <addr>", "Send ping to <addr>" },
+	{ &cmd_flash,	"flash", "flash <addr> <file>" ,"flash file to device"},
+	{ &cmd_lamp,	"lamp", "lamp <addr> <lamp> <value>" ,"set lamp on device to value"},
+	{ &cmd_borg,	"borg", "borg <subcommand>" ,"control bord device"},
+	{ &cmd_mood,	"mood", "mood <subcommand>" ,"control mood device"},
+	{ &cmd_cansole, "cansole", "cansole <addr> <chan> <subchannel>", "connect to cansole at given address, channel and subchannel" },
+	{ &cmd_musicd, "musicd", "musicd", "starts a music control daemon in foreground" },
+	{ &cmd_treppenblink, "treppenblink", "treppenblink", "mode des treppenblinks" },
+	{ &cmd_canir, "canir", "canir", "control thinks supposed to accept ir-commands only via can" },
+	{ &cmd_powercommander, "powercommander", "powercommander", "powercommander class object function value ... wiki->Powercommander" },
+	{ &cmd_cantemp, "cantemp", "cantemp", "Temperatur fuer Sensor" },
+	{ &cmd_bastel, "bastelcmd", "bastelcmd", "bastelcontrol class object function value ... wiki->Bastelraum" },
+	{ &cmd_canpowermeter, "powermeter", "powermeter", "Energieverbrauch des Labors" },
+	{ &cmd_gateway, "gw", "gw <subcommand>", "CAN-Gateway Control (ping currently)" },
+	{ NULL, NULL, NULL, NULL }
 };
 
 
@@ -76,12 +76,13 @@ static char *progname;
 static char *optstring = "hv::S:s:p:";
 struct option longopts[] =
 {
-  { "help", no_argument, NULL, 'h' },
-  { "verbose", optional_argument, NULL, 'v' },
-  { "server", required_argument, NULL, 's' },
-  { "serial", required_argument, NULL, 'S' },
-  { "port", required_argument, NULL, 'p' },
-  { NULL, 0, NULL, 0 }
+	{ "help", no_argument, NULL, 'h' },
+	{ "verbose", optional_argument, NULL, 'v' },
+	{ "server", required_argument, NULL, 's' },
+	{ "serial", required_argument, NULL, 'S' },
+	{ "baudrate", required_argument, NULL, 'b' },
+	{ "port", required_argument, NULL, 'p' },
+	{ NULL, 0, NULL, 0 }
 };
 
 
@@ -92,16 +93,16 @@ void help()
 	printf("\nUsage: %s [OPTIONS] <COMMAND>\n", progname);
 	printf("\n\
 Options:\n\n\
-   -h, --help              display this help and exit\n\
-   -v, --verbose           be more verbose and display a CAN packet dump\n\
-   -s, --server HOST       use specified server (default: localhost)\n\
-   -p, --port PORT         use specified TCP/IP port (default: 2342)\n\
-   -S, --serial PORT       use specified serial port\n\n\
+	 -h, --help							display this help and exit\n\
+	 -v, --verbose					 be more verbose and display a CAN packet dump\n\
+	 -s, --server HOST			 use specified server (default: localhost)\n\
+	 -p, --port PORT				 use specified TCP/IP port (default: 2342)\n\
+	 -S, --serial PORT			 use specified serial port\n\n\
 Commands:\n\n" );
 
 	ncmd = cmds;
 	while(ncmd->fkt) {
-		printf( "   %-30s %s\n", ncmd->sig, ncmd->desc );
+		printf( "	 %-30s %s\n", ncmd->sig, ncmd->desc );
 		ncmd++;
 	}
 	printf( "\n" );
@@ -112,18 +113,17 @@ Commands:\n\n" );
  */
 int main(int argc, char *argv[])
 {
-	char *tcpport  = "2342";         // TCP Port
+	char *tcpport	= "2342";				 // TCP Port
 	char *server = "localhost";
 	char *serial = NULL;
+	char *baud = NULL;
 	int optc;
 
 	progname = argv[0];
 	int option_index = 0;
 
-	while ((optc = getopt_long(argc, argv, optstring, longopts, &option_index)) != EOF)
-	{
-		switch (optc)
-		{
+	while ((optc = getopt_long(argc, argv, optstring, longopts, &option_index)) != EOF) {
+		switch (optc) {
 			case 'v':
 				if (optarg)
 					debug_level = atoi(optarg);
@@ -132,6 +132,9 @@ int main(int argc, char *argv[])
 				break;
 			case 'S':
 				serial = optarg;
+				break;
+			case 'b':
+				baud = optarg;
 				break;
 			case 's':
 				server = optarg;
@@ -165,7 +168,7 @@ int main(int argc, char *argv[])
 			//connect only if a valid command has been detected
 			if (serial) {
 				debug(1, "Trying to establish CAN communication via serial %s", serial);
-				canu_init(serial);
+				canu_init(serial, baud);
 				can_init_posix(NULL);		// use serial
 			} else {
 				debug(1, "Trying to establish CAN communication via cand (%s:%s)", server, tcpport);
