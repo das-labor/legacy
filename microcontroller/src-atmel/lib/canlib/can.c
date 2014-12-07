@@ -287,7 +287,15 @@ uint8_t mcp_read(uint8_t reg)
 	SET_CS();
 	return d;
 }
-
+#ifdef OPTIMISED_LAP
+static void lap_to_packet(can_message_x *msg, uint8_t *mcp_format)
+{
+	mcp_format[0] = ((uint8_t) (msg->msg.port_src << 2)) | (msg->msg.port_dst >> 4);
+	mcp_format[0] = ((msg->msg.port_dst & 0x0C) << 3) | (1 << EXIDE) | (msg->msg.port_dst & 0x03);
+	mcp_format[0] = msg->msg.addr_src;
+	mcp_format[0] = msg->msg.addr_dst;
+}
+#endif // OPTIMISED_LAP
 
 /* Management */
 void mcp_setmode(uint8_t mode)
@@ -306,7 +314,7 @@ static void mcp_setfilter(void)
 	//  0      1     " only 11bit Identifier
 	//  1      0     " only 29bit Identifier
 	//  1      1     any
-	mcp_write(RXB0CTRL, (1 << RXM1) | (1 << RXM0));
+	mcp_write(RXB0CTRL, (1 << RXM1) | (1 << RXM0)); //  | (1 << BUKT) XXX use both rx buffers
 }
 
 void mcp_setled(uint8_t led, uint8_t state)
@@ -493,7 +501,7 @@ can_message *can_get_nb()
 	{
 		uint8_t status = mcp_status();
 
-		if (status & 0x01)
+		if (status & 0x01) // switch XXX dual rx buffers
 		{
 			//So the MCP Generates an RX Interrupt
 			message_fetch(&rx_message);
