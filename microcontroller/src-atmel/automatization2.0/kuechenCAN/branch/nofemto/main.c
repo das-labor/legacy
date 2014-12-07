@@ -1,6 +1,6 @@
 #include <avr/io.h>
-#include <avr/wdt.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
 
 #include "config.h"
 #include "twi_master/twi_master.h"
@@ -35,7 +35,7 @@ static void init(void)
 		while (1);
 	}
 
-	ds1631_init(I2C_ADRESSE_DS1631); // Init twi Tempearture Sensor
+	ds1631_init(I2C_ADRESSE_DS1631); // Init twi Temperature Sensor
 
 	spi_init(); // initialize spi port
 	can_read_addr();

@@ -22,6 +22,8 @@
 #define F_MCP F_CPU
 #define MCP2510
 
+#define OPTIMISED_LAP
+
 #define NO_NETVAR
 //#define NEW_PROTO
 
