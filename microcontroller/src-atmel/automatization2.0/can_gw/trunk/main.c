@@ -58,8 +58,8 @@
 //our own control "register" bit flags
 #define FLAG_AUTOREPORT_PSTATS		0
 #define FLAG_AUTOREPORT_POWERDRAW	1
-#define FLAG_BUSPOWER				2
-#define FLAG_RESET					7
+#define FLAG_BUSPOWER			2
+#define FLAG_RESET			7
 
 //hacky import of read function
 extern unsigned char mcp_read(unsigned char reg);
@@ -93,8 +93,7 @@ static uint16_t adc_last_schedule_time, autoreport_last_schedule_time;
 static uint8_t reset_cause = 0;
 
 //commands
-typedef enum
-{
+typedef enum {
 	RS232CAN_RESET=0x00,
 	RS232CAN_SETFILTER=0x10,
 	RS232CAN_PKT=0x11,
@@ -133,8 +132,7 @@ static uint16_t write_buffer_to_uart_and_crc(uint16_t crc, char *buf, uint8_t le
 {
 	uint8_t i;
 
-	for (i = 0; i < len; i++)
-	{
+	for (i = 0; i < len; i++) {
 		crc = _crc16_update(crc, *buf);
 		uart_putc(*buf++);
 	}
@@ -190,10 +188,10 @@ static void write_cmd_to_uart(uint8_t cmd, char *buf, uint8_t len)
 
 typedef enum {STATE_START, STATE_LEN, STATE_PAYLOAD, STATE_CRC} canu_rcvstate_t;
 
-rs232can_msg	canu_rcvpkt;
-canu_rcvstate_t	canu_rcvstate = STATE_START;
-unsigned char	canu_rcvlen   = 0;
-unsigned char	canu_failcnt  = 0;
+static rs232can_msg	canu_rcvpkt;
+static canu_rcvstate_t	canu_rcvstate = STATE_START;
+static unsigned char	canu_rcvlen   = 0;
+static unsigned char	canu_failcnt  = 0;
 
 static rs232can_msg *canu_get_nb(void)
 {
@@ -201,16 +199,13 @@ static rs232can_msg *canu_get_nb(void)
 	static uint16_t crc, crc_in;
 	unsigned char c;
 
-	while (uart_getc_nb((char *) &c))
-	{
+	while (uart_getc_nb((char *) &c)) {
 		#ifdef DEBUG
 		printf("canu_get_nb received: %02x\n", c);
 		#endif
-		switch (canu_rcvstate)
-		{
+		switch (canu_rcvstate) {
 			case STATE_START:
-				if (c)
-				{
+				if (c) {
 					canu_rcvstate = STATE_LEN;
 					canu_rcvpkt.cmd = c;
 					crc = _crc16_update(0, c);
@@ -219,8 +214,7 @@ static rs232can_msg *canu_get_nb(void)
 				break;
 			case STATE_LEN:
 				canu_rcvlen       = c;
-				if (canu_rcvlen > RS232CAN_MAXLENGTH)
-				{
+				if (canu_rcvlen > RS232CAN_MAXLENGTH) {
 					canu_rcvstate = STATE_START;
 					break;
 				}
@@ -230,21 +224,17 @@ static rs232can_msg *canu_get_nb(void)
 				crc = _crc16_update(crc, c);
 				break;
 			case STATE_PAYLOAD:
-				if (canu_rcvlen--)
-				{
+				if (canu_rcvlen--) {
 					*(uartpkt_data++) = c;
 					crc = _crc16_update(crc, c);
-				}
-				else
-				{
+				} else {
 					canu_rcvstate = STATE_CRC;
 					crc_in = c;
 				}
 				break;
 			case STATE_CRC:
 				canu_rcvstate = STATE_START;
-				if (crc == ((crc_in << 8) | c))
-				{
+				if (crc == ((crc_in << 8) | c)) {
 					canu_failcnt = 0;
 					return &canu_rcvpkt;
 				}
@@ -259,7 +249,7 @@ static rs232can_msg *canu_get_nb(void)
 /*****************************************************************************/
 
 // synchronize line
-void canu_reset(void)
+static void canu_reset(void)
 {
 	unsigned char i;
 	for (i = sizeof(rs232can_msg) + 2; i > 0; i--)
@@ -267,12 +257,11 @@ void canu_reset(void)
 }
 
 
-void process_cantun_msg(rs232can_msg *msg)
+static void process_cantun_msg(rs232can_msg *msg)
 {
 	can_message *cmsg;
 
-	switch (msg->cmd)
-	{
+	switch (msg->cmd) {
 		case RS232CAN_RESET:
 			wdt_enable(WDTO_15MS);
 			while (1);
@@ -331,13 +320,10 @@ void process_cantun_msg(rs232can_msg *msg)
 #ifdef BUSPOWER_SWITCH
 static void buspower(uint8_t on)
 {
-	if (on)
-	{
+	if (on) {
 		DDR_BUSPOWER |= (1<<BIT_BUSPOWER);
 		PORT_BUSPOWER |= (1<<BIT_BUSPOWER);
-	}
-	else
-	{
+	} else {
 		DDR_BUSPOWER &= ~(1<<BIT_BUSPOWER);
 		PORT_BUSPOWER &= ~(1<<BIT_BUSPOWER);
 	}
@@ -355,15 +341,11 @@ static void led_init()
 static void led_set(unsigned int stat)
 {
 	unsigned char x;
-	for (x = 0; x < 16; x++)
-	{
+	for (x = 0; x < 16; x++) {
 		if (stat & 0x01)
-		{
 			PORT_LEDS |= (1<<PIN_LEDD);
-		} else
-		{
+		else
 			PORT_LEDS &= ~(1<<PIN_LEDD);
-		}
 		stat >>= 1;
 		PORT_LEDS |= (1<<PIN_LEDCK);
 		PORT_LEDS &= ~(1<<PIN_LEDCK);
@@ -441,8 +423,7 @@ static void adc_calibrate(void)
 //adc interrupt to switch channels
 ISR(ADC_vect)
 {
-	switch (adc_state)
-	{
+	switch (adc_state) {
 		case CH_BUSVOLTAGE:
 			bus_pwr.v = ADC;
 			adc_state = CH_BUSCURRENT;
@@ -535,12 +516,11 @@ static void sys_init(void)
 }
 
 
-void syscontrol(uint8_t ctrl_reg_new)
+static void syscontrol(uint8_t ctrl_reg_new)
 {
 	uint8_t changes = ctrl_reg_new ^ ctrl_reg;
 
-	if (ctrl_reg_new & _BV(FLAG_RESET))
-	{
+	if (ctrl_reg_new & _BV(FLAG_RESET)) {
 		wdt_enable(WDTO_15MS);
 		while (23);
 	}
@@ -576,8 +556,7 @@ int main(void)
 
 	//store system counter
 	adc_last_schedule_time = autoreport_last_schedule_time = sys_ticks;
-	while (1)
-	{
+	while (1) {
 		rs232can_msg *rmsg;
 		can_message *cmsg;
 
@@ -587,8 +566,7 @@ int main(void)
 		rmsg = canu_get_nb();
 		if (rmsg)
 			process_cantun_msg(rmsg);
-		else if (canu_failcnt > 1)
-		{
+		else if (canu_failcnt > 1) {
 			canu_reset();
 			write_cmd_to_uart(RS232CAN_RESYNC, 0, 0);
 			canu_failcnt = 0;
@@ -596,8 +574,7 @@ int main(void)
 
 		//transmission from can to host
 		cmsg = can_get_nb();
-		if (cmsg)
-		{
+		if (cmsg) {
 			pkt_cnt.tx_count ++;
 			pkt_cnt.tx_size += cmsg->dlc;
 			write_can_message_to_uart(cmsg);
@@ -608,8 +585,7 @@ int main(void)
 #if defined(LED_SUPPORT) || defined(LED_SUPPORT_MCP)
 		//update leds
 		leds = (pkt_cnt.rx_count << 8) | pkt_cnt.tx_count;
-		if (leds != leds_old)
-		{
+		if (leds != leds_old) {
 			leds_old = leds;
 #ifdef LED_SUPPORT_MCP
 			mcp_setled(0, leds & 1);
@@ -624,15 +600,13 @@ int main(void)
 		// schedule adc measurements, approx. twice a second
 		// the timer frequency is approx. 61Hz @ 16MHz cpu. freq
 		// so our delta should be around SYS_TICK_FREQ / 2
-		if ((sys_ticks - adc_last_schedule_time) > (SYS_TICK_FREQ / 2))
-		{
+		if ((sys_ticks - adc_last_schedule_time) > (SYS_TICK_FREQ / 2)) {
 			adc_last_schedule_time = sys_ticks;
 			ADC_START();
 		}
 #endif // POWER_MEASUREMENT
 		// schedule autoreport functions approx once a second
-		if ((ctrl_reg & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS))) > 0 && (sys_ticks - autoreport_last_schedule_time) > (SYS_TICK_FREQ))
-		{
+		if ((ctrl_reg & (_BV(FLAG_AUTOREPORT_POWERDRAW) | _BV(FLAG_AUTOREPORT_PSTATS))) > 0 && (sys_ticks - autoreport_last_schedule_time) > (SYS_TICK_FREQ)) {
 			autoreport_last_schedule_time = sys_ticks;
 
 			if (ctrl_reg & _BV(FLAG_AUTOREPORT_PSTATS))

@@ -21,6 +21,7 @@
 #define POWER_MEASUREMENT
 #define LED_SUPPORT
 //#define LED_SUPPORT_MCP
+//#define LED_SUPPORT_LABNODE
 
 // uart.[ch] defines
 #define UART_INTERRUPT
@@ -38,9 +39,8 @@
 
 #define F_MCP 16000000UL
 
-#define MCP_CS_PORT  PORTB
 #define MCP_CS_BIT   PB2
-
+#define MCP_CS_PORT  PORTB
 
 //#define SPI_REG_PIN_MCP_INT PIND
 //#define SPI_PIN_MCP_INT     PD2
