@@ -91,3 +91,20 @@ void setDefaultAfterPoweron(void) {
 	}
 	TWIM_Stop();
 }
+
+
+static uint16_t TeufelOnCounter;
+void TeufelPoweron(void)
+{
+	TeufelOnCounter = 1;
+}
+
+void TeufelPoweronTick(void)
+{
+	if (TeufelOnCounter)
+		TeufelOnCounter++;
+	if (TeufelOnCounter > 10000) {
+		TeufelOnCounter = 0;
+		setDefaultAfterPoweron();
+	}
+}
