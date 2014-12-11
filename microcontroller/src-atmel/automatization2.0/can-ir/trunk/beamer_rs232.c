@@ -45,11 +45,13 @@ enum {
 	BLANK,
 	QUERY_LAMP_STATUS,
 	QUERY_LAMP_HOURS,
-	QUERY_VIDEO_SOURCE
+	QUERY_VIDEO_SOURCE,
+	RS232_CMD_COUNT
 } rs232_cmd;
 
 
-void read_string(char *buf, size_t i) {
+static void read_string(char *buf, size_t i)
+{
 	// Lese die Adresse des i-ten Strings aus array[]
 	//const char *parray = (const char*) pgm_read_word (&acer_cmds[i]);
 	// Kopiere den Inhalt der Zeichenkette vom Flash ins RAM
@@ -61,12 +63,12 @@ static uint8_t lamp_status = 0;
 static uint8_t last_cmd = 0;
 
 
-void rs232_send_command(uint8_t cmd) {
-	char buf[12];
+void rs232_send_command(uint8_t cmd)
+{
+	char buf[RS232_CMD_COUNT];
 
-	if (cmd < 12) {
+	if (cmd < RS232_CMD_COUNT) {
 		if (cmd == 0) {
-			//rs232_send_command(QUERY_LAMP_STATUS);
 			if (lamp_status)
 				cmd = 1;
 		}
@@ -78,7 +80,8 @@ void rs232_send_command(uint8_t cmd) {
 	}
 }
 
-void lap_send_msg(uint8_t type, uint8_t data) {
+void lap_send_msg(uint8_t type, uint8_t data)
+{
 	can_message *tx_msg = can_buffer_get();
 	tx_msg->addr_src = 0x10;
 	tx_msg->port_src = 0x05;
@@ -94,10 +97,11 @@ void lap_send_msg(uint8_t type, uint8_t data) {
  rueckgabe strings
  "Res XXXXX"
  "Lamp X" (0 / 1)
- "XXXX"
  "Src X" (0 - 7)
+ "XXXX"
 */
-static void parse_string(char *buf) {
+static void parse_string(char *buf)
+{
 	switch (buf[0]) {
 		/*case 'R':
 			if (buf[1] == 'e' && buf[2] == 's') {
@@ -126,20 +130,57 @@ static void parse_string(char *buf) {
 	}
 }
 
-void rs232_receive_handler(void) {
+void rs232_receive_handler(void)
+{
 	char c;
 	static char ret_buf[12];
 	static uint8_t i = 0;
 
 	if (uart_getc_nb(&c)) {
 		ret_buf[i++] = c;
-		if (c == '\r' || i == 12) {
+		if (c == '\r' || i == 11) {
 			i = 0;
 			parse_string(ret_buf);
 		}
 	}
 }
 
-void poll_beamer_state(void) {
+static uint8_t shutdown_progress;
 
+
+void poll_beamer_state(void)
+{
+	static uint16_t beamer_poll_delay;
+	if (beamer_poll_delay++ > 3000) {
+		rs232_send_command(QUERY_LAMP_STATUS);
+		if (shutdown_progress && !lamp_status)
+			rs232_send_command(QUERY_VIDEO_SOURCE);
+		beamer_poll_delay = 0;
+	}
+}
+
+
+void sendBeamerPowerOffMsg(void)
+{
+	can_message *tx_msg = can_buffer_get();
+	tx_msg->addr_src = 0x10;
+	tx_msg->port_src = 0x00;
+	tx_msg->addr_dst = 0x02;
+	tx_msg->port_dst = 0x01;
+	tx_msg->dlc = 3;
+	tx_msg->data[0] = 0x00; // C_SW
+	tx_msg->data[1] = 0x01; // SWA_BEAMER
+	tx_msg->data[2] = 0x23; // AUS - special value
+	can_transmit(tx_msg);
+}
+
+/* while cooling Lamp 0 + Src 0
+ * after cooling Lamp 0 + Src 1
+ */
+
+static uint8_t shutdown_progress;
+
+void start_shutdown()
+{
+	shutdown_progress = 1;
 }

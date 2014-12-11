@@ -1,6 +1,6 @@
 LAP_ADDR       = 0x10
 
-OBJ            = can-ir.o lab-irkit.o can/can.o can/spi.o uart/uart.o beamer_rs232.o twi_master/twi_master.o teufel-i2c.o
+OBJ            = main.o can-ir.o lab-irkit.o can/can.o can/spi.o uart/uart.o beamer_rs232.o twi_master/twi_master.o teufel-i2c.o
 
 # Default values
 OUT           ?= image
