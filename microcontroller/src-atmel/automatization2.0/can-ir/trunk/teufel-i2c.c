@@ -14,8 +14,8 @@
 #define ADDR_CHIP_2 0x88
 
 enum {
+	HIGH_NIBBLE,
 	LOW_NIBBLE,
-	HIGH_NIBBLE
 } e_LH_NIBBLE;
 
 #define _HL(mask) ((mask) << 4)
@@ -27,12 +27,23 @@ enum {
 	RL	= 1,
 	CEN	= 0,
 	FR	= 2,
-	FL	=	4,
-	SR	=	5,
-	SL	= 1,
+	FL	= 4,
+	SL	= 5,
+	SR	= 1,
 } e_CHANNEL;
 
-t_vol s_volume;
+#define DEFAULT_VOL 60
+
+t_channel channels[8] = {
+	{DEFAULT_VOL, _CHANNEL(RR) + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL, _CHANNEL(SUB) + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL, _CHANNEL(RL) + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL, _CHANNEL(CEN) + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL, _CHANNEL(FR) + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL, _CHANNEL(FL) + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL, _CHANNEL(SL) + _HL(HIGH_NIBBLE)},
+	{DEFAULT_VOL, _CHANNEL(SR) + _HL(HIGH_NIBBLE)},
+};
 
 static void lap_send_msg(void) {
 	can_message *tx_msg = can_buffer_get();
@@ -41,14 +52,8 @@ static void lap_send_msg(void) {
 	tx_msg->addr_dst = 0;
 	tx_msg->port_dst = 0;
 	tx_msg->dlc = 8;
-	tx_msg->data[0] = s_volume.rr;
-	tx_msg->data[1] = s_volume.sub;
-	tx_msg->data[2] = s_volume.rl;
-	tx_msg->data[3] = s_volume.cen;
-	tx_msg->data[4] = s_volume.fr;
-	tx_msg->data[5] = s_volume.fl;
-	tx_msg->data[6] = s_volume.sr;
-	tx_msg->data[7] = s_volume.sl;
+	for (uint8_t i = 0; i < 8; i++)
+		tx_msg->data[i] = channels[i].vol;
 	can_transmit(tx_msg);
 }
 
@@ -57,41 +62,31 @@ void setAllChannels(uint8_t vol)
 
 }
 
-void setSingleChannel(uint8_t channel, uint8_t vol)
+static void writeChannel(t_channel *channel)
 {
-
+	uint8_t vol = 121 - channel->vol;
+	TWIM_Write(channel->id + (vol & 0x0f));
+	TWIM_Write((channel->id ^ _HL(LOW_NIBBLE)) + ((vol >> 4) & 0x0f));
 }
 
-void writeChannel(uint8_t channel, uint8_t vol)
+void setSingleChannel(uint8_t chanID, uint8_t vol)
 {
-	TWIM_Write(channel + _HL(LOW_NIBBLE) + (vol & 0x0f));
-	TWIM_Write(channel + _HL(HIGH_NIBBLE) + ((vol >> 4) & 0x0f));
-}
-
-void setDefaultAfterPoweron(void) {
-	if (TWIM_Start(ADDR_CHIP_1 + TW_WRITE))
-	{
-		writeChannel(_CHANNEL(RR), s_volume.rr);
-		writeChannel(_CHANNEL(SUB), s_volume.sub);
-	}
-	if (TWIM_Start(ADDR_CHIP_1 + TW_WRITE))
-	{
-		writeChannel(_CHANNEL(RL), s_volume.rl);
-		writeChannel(_CHANNEL(CEN), s_volume.cen);
-	}
-	if (TWIM_Start(ADDR_CHIP_1 + TW_WRITE))
-	{
-		writeChannel(_CHANNEL(FR), s_volume.fr);
-		writeChannel(_CHANNEL(FL), s_volume.fl);
-	}
-	if (TWIM_Start(ADDR_CHIP_2 + TW_WRITE))
-	{
-		writeChannel(_CHANNEL(SR), s_volume.sr);
-		writeChannel(_CHANNEL(SL), s_volume.sl);
+	channels[chanID].vol = vol;
+	if (TWIM_Start(((chanID < 6) ? ADDR_CHIP_1 : ADDR_CHIP_2) + TW_WRITE)) {
+		writeChannel(&channels[chanID]);
 	}
 	TWIM_Stop();
 }
 
+void setDefaultAfterPoweron(void) {
+	for (uint8_t i = 0; i < 8; i += 2) {
+		if (TWIM_Start(((i < 6) ? ADDR_CHIP_1 : ADDR_CHIP_2) + TW_WRITE)) {
+			writeChannel(&channels[i]);
+			writeChannel(&channels[i + 1]);
+		}
+	}
+	TWIM_Stop();
+}
 
 static uint16_t TeufelOnCounter;
 void TeufelPoweron(void)
