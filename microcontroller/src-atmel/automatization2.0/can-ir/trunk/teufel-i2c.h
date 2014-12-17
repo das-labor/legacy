@@ -3,18 +3,14 @@
 
 #include <stdint.h>
 
+extern void setDefaultAfterPoweron(void);
+
+
 typedef struct
 {
-	uint8_t rr;
-	uint8_t sub;
-	uint8_t rl;
-	uint8_t cen;
-	uint8_t fr;
-	uint8_t fl;
-	uint8_t sl;
-	uint8_t sr;
-} t_vol;
+	uint8_t vol;
+	uint8_t id;
+} t_channel;
 
-extern void setDefaultAfterPoweron(void);
 
 #endif // _TEUFEL_I2C_H
