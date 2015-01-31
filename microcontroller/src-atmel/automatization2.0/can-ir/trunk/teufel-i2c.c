@@ -10,6 +10,14 @@
  *
  */
 
+/*
+ * pin1 schwarz: +12 an -12V aus
+ * pin2 braun:   0V GND
+ * pin3 rot:     +12V
+ * pin4 orange: scl
+ * pin5 gelb:   sda
+ */
+
 #define ADDR_CHIP_1 0x8c
 #define ADDR_CHIP_2 0x88
 
@@ -32,17 +40,17 @@ enum {
 	SR	= 1,
 } e_CHANNEL;
 
-#define DEFAULT_VOL 60
+#define DEFAULT_VOL 40
 
 t_channel channels[8] = {
-	{DEFAULT_VOL, _CHANNEL(RR) + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL, _CHANNEL(SUB) + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL, _CHANNEL(RL) + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL, _CHANNEL(CEN) + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL, _CHANNEL(FR) + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL, _CHANNEL(FL) + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL, _CHANNEL(SL) + _HL(HIGH_NIBBLE)},
-	{DEFAULT_VOL, _CHANNEL(SR) + _HL(HIGH_NIBBLE)},
+	{DEFAULT_VOL     , _CHANNEL(RR)  + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL + 15, _CHANNEL(SUB) + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL     , _CHANNEL(RL)  + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL     , _CHANNEL(CEN) + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL     , _CHANNEL(FR)  + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL     , _CHANNEL(FL)  + _HL(LOW_NIBBLE)},
+	{DEFAULT_VOL     , _CHANNEL(SL)  + _HL(HIGH_NIBBLE)},
+	{DEFAULT_VOL     , _CHANNEL(SR)  + _HL(HIGH_NIBBLE)},
 };
 
 static void lap_send_msg(void) {
@@ -59,14 +67,37 @@ static void lap_send_msg(void) {
 
 void setAllChannels(uint8_t vol)
 {
-
+	
 }
+
+/*
+ * Der Wertebereich auf dem I2C Bus geht von 0x0 bis 0x79.
+ * Dabei müssen aber Werte welche mit 0xXa -0xXf enden übersprungen werden.
+ * Werte zwischen a bis f setzen die Lautstärke auf 0.
+ * Warscheinlich ist das ein Artefakt der BCD 7 Segment Anzeige.
+ *                       /
+ *                     /
+ *               _ _ /
+ *              /|  |
+ *            /  |  |
+ *      _ _ /    |  |
+ *     /|  |     |  |
+ *   /  |  |     |  |
+ * /    |__|     |__|
+ *   10  6   10   6   10
+ *
+ */
 
 static void writeChannel(t_channel *channel)
 {
-	uint8_t vol = 121 - channel->vol;
+	uint8_t vol;
+	if (channel->vol > 79)
+		channel->vol = 79;
+		
+	vol = 121 - ((channel->vol / 10) * 16 + channel->vol % 10); // konvertierung von invertierem wert
+	
 	TWIM_Write(channel->id + (vol & 0x0f));
-	TWIM_Write((channel->id ^ _HL(LOW_NIBBLE)) + ((vol >> 4) & 0x0f));
+	TWIM_Write((channel->id ^_HL(LOW_NIBBLE)) + ((vol >> 4) & 0x0f));
 }
 
 void setSingleChannel(uint8_t chanID, uint8_t vol)
