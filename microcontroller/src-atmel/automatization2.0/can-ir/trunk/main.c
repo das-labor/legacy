@@ -13,7 +13,11 @@
 #include "teufel-i2c.h"
 
 static volatile uint8_t tickscounter;
-// XXX add counter;
+
+ISR(TIMER0_OVF_vect)
+{
+	tickscounter++;
+}
 
 static uint8_t myaddr;
 
@@ -52,10 +56,7 @@ static void can_handler(void)
 				else if (rx_msg->port_dst == PORT_REMOTE) { // 0x21
 					//switch the remote device type
 					switch (rx_msg->data[0]) {
-						//this is a message for the teufel system
-						case 0:
-							sendTeufelIR(rx_msg->data[1]);
-							break;
+						//0 was teufel ir
 						//this is a message for the acer beamer
 						case 1:
 							PORTD |= _BV(PD7); // Enable debug LED
@@ -67,6 +68,8 @@ static void can_handler(void)
 							break;
 						case 4:
 							setSingleChannel(rx_msg->data[1], rx_msg->data[2]);
+							break;
+						default:
 							break;
 					}
 				}
@@ -106,8 +109,6 @@ static void can_handler(void)
 	}
 }
 
-
-
 //system initialization
 static void init(void)
 {
@@ -118,7 +119,10 @@ static void init(void)
 	DDRD |= _BV(PD7);
 
 	// initialize ir subsystem
-	ir_init();
+//	ir_init();
+
+	TCCR0 = _BV(CS02) | _BV(CS00); // clk / 256
+	TIMSK = _BV(TOIE0);
 
 	// initialize spi port
 	spi_init();
@@ -144,7 +148,7 @@ int main(void)
 	// system initialization
 	init();
 
-	setDefaultAfterPoweron();
+	setDefaultAfterPoweron(); // teufel
 
 	// the main loop continuously handles can messages
 	while (1) {
