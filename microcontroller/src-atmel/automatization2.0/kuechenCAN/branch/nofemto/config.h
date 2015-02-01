@@ -63,7 +63,7 @@
 
 
 // TWI Adresse des Temperatursensors
-#define I2C_ADRESSE_DS1631 0x9e
+#define I2C_ADRESSE_DS1631 0x92
 
 #endif // _CONFIG_H
 
