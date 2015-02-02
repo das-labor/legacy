@@ -40,20 +40,24 @@ enum {
 	SR	= 1,
 } e_CHANNEL;
 
-#define DEFAULT_VOL 40
+#define DEFAULT_FRONT 47
+#define DEFAULT_REAR 79
+#define DEFAULT_SUB 62
+#define DEFAULT_CENTER 70
+#define DEFAULT_SIDE 0
 
 t_channel channels[8] = {
-	{DEFAULT_VOL     , _CHANNEL(RR)  + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL + 15, _CHANNEL(SUB) + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL     , _CHANNEL(RL)  + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL     , _CHANNEL(CEN) + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL     , _CHANNEL(FR)  + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL     , _CHANNEL(FL)  + _HL(LOW_NIBBLE)},
-	{DEFAULT_VOL     , _CHANNEL(SL)  + _HL(HIGH_NIBBLE)},
-	{DEFAULT_VOL     , _CHANNEL(SR)  + _HL(HIGH_NIBBLE)},
+	{DEFAULT_REAR   , _CHANNEL(RR)  + _HL(LOW_NIBBLE)},
+	{DEFAULT_SUB    , _CHANNEL(SUB) + _HL(LOW_NIBBLE)},
+	{DEFAULT_REAR   , _CHANNEL(RL)  + _HL(LOW_NIBBLE)},
+	{DEFAULT_CENTER , _CHANNEL(CEN) + _HL(LOW_NIBBLE)},
+	{DEFAULT_FRONT  , _CHANNEL(FR)  + _HL(LOW_NIBBLE)},
+	{DEFAULT_FRONT  , _CHANNEL(FL)  + _HL(LOW_NIBBLE)},
+	{DEFAULT_SIDE   , _CHANNEL(SL)  + _HL(HIGH_NIBBLE)},
+	{DEFAULT_SIDE   , _CHANNEL(SR)  + _HL(HIGH_NIBBLE)},
 };
 
-static void lap_send_msg(void) {
+extern void TeufelSendCANPacket(void) {
 	can_message *tx_msg = can_buffer_get();
 	tx_msg->addr_src = 0x10;
 	tx_msg->port_src = 0x06;
@@ -67,7 +71,10 @@ static void lap_send_msg(void) {
 
 void setAllChannels(uint8_t vol)
 {
-	
+	for(uint8_t i = 0; i < 8; i++) {
+		channels[i].vol = vol;
+	}
+	setDefaultAfterPoweron();
 }
 
 /*
@@ -117,6 +124,19 @@ void setDefaultAfterPoweron(void) {
 		}
 	}
 	TWIM_Stop();
+}
+
+void setIncrementChannels(int8_t diff) {
+	for(uint8_t i = 0; i < 8; i++) {
+		if(channels[i].vol < -diff) {
+			channels[i].vol = 0;
+		} else if((int8_t)channels[i].vol - 79 > diff) {
+			channels[i].vol = 79;
+		} else {
+			channels[i].vol += diff;
+		}
+	}
+	setDefaultAfterPoweron();
 }
 
 static uint16_t TeufelOnCounter;

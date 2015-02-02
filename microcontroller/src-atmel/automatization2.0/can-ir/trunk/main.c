@@ -65,9 +65,15 @@ static void can_handler(void)
 						// 2 was beamer IR
 						case 3:
 							setAllChannels(rx_msg->data[1]);
+							TeufelSendCANPacket();
 							break;
 						case 4:
 							setSingleChannel(rx_msg->data[1], rx_msg->data[2]);
+							TeufelSendCANPacket();
+							break;
+						case 5:
+							setIncrementChannels(rx_msg->data[2]);
+							TeufelSendCANPacket();
 							break;
 						default:
 							break;
