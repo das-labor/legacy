@@ -160,7 +160,7 @@ void poll_beamer_state(void)
 }
 
 
-void sendBeamerPowerOffMsg(void)
+static void sendBeamerPowerOffMsg(void)
 {
 	can_message *tx_msg = can_buffer_get();
 	tx_msg->addr_src = 0x10;
@@ -180,7 +180,7 @@ void sendBeamerPowerOffMsg(void)
 
 static uint8_t shutdown_progress;
 
-void start_shutdown()
+void start_shutdown(void)
 {
 	shutdown_progress = 1;
 }
