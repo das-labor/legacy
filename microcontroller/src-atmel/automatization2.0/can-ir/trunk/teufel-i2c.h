@@ -3,14 +3,16 @@
 
 #include <stdint.h>
 
-extern void setDefaultAfterPoweron(void);
-
-
 typedef struct
 {
 	uint8_t vol;
 	uint8_t id;
 } t_channel;
 
+extern void setAllChannels(uint8_t);
+static void writeChannel(t_channel *);
+extern void setDefaultAfterPoweron(void);
+extern void TeufelSendCANPacket(void);
+extern void setIncrementChannels(int8_t);
 
 #endif // _TEUFEL_I2C_H
