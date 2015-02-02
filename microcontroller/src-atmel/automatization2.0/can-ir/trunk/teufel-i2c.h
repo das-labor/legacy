@@ -8,6 +8,7 @@ extern void setAllChannels(uint8_t vol);
 extern void setSingleChannel(uint8_t chanID, uint8_t vol);
 
 extern void TeufelSendCANPacket(void);
+extern void setMute(uint8_t);
 
 extern void setDefaultAfterPoweron(void);
 extern void TeufelPoweron(void);

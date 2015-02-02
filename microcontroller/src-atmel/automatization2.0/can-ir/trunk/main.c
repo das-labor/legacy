@@ -75,6 +75,10 @@ static void can_handler(void)
 							setIncrementChannels(rx_msg->data[2]);
 							TeufelSendCANPacket();
 							break;
+						case 6:
+							setMute(rx_msg->data[1]);
+							TeufelSendCANPacket();
+							break;
 						default:
 							break;
 					}
