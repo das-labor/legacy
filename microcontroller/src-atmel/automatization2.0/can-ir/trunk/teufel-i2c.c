@@ -154,14 +154,31 @@ void setSingleChannel(uint8_t chanID, uint8_t vol)
 
 void setIncrementChannels(int8_t diff)
 {
-	for (uint8_t i = 0; i < NUM_CHANNELS; i++) {
-		if (channels[i].vol < -diff) {
+	for(uint8_t i = 0; i < NUM_CHANNELS; i++) {
+		if((int16_t)channels[i].vol + diff < 0) {
 			channels[i].vol = 0;
-		} else if ((int8_t)channels[i].vol - 79 > diff) {
+		} else if((int16_t)channels[i].vol + diff > 79) {
 			channels[i].vol = 79;
 		} else {
 			channels[i].vol += diff;
 		}
+	}
+	setDefaultAfterPoweron();
+}
+
+uint8_t savedVolume[8] = {0xFF};
+
+void setMute(uint8_t muted) {
+	if(muted) {
+		for(uint8_t i = 0; i < 8; i++) {
+			savedVolume[i] = channels[i].vol;
+			channels[i].vol = 0;
+		}
+	} else if(savedVolume[0] != 0xFF) {
+		for(uint8_t i = 0; i < 8; i++) {
+			channels[i].vol = savedVolume[i];
+		}
+		savedVolume[0] = 0xFF;
 	}
 	setDefaultAfterPoweron();
 }
