@@ -167,9 +167,10 @@ int main(void)
 		if (tickscounter > 10) {
 			tickscounter = 0;
 			TeufelPoweronTick();
-			if (beamer_power)
+			if (beamer_power) { // beamer hat strom
 				poll_beamer_state();
+			}
 		}
-		PORTD &= ~_BV(PD7); // Disable debug LED
+		//PORTD &= ~_BV(PD7); // Disable debug LED
 	}
 }
