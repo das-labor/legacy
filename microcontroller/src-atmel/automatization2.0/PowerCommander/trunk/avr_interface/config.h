@@ -21,6 +21,7 @@
 
 #define F_MCP F_CPU
 
+#define OPTIMISED_LAP
 
 //#define TESTBOARD
 

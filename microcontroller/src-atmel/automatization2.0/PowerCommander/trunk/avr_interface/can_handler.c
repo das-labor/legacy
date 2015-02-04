@@ -44,8 +44,8 @@ void can_handler()
 				case 1: // old proto
 					switch (rx_msg->data[0])
 					{
-						case C_SW: // SET LAMP
-							if (rx_msg->data[2] < F_SW_STATUS)
+						case C_SW: // 0 SET LAMP
+							if (rx_msg->data[2] < F_SW_STATUS || rx_msg->data[2] == 0x23)
 							{
 								switch (rx_msg->data[1])
 								{
@@ -163,13 +163,13 @@ void can_handler()
 						case 2: // request status packet
 							can_send_output_status();
 							break;
-						case 3: // set all lamps
+						case 3: // set all lamps - XXX so ist das doch doof und ergibt keinen sinn
 							set_lamp_all(ROOM_VORTRAG, rx_msg->data[2]);
-							set_lamp_all(ROOM_KUECHE, rx_msg->data[2]);
+							//set_lamp_all(ROOM_KUECHE, rx_msg->data[2]);
 							break;
-						case 4: // set brightness all lamps
+						case 4: // set brightness all lamps - XXX und dat auch
 							set_bright_all(ROOM_VORTRAG, rx_msg->data[2]);
-							set_bright_all(ROOM_KUECHE, rx_msg->data[2]);
+							//set_bright_all(ROOM_KUECHE, rx_msg->data[2]);
 							break;
 					}
 					break;
@@ -225,7 +225,7 @@ void can_send_output_status()
 	msg->data[4] = get_channel_brightness(PWM_SCHRANK);
 	msg->data[5] = get_channel_brightness(PWM_FLIPPER);
 	msg->data[6] = get_channel_brightness(PWM_KUECHE);
-	msg->data[7] = get_channel_brightness(PWM_LOUNGE);
+	//msg->data[7] = get_channel_brightness(PWM_LOUNGE);
 	can_transmit(msg);
 }
 
@@ -235,4 +235,3 @@ void read_can_addr()
 {
 	myaddr = eeprom_read_byte(&EE_lap_addr);
 }
-

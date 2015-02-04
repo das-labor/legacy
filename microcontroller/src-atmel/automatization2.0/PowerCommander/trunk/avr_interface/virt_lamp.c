@@ -85,8 +85,7 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 	if (index > 7)
 		return;
 
-	switch (room)
-	{
+	switch (room) {
 		case ROOM_VORTRAG:
 			switch (index) { // SWL_TAFEL
 				case 0:
@@ -98,12 +97,14 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 				case 2: // SWL_SCHRANK
 					output_set(SWL_SCHRANK, enable);
 					break;
-				case 3: // SWL_FLIPPER 
+				case 3: // SWL_FLIPPER
 					output_set(SWL_FLIPPER, enable);
 					break;
 				case 4: // SWL_BEAMER - beamer steckdose
-					if (enable) // allow only power on
+					if (enable == 1) // allow only power on
 						output_set(SWA_BEAMER, enable);
+					else if (enable == 0x23) // special power off - needed by can-ir
+						output_set(SWA_BEAMER, 0x00);
 					break;
 			}
 			relais_control();	// update relais status, will call twi_send()
@@ -143,8 +144,7 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 
 void set_lamp_all(uint8_t room, uint8_t enable)
 {
-	switch (room)
-	{
+	switch (room) {
 		case ROOM_VORTRAG:
 			if (enable)
 				outputdata.ports |= (1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK);
@@ -207,8 +207,7 @@ void set_bright(uint8_t room, uint8_t index, uint8_t value)
 	if (index > 7)
 		return;
 
-	switch (room)
-	{
+	switch (room) {
 		case ROOM_VORTRAG:
 			if (index < 4) {
 				outputdata.pwmval[index] = value;
@@ -250,8 +249,7 @@ void set_bright(uint8_t room, uint8_t index, uint8_t value)
 
 void set_bright_all(uint8_t room, uint8_t value)
 {
-	switch (room)
-	{
+	switch (room) {
 		case ROOM_VORTRAG:
 			outputdata.pwmval[PWM_TAFEL] = value;
 			outputdata.pwmval[PWM_BEAMER] = value;
@@ -332,7 +330,7 @@ uint8_t get_channel_brightness(uint8_t index)
 	return outputdata.pwmval[index];
 }
 
-uint8_t get_output_status()
+uint8_t get_output_status(void)
 {
 	uint8_t tmp = 0;
 	if (outputdata.ports & _BV(SWA_HS))
@@ -366,4 +364,3 @@ static void relais_control(void)
 
 	twi_send();	// push outputdata
 }
-
