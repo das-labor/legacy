@@ -35,9 +35,9 @@ static const PGM_P acer_cmds[] = {
 };
 
 enum {
-	POWER_ON = 1,
-	POWER_OFF,
-	SOURCE,
+//	POWER_ON = 0,
+//	POWER_OFF,
+	SOURCE = 1,
 	SOURCE_VGA,
 	SOURCE_DVI,
 	SOURCE_SVIDEO,
@@ -49,6 +49,7 @@ enum {
 	RS232_CMD_COUNT
 } rs232_cmd;
 
+static void beamer_nachlauf_detection(uint8_t src);
 
 static void read_string(char *buf, size_t i)
 {
@@ -59,24 +60,22 @@ static void read_string(char *buf, size_t i)
 }
 
 
-static uint8_t lamp_status = 0;
-static uint8_t last_cmd = 0;
+static uint8_t lamp_status = 0, video_source = 0;
 
 
 void rs232_send_command(uint8_t cmd)
 {
-	char buf[RS232_CMD_COUNT];
+	char buf[12];
 
 	if (cmd < RS232_CMD_COUNT) {
-		if (cmd == 0) {
+		if (cmd == 0) { // power off
 			if (lamp_status)
-				cmd = 1;
+				cmd = 1; // power on
 		}
 		else
 			cmd += 1;
 		read_string(buf, cmd);
 		uart_putstr(buf);
-		last_cmd = cmd;
 	}
 }
 
@@ -96,7 +95,7 @@ void lap_send_msg(uint8_t type, uint8_t data)
 /*
  rueckgabe strings
  "Res XXXXX"
- "Lamp X" (0 / 1)
+ "Lamp X" (0 / 1) "*000\r  Lamp 0\r" 2A 30 30 30 0D 4C 61 6D 70 20 30 0D
  "Src X" (0 - 7)
  "XXXX"
 */
@@ -108,7 +107,7 @@ static void parse_string(char *buf)
 
 			}
 			break;*/
-		case 'L':
+		case 'L': // Lamp X\r
 			if (buf[1] == 'a' && buf[2] == 'm' && buf[3] == 'p') {
 				if (buf[5] == '0')
 					lamp_status = 0;
@@ -117,14 +116,16 @@ static void parse_string(char *buf)
 				lap_send_msg(1, lamp_status);
 			}
 			break;
-		case 'S':
+		case 'S': // Src X\r
 			if (buf[1] == 'r' && buf[2] == 'c') {
-				lap_send_msg(2, buf[4] - 0x30); // ascii
+				video_source = buf[4] - 0x30;  // ascii to dec
+				lap_send_msg(2, video_source);
+				beamer_nachlauf_detection(video_source);
 			}
 			break;
 		default:
-			if ((buf[0] >= 0x30) && buf[0] <= 0x39) {
-				lap_send_msg(3, atoi(buf)); //
+			if (((buf[0] >= 0x30) && buf[0] <= 0x39) && (buf[1] >= 0x30) && buf[1] <= 0x39) {
+				lap_send_msg(3, atoi(buf)); // XXX  16 bit  lamp time
 			}
 			break;
 	}
@@ -145,17 +146,16 @@ void rs232_receive_handler(void)
 	}
 }
 
-static uint8_t shutdown_progress;
-
+static uint8_t shutdown_progress = 0;
 
 void poll_beamer_state(void)
 {
-	static uint16_t beamer_poll_delay;
-	if (beamer_poll_delay++ > 3000) {
+	static uint16_t beamer_poll_delay = 0;
+	if (beamer_poll_delay++ > 50) {
+		beamer_poll_delay = 0;
 		rs232_send_command(QUERY_LAMP_STATUS);
 		if (shutdown_progress && !lamp_status)
 			rs232_send_command(QUERY_VIDEO_SOURCE);
-		beamer_poll_delay = 0;
 	}
 }
 
@@ -178,9 +178,18 @@ static void sendBeamerPowerOffMsg(void)
  * after cooling Lamp 0 + Src 1
  */
 
-static uint8_t shutdown_progress;
+static void beamer_nachlauf_detection(uint8_t src) {
+	if (shutdown_progress && !lamp_status && src)
+	{
+	  //sendBeamerPowerOffMsg();
+	  PORTD ^= _BV(PD7); // XXX
+	  shutdown_progress = 0;
+	}
+}
+
 
 void start_shutdown(void)
 {
+	rs232_send_command(1);
 	shutdown_progress = 1;
 }
