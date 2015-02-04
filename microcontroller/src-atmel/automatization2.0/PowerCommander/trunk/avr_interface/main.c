@@ -53,11 +53,9 @@ static void init(void)
 ** Initiate TWI Master Interface with bitrate of 100000 Hz
 */
 	if (!TWIM_Init())
-	{
 		while (1);
-	}
 
-	sync_stat_cache(); 	// get output states
+	sync_stat_cache(); // get output states
 
 	spi_init(); // initialize spi port
 	read_can_addr();
@@ -75,8 +73,7 @@ int main(void)
 	init(); // system initialization
 
 	// the main loop continuously handles can messages
-	while (1)
-	{
+	while (1) {
 		can_handler();
 
 		/* execute every 20 ms */
