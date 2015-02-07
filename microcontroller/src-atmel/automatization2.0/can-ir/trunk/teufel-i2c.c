@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "teufel-i2c.h"
 #include "twi_master/twi_master.h"
-#include "can/can.h"
+#include "can_handler.h"
 
 /* TODO
  * erst nur globe lautstärke unterstützen
@@ -18,8 +18,6 @@
 
 #define ADDR_CHIP_1 0x8c
 #define ADDR_CHIP_2 0x88
-
-#define NUM_CHANNELS 8
 
 enum {
 	HIGH_NIBBLE,
@@ -46,12 +44,7 @@ enum {
 #define DEFAULT_CENTER 70
 #define DEFAULT_SIDE 0
 
-typedef struct {
-	uint8_t vol;
-	uint8_t id;
-} t_channel;
-
-static t_channel channels[NUM_CHANNELS] = {
+static t_channel channels[NUM_TEUFEL_CHANNELS] = {
 	{DEFAULT_REAR   , _CHANNEL(RR)  + _HL(LOW_NIBBLE)},
 	{DEFAULT_SUB    , _CHANNEL(SUB) + _HL(LOW_NIBBLE)},
 	{DEFAULT_REAR   , _CHANNEL(RL)  + _HL(LOW_NIBBLE)},
@@ -62,7 +55,7 @@ static t_channel channels[NUM_CHANNELS] = {
 	{DEFAULT_SIDE   , _CHANNEL(SR)  + _HL(HIGH_NIBBLE)},
 };
 
-static const uint8_t defaultVolumes[NUM_CHANNELS] = {
+static const uint8_t defaultVolumes[NUM_TEUFEL_CHANNELS] = {
 	DEFAULT_REAR,
 	DEFAULT_SUB,
 	DEFAULT_REAR,
@@ -72,19 +65,6 @@ static const uint8_t defaultVolumes[NUM_CHANNELS] = {
 	DEFAULT_SIDE,
 	DEFAULT_SIDE,
 };
-
-
-void TeufelSendCANPacket(void) {
-	can_message *tx_msg = can_buffer_get();
-	tx_msg->addr_src = 0x10;
-	tx_msg->port_src = 0x06;
-	tx_msg->addr_dst = 0;
-	tx_msg->port_dst = 0;
-	tx_msg->dlc = 8;
-	for (uint8_t i = 0; i < NUM_CHANNELS; i++)
-		tx_msg->data[i] = channels[i].vol;
-	can_transmit(tx_msg);
-}
 
 /*
  * Der Wertebereich auf dem I2C Bus geht von 0x0 bis 0x79.
@@ -118,7 +98,7 @@ static void writeChannel(t_channel *channel)
 
 static void writeAllChannels(void)
 {
-	for (uint8_t i = 0; i < NUM_CHANNELS; i++) {
+	for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i++) {
 		if (TWIM_Start(((i < 6) ? ADDR_CHIP_1 : ADDR_CHIP_2) + TW_WRITE)) {
 			writeChannel(&channels[i]);
 		}
@@ -126,23 +106,22 @@ static void writeAllChannels(void)
 			break;
 	}
 	TWIM_Stop();
+	lap_send_teufel_status(channels);
 }
 
 void setAllChannels(uint8_t vol)
 {
-	for (uint8_t i = 0; i < NUM_CHANNELS; i++)
+	for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i++)
 		channels[i].vol = vol;
 	writeAllChannels();
 }
 
 void setDefaultAfterPoweron(void)
 {
-	for (uint8_t i = 0; i < NUM_CHANNELS; i++)
+	for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i++)
 		channels[i].vol = defaultVolumes[i];
 	writeAllChannels();
 }
-
-
 
 void setSingleChannel(uint8_t chanID, uint8_t vol)
 {
@@ -150,37 +129,39 @@ void setSingleChannel(uint8_t chanID, uint8_t vol)
 	if (TWIM_Start(((chanID < 6) ? ADDR_CHIP_1 : ADDR_CHIP_2) + TW_WRITE))
 		writeChannel(&channels[chanID]);
 	TWIM_Stop();
+	lap_send_teufel_status(channels);
 }
 
 void setIncrementChannels(int8_t diff)
 {
-	for(uint8_t i = 0; i < NUM_CHANNELS; i++) {
-		if((int16_t)channels[i].vol + diff < 0) {
+	for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i++) {
+		if ((int16_t) channels[i].vol + diff < 0) {
 			channels[i].vol = 0;
-		} else if((int16_t)channels[i].vol + diff > 79) {
+		} else if ((int16_t) channels[i].vol + diff > 79) {
 			channels[i].vol = 79;
 		} else {
 			channels[i].vol += diff;
 		}
 	}
-	setDefaultAfterPoweron();
+	writeAllChannels();
 }
 
 uint8_t savedVolume[8] = {0xFF};
 
-void setMute(uint8_t muted) {
-	if(muted) {
-		for(uint8_t i = 0; i < 8; i++) {
+void setMute(uint8_t muted)
+{
+	if (muted) {
+		for (uint8_t i = 0; i < 8; i++) {
 			savedVolume[i] = channels[i].vol;
 			channels[i].vol = 0;
 		}
-	} else if(savedVolume[0] != 0xFF) {
-		for(uint8_t i = 0; i < 8; i++) {
+	} else if (savedVolume[0] != 0xFF) {
+		for (uint8_t i = 0; i < 8; i++) {
 			channels[i].vol = savedVolume[i];
 		}
 		savedVolume[0] = 0xFF;
 	}
-	setDefaultAfterPoweron();
+	writeAllChannels();
 }
 
 static uint16_t TeufelOnCounter;

@@ -2,7 +2,8 @@
 #include <stdlib.h>
 
 #include "uart/uart.h"
-#include "can/can.h"
+#include "can_handler.h"
+
 
 static const char power_on[] PROGMEM = "OKOKOKOKOK\r";
 static const char power_off[] PROGMEM = "* 0 IR 002\r";
@@ -79,18 +80,6 @@ void rs232_send_command(uint8_t cmd)
 	}
 }
 
-void lap_send_msg(uint8_t type, uint8_t data)
-{
-	can_message *tx_msg = can_buffer_get();
-	tx_msg->addr_src = 0x10;
-	tx_msg->port_src = 0x05;
-	tx_msg->addr_dst = 0;
-	tx_msg->port_dst = 0;
-	tx_msg->dlc = 2;
-	tx_msg->data[0] = type;
-	tx_msg->data[1] = data;
-	can_transmit(tx_msg);
-}
 
 /*
  rueckgabe strings
@@ -113,19 +102,19 @@ static void parse_string(char *buf)
 					lamp_status = 0;
 				else if (buf[5] == '1')
 					lamp_status = 1;
-				lap_send_msg(1, lamp_status);
+				lap_send_beamer_status(1, lamp_status);
 			}
 			break;
 		case 'S': // Src X\r
 			if (buf[1] == 'r' && buf[2] == 'c') {
 				video_source = buf[4] - 0x30;  // ascii to dec
-				lap_send_msg(2, video_source);
+				lap_send_beamer_status(2, video_source);
 				beamer_nachlauf_detection(video_source);
 			}
 			break;
 		default:
 			if (((buf[0] >= 0x30) && buf[0] <= 0x39) && (buf[1] >= 0x30) && buf[1] <= 0x39) {
-				lap_send_msg(3, atoi(buf)); // XXX  16 bit  lamp time
+				lap_send_beamer_status(3, atoi(buf)); // XXX  16 bit  lamp time
 			}
 			break;
 	}
@@ -147,11 +136,17 @@ void rs232_receive_handler(void)
 }
 
 static uint8_t shutdown_progress = 0;
+static uint8_t beamer_power;
+
+void set_beamer_power(uint8_t status)
+{
+	beamer_power = status;
+}
 
 void poll_beamer_state(void)
 {
 	static uint16_t beamer_poll_delay = 0;
-	if (beamer_poll_delay++ > 50) {
+	if (beamer_power && beamer_poll_delay++ > 50) {
 		beamer_poll_delay = 0;
 		rs232_send_command(QUERY_LAMP_STATUS);
 		if (shutdown_progress && !lamp_status)
@@ -159,34 +154,19 @@ void poll_beamer_state(void)
 	}
 }
 
-
-static void sendBeamerPowerOffMsg(void)
-{
-	can_message *tx_msg = can_buffer_get();
-	tx_msg->addr_src = 0x10;
-	tx_msg->port_src = 0x00;
-	tx_msg->addr_dst = 0x02;
-	tx_msg->port_dst = 0x01;
-	tx_msg->dlc = 3;
-	tx_msg->data[0] = 0x00; // C_SW
-	tx_msg->data[1] = 0x01; // SWA_BEAMER
-	tx_msg->data[2] = 0x23; // AUS - special value
-	can_transmit(tx_msg);
-}
-
-/* while cooling Lamp 0 + Src 0
+/*
+ * while cooling Lamp 0 + Src 0
  * after cooling Lamp 0 + Src 1
  */
 
 static void beamer_nachlauf_detection(uint8_t src) {
 	if (shutdown_progress && !lamp_status && src)
 	{
-	  //sendBeamerPowerOffMsg();
-	  PORTD ^= _BV(PD7); // XXX
-	  shutdown_progress = 0;
+		lap_switch_beamer_relais(0);
+		PORTD ^= _BV(PD7); // XXX
+		shutdown_progress = 0;
 	}
 }
-
 
 void start_shutdown(void)
 {
