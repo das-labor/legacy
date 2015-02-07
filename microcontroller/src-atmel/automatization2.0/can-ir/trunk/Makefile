@@ -1,6 +1,6 @@
 LAP_ADDR       = 0x10
 
-OBJ            = main.o can/can.o can/spi.o uart/uart.o beamer_rs232.o twi_master/twi_master.o teufel-i2c.o
+OBJ            = main.o can/can.o can/spi.o can_handler.o uart/uart.o beamer_rs232.o twi_master/twi_master.o teufel-i2c.o
 
 # Default values
 OUT           ?= image
@@ -10,7 +10,7 @@ MCU_AS	      ?= avr-as
 OPTIMIZE      ?= -Os
 WARNINGS      ?= -Wall -Winline -pedantic -Wstrict-prototypes -Wextra
 DEFS          ?= -DF_CPU=16000000UL -DEEPROM_LAP_ADDR=$(LAP_ADDR)
-CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu99 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
+CFLAGS        += -mmcu=$(MCU_TARGET) $(OPTIMIZE) $(WARNINGS) $(DEFS) -I. -std=gnu11 -ffunction-sections -fdata-sections -mstrict-X -maccumulate-args
 ASFLAGS	      += -mmcu=avr5
 LDFLAGS        = -Wl,-Map,$(OUT).map,--relax,--gc-sections,--print-gc-sections
 
