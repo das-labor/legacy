@@ -98,9 +98,10 @@ static void writeChannel(t_channel *channel)
 
 static void writeAllChannels(void)
 {
-	for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i++) {
+	for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i+=2) {
 		if (TWIM_Start(((i < 6) ? ADDR_CHIP_1 : ADDR_CHIP_2) + TW_WRITE)) {
 			writeChannel(&channels[i]);
+			writeChannel(&channels[i+1]);
 		}
 		else
 			break;
@@ -151,12 +152,12 @@ uint8_t savedVolume[8] = {0xFF};
 void setMute(uint8_t muted)
 {
 	if (muted) {
-		for (uint8_t i = 0; i < 8; i++) {
+		for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i++) {
 			savedVolume[i] = channels[i].vol;
 			channels[i].vol = 0;
 		}
 	} else if (savedVolume[0] != 0xFF) {
-		for (uint8_t i = 0; i < 8; i++) {
+		for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i++) {
 			channels[i].vol = savedVolume[i];
 		}
 		savedVolume[0] = 0xFF;
