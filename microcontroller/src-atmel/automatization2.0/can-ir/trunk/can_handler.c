@@ -46,7 +46,7 @@ void can_handler(void)
 						//this is a message for the acer beamer
 						case 1:
 							PORTD |= _BV(PD7); // Enable debug LED
-							rs232_send_command(rx_msg->data[1]);
+							beamer_send_command(rx_msg->data[1]);
 							break;
 						// 2 was beamer IR
 						case 3:
@@ -56,7 +56,7 @@ void can_handler(void)
 							setSingleChannel(rx_msg->data[1], rx_msg->data[2]);
 							break;
 						case 5:
-							setIncrementChannels(rx_msg->data[2]);
+							incrementChannels(rx_msg->data[2]);
 							break;
 						case 6:
 							setMute(rx_msg->data[1]);
@@ -116,20 +116,21 @@ void lap_switch_beamer_relais(uint8_t status)
 }
 
 // XXX provide usefull feedback
-void lap_send_beamer_status(uint8_t type, uint8_t data)
+void lap_send_beamer_status(uint8_t type, uint8_t len, uint16_t data)
 {
 	can_message *tx_msg = can_buffer_get();
 	tx_msg->addr_src = 0x10;
 	tx_msg->port_src = 0x05;
 	tx_msg->addr_dst = 0;
 	tx_msg->port_dst = 0;
-	tx_msg->dlc = 3;
+	tx_msg->dlc = len;
 	tx_msg->data[0] = type;
-	tx_msg->data[1] = data;
+	tx_msg->data[1] = data & 0x0f;
+	tx_msg->data[2] = data >> 8;
 	can_transmit(tx_msg);
 }
 
-void lap_send_teufel_status(t_channel *channels)
+void lap_send_teufel_status(t_channel channels[])
 {
 	can_message *tx_msg = can_buffer_get();
 	tx_msg->addr_src = 0x10;

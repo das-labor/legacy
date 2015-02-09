@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include "teufel-i2c.h"
 #include "twi_master/twi_master.h"
@@ -133,12 +132,12 @@ void setSingleChannel(uint8_t chanID, uint8_t vol)
 	lap_send_teufel_status(channels);
 }
 
-void setIncrementChannels(int8_t diff)
+void incrementChannels(int8_t diff)
 {
 	for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i++) {
-		if ((int16_t) channels[i].vol + diff < 0) {
+		if ((((int16_t) channels[i].vol) + diff) < 0) {
 			channels[i].vol = 0;
-		} else if ((int16_t) channels[i].vol + diff > 79) {
+		} else if (((int16_t) channels[i].vol + diff) > 79) {
 			channels[i].vol = 79;
 		} else {
 			channels[i].vol += diff;
@@ -147,10 +146,11 @@ void setIncrementChannels(int8_t diff)
 	writeAllChannels();
 }
 
-uint8_t savedVolume[8] = {0xFF};
+
 
 void setMute(uint8_t muted)
 {
+	static uint8_t savedVolume[NUM_TEUFEL_CHANNELS] = {0xFF};
 	if (muted) {
 		for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i++) {
 			savedVolume[i] = channels[i].vol;

@@ -64,7 +64,7 @@ static void read_string(char *buf, size_t i)
 static uint8_t lamp_status = 0, video_source = 0;
 
 
-void rs232_send_command(uint8_t cmd)
+void beamer_send_command(uint8_t cmd)
 {
 	char buf[12];
 
@@ -91,36 +91,43 @@ void rs232_send_command(uint8_t cmd)
 static void parse_string(char *buf)
 {
 	switch (buf[0]) {
-		/*case 'R':
+		case 'R': // Resolution
 			if (buf[1] == 'e' && buf[2] == 's') {
 
 			}
-			break;*/
+			break;
 		case 'L': // Lamp X\r
 			if (buf[1] == 'a' && buf[2] == 'm' && buf[3] == 'p') {
 				if (buf[5] == '0')
 					lamp_status = 0;
 				else if (buf[5] == '1')
 					lamp_status = 1;
-				lap_send_beamer_status(1, lamp_status);
+				lap_send_beamer_status(1, 2, lamp_status);
 			}
 			break;
 		case 'S': // Src X\r
 			if (buf[1] == 'r' && buf[2] == 'c') {
 				video_source = buf[4] - 0x30;  // ascii to dec
-				lap_send_beamer_status(2, video_source);
+				lap_send_beamer_status(2, 2, video_source);
 				beamer_nachlauf_detection(video_source);
 			}
 			break;
+		case '*':
+			/*if (buf[4] == '0')
+				printf("ack\n");
+			else if (buf[4] == '1')
+				printf("nack\n");*/
+			break;
 		default:
 			if (((buf[0] >= 0x30) && buf[0] <= 0x39) && (buf[1] >= 0x30) && buf[1] <= 0x39) {
-				lap_send_beamer_status(3, atoi(buf)); // XXX  16 bit  lamp time
+				buf[4] = '\0';
+				lap_send_beamer_status(3, 3, atoi(buf)); // XXX  16 bit  lamp time
 			}
 			break;
 	}
 }
 
-void rs232_receive_handler(void)
+void beamer_receive_handler(void)
 {
 	char c;
 	static char ret_buf[12];
@@ -143,14 +150,14 @@ void set_beamer_power(uint8_t status)
 	beamer_power = status;
 }
 
-void poll_beamer_state(void)
+void beamer_poll_state(void)
 {
 	static uint16_t beamer_poll_delay = 0;
 	if (beamer_power && beamer_poll_delay++ > 50) {
 		beamer_poll_delay = 0;
-		rs232_send_command(QUERY_LAMP_STATUS);
+		beamer_send_command(QUERY_LAMP_STATUS);
 		if (shutdown_progress && !lamp_status)
-			rs232_send_command(QUERY_VIDEO_SOURCE);
+			beamer_send_command(QUERY_VIDEO_SOURCE);
 	}
 }
 
@@ -168,8 +175,8 @@ static void beamer_nachlauf_detection(uint8_t src) {
 	}
 }
 
-void start_shutdown(void)
+void beamer_start_shutdown(void)
 {
-	rs232_send_command(1);
+	beamer_send_command(1);
 	shutdown_progress = 1;
 }
