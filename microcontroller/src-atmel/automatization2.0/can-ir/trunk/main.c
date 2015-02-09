@@ -60,11 +60,11 @@ int main(void)
 	// the main loop continuously handles can messages
 	while (1) {
 		can_handler();
-		rs232_receive_handler();
+		beamer_receive_handler();
 		if (tickscounter > 10) {
 			tickscounter = 0;
 			TeufelPoweronTick();
-			poll_beamer_state();
+			beamer_poll_state();
 		}
 		//PORTD &= ~_BV(PD7); // Disable debug LED
 	}
