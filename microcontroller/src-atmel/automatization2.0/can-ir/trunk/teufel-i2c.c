@@ -97,10 +97,10 @@ static void writeChannel(t_channel *channel)
 
 static void writeAllChannels(void)
 {
-	for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i+=2) {
+	for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i += 2) {
 		if (TWIM_Start(((i < 6) ? ADDR_CHIP_1 : ADDR_CHIP_2) + TW_WRITE)) {
 			writeChannel(&channels[i]);
-			writeChannel(&channels[i+1]);
+			writeChannel(&channels[i + 1]);
 		}
 		else
 			break;

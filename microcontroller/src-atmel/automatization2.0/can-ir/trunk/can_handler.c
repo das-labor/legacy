@@ -80,6 +80,7 @@ void can_handler(void)
 						}
 						else if (!(rx_msg->data[1] & 0x01) && status & _BV(1)) {
 							status &= ~_BV(1);
+							beamer_start_shutdown();
 						}
 						if (rx_msg->data[1] & 0x02) { // Beamer Schütz an
 							set_beamer_power(1);
