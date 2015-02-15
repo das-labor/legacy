@@ -177,8 +177,8 @@ static void beamer_nachlauf_detection(uint8_t src) {
 
 void beamer_start_shutdown(void)
 {
-	if (beamer_power) {
-		beamer_send_command(1);
+	if (beamer_power && lamp_status) {
+		beamer_send_command(0);
 		shutdown_progress = 1;
 	}
 }
