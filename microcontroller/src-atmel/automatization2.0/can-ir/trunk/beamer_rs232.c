@@ -156,9 +156,9 @@ void beamer_poll_state(void)
 	if (beamer_power && beamer_poll_delay++ > 50) {
 		beamer_poll_delay = 0;
 		beamer_send_command(QUERY_LAMP_STATUS);
-		if (shutdown_progress && !lamp_status)
-			beamer_send_command(QUERY_VIDEO_SOURCE);
 	}
+	if (shutdown_progress && (!lamp_status) && (beamer_poll_delay == 20))
+		beamer_send_command(QUERY_VIDEO_SOURCE);
 }
 
 /*
@@ -170,15 +170,13 @@ static void beamer_nachlauf_detection(uint8_t src) {
 	if (shutdown_progress && !lamp_status && src)
 	{
 		lap_switch_beamer_relais(0);
-		PORTD ^= _BV(PD7); // XXX
 		shutdown_progress = 0;
 	}
 }
 
 void beamer_start_shutdown(void)
 {
-	if (beamer_power && lamp_status) { // check if beamer is on
+	if (beamer_power && lamp_status) // check if beamer is on
 		beamer_send_command(0);
-		shutdown_progress = 1;
-	}
+	shutdown_progress = 1;
 }
