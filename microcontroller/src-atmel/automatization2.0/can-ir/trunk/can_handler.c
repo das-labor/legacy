@@ -105,7 +105,7 @@ void can_handler(void)
 void lap_switch_beamer_relais(uint8_t status)
 {
 	can_message *tx_msg = can_buffer_get();
-	tx_msg->addr_src = 0x10;
+	tx_msg->addr_src = myaddr;
 	tx_msg->port_src = 0x00;
 	tx_msg->addr_dst = 0x02;
 	tx_msg->port_dst = 0x01;
@@ -120,7 +120,7 @@ void lap_switch_beamer_relais(uint8_t status)
 void lap_send_beamer_status(uint8_t type, uint8_t len, uint16_t data)
 {
 	can_message *tx_msg = can_buffer_get();
-	tx_msg->addr_src = 0x10;
+	tx_msg->addr_src = myaddr;
 	tx_msg->port_src = 0x05;
 	tx_msg->addr_dst = 0;
 	tx_msg->port_dst = 0;
@@ -134,7 +134,7 @@ void lap_send_beamer_status(uint8_t type, uint8_t len, uint16_t data)
 void lap_send_teufel_status(t_channel channels[])
 {
 	can_message *tx_msg = can_buffer_get();
-	tx_msg->addr_src = 0x10;
+	tx_msg->addr_src = myaddr;
 	tx_msg->port_src = 0x06;
 	tx_msg->addr_dst = 0;
 	tx_msg->port_dst = 0;
