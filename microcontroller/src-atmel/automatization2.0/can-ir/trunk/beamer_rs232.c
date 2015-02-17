@@ -1,5 +1,5 @@
-#include <avr/pgmspace.h>
 #include <stdlib.h>
+#include <avr/pgmspace.h>
 
 #include "uart/uart.h"
 #include "can_handler.h"
@@ -17,9 +17,7 @@ static const char source_dvi[] PROGMEM = "* 0 IR 016\r";
 static const char source_svideo[] PROGMEM = "* 0 IR 018\r";
 static const char source_composite[] PROGMEM = "* 0 IR 019\r";
 static const char blank[] PROGMEM = "* 0 IR 030\r";
-/*static const char [] PROGMEM = "";
-static const char [] PROGMEM = "";
-static const char [] PROGMEM = "";*/
+
 
 static const PGM_P acer_cmds[] = {
 	power_on,
@@ -36,8 +34,6 @@ static const PGM_P acer_cmds[] = {
 };
 
 enum {
-//	POWER_ON = 0,
-//	POWER_OFF,
 	SOURCE = 1,
 	SOURCE_VGA,
 	SOURCE_DVI,
@@ -166,9 +162,9 @@ void beamer_poll_state(void)
  * after cooling Lamp 0 + Src 1
  */
 
-static void beamer_nachlauf_detection(uint8_t src) {
-	if (shutdown_progress && !lamp_status && src)
-	{
+static void beamer_nachlauf_detection(uint8_t src)
+{
+	if (shutdown_progress && !lamp_status && src) {
 		lap_switch_beamer_relais(0);
 		shutdown_progress = 0;
 	}
