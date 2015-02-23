@@ -3,20 +3,25 @@
 
 #include "uart/uart.h"
 #include "can_handler.h"
+/*
+ * todo
+ * on / off
+ * power off if lamp off
+ * 
+ */
 
-
-static const char power_on[] PROGMEM = "OKOKOKOKOK\r";
-static const char power_off[] PROGMEM = "* 0 IR 002\r";
-static const char query_lamp_status[] PROGMEM = "* 0 Lamp ?\r";
-static const char query_lamp_hours[] PROGMEM = "* 0 Lamp\r";
-static const char query_video_source[] PROGMEM = "* 0 Src ?\r";
-static const char query_video_res[] PROGMEM = "* 0 IR 036\r";
-static const char source[] PROGMEM = "* 0 IR 031\r";
-static const char source_vga[] PROGMEM = "* 0 IR 015\r";
-static const char source_dvi[] PROGMEM = "* 0 IR 016\r";
-static const char source_svideo[] PROGMEM = "* 0 IR 018\r";
-static const char source_composite[] PROGMEM = "* 0 IR 019\r";
-static const char blank[] PROGMEM = "* 0 IR 030\r";
+//static const char power_on[] PROGMEM = "OKOKOKOKOK";
+static const char power_on[] PROGMEM = "IR 001";
+static const char power_off[] PROGMEM = "IR 002";
+static const char source[] PROGMEM = "IR 031";
+static const char source_vga[] PROGMEM = "IR 015";
+static const char source_svideo[] PROGMEM = "IR 018";
+static const char source_composite[] PROGMEM = "IR 019";
+static const char source_hdmi[] PROGMEM = "IR 050";
+static const char blank[] PROGMEM = "IR 030";
+static const char query_lamp_status[] PROGMEM = "Lamp ?";
+static const char query_lamp_hours[] PROGMEM = "Lamp";
+static const char query_video_source[] PROGMEM = "Src ?";
 
 
 static const PGM_P acer_cmds[] = {
@@ -24,9 +29,9 @@ static const PGM_P acer_cmds[] = {
 	power_off,
 	source,
 	source_vga,
-	source_dvi,
 	source_svideo,
 	source_composite,
+	source_hdmi,
 	blank,
 	query_lamp_status,
 	query_lamp_hours,
@@ -36,9 +41,9 @@ static const PGM_P acer_cmds[] = {
 enum {
 	SOURCE = 1,
 	SOURCE_VGA,
-	SOURCE_DVI,
 	SOURCE_SVIDEO,
 	SOURCE_COMPOSITE,
+	SOURCE_HDMI,
 	BLANK,
 	QUERY_LAMP_STATUS,
 	QUERY_LAMP_HOURS,
@@ -71,8 +76,11 @@ void beamer_send_command(uint8_t cmd)
 		}
 		else
 			cmd += 1;
+
+		uart_putstr("* 0 ");
 		read_string(buf, cmd);
 		uart_putstr(buf);
+		uart_putc('\r');
 	}
 }
 
