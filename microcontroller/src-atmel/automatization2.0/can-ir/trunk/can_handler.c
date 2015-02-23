@@ -45,7 +45,6 @@ void can_handler(void)
 					//0 was teufel ir
 					//this is a message for the acer beamer
 					case 1:
-						PORTD |= _BV(PD7); // Enable debug LED
 						beamer_send_command(rx_msg->data[1]);
 						break;
 					// 2 was beamer IR
@@ -82,11 +81,13 @@ void can_handler(void)
 						status &= ~_BV(1);
 						beamer_start_shutdown();
 					}
-					if (rx_msg->data[1] & 0x02) { // Beamer Schütz an
+					if ((rx_msg->data[1] & 0x02) && !(status & _BV(0))) { // Beamer Schütz an
 						set_beamer_power(1);
+						status |= _BV(0);
 					}
-					else if (!(rx_msg->data[1] & 0x02)) { // Beamer Schütz aus
+					else if (!(rx_msg->data[1] & 0x02) && status & _BV(0)) { // Beamer Schütz aus
 						set_beamer_power(0);
+						status &= ~_BV(0);
 					}
 					break;
 			}
