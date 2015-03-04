@@ -92,16 +92,13 @@ static volatile char *volatile txhead, *volatile txtail;
 
 ISR(UART_UDRE_VECTOR)
 {
-	if (txhead == txtail)
-	{
+	if (txhead == txtail) {
 #ifdef UART_LEDS
-	PORTC ^= 0x01;
+		PORTC ^= 0x01;
 #endif
-	
-	UCSRB &= ~(1 << UDRIE);		/* disable data register empty IRQ */
-	} else
-	{
-		UDR = *txtail;			/* schreibt das Zeichen x auf die Schnittstelle */
+		UCSRB &= ~(1 << UDRIE);		// disable data register empty IRQ
+	} else {
+		UDR = *txtail;			// send char
 		if (++txtail == (txbuf + UART_TXBUFSIZE))
 			txtail = txbuf;
 	}
@@ -117,32 +114,26 @@ ISR(UART_RECV_VECTOR)
 
 	/* buffer full? */
 	diff = rxhead - rxtail;
-	if ( diff < 0 )
+	if (diff < 0)
 		diff += UART_RXBUFSIZE;
-	if (diff < UART_RXBUFSIZE - 1)
-	{
-		// buffer NOT full
+	if (diff < UART_RXBUFSIZE - 1) {// buffer NOT full
 		*rxhead = UDR;
 		if (++rxhead == (rxbuf + UART_RXBUFSIZE))
 			rxhead = rxbuf;
-	} else
-	{
-		UDR;				//reads the buffer to clear the interrupt condition
+	} else {
+		UDR;			// reads the buffer to clear the interrupt condition
 	}
 }
-
 #endif // UART_INTERRUPT
 
-
-void uart_init()
+void uart_init(void)
 {
 #ifdef UART_LEDS
-	DDRC |= 0x03;	// Port C LED outputs
+	DDRC |= 0x03;			// Port C LED outputs
 #endif
-	PORTD |= 0x01;				//Pullup an RXD an
+	PORTD |= 0x01;			// Pullup on RXD
 
-	UCSRB = _BV(TXEN) | _BV(RXEN); // UART RX und TX einschalten
-
+	UCSRB = _BV(TXEN) | _BV(RXEN);	// enable UART RX und TX
 
 	UBRRH = UBRRH_VALUE;
 	UBRRL = UBRRL_VALUE;
@@ -172,11 +163,11 @@ void uart_init()
 #ifdef UART_INTERRUPT
 void uart_putc(char c)
 {
+#ifdef UART_INTERRUPT
 	volatile int diff;
 
-	/* buffer full? */
-	do
-	{
+	// buffer full?
+	do {
 		diff = txhead - txtail;
 		if (diff < 0)
 			diff += UART_TXBUFSIZE;
@@ -187,57 +178,48 @@ void uart_putc(char c)
 	if (++txhead == (txbuf + UART_TXBUFSIZE))
 		txhead = txbuf;
 
-	UCSRB |= _BV(UDRIE);		/* enable data register empty IRQ */
+	UCSRB |= _BV(UDRIE);		// enable data register empty IRQ
 	sei();
-}
 #else  // WITHOUT INTERRUPT
-void uart_putc(char c)
-{
-	while (!(UCSRA & _BV(UDRE))); /* warten bis Senden moeglich                   */
-	UDR = c;                      /* schreibt das Zeichen x auf die Schnittstelle */
-}
+	while (!(UCSRA & _BV(UDRE)));	// wait for empty tx reg
+	UDR = c;			// send char
 #endif // UART_INTERRUPT
-
+}
 
 void uart_putstr(char *str)
 {
 	while (*str)
-	{
 		uart_putc(*str++);
-	}
 }
 
 void uart_putstr_P(PGM_P str)
 {
 	char tmp;
-	while((tmp = pgm_read_byte(str)))
-	{
+	while ((tmp = pgm_read_byte(str))) {
 		uart_putc(tmp);
 		str++;
 	}
 }
 
-#ifdef UART_INTERRUPT
-char uart_getc()
+
+char uart_getc(void)
 {
+#ifdef UART_INTERRUPT
 	char val;
 
-	while (rxhead==rxtail);
+	while (rxhead == rxtail);
 
 	val = *rxtail;
 	if (++rxtail == (rxbuf + UART_RXBUFSIZE))
 		rxtail = rxbuf;
 
 	return val;
-
-}
-#else  // WITHOUT INTERRUPT
-char uart_getc()
-{
-	while (!(UCSRA & (1<<RXC)));	// warten bis Zeichen verfuegbar
-	return UDR;			// Zeichen aus UDR zurueckgeben
-}
+#else // WITHOUT INTERRUPT
+	while (!(UCSRA & (1 << RXC)));	// wait for char
+	return UDR;			// return received char
 #endif // UART_INTERRUPT
+}
+
 
 // returns 1 on success
 #ifdef UART_INTERRUPT
@@ -255,8 +237,7 @@ char uart_getc_nb(char *c)
 #else  // WITHOUT INTERRUPT
 char uart_getc_nb(char *c)
 {
-	if (UCSRA & _BV(RXC))		// Zeichen verfuegbar
-	{
+	if (UCSRA & _BV(RXC)) {		// char received
 		*c = UDR;
 		return 1;
 	}
@@ -289,26 +270,23 @@ void uart_hexdump(unsigned char *buf, int len)
 #endif
 
 #ifdef UART_GETLINE
-//get one Cariage return terminated line
-//echo charakters back on Uart
-//returns buffer with zero terminated line on success, 0 pointer otherwise
-char *uart_getline()
+// get one Cariage return terminated line
+// echo charakters back on Uart
+// returns buffer with zero terminated line on success, 0 pointer otherwise
+char *uart_getline(void)
 {
 	static char buffer[UART_LINE_BUFFER_SIZE];
 	static char *pos = buffer;
 	char tmp;
-	while ((tmp = uart_getc()))
-	{
-		if(tmp == '\r')
-		{
-			*pos = 0;	//terminate line
-			pos = buffer;   //reset pointer
-			return buffer;  //and return the buffer
+	while ((tmp = uart_getc())) {
+		if (tmp == '\r') {
+			*pos = 0;	// terminate line
+			pos = buffer;   // reset pointer
+			return buffer;  // and return the buffer
 		}
-		if ((tmp != '\n') && (pos < buffer+UART_LINE_BUFFER_SIZE-1)) //buffer full?
-		{
-			*pos++ = tmp;		//no: write character to buffer
-			//uart_putc (tmp);
+		if ((tmp != '\n') && (pos < buffer + UART_LINE_BUFFER_SIZE - 1)) { // buffer full?
+			*pos++ = tmp;		// no: write character to buffer
+			// uart_putc (tmp);
 		}
 	}
 	return 0;
@@ -319,7 +297,7 @@ char *uart_getline()
 #ifdef UART_INTERRUPT
 char uart_rxbuffer_notempty(void)
 {
-	if (rxhead==rxtail)
+	if (rxhead == rxtail)
 		return 0;
 	else
 		return 1;
@@ -336,4 +314,3 @@ uint16_t uart_getrxqueuelength(void)
 	return (rxhead - rxtail);
 }
 #endif
-
