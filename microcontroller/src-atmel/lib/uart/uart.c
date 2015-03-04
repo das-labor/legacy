@@ -83,6 +83,12 @@
 	#warning UART_LEDS is truned on, which means that PC0 and PC1 will be toggled by receiving/transmitting bytes!!
 #endif
 
+#ifdef STDFUNCT_IO
+FILE uart_output = FDEV_SETUP_STREAM(uart_putc, NULL, _FDEV_SETUP_WRITE);
+FILE uart_input = FDEV_SETUP_STREAM(NULL, uart_getc, _FDEV_SETUP_READ);
+void uart_putcs(char c, FILE *stream);
+char uart_getcs(FILE *stream);
+#endif // STDFUNCT_IO
 
 #ifdef UART_INTERRUPT
 static volatile char rxbuf[UART_RXBUFSIZE];
@@ -158,9 +164,21 @@ void uart_init(void)
 	// activate rx IRQ
 	UCSRB |= _BV(RXCIE);
 #endif // UART_INTERRUPT
+#ifdef STDFUNCT_IO
+	stdout = &uart_output;
+	stdin  = &uart_input;
+#endif // STDFUNCT_IO
 }
 
-#ifdef UART_INTERRUPT
+
+#ifdef STDFUNCT_IO
+void uart_putcs(char c, FILE *stream)
+{
+	(void) stream;
+	uart_putc(c);
+}
+#endif // STDFUNCT_IO
+
 void uart_putc(char c)
 {
 #ifdef UART_INTERRUPT
@@ -201,6 +219,13 @@ void uart_putstr_P(PGM_P str)
 	}
 }
 
+#ifdef STDFUNCT_IO
+char uart_getcs(FILE *stream)
+{
+	(void) stream;
+	return uart_getc();
+}
+#endif // STDFUNCT_IO
 
 char uart_getc(void)
 {
