@@ -96,6 +96,18 @@ void can_handler(void)
 	}
 }
 
+void lap_get_status()
+{
+	can_message *tx_msg = can_buffer_get();
+	tx_msg->addr_src = myaddr;
+	tx_msg->port_src = 0x00;
+	tx_msg->addr_dst = 0x02;
+	tx_msg->port_dst = 0x02;
+	tx_msg->dlc = 1;
+	tx_msg->data[0] = 0x02; // send status
+	can_transmit(tx_msg);
+}
+
 void lap_switch_beamer_relais(uint8_t status)
 {
 	can_message *tx_msg = can_buffer_get();
