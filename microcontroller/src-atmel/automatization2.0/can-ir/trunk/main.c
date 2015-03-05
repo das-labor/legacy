@@ -56,6 +56,7 @@ int main(void)
 	init();
 
 	setDefaultAfterPoweron(); // teufel
+	lap_get_status();
 
 	// the main loop continuously handles can messages
 	while (1) {
