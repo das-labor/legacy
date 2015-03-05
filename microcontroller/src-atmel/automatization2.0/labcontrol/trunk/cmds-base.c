@@ -21,8 +21,7 @@ void cmd_loopback(int argc, char *argv[])
 	if (sscanf(argv[1], "%i", &mode) != 1)
 		goto argerror;
 
-	if (mode)
-	{
+	if (mode) {
 		printf("Activating loopack mode\n");
 		can_setmode(loopback);
 	} else {
@@ -47,12 +46,10 @@ void cmd_ping(int argc, char *argv[])
 
 	lap_ping(addr);
 
-	for (;;)
-	{
+	for (;;) {
 		msg = can_get();
 
-		if ((msg != NULL) && msg->addr_src == addr && msg->port_src == PORT_MGT && msg->data[0] == FKT_MGT_PONG)
-		{
+		if ((msg != NULL) && msg->addr_src == addr && msg->port_src == PORT_MGT && msg->data[0] == FKT_MGT_PONG) {
 			printf("Pong from 0x%x\n", addr);
 			free(msg);
 			return;
@@ -80,15 +77,13 @@ argerror:
 
 
 
-void hexdump(unsigned char *addr, int size)
+static void hexdump(unsigned char *addr, int size)
 {
 	unsigned char x = 0;
 
-	while (size--)
-	{
+	while (size--) {
 		printf("%02x ", *addr++);
-		if (++x == 16)
-		{
+		if (++x == 16) {
 			printf("\n");
 			x = 0;
 		}
@@ -96,7 +91,7 @@ void hexdump(unsigned char *addr, int size)
 }
 
 
-void dump_packet_v2(can_message_v2 *msg)
+static void dump_packet_v2(can_message_v2 *msg)
 {
 	time_t muh = time(0);
 	struct tm *tme = localtime(&muh);
@@ -108,7 +103,7 @@ void dump_packet_v2(can_message_v2 *msg)
 	printf("\n");
 }
 
-void dump_packet(can_message *msg)
+static void dump_packet(can_message *msg)
 {
 	time_t muh = time(0);
 	struct tm *tme = localtime(&muh);
@@ -120,10 +115,26 @@ void dump_packet(can_message *msg)
 	printf("\n");
 }
 
+static uint8_t filter_msg(can_message *msg_filter, can_message *msg)
+{
+	if ((!msg_filter->addr_src || msg_filter->addr_src == msg->addr_src) &&
+	    (!msg_filter->addr_dst || msg_filter->addr_dst == msg->addr_dst) &&
+	    (!msg_filter->port_src || msg_filter->port_src == msg->port_src) &&
+	    (!msg_filter->port_dst || msg_filter->port_dst == msg->port_dst))
+		return 1;
+	else
+		return 0;
+}
+
 void cmd_dump(int argc, char *argv[])
 {
-	if (argc > 1)
-	{
+	can_message msg_filter;
+	msg_filter.addr_src = 0;
+	msg_filter.port_src = 0;
+	msg_filter.addr_dst = 0;
+	msg_filter.port_dst = 0;
+
+	if (argc > 1 && strcmp(argv[1], "v2")) {
 		can_message_v2 *msg;
 
 		while (1)
@@ -137,21 +148,32 @@ void cmd_dump(int argc, char *argv[])
 			}
 			usleep(100);
 		}
-	} else
-	{
+	} else {
+		if (argc > 1 && argc < 4) {
+			if (sscanf(argv[1], "%i:%i", (int *) &msg_filter.addr_src, (int *) &msg_filter.port_src) != 2)
+				goto argerror;
+
+			if (sscanf(argv[2], "%i:%i", (int *) &msg_filter.addr_dst, (int *) &msg_filter.port_dst) != 2)
+				goto argerror;
+			printf("filter: %x %x %x %x\r\n", msg_filter.addr_src, msg_filter.port_src, msg_filter.addr_dst, msg_filter.port_dst);
+		}
+
 		can_message *msg;
 
 		while (1)
 		{
 			msg = can_get();
-			
+		
 			if (msg)
 			{
-				dump_packet(msg);
+				if (filter_msg(&msg_filter, msg))
+					dump_packet(msg);
 				can_free(msg);
 			}
 		}
 	}
+argerror:
+	debug(0, "dump [v2] [<src-addr>:<src-port> <dst-addr>:<dst-port>]");
 }
 
 
@@ -180,8 +202,7 @@ void cmd_packet(int argc, char *argv[])
 	msg->dlc = 0;
 
 	tok = strtok( argv[3], ",");
-	while (tok)
-	{
+	while (tok) {
 		if (msg->dlc >= 8 ) goto argerror;
 		if (sscanf(tok, "%i", &i) != 1) goto argerror;
 		msg->data[msg->dlc++] = i;
@@ -203,15 +224,15 @@ void cmd_lamp(int argc,char *argv[])
 	if (argc != 4)
 		goto argerror;
 
-	int dst;
-	int lamp;
-	int value;
-	sscanf(argv[1],"%x",&dst);
-	sscanf(argv[2],"%x",&lamp);
-	sscanf(argv[3],"%x",&value);
+	unsigned int dst;
+	unsigned int lamp;
+	unsigned int value;
+	sscanf(argv[1], "%x", &dst);
+	sscanf(argv[2], "%x", &lamp);
+	sscanf(argv[3], "%x", &value);
 
 
-	pdo_message * msg  = (pdo_message *) can_buffer_get();
+	pdo_message * msg = (pdo_message *) can_buffer_get();
 
 	msg->port_dst = PORT_LAMPE;
 	msg->port_src = PORT_MGT;
