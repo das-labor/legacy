@@ -149,7 +149,7 @@ void beamer_receive_handler(void)
 static uint8_t shutdown_progress = 0;
 static uint8_t beamer_power;
 
-void set_beamer_power(uint8_t status)
+void set_status_beamer_power(uint8_t status)
 {
 	beamer_power = status;
 }
