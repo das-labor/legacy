@@ -69,34 +69,31 @@ void can_handler(void)
 		 * Wenn Beamer Strom hat lamp status (auflösung / laufzeit / src) pollen
 		 * beim labor abschalten beamer abschalten, nachlaufen lassen, strom trennen
 		 */
-		if (rx_msg->addr_src == 0x02) { // get powercommander status
+		else if (rx_msg->addr_src == 0x02 && rx_msg->port_src == 0x02) { // get powercommander status
 			static uint8_t status = 0;
-			switch (rx_msg->port_src) {
-				case 0x02:
-					if ((rx_msg->data[1] & 0x01) && !(status & _BV(1))) { // Hauptschütz an
-						TeufelPoweron();
-						status |= _BV(1);
-					}
-					else if (!(rx_msg->data[1] & 0x01) && status & _BV(1)) {
-						status &= ~_BV(1);
-						beamer_start_shutdown();
-					}
-					if ((rx_msg->data[1] & 0x02) && !(status & _BV(0))) { // Beamer Schütz an
-						set_beamer_power(1);
-						status |= _BV(0);
-					}
-					else if (!(rx_msg->data[1] & 0x02) && status & _BV(0)) { // Beamer Schütz aus
-						set_beamer_power(0);
-						status &= ~_BV(0);
-					}
-					break;
+			if ((rx_msg->data[1] & _BV(0)) && (!(status & _BV(0)))) { // Hauptschütz an
+				TeufelPoweron();
+				status |= _BV(0);
+			}
+			else if ((!(rx_msg->data[1] & _BV(0))) && (status & _BV(0))) { // Hauptschütz aus
+				beamer_start_shutdown();
+				status &= ~_BV(0);
+			}
+
+			if ((rx_msg->data[1] & _BV(1)) && (!(status & _BV(1)))) { // Beamer Schütz an
+				set_status_beamer_power(1);
+				status |= _BV(1);
+			}
+			else if ((!(rx_msg->data[1] & _BV(1))) && (status & _BV(1))) { // Beamer Schütz aus
+				set_status_beamer_power(0);
+				status &= ~_BV(1);
 			}
 		}
 		can_free(rx_msg);
 	}
 }
 
-void lap_get_status()
+void lap_get_status(void)
 {
 	can_message *tx_msg = can_buffer_get();
 	tx_msg->addr_src = myaddr;
