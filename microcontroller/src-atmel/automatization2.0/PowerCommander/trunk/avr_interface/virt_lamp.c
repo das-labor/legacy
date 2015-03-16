@@ -104,7 +104,7 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 					if (enable == 1) // allow only power on
 						output_set(SWA_BEAMER, enable);
 					else if (enable == 0x23) // special power off - needed by can-ir
-						output_set(SWA_BEAMER, 0x00);
+						output_set(SWA_BEAMER, 0);
 					break;
 			}
 			relais_control();	// update relais status, will call twi_send()
@@ -137,7 +137,7 @@ void set_lamp(uint8_t room, uint8_t index, uint8_t enable)
 			break;
 		case ROOM_KUECHE:
 			output_set(SWL_KUECHE, enable);
-			relais_control();	// update relais status, will call twi_send()
+			twi_send();
 			break;
 	}
 }
@@ -150,7 +150,7 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 				outputdata.ports |= (1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK);
 			else
 				outputdata.ports &= ~((1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK));
-			relais_control();	/* update relais status, will call twi_send() */
+			relais_control();	// update relais status, will call twi_send()
 			break;
 		case ROOM_LOUNGE:
 			{
@@ -180,7 +180,7 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 			break;
 		case ROOM_KUECHE:
 			output_set(SWL_KUECHE, enable);
-			relais_control();	// update relais status, will call twi_send()
+			twi_send();
 			break;
 	}
 }
@@ -337,10 +337,6 @@ uint8_t get_output_status(void)
 		tmp |= _BV(0x00);
 	if (outputdata.ports & _BV(SWA_BEAMER))
 		tmp |= _BV(0x01);
-	if (outputdata.ports & _BV(SWL_LOUNGE))
-		tmp |= _BV(0x02);
-	if (outputdata.ports & _BV(SWL_VORTRAG))
-		tmp |= _BV(0x03);
 	return tmp;
 }
 
