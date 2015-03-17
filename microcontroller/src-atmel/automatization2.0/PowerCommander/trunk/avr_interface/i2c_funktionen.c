@@ -24,14 +24,18 @@ void sync_stat_cache()
 
 void twi_send()
 {
+	uint8_t *p_od = (uint8_t *) &outputdata;
+	static uint8_t lastdata[PWM_CHAN + 2];
+	for (uint8_t i = 0; i < PWM_CHAN + 2; i++)
+		if (*(p_od + i) != lastdata[i])
+			goto send;
+	return;
+send:
 	if (TWIM_Start(TWI_ADDRESS + TW_WRITE))
-	{
-		TWIM_Write(outputdata.ports);
-		TWIM_Write(outputdata.ports >> 8);
-		for (uint8_t i = 0; i < PWM_CHAN; i++)
-			TWIM_Write(outputdata.pwmval[i]);
-	}
+		for (uint8_t i = 0; i < PWM_CHAN + 2; i++) {
+			TWIM_Write(*(p_od + i));
+			lastdata[i] = *(p_od + i);
+		}
 	TWIM_Stop();
 	can_send_output_status();
 }
-
