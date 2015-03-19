@@ -60,6 +60,9 @@ void can_handler(void)
 					case 6:
 						setMute(rx_msg->data[1]);
 						break;
+					case 7:
+						beamer_start_shutdown();
+						break;
 					default:
 						break;
 				}

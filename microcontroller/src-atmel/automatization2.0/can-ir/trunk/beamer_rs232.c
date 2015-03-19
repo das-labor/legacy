@@ -4,86 +4,83 @@
 #include "uart/uart.h"
 #include "can_handler.h"
 /*
- * todo
- * on / off
- * power off if lamp off
- * 
+ * TODO
+ * on / off with power
  */
 
-//static const char power_on[] PROGMEM = "OKOKOKOKOK";
-static const char power_on[] PROGMEM = "IR 001";
-static const char power_off[] PROGMEM = "IR 002";
-static const char source[] PROGMEM = "IR 031";
-static const char source_vga[] PROGMEM = "IR 015";
-static const char source_svideo[] PROGMEM = "IR 018";
-static const char source_composite[] PROGMEM = "IR 019";
-static const char source_hdmi[] PROGMEM = "IR 050";
-static const char blank[] PROGMEM = "IR 030";
 static const char query_lamp_status[] PROGMEM = "Lamp ?";
 static const char query_lamp_hours[] PROGMEM = "Lamp";
 static const char query_video_source[] PROGMEM = "Src ?";
 
 
-static const PGM_P acer_cmds[] = {
-	power_on,
-	power_off,
-	source,
-	source_vga,
-	source_svideo,
-	source_composite,
-	source_hdmi,
-	blank,
+static const PGM_P acer_query[] = {
 	query_lamp_status,
 	query_lamp_hours,
 	query_video_source
 };
 
 enum {
-	SOURCE = 1,
+	QUERY_LAMP_STATUS,
+	QUERY_LAMP_HOURS,
+	QUERY_VIDEO_SOURCE,
+	ACER_QUERY_COUNT,
+} e_acer_query;
+
+static const uint8_t acer_cmds[] PROGMEM = {1, 2, 47, 30, 31, 15, 18, 19, 50, 8, 9, 10, 11, 12};
+
+enum {
+	ON,
+	OFF,
+	BLANK,
+	SOURCE,
 	SOURCE_VGA,
 	SOURCE_SVIDEO,
 	SOURCE_COMPOSITE,
 	SOURCE_HDMI,
-	BLANK,
-	QUERY_LAMP_STATUS,
-	QUERY_LAMP_HOURS,
-	QUERY_VIDEO_SOURCE,
-	RS232_CMD_COUNT
-} rs232_cmd;
+	MENU,
+	UP,
+	DOWN,
+	RIGHT,
+	LEFT,
+	E_KEY,
+	ACER_CMD_COUNT,
+} e_acer_cmd;
+
+#define CMD_ON_OFF 0
 
 static void beamer_nachlauf_detection(uint8_t src);
 
-static void read_string(char *buf, size_t i)
-{
-	// Lese die Adresse des i-ten Strings aus array[]
-	//const char *parray = (const char*) pgm_read_word (&acer_cmds[i]);
-	// Kopiere den Inhalt der Zeichenkette vom Flash ins RAM
-	strcpy_P(buf, acer_cmds[i]);
-}
 
-
-static uint8_t lamp_status = 0, video_source = 0;
-
+static uint8_t lamp_status = 0, video_source = 0, last_cmd = 0xff;
 
 void beamer_send_command(uint8_t cmd)
 {
-	char buf[12];
-
-	if (cmd < RS232_CMD_COUNT) {
-		if (cmd == 0) { // power off
+	if (cmd < ACER_CMD_COUNT) {
+		if (cmd == CMD_ON_OFF) { // power on / off
 			if (lamp_status)
-				cmd = 1; // power on
+				cmd = pgm_read_word(&acer_cmds[OFF]); // power off
 		}
 		else
 			cmd += 1;
 
-		uart_putstr("* 0 ");
-		read_string(buf, cmd);
-		uart_putstr(buf);
+		uart_putstr_P(PSTR("* 0 IR 0"));
+		uart_putc(pgm_read_word(&acer_cmds[cmd]) / 10 + 0x30);
+		uart_putc(pgm_read_word(&acer_cmds[cmd]) % 10 + 0x30);
 		uart_putc('\r');
 	}
 }
 
+static void beamer_query(uint8_t query)
+{
+	if (query < ACER_QUERY_COUNT) {
+		char buf[8];
+		strcpy_P(buf, acer_query[query]);
+		uart_putstr_P(PSTR("* 0 "));
+		uart_putstr(buf);
+		uart_putc('\r');
+		last_cmd = query;
+	}
+}
 
 /*
  rueckgabe strings
@@ -116,15 +113,16 @@ static void parse_string(char *buf)
 				beamer_nachlauf_detection(video_source);
 			}
 			break;
-		case '*':
-			/*if (buf[4] == '0')
-				printf("ack\n");
-			else if (buf[4] == '1')
-				printf("nack\n");*/
+		case '*': // CMD ack: "*000\r" nack: "*001\r"
+			lap_send_beamer_status(5, 2, buf[3] - 0x30);
+			if ((last_cmd == QUERY_VIDEO_SOURCE) && (buf[3] - 0x30 == 1)) {
+				beamer_nachlauf_detection(1);
+			}
+			last_cmd = 0xff;
 			break;
-		default:
+		default: // "XXXX" lamp hours
 			if (((buf[0] >= 0x30) && buf[0] <= 0x39) && (buf[1] >= 0x30) && buf[1] <= 0x39) {
-				buf[4] = '\0';
+				buf[4] = '\0'; // replace \r with \0 for atoi
 				lap_send_beamer_status(3, 3, atoi(buf)); // XXX  16 bit  lamp time
 			}
 			break;
@@ -159,15 +157,21 @@ void beamer_poll_state(void)
 	static uint16_t beamer_poll_delay = 0;
 	if (beamer_power && beamer_poll_delay++ > 50) {
 		beamer_poll_delay = 0;
-		beamer_send_command(QUERY_LAMP_STATUS);
+		beamer_query(QUERY_LAMP_STATUS);
+		//uart_putstr_P(PSTR("* 0 Lamp ?\r")); // FIXME remove
 	}
-	if (shutdown_progress && (!lamp_status) && (beamer_poll_delay == 20))
-		beamer_send_command(QUERY_VIDEO_SOURCE);
+	if (shutdown_progress && (!lamp_status) && (beamer_poll_delay == 20)) {
+		beamer_query(QUERY_VIDEO_SOURCE);
+		//uart_putstr_P(PSTR("* 0 Src ?\r")); // FIXME remove
+		last_cmd = QUERY_VIDEO_SOURCE;
+		lap_send_beamer_status(4, 2, 0xfe); // FIXME remove
+	}
 }
 
 /*
  * while cooling Lamp 0 + Src 0
- * after cooling Lamp 0 + Src 1
+ * after cooling Lamp 0 + Src 1 
+ * new: after cooling Lamp 0 + Src ? returns nack
  */
 
 static void beamer_nachlauf_detection(uint8_t src)
@@ -180,7 +184,7 @@ static void beamer_nachlauf_detection(uint8_t src)
 
 void beamer_start_shutdown(void)
 {
-	if (beamer_power && lamp_status) // check if beamer is on
-		beamer_send_command(0);
+	if (beamer_power && lamp_status) // check if beamer has power and is running
+		beamer_send_command(CMD_ON_OFF); // send off cmd
 	shutdown_progress = 1;
 }
