@@ -3,12 +3,18 @@
 #include "twi_master/twi_master.h"
 #include "can_handler.h"
 
+/* Nutzt die interne I²C Schnittstelle des Teufel Systems XXX um die 
+ * Rückseitige Verstärkerbaugruppe anzusteuern. Das Frontpanel wird dabei ausser
+ * Funktion gesetzt.
+ */
+
 /* TODO
- * erst nur globe lautstärke unterstützen
+ * use -/+ 12 V signal
+ * bug in mute: front left is still on
  */
 
 /*
- * pin1 schwarz: +12 an -12V aus
+ * pin1 schwarz: +12 V an -12 V aus
  * pin2 braun:   0V GND
  * pin3 rot:     +12V
  * pin4 orange: scl
@@ -69,7 +75,7 @@ static const uint8_t defaultVolumes[NUM_TEUFEL_CHANNELS] = {
  * Der Wertebereich auf dem I2C Bus geht von 0x0 bis 0x79.
  * Dabei müssen aber Werte welche mit 0xXa -0xXf enden übersprungen werden.
  * Werte zwischen a bis f setzen die Lautstärke auf 0.
- * Warscheinlich ist das ein Artefakt der BCD 7 Segment Anzeige.
+ * Wahrscheinlich ist das ein Artefakt der BCD 7 Segment Anzeige.
  *                       /
  *                     /
  *               _ _ /
@@ -145,8 +151,6 @@ void incrementChannels(int8_t diff)
 	}
 	writeAllChannels();
 }
-
-
 
 void setMute(uint8_t muted)
 {
