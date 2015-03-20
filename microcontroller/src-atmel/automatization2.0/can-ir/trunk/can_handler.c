@@ -132,8 +132,8 @@ void lap_send_beamer_status(uint8_t type, uint8_t len, uint16_t data)
 	tx_msg->port_dst = 0;
 	tx_msg->dlc = len;
 	tx_msg->data[0] = type;
-	tx_msg->data[1] = data & 0x0f;
-	tx_msg->data[2] = data >> 8;
+	tx_msg->data[1] = (uint8_t) data & 0xff;
+	tx_msg->data[2] = (uint8_t) (data >> 8) & 0xff;
 	can_transmit(tx_msg);
 }
 
