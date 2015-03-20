@@ -158,19 +158,16 @@ void beamer_poll_state(void)
 	if (beamer_power && beamer_poll_delay++ > 50) {
 		beamer_poll_delay = 0;
 		beamer_query(QUERY_LAMP_STATUS);
-		//uart_putstr_P(PSTR("* 0 Lamp ?\r")); // FIXME remove
 	}
 	if (shutdown_progress && (!lamp_status) && (beamer_poll_delay == 20)) {
 		beamer_query(QUERY_VIDEO_SOURCE);
-		//uart_putstr_P(PSTR("* 0 Src ?\r")); // FIXME remove
 		last_cmd = QUERY_VIDEO_SOURCE;
-		lap_send_beamer_status(4, 2, 0xfe); // FIXME remove
 	}
 }
 
 /*
  * while cooling Lamp 0 + Src 0
- * after cooling Lamp 0 + Src 1 
+ * after cooling Lamp 0 + Src 1 - old beamer
  * new: after cooling Lamp 0 + Src ? returns nack
  */
 
