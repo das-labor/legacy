@@ -1707,6 +1707,7 @@ Borgware-2D is now hosted on GitHub. To get the latest version,
 install git on your system and type:
 
   git clone https://github.com/das-labor/borgware-2d.git
+  cd borgware-2d
   git submodule init
   git submodule update
 
