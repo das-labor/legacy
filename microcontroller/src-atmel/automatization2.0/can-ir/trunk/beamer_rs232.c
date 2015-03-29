@@ -58,7 +58,7 @@ void beamer_send_command(uint8_t cmd)
 	if (cmd < ACER_CMD_COUNT) {
 		if (cmd == CMD_ON_OFF) { // power on / off
 			if (lamp_status)
-				cmd = pgm_read_byte(&acer_cmds[OFF]); // power off
+				cmd = OFF; // power off
 		}
 		else
 			cmd += 1;
