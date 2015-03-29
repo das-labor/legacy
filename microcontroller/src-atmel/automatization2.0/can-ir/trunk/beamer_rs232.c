@@ -26,17 +26,17 @@ enum {
 	ACER_QUERY_COUNT,
 } e_acer_query;
 
-static const uint8_t acer_cmds[] PROGMEM = {1, 2, 47, 30, 31, 15, 18, 19, 50, 8, 9, 10, 11, 12};
+static const uint8_t acer_cmds[] PROGMEM = {1, 2, 31, 15, 18, 19, 50, 30, 8, 9, 10, 11, 12, 47};
 
 enum {
 	ON,
 	OFF,
-	BLANK,
 	SOURCE,
 	SOURCE_VGA,
 	SOURCE_SVIDEO,
 	SOURCE_COMPOSITE,
 	SOURCE_HDMI,
+	BLANK,
 	MENU,
 	UP,
 	DOWN,
@@ -58,14 +58,14 @@ void beamer_send_command(uint8_t cmd)
 	if (cmd < ACER_CMD_COUNT) {
 		if (cmd == CMD_ON_OFF) { // power on / off
 			if (lamp_status)
-				cmd = pgm_read_word(&acer_cmds[OFF]); // power off
+				cmd = pgm_read_byte(&acer_cmds[OFF]); // power off
 		}
 		else
 			cmd += 1;
 
 		uart_putstr_P(PSTR("* 0 IR 0"));
-		uart_putc(pgm_read_word(&acer_cmds[cmd]) / 10 + 0x30);
-		uart_putc(pgm_read_word(&acer_cmds[cmd]) % 10 + 0x30);
+		uart_putc(pgm_read_byte(&acer_cmds[cmd]) / 10 + 0x30);
+		uart_putc(pgm_read_byte(&acer_cmds[cmd]) % 10 + 0x30);
 		uart_putc('\r');
 	}
 }
