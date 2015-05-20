@@ -121,7 +121,7 @@ static void parse_string(char *buf)
 			last_cmd = 0xff;
 			break;
 		default: // "XXXX" lamp hours
-			if (((buf[0] >= 0x30) && buf[0] <= 0x39) && (buf[1] >= 0x30) && buf[1] <= 0x39) {
+			if (buf[0] >= 0x30 && buf[0] <= 0x39 && buf[1] >= 0x30 && buf[1] <= 0x39) {
 				buf[4] = '\0'; // replace \r with \0 for atoi
 				lap_send_beamer_status(3, 3, atoi(buf)); // XXX  16 bit  lamp time
 			}
@@ -181,7 +181,9 @@ static void beamer_nachlauf_detection(uint8_t src)
 
 void beamer_start_shutdown(void)
 {
-	if (beamer_power && lamp_status) // check if beamer has power and is running
-		beamer_send_command(CMD_ON_OFF); // send off cmd
-	shutdown_progress = 1;
+	if (beamer_power) { // check if beamer has power and is running
+		if (lamp_status)
+			beamer_send_command(CMD_ON_OFF); // send off cmd
+		shutdown_progress = 1;
+	}
 }

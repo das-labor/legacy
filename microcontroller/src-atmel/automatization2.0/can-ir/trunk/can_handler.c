@@ -72,7 +72,7 @@ void can_handler(void)
 		 * Wenn Beamer Strom hat lamp status (auflösung / laufzeit / src) pollen
 		 * beim labor abschalten beamer abschalten, nachlaufen lassen, strom trennen
 		 */
-		else if (rx_msg->addr_src == 0x02 && rx_msg->port_src == 0x02) { // get powercommander status
+		else if (rx_msg->addr_src == 0x02 && rx_msg->port_src == 0x02 && rx_msg->addr_dst == 0x00 && rx_msg->port_dst == 0x00) { // get powercommander status
 			static uint8_t status = 0;
 			if ((rx_msg->data[1] & _BV(0)) && (!(status & _BV(0)))) { // Hauptschütz an
 				TeufelPoweron();
