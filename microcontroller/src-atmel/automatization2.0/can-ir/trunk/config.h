@@ -1,5 +1,4 @@
-#ifndef _CONFIG_H
-#define _CONFIG_H
+#pragma once
 
 // SPI
 #define MCP_CS_BIT          PB2
@@ -23,5 +22,5 @@
 
 #define UART_BAUD_RATE 9600
 
-#endif // _CONFIG_H
-
+#define TEA6420_ADDR 0x00
+#define PCA9555_ADDR 0x00
