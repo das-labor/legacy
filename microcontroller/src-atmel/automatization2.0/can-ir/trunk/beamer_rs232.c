@@ -115,7 +115,7 @@ static void parse_string(char *buf)
 			break;
 		case '*': // CMD ack: "*000\r" nack: "*001\r"
 			lap_send_beamer_status(5, 2, buf[3] - 0x30);
-			if ((last_cmd == QUERY_VIDEO_SOURCE) && (buf[3] - 0x30 == 1)) {
+			if ((last_cmd == QUERY_VIDEO_SOURCE) && (buf[3] == 0x31)) {
 				beamer_nachlauf_detection(1);
 			}
 			last_cmd = 0xff;

@@ -3,7 +3,7 @@
 #include "twi_master/twi_master.h"
 #include "can_handler.h"
 
-/* Nutzt die interne I²C Schnittstelle des Teufel Systems XXX um die 
+/* Nutzt die interne I²C Schnittstelle des Teufel Systems XXX um die
  * Rückseitige Verstärkerbaugruppe anzusteuern. Das Frontpanel wird dabei ausser
  * Funktion gesetzt.
  */
@@ -94,9 +94,9 @@ static void writeChannel(t_channel *channel)
 	uint8_t vol;
 	if (channel->vol > 79)
 		channel->vol = 79;
-		
-	vol = 121 - ((channel->vol / 10) * 16 + channel->vol % 10); // konvertierung von invertierem wert
-	
+
+	vol = 121 - ((channel->vol / 10) * 16 + channel->vol % 10); // konvertierung von invertiertem Wert
+
 	TWIM_Write(channel->id + (vol & 0x0f));
 	TWIM_Write((channel->id ^_HL(LOW_NIBBLE)) + ((vol >> 4) & 0x0f));
 }
