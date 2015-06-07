@@ -147,16 +147,16 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 	switch (room) {
 		case ROOM_VORTRAG:
 			if (enable)
-				outputdata.ports |= (1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK);
+				outputdata.ports |= (1 << SWL_TAFEL) | (1 << SWL_BEAMER) | (1 << SWL_FLIPPER) | (1 << SWL_SCHRANK);
 			else
-				outputdata.ports &= ~((1<<SWL_TAFEL)|(1<<SWL_BEAMER)|(1<<SWL_FLIPPER)|(1<<SWL_SCHRANK));
+				outputdata.ports &= ~((1 << SWL_TAFEL) | (1 << SWL_BEAMER) | (1 << SWL_FLIPPER) | (1 << SWL_SCHRANK));
 			relais_control();	// update relais status, will call twi_send()
 			break;
 		case ROOM_LOUNGE:
 			{
 				can_message *msg = can_buffer_get();
 				msg->addr_src = myaddr;
-				msg->port_src = 2;
+				msg->port_src = 0;
 				msg->addr_dst = 0x60;
 				msg->port_dst = 2;
 				msg->dlc = 3;
@@ -168,7 +168,7 @@ void set_lamp_all(uint8_t room, uint8_t enable)
 			{
 				can_message *msg = can_buffer_get();
 				msg->addr_src = myaddr;
-				msg->port_src = 2;
+				msg->port_src = 0;
 				msg->addr_dst = 0x61;
 				msg->port_dst = 2;
 				msg->dlc = 3;
