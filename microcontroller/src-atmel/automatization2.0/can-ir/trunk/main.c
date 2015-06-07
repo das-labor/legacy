@@ -10,8 +10,7 @@
 #include "beamer_rs232.h"
 #include "teufel-i2c.h"
 #include "can_handler.h"
-#include "i2c_pca9555.h"
-#include "i2c_tea6420.h"
+#include "audio_matrix.h"
 
 static volatile uint8_t tickscounter;
 
@@ -47,14 +46,7 @@ static void init(void)
 	//initialize can communication
 	can_init();
 
-	pca9555_write_byte(0xE0E0, PCA9555_CFG0);
-	pca9555_write_byte(0x1c1c, PCA9555_OUT0);
-
-	tea6420_connect_i2o(INPUT_1, GAIN_0DB, OUTPUT_1);
-	tea6420_connect_i2o(INPUT_1, GAIN_0DB, OUTPUT_2);
-	tea6420_connect_i2o(INPUT_1, GAIN_0DB, OUTPUT_3);
-	tea6420_connect_i2o(INPUT_1, GAIN_0DB, OUTPUT_4);
-
+	am_init();
 
 	// turn on interrupts
 	sei();
@@ -77,6 +69,7 @@ int main(void)
 			tickscounter = 0;
 			TeufelPoweronTick();
 			beamer_poll_state();
+			am_led_tick;
 		}
 		//PORTD &= ~_BV(PD7); // Disable debug LED
 	}

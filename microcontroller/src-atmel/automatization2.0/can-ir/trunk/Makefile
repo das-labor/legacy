@@ -1,6 +1,6 @@
 LAP_ADDR       = 0x10
 
-OBJ            = main.o can/can.o can/spi.o can_handler.o uart/uart.o beamer_rs232.o twi_master/twi_master.o teufel-i2c.o i2c_tea6420.o i2c_pca9555.o
+OBJ            = main.o can/can.o can/spi.o can_handler.o uart/uart.o beamer_rs232.o twi_master/twi_master.o teufel-i2c.o i2c_tea6420.o i2c_pca9555.o audio_matrix.o
 
 # Default values
 OUT           ?= image
