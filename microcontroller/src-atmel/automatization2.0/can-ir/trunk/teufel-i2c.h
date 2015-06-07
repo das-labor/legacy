@@ -1,7 +1,4 @@
-#ifndef _TEUFEL_I2C_H
-#define _TEUFEL_I2C_H
-
-#include <stdint.h>
+#pragma once
 
 typedef struct {
 	uint8_t vol;
@@ -15,9 +12,7 @@ extern void setMute(uint8_t muted);
 extern void setAllChannels(uint8_t vol);
 extern void setSingleChannel(uint8_t chanID, uint8_t vol);
 
-
 extern void setDefaultAfterPoweron(void);
 extern void TeufelPoweron(void);
 extern void TeufelPoweronTick(void);
 
-#endif // _TEUFEL_I2C_H
