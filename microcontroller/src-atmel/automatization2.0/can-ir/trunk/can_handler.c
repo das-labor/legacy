@@ -6,7 +6,7 @@
 #include "can/can.h"
 #include "can/lap.h"
 #include "beamer_rs232.h"
-#include "i2c_pca9555.h"
+#include "audio_matrix.h"
 
 static uint8_t myaddr;
 
@@ -77,12 +77,12 @@ void can_handler(void)
 			static uint8_t status = 0;
 			if ((rx_msg->data[1] & _BV(0)) && (!(status & _BV(0)))) { // Hauptschütz an
 				TeufelPoweron();
-				pca9555_write_byte(0x1c1c, PCA9555_OUT0);
+				am_set_power_led(1);
 				status |= _BV(0);
 			}
 			else if ((!(rx_msg->data[1] & _BV(0))) && (status & _BV(0))) { // Hauptschütz aus
 				beamer_start_shutdown();
-				pca9555_write_byte(0x1f1f, PCA9555_OUT0);
+				am_set_power_led(0);
 				status &= ~_BV(0);
 			}
 
