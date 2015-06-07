@@ -15,15 +15,11 @@ void can_handler()
 {
 	can_message *rx_msg;
 	uint8_t data[2] = {0, 0};
-	if ((rx_msg = can_get_nb()))			//get next canmessage in rx_msg
-	{
-		if (rx_msg->addr_dst == myaddr)
-		{
-			switch (rx_msg->port_dst)
-			{
+	if ((rx_msg = can_get_nb())) {			//get next canmessage in rx_msg
+		if (rx_msg->addr_dst == myaddr) {
+			switch (rx_msg->port_dst) {
 				case PORT_MGT:
-					switch (rx_msg->data[0])
-					{
+					switch (rx_msg->data[0]) {
 						case FKT_MGT_RESET:
 							wdt_enable(WDTO_15MS);
 							while (1);
@@ -64,8 +60,7 @@ void can_handler()
 		{
 			temp_ist = rx_msg->data[0];
 		} */
-		if (rx_msg->addr_src == 0x02) // get powercommander status
-		{
+		else if (rx_msg->addr_src == 0x02 && rx_msg->addr_dst == 0x00) { // get powercommander status
 			static uint8_t status = 0;
 			switch (rx_msg->port_src) {
 				case 0x02:
@@ -124,4 +119,3 @@ void can_read_addr()
 {
 	myaddr = eeprom_read_byte(&EE_lap_addr);
 }
-
