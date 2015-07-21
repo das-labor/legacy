@@ -9,4 +9,4 @@ extern void lap_send_teufel_status(t_channel channels[]);
 extern void lap_send_beamer_status(uint8_t type, uint8_t len, uint16_t data);
 extern void lap_switch_beamer_relais(uint8_t status);
 extern void lap_get_status(void);
-
+void lap_send_matrix_status(uint8_t (*matrix)(uint8_t));

@@ -64,6 +64,12 @@ void can_handler(void)
 					case 7:
 						beamer_start_shutdown();
 						break;
+					case 8:
+						am_set_output(rx_msg->data[1], rx_msg->data[2]);
+						break;
+					case 9:
+						am_set_gain(rx_msg->data[1], rx_msg->data[2]);
+						break;
 					default:
 						break;
 				}
@@ -150,6 +156,19 @@ void lap_send_teufel_status(t_channel channels[])
 	tx_msg->dlc = NUM_TEUFEL_CHANNELS;
 	for (uint8_t i = 0; i < NUM_TEUFEL_CHANNELS; i++)
 		tx_msg->data[i] = channels[i].vol;
+	can_transmit(tx_msg);
+}
+
+void lap_send_matrix_status(uint8_t (*matrix)(uint8_t))
+{
+	can_message *tx_msg = can_buffer_get();
+	tx_msg->addr_src = myaddr;
+	tx_msg->port_src = 0x07;
+	tx_msg->addr_dst = 0;
+	tx_msg->port_dst = 0;
+	tx_msg->dlc = 4;
+	for (uint8_t i = 0; i < 4; i++)
+		tx_msg->data[i] = (*matrix)(i);
 	can_transmit(tx_msg);
 }
 

@@ -69,7 +69,7 @@ int main(void)
 			tickscounter = 0;
 			TeufelPoweronTick();
 			beamer_poll_state();
-			am_led_tick;
+			am_led_tick();
 		}
 		//PORTD &= ~_BV(PD7); // Disable debug LED
 	}
