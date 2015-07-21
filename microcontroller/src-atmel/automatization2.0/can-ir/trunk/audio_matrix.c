@@ -52,24 +52,25 @@ static void am_set_default(void)
 	set_input_led();
 }
 
-void am_init(void)
-{
-	pca9555_write_word(ALL_LEDS, PCA9555_CFG0); // set to output ports
-	am_set_default();
-}
-
 void am_set_power_led(uint8_t state)
 {
-	uint8_t led_set;
-	if (state) {
+/*	uint8_t led_set;
+	if (state)
 		led_set = pca9555_get_output() & ~_BV(LED_POWER);
-		am_set_default();
-	}
 	else
 		led_set = pca9555_get_output() | ALL_LEDS;
 	
-	pca9555_write_word(led_set, PCA9555_OUT0); // schreibe 16 bit in output 1 & 2
+	pca9555_write_word(led_set, PCA9555_OUT0); // schreibe 16 bit in output 1 & 2*/
+	if (state)
+		am_set_default();
 }
+
+void am_init(void)
+{
+	pca9555_write_word(ALL_LEDS, PCA9555_CFG0); // set to output ports
+	am_set_power_led(1);
+}
+
 
 void am_led_tick(void)
 {
@@ -77,7 +78,7 @@ void am_led_tick(void)
 	static uint8_t led_counter[4];
 	uint8_t led_set = _BV(LED_OUT1) | _BV(LED_OUT2) | _BV(LED_OUT3) | _BV(LED_OUT4);
 
-	for (counter = 0; counter < 30; counter++) {
+	if (counter < 30) {
 		if (counter < 10)
 			for (uint8_t i = 0; i < 4; i++) {
 				if (!counter && led_out_state[i]) {
@@ -95,5 +96,8 @@ void am_led_tick(void)
 					
 				pca9555_write_word(led_set, PCA9555_OUT0); // schreibe 16 bit in output 1 & 2
 			}
+		counter++;
 	}
+	else
+		counter = 0;
 }
