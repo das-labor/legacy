@@ -46,8 +46,6 @@ static void init(void)
 	//initialize can communication
 	can_init();
 
-	am_init();
-
 	// turn on interrupts
 	sei();
 }
@@ -58,7 +56,7 @@ int main(void)
 	// system initialization
 	init();
 
-	setDefaultAfterPoweron(); // teufel
+	//setDefaultAfterPoweron(); // teufel
 	lap_get_status();
 
 	// the main loop continuously handles can messages
@@ -69,7 +67,7 @@ int main(void)
 			tickscounter = 0;
 			TeufelPoweronTick();
 			beamer_poll_state();
-			am_led_tick();
+			am_tick();
 		}
 		//PORTD &= ~_BV(PD7); // Disable debug LED
 	}

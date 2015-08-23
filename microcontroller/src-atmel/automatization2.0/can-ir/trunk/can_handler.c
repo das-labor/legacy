@@ -83,7 +83,7 @@ void can_handler(void)
 			static uint8_t status = 0;
 			if ((rx_msg->data[1] & _BV(0)) && (!(status & _BV(0)))) { // Hauptschütz an
 				TeufelPoweron();
-				am_set_power_led(1);
+				am_init_delay();
 				status |= _BV(0);
 			}
 			else if ((!(rx_msg->data[1] & _BV(0))) && (status & _BV(0))) { // Hauptschütz aus
