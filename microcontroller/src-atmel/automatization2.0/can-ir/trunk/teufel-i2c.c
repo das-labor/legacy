@@ -44,9 +44,9 @@ enum {
 } e_CHANNEL;
 
 #define DEFAULT_FRONT 47
-#define DEFAULT_REAR 79
-#define DEFAULT_SUB 62
-#define DEFAULT_CENTER 70
+#define DEFAULT_REAR 47
+#define DEFAULT_SUB 50
+#define DEFAULT_CENTER 47
 #define DEFAULT_SIDE 0
 
 static t_channel channels[NUM_TEUFEL_CHANNELS] = {
@@ -179,7 +179,7 @@ void TeufelPoweronTick(void)
 {
 	if (TeufelOnCounter) {
 		TeufelOnCounter++;
-		if (TeufelOnCounter > 10000) {
+		if (TeufelOnCounter > 120) {
 			TeufelOnCounter = 0;
 			setDefaultAfterPoweron();
 		}
