@@ -70,6 +70,10 @@ void can_handler(void)
 					case 9:
 						am_set_gain(rx_msg->data[1], rx_msg->data[2]);
 						break;
+					case 10:
+						am_set_output(rx_msg->data[1], 0);
+						am_set_output(rx_msg->data[1], 1);
+						break;
 					default:
 						break;
 				}
