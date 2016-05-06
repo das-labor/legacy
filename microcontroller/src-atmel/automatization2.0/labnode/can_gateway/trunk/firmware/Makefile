@@ -3,10 +3,10 @@ OBJ            = main.o uart/uart.o canlib/can.o canlib/spi.o usbdrv/usbdrv.o us
 
 # Default values
 OUT           ?= image
-MCU_TARGET    ?= atmega32
+MCU_TARGET    ?= atmega644
 MCU_CC        ?= avr-gcc
 MCU_AS        ?= avr-as
-OPTIMIZE      ?= -Os
+OPTIMIZE      ?= -Os -mstrict-X
 WARNINGS      ?= -Wall -Winline -Wextra -Wpedantic
 SVN_REVISION  ?= `svn --trust-server-cert --non-interactive info | grep "Revision:" | cut -d : -f 2 | tr -d '\n '`
 ID_STRING     ?=  \"`pwd | awk -F / '{print $$NF}' | cut -c 1-20 | tr -d '\n '`\"
