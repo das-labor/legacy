@@ -145,15 +145,27 @@ void uart_init(void)
 	UBRRL = UBRRL_VALUE;
 
 #if USE_2X
+#	if defined(U2X0)
+	UCSRA = _BV(U2X0);
+#	else
 	UCSRA = _BV(U2X);
+#	endif
 #else
 	UCSRA = 0;
 #endif
 
-#ifdef URSEL
-	UCSRC = _BV(URSEL) | _BV(UCSZ1) | _BV(UCSZ0);	// Asynchron 8N1
+#if defined(UCSZ00) && defined(UCSZ01)
+#	ifdef URSEL
+	UCSRC = _BV(URSEL) | _BV(UCSZ01) | _BV(UCSZ00);	// Asynchron 8N1
+#	else
+	UCSRC = _BV(UCSZ01) | _BV(UCSZ00);
+#	endif
 #else
+#	ifdef URSEL
+	UCSRC = _BV(URSEL) | _BV(UCSZ1) | _BV(UCSZ0);	// Asynchron 8N1
+#	else
 	UCSRC = _BV(UCSZ1) | _BV(UCSZ0);
+#	endif
 #endif
 
 #ifdef UART_INTERRUPT
