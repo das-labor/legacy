@@ -98,6 +98,7 @@ clean:
 	rm -f $(FEMTOOS_LIB_DIR)/can_base.a
 	rm -f $(FEMTOOS_LIB_DIR)/twi_master.a
 	rm -f $(FEMTOOS_LIB_DIR)/femtoos.a
+	rm -f $(FEMTOOS_LIB_DIR)/femtoos_startup.o
 
 
 
