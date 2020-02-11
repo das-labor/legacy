@@ -476,76 +476,76 @@ TosData  xOS __attribute__ ((nocommon));
 /* ===================================================================================================================== */
 
 #if defNumberOfTasks == 0
-  const Tbyte * pxTCBlist[0] PROGMEM =  { };
+  const Tbyte * const pxTCBlist[0] PROGMEM =  { };
 #elif defNumberOfTasks == 1
-  const Tbyte * pxTCBlist[1] PROGMEM =  { tcb00 };
+  const Tbyte * const pxTCBlist[1] PROGMEM =  { tcb00 };
 #elif defNumberOfTasks == 2
-  const Tbyte * pxTCBlist[2] PROGMEM =  { tcb00,tcb01 };
+  const Tbyte * const pxTCBlist[2] PROGMEM =  { tcb00,tcb01 };
 #elif defNumberOfTasks == 3
-  const Tbyte * pxTCBlist[3] PROGMEM =  { tcb00,tcb01,tcb02 };
+  const Tbyte * const pxTCBlist[3] PROGMEM =  { tcb00,tcb01,tcb02 };
 #elif defNumberOfTasks == 4
-  const Tbyte * pxTCBlist[4] PROGMEM =  { tcb00,tcb01,tcb02,tcb03 };
+  const Tbyte * const pxTCBlist[4] PROGMEM =  { tcb00,tcb01,tcb02,tcb03 };
 #elif defNumberOfTasks == 5
-  const Tbyte * pxTCBlist[5] PROGMEM =  { tcb00,tcb01,tcb02,tcb03,tcb04 };
+  const Tbyte * const pxTCBlist[5] PROGMEM =  { tcb00,tcb01,tcb02,tcb03,tcb04 };
 #elif defNumberOfTasks == 6
-  const Tbyte * pxTCBlist[6] PROGMEM =  { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05 };
+  const Tbyte * const pxTCBlist[6] PROGMEM =  { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05 };
 #elif defNumberOfTasks == 7
-  const Tbyte * pxTCBlist[7] PROGMEM =  { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06 };
+  const Tbyte * const pxTCBlist[7] PROGMEM =  { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06 };
 #elif defNumberOfTasks == 8
-  const Tbyte * pxTCBlist[8] PROGMEM =  { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07 };
+  const Tbyte * const pxTCBlist[8] PROGMEM =  { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07 };
 #elif defNumberOfTasks == 9
-  const Tbyte * pxTCBlist[9] PROGMEM =  { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08 };
+  const Tbyte * const pxTCBlist[9] PROGMEM =  { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08 };
 #elif defNumberOfTasks == 10
-  const Tbyte * pxTCBlist[10] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09 };
+  const Tbyte * const pxTCBlist[10] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09 };
 #elif defNumberOfTasks == 11
-  const Tbyte * pxTCBlist[11] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10 };
+  const Tbyte * const pxTCBlist[11] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10 };
 #elif defNumberOfTasks == 12
-  const Tbyte * pxTCBlist[12] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10,tcb11 };
+  const Tbyte * const pxTCBlist[12] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10,tcb11 };
 #elif defNumberOfTasks == 13
-  const Tbyte * pxTCBlist[13] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10,tcb11,tcb12 };
+  const Tbyte * const pxTCBlist[13] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10,tcb11,tcb12 };
 #elif defNumberOfTasks == 14
-  const Tbyte * pxTCBlist[14] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10,tcb11,tcb12,tcb13 };
+  const Tbyte * const pxTCBlist[14] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10,tcb11,tcb12,tcb13 };
 #elif defNumberOfTasks == 15
-  const Tbyte * pxTCBlist[15] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10,tcb11,tcb12,tcb13,tcb14 };
+  const Tbyte * const pxTCBlist[15] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10,tcb11,tcb12,tcb13,tcb14 };
 #elif defNumberOfTasks == 16
-  const Tbyte * pxTCBlist[16] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10,tcb11,tcb12,tcb13,tcb14,tcb15 };
+  const Tbyte * const pxTCBlist[16] PROGMEM = { tcb00,tcb01,tcb02,tcb03,tcb04,tcb05,tcb06,tcb07,tcb08,tcb09,tcb10,tcb11,tcb12,tcb13,tcb14,tcb15 };
 #endif
 
 
 #if defNumberOfTasks == 0
-  const TtaskDefinitionBlock * pxTDBlist[0] PROGMEM =  { };
+  const TtaskDefinitionBlock * const pxTDBlist[0] PROGMEM =  { };
 #elif defNumberOfTasks == 1
-  const TtaskDefinitionBlock * pxTDBlist[1] PROGMEM =  { &tdb00 };
+  const TtaskDefinitionBlock * const pxTDBlist[1] PROGMEM =  { &tdb00 };
 #elif defNumberOfTasks == 2
-  const TtaskDefinitionBlock * pxTDBlist[2] PROGMEM =  { &tdb00,&tdb01 };
+  const TtaskDefinitionBlock * const pxTDBlist[2] PROGMEM =  { &tdb00,&tdb01 };
 #elif defNumberOfTasks == 3
-  const TtaskDefinitionBlock * pxTDBlist[3] PROGMEM =  { &tdb00,&tdb01,&tdb02 };
+  const TtaskDefinitionBlock * const pxTDBlist[3] PROGMEM =  { &tdb00,&tdb01,&tdb02 };
 #elif defNumberOfTasks == 4
-  const TtaskDefinitionBlock * pxTDBlist[4] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03 };
+  const TtaskDefinitionBlock * const pxTDBlist[4] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03 };
 #elif defNumberOfTasks == 5
-  const TtaskDefinitionBlock * pxTDBlist[5] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04 };
+  const TtaskDefinitionBlock * const pxTDBlist[5] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04 };
 #elif defNumberOfTasks == 6
-  const TtaskDefinitionBlock * pxTDBlist[6] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05 };
+  const TtaskDefinitionBlock * const pxTDBlist[6] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05 };
 #elif defNumberOfTasks == 7
-  const TtaskDefinitionBlock * pxTDBlist[7] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06 };
+  const TtaskDefinitionBlock * const pxTDBlist[7] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06 };
 #elif defNumberOfTasks == 8
-  const TtaskDefinitionBlock * pxTDBlist[8] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07 };
+  const TtaskDefinitionBlock * const pxTDBlist[8] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07 };
 #elif defNumberOfTasks == 9
-  const TtaskDefinitionBlock * pxTDBlist[9] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08 };
+  const TtaskDefinitionBlock * const pxTDBlist[9] PROGMEM =  { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08 };
 #elif defNumberOfTasks == 10
-  const TtaskDefinitionBlock * pxTDBlist[10] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09 };
+  const TtaskDefinitionBlock * const pxTDBlist[10] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09 };
 #elif defNumberOfTasks == 11
-  const TtaskDefinitionBlock * pxTDBlist[11] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10 };
+  const TtaskDefinitionBlock * const pxTDBlist[11] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10 };
 #elif defNumberOfTasks == 12
-  const TtaskDefinitionBlock * pxTDBlist[12] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10,&tdb11 };
+  const TtaskDefinitionBlock * const pxTDBlist[12] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10,&tdb11 };
 #elif defNumberOfTasks == 13
-  const TtaskDefinitionBlock * pxTDBlist[13] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10,&tdb11,&tdb12 };
+  const TtaskDefinitionBlock * const pxTDBlist[13] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10,&tdb11,&tdb12 };
 #elif defNumberOfTasks == 14
-  const TtaskDefinitionBlock * pxTDBlist[14] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10,&tdb11,&tdb12,&tdb13 };
+  const TtaskDefinitionBlock * const pxTDBlist[14] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10,&tdb11,&tdb12,&tdb13 };
 #elif defNumberOfTasks == 15
-  const TtaskDefinitionBlock * pxTDBlist[15] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10,&tdb11,&tdb12,&tdb13,&tdb14 };
+  const TtaskDefinitionBlock * const pxTDBlist[15] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10,&tdb11,&tdb12,&tdb13,&tdb14 };
 #elif defNumberOfTasks == 16
-  const TtaskDefinitionBlock * pxTDBlist[16] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10,&tdb11,&tdb12,&tdb13,&tdb14,&tdb15 };
+  const TtaskDefinitionBlock * const pxTDBlist[16] PROGMEM = { &tdb00,&tdb01,&tdb02,&tdb03,&tdb04,&tdb05,&tdb06,&tdb07,&tdb08,&tdb09,&tdb10,&tdb11,&tdb12,&tdb13,&tdb14,&tdb15 };
 #endif
 
 

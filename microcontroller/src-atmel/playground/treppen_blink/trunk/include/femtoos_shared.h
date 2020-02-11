@@ -69,8 +69,8 @@ extern void appExitSleep(void);
 extern void appBoot(void);
 
 
-extern const Tbyte * pxTCBlist[defNumberOfTasks];
-extern const TtaskDefinitionBlock * pxTDBlist[defNumberOfTasks];
+extern const Tbyte * const pxTCBlist[defNumberOfTasks];
+extern const TtaskDefinitionBlock * const pxTDBlist[defNumberOfTasks];
 extern const fpInitTask pxInitlist[defNumberOfTasks];
 extern const fpLoopTask pxLooplist[defNumberOfTasks];
 extern const fpBarkTask pxBarklist[defNumberOfWatchdogTasks];
