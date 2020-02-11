@@ -14,7 +14,7 @@ AR=$(FEMTOOS_AVR_TOOLDIR)/bin/avr-ar
 BASEFLAGS= -save-temps
 BASEFLAGS+= -mint8
 BASEFLAGS+= -Wl,--defsym=__stack=xOS+xOSstackShift
-BASEFLAGS+= --param inline-call-cost=2
+#BASEFLAGS+= --param inline-call-cost=2
 BASEFLAGS+= -ffunction-sections
 BASEFLAGS+= -Wl,--gc-sections
 BASEFLAGS+= -Wl,--relax
