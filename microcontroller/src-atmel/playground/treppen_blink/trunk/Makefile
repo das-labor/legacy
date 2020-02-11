@@ -1,4 +1,12 @@
-FEMTOOS_AVR_TOOLDIR=/home/pl4nkton/avr/FemtoOS_0.92/IDE/proc
+# old
+#FEMTOOS_AVR_TOOLDIR=/home/pl4nkton/avr/FemtoOS_0.92/IDE/proc
+
+# avr-gcc would be at /usr/local/bin/avr-gcc with this example
+#FEMTOOS_AVR_TOOLDIR=/usr/local/
+
+ifndef FEMTOOS_AVR_TOOLDIR
+$(error set FEMTOOS_AVR_TOOLDIR to a directory containing an AVR toolchain, and don't commit that change)
+endif
 
 FEMTOOS_SOURCE=./
 FEMTOOS_APPLICATION_CONFIG_DIR=./
