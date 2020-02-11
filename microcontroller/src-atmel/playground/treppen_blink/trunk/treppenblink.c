@@ -320,7 +320,6 @@ void twi_mhandler_error(Tuint08 error,i2c_message *errdata)
 	can_transmit(&dstrl);
   
 }
-#endif // TWI_MTHREAD
 
 void init_sensor()
 {
@@ -413,6 +412,19 @@ void read_sensor()
 
 }
 
+#else
+
+void init_sensor()
+{
+	// do nothing, twim is not defined
+}
+
+void read_sensor()
+{
+	// do nothing, twim is not defined
+}
+
+#endif // TWI_MTHREAD
 
 #if (preTaskDefined(rgbled))
 void appLoop_rgbled(void)

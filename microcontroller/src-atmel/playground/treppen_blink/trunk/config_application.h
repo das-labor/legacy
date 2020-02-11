@@ -25,9 +25,12 @@
 #ifndef CONFIG_FEMTOOS_H_
 #define CONFIG_FEMTOOS_H_
 
+#define TWI_MTHREAD cfgTrue
+// undefined because otherwise LEDs dont work???
+#undef TWI_MTHREAD
+
 // Initiate TWI Master with bitrate of 100000 Hz
 #define TWI_BITRATE 100000
-#define TWI_MTHREAD cfgTrue
 #define TWI_SLAVE (15)
 
 #define MC_MOSI    PB3
@@ -291,7 +294,8 @@
 
 //#define  TaskIncludeOverride                     cfgStartRunning
 #define  TaskInclude_xcan                     cfgStartRunning
-#define  TaskInclude_twim                     cfgStartRunning
+// disabled because it kept spamming the CAN bus
+#define  TaskInclude_twim                     cfgExclude
 //#define  TaskInclude_xcan                     cfgExclude
 
 #define  TaskInclude_rundown                     cfgStartRunning
