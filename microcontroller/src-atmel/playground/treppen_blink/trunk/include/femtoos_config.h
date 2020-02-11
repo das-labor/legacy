@@ -1,5 +1,5 @@
 /*
- * Femto OS v 0.91 - Copyright (C) 2008-2009 Ruud Vlaming
+ * Femto OS v 0.92 - Copyright (C) 2008-2010 Ruud Vlaming
  *
  * This file is part of the Femto OS distribution.
  *
@@ -742,6 +742,20 @@
  * and two bytes of ram per task.
  */
 #define  cfgUseDelay                             cfgTrue
+
+/** <!--1422-->
+ * If you check for suspend when delayed, activate this.
+ *
+ * Normally, you must manually check for a suspend request, for a task will
+ * not just suspend when asked too. The problem with that is that the task
+ * may hold locks, of have open files, so that other tasks will effectively
+ * become suspended too. See taskSuspend() for more information. However, you
+ * almost never will delay a task when it holds locks or has open files, for
+ * the same reason. Therefore the delay call is a natural point to check for
+ * the suspend request. If you activate this option, the OS will do so for you.
+ * Then, you will know on beforehand where the suspend takes place.
+ */
+#define  cfgUseSuspendOnDelay                    cfgTrue
 
 /** <!--1404-->
  * Activate if you make use of the synchronization primitives.
@@ -1607,6 +1621,22 @@
  * least one task to make use of the this facility.
  */
 #define  includeGenQueuRead                      cfgTrue
+
+/** <!--1768-->
+ * Unwrite a byte on the queu.
+ *
+ * Activate cfgUseSynchronization, and have cfgUseAsQueu defined on at
+ * least one task to make use of the this facility.
+ */
+#define  includeGenQueuUnwrite                   cfgTrue
+
+/** <!--1769-->
+ * Unread a byte from the queu.
+ *
+ * Activate cfgUseSynchronization, and have cfgUseAsQueu defined on at
+ * least one task to make use of the this facility.
+ */
+#define  includeGenQueuUnread                    cfgTrue
 
 /** <!--1733-->
  * Clear the queu.
@@ -2967,6 +2997,7 @@
 
 #define  cfgUseEquidistantTicks                  cfgTrue
 #define  cfgUseDelay                             cfgFalse
+#define  cfgUseSuspendOnDelay                    cfgFalse
 #define  cfgUseSynchronization                   cfgSyncNon
 #define  cfgUseHierarchicalRoundRobin            cfgFalse
 #define  cfgUseNestedCriticals                   cfgFalse
@@ -3064,6 +3095,8 @@
 /* Queu functions --------------------------------------------------------- */
 #define  includeGenQueuWrite                     cfgFalse
 #define  includeGenQueuRead                      cfgFalse
+#define  includeGenQueuUnwrite                   cfgFalse
+#define  includeGenQueuUnread                    cfgFalse
 #define  includeGenQueuClear                     cfgFalse
 #define  includeGenQueuPeek                      cfgFalse
 #define  includeGenQueuReadable                  cfgFalse

@@ -1,5 +1,5 @@
 /*
- * Femto OS v 0.91 - Copyright (C) 2008-2009 Ruud Vlaming
+ * Femto OS v 0.92 - Copyright (C) 2008-2010 Ruud Vlaming
  *
  * This file is part of the Femto OS distribution.
  *
@@ -174,7 +174,7 @@ void taskDelayFromWake(Tuint16 uiTicksToWait) defSysWrapperEpilogue;
  * Suspend a task, but do not invoke a context switch.
  *
  * Call this method if you want to suspend a particular task. The state of
- * that task is not changed to suspended immediately, bit this is viewed
+ * that task is not changed to suspended immediately, but this is viewed
  * as a suspend request, to which the task may respond if he likes, by
  * calling taskSuspend(defSuspendCheck). The reason the call does not have
  * immediate effect is that the current state of the target
@@ -182,22 +182,25 @@ void taskDelayFromWake(Tuint16 uiTicksToWait) defSysWrapperEpilogue;
  * open files. Suspending such tasks may take down the whole system.
  * If the task is restarted however the state is well defined (it may
  * not hold locks of blocks) the request is always honored, independent
- * of the parameter restart was called with.
+ * of the parameter restart was called with. The latter also implies
+ * that this call may used in the bark method of a task, in order to stop
+ * the task until the cause of the timeout problems have been eliminated.
  *
  * The call does not force a context switch, thus if you call it with
  * the current running task number the method returns.
  *
  * The call has no effect on terminated or already suspended tasks.
  * Sleeping tasks will receive the request and be suspended when they
- * handle the call after the have waken.
+ * handle the call after they have waken.
  *
  * When called upon shared tasks, the result depends on the state
  * of the shared task. If it is currently scheduled for execution,
  * if will be treated as a normal task. So if it runs into a
- * taskSuspend(defSuspendCheck) it will be suspended immediate, and
+ * taskSuspend(defSuspendCheck) it will be suspended immediately, and
  * no other shared tasks are able to run again. If the shared task
  * hits restart first, the task will be suspended in shared state,
- * thus allowing the other shared states to run.
+ * thus allowing the other shared states to run. In general it is
+ * inadvisable to have a taskSuspend() in a shared task.
  */
 void genSuspend(Tuint08 uiTaskNumber);
 #define genSuspendOnName(TaskName) genSuspend(preTaskNumberOf(TaskName))
@@ -209,8 +212,11 @@ void genSuspend(Tuint08 uiTaskNumber);
  * the parameter defSuspendNow. If you want to handle a suspend request
  * from genSuspend(), call with defSuspendCheck. The
  * suspended state is directly applied, a context switch is performed.
- * This method only returns is an other task (or isr) calls genResume
+ * This method only returns if an other task (or isr) calls genResume
  * on your task.
+ *
+ * If you want to remove any suspend requests, call it with defSuspendClear.
+ * The task will not suspend and the request will be deleted.
  *
  * Do not use this at places where you may hold resources, such are
  * files, or locks. Although possible, other tasks may be effectively
@@ -663,6 +669,7 @@ void taskSyncRelease(Tuint08 uiSlotSlot) defSysWrapperEpilogue;
      * The method returns true or false.
      * True means that the lock has been obtained, false means a timeout.
      */
+    #define taskQueuRequestOnName(SlotName,TicksToWait)                                                              taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),0,0,TicksToWait)
     #define taskQueuWriteRequestOnName(SlotName,FreeFilling,TicksToWait)                                             taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),0,(-(FreeFilling)),TicksToWait)
     #define taskQueuReadRequestOnName(SlotName,FreeFilling,TicksToWait)                                              taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),0,(FreeFilling),TicksToWait)
     /** <!--0318-->
@@ -680,6 +687,7 @@ void taskSyncRelease(Tuint08 uiSlotSlot) defSysWrapperEpilogue;
      */
     #define taskMutexRequestOnName(SlotName,TicksToWait)                                                             taskSyncRequest(PassIfSlotIsMutex(preSlotNumberOf(SlotName)),0,0,TicksToWait)
   #else
+    #define taskQueuRequestOnName(SlotName,TicksToWait)                                                              taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),0,TicksToWait)
     #define taskQueuWriteRequestOnName(SlotName,FreeFilling,TicksToWait)                                             taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),(-(FreeFilling)),TicksToWait)
     #define taskQueuReadRequestOnName(SlotName,FreeFilling,TicksToWait)                                              taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),(FreeFilling),TicksToWait)
     #define taskMutexRequestOnName(SlotName,TicksToWait)                                                             taskSyncRequest(PassIfSlotIsMutex(preSlotNumberOf(SlotName)),0,TicksToWait)
@@ -690,10 +698,12 @@ void taskSyncRelease(Tuint08 uiSlotSlot) defSysWrapperEpilogue;
     #define taskSyncWriteReadRequestOnName(SlotLeftName,SlotRightName,FreeLeftFilling,FreeRightFilling)              taskSyncRequest((((preSlotNumberOf(SlotLeftName))<<4)|((preSlotNumberOf(SlotRightName)))),(-(FreeLeftFilling)),(FreeRightFilling))
     #define taskSyncReadWriteRequestOnName(SlotLeftName,SlotRightName,FreeLeftFilling,FreeRightFilling)              taskSyncRequest((((preSlotNumberOf(SlotLeftName))<<4)|((preSlotNumberOf(SlotRightName)))),(FreeLeftFilling),(-(FreeRightFilling)))
     #define taskSyncReadReadRequestOnName(SlotLeftName,SlotRightName,FreeLeftFilling,FreeRightFilling)               taskSyncRequest((((preSlotNumberOf(SlotLeftName))<<4)|((preSlotNumberOf(SlotRightName)))),(FreeLeftFilling),(FreeRightFilling))
+    #define taskQueuRequestOnName(SlotName)                                                                          taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),0,0)
     #define taskQueuWriteRequestOnName(SlotName,FreeFilling)                                                         taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),0,(-(FreeFilling)))
     #define taskQueuReadRequestOnName(SlotName,FreeFilling)                                                          taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),0,(FreeFilling))
     #define taskMutexRequestOnName(SlotName)                                                                         taskSyncRequest(PassIfSlotIsMutex(preSlotNumberOf(SlotName)),0,0)
   #else
+    #define taskQueuRequestOnName(SlotName)                                                                          taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),0)
     #define taskQueuWriteRequestOnName(SlotName,FreeFilling)                                                         taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),(-(FreeFilling)))
     #define taskQueuReadRequestOnName(SlotName,FreeFilling)                                                          taskSyncRequest(PassIfSlotIsQueu(preSlotNumberOf(SlotName)),(FreeFilling))
     #define taskMutexRequestOnName(SlotName)                                                                         taskSyncRequest(PassIfSlotIsMutex(preSlotNumberOf(SlotName)),0)
@@ -729,7 +739,7 @@ void taskSyncRelease(Tuint08 uiSlotSlot) defSysWrapperEpilogue;
  *
  * These macro make it possible to release a lock on a mutex on the basis of the name.
  * It performs the same action as taskSyncRelease() but an extra check is included
- * if the slot indeed holds a queue.
+ * if the slot indeed holds a mutex.
  */
 #define taskMutexReleaseOnName(SlotName)                      taskSyncRelease(PassIfSlotIsMutex(preSlotNumberOf(SlotName)))
 
@@ -761,12 +771,54 @@ void genQueuWrite(Tuint08 uiSlot, Tbyte bItem);
  * read/write methods are tick/interrupt protected. Thus it is possible to
  * use the queue mechanism without the request/release methods, if you take
  * care of locking and counting of the bytes yourself. This is particularly
- * handy when working with interrupts A queue may filled in the interrupt
+ * handy when working with interrupts. A queue may filled in the interrupt
  * and read in a task.
  * If you read from an empty queue the returned value is 0.
  */
 Tbyte genQueuRead(Tuint08 uiSlot);
 #define genQueuReadOnName(SlotName) genQueuRead(preSlotNumberOf(SlotName))
+
+/** <!--0327-->
+ * Unwrite (remove) bytes from the queue.
+ *
+ * Call this method if you want to undo the last write operations. The execution
+ * takes place in task space, and may require some stack space. Normally you
+ * use this directly after several genQueuWrite(), thus inside the same locked
+ * environment, to correct erroneous write operations. If done outside the
+ * lock, be sure you know what bytes you are removing. You may try to unwrite
+ * more bytes as present, this is not an error, and will result all the removal
+ * of all bytes written.
+ *
+ * Note that this action does not restore the original values (from before the
+ * write) of the queue. So if this call is followed by an genQueuUnread(),
+ * those bytes will not magically return.
+ *
+ * Typical use is after a communication when it turns out for example that
+ * the crc of the bytes received is incorrect.
+ */
+void genQueuUnwrite(Tuint08 uiSlot, Tuint08 uiUnwriteSize);
+#define genQueuUnwriteOnName(SlotName, UnwriteSize) genQueuUnread(preSlotNumberOf(SlotName),UnwriteSize)
+
+/** <!--0328-->
+ * Unread (remove) bytes from the queue.
+ *
+ * Call this method if you want to undo the last read operations. The execution
+ * takes place in task space, and may require some stack space. Normally you
+ * use this directly after several genQueuRead(), thus inside the same locked
+ * environment, to correct erroneous read operations. If done outside the
+ * lock, be sure you know what bytes you are removing. You may try to unread
+ * more bytes as present, this is not an error, and will result all the removal
+ * of all bytes read.
+ *
+ * After an unread the bytes my be read again, and since the values in the queue
+ * are not altered, the same values will reappear.
+ *
+ * Typical use is after a communication when it turns out for example that
+ * the crc of the bytes received is incorrect.
+ */
+void genQueuUnread(Tuint08 uiSlot, Tuint08 uiUnreadSize);
+#define genQueuUnreadOnName(SlotName, UnreadSize) genQueuUnread(preSlotNumberOf(SlotName),UnreadSize)
+
 
 /** <!--0301-->
  * Clear the queue.
@@ -793,7 +845,7 @@ Tbyte genQueuPeek(Tuint08 uiSlot);
 /** <!--0315-->
  * See how many bytes can be read from the queue.
  *
- * This method return how may bytes can be written to the queue. This is
+ * This method return how may bytes can be read to the queue. This is
  * really a temporarily value, but since you know which tasks read/write
  * on the queue, you can judge how stable it is.
  */
@@ -803,7 +855,7 @@ Tuint08 genQueuReadable(Tuint08 uiSlot);
 /** <!--0311-->
  * See how many bytes can be written to the queue.
  *
- * This method return how may bytes can be read to the queue. This is
+ * This method return how may bytes can be written to the queue. This is
  * really a temporarily value, but since you know which tasks read/write
  * on the queue, you can judge how stable it is.
  */
@@ -1533,22 +1585,51 @@ Tuint16 isrStackCheck(Tuint08 uiExtraStackSafety);
   #endif
 #endif
 
+
 /** <!--0805-->
- * Call this to let the task wait for a specific event in the system.
+ * Call to let the task wait for one specific event in the system.
  *
  * This function is used as a lightweight alternative to synchronization to
  * slots. There are 8 predefined events ready to use. If you call this function
- * on one or more of those events, the task blocks until all of these events
+ * the task blocks until the events has fired. Firing event is possible from
+ * within an isr, even if the OS is set interruptible. Thus this can make you
+ * application very responsive, while not being bound to handle all matters
+ * inside an isr. Any task being able to wait for events must have the CapEvent
+ * capability.
+ *
+ * Note, if you use a number, that should be the number of the event itself,
+ * thus a number 0 ... 7 (borders included). It is easier to work with names though.
+ */
+#if (cfgUseTimeout == cfgTrue)
+  #define taskWaitForEvent(Event,TicksToWait)            taskWaitForEventSet((1<<(Event)),TicksToWait)
+  #define taskWaitForEventOnName(EventName,TicksToWait)  taskWaitForEventSet(preEventLocationOf(EventName),TicksToWait)
+#else
+  #define taskWaitForEvent(Event)                        taskWaitForEventSet((1<<(Event)))
+  #define taskWaitForEventOnName(EventName)              taskWaitForEventSet(preEventLocationOf(EventName))
+#endif
+
+
+/** <!--0806-->
+ * Call to let the task wait for more specific events in the system.
+ *
+ * This function is used as a lightweight alternative to synchronization to
+ * slots. There are 8 predefined events ready to use. If you call this function
+ * on several events, the task blocks until all of these events
  * have fired. Events are typically fired one at the time, so the task is
  * reactivated when the last event has fired. Firing event is possible from
  * within an isr, even if the OS is set interruptible. Thus this can make you
  * application very responsive, while not being bound to handle all matters
  * inside an isr. Any task being able to wait for events must have the CapEvent
  * capability.
+ *
+ * The uiEventSet is a binary pattern, the events are represented by a set
+ * bit on their location. So if you want to wait on events 5 and 0 supply
+ * the byte 0x21. Waiting for event set 0x00 results in a direct context
+ * switch, since there is nothing to wait for. It is easier to work with
+ * names though.
  */
 #if (cfgUseTimeout == cfgTrue)
-  Tbool taskWaitForEvent(Tuint08 uiEventSet, Tuint16 uiTicksToWait) defSysWrapperEpilogue;
-  #define taskWaitForEventSetOnNames1(Event0,TicksToWait)                                           taskWaitForEventSet(preEventLocationOf(Event0),TicksToWait)
+  Tbool taskWaitForEventSet(Tuint08 uiEventSet, Tuint16 uiTicksToWait) defSysWrapperEpilogue;
   #define taskWaitForEventSetOnNames2(Event0,Event1,TicksToWait)                                    taskWaitForEventSet(preEventLocationOf(Event0)|preEventLocationOf(Event1),TicksToWait)
   #define taskWaitForEventSetOnNames3(Event0,Event1,Event2,TicksToWait)                             taskWaitForEventSet(preEventLocationOf(Event0)|preEventLocationOf(Event1)|preEventLocationOf(Event2),TicksToWait)
   #define taskWaitForEventSetOnNames4(Event0,Event1,Event2,Event3,TicksToWait)                      taskWaitForEventSet(preEventLocationOf(Event0)|preEventLocationOf(Event1)|preEventLocationOf(Event2)|preEventLocationOf(Event3),TicksToWait)
@@ -1557,8 +1638,7 @@ Tuint16 isrStackCheck(Tuint08 uiExtraStackSafety);
   #define taskWaitForEventSetOnNames7(Event0,Event1,Event2,Event3,Event4,Event5,Event6,TicksToWait) taskWaitForEventSet(preEventLocationOf(Event0)|preEventLocationOf(Event1)|preEventLocationOf(Event2)|preEventLocationOf(Event3)|preEventLocationOf(Event4)|preEventLocationOf(Event5)|preEventLocationOf(Event6),TicksToWait)
   #define taskWaitForAllEvents(TicksToWait)                                                         taskWaitForEventSet(defAllEvents,TicksToWait)
 #else
-  void taskWaitForEvent(Tuint08 uiEventSet) defSysWrapperEpilogue;
-  #define taskWaitForEventSetOnNames1(Event0)                                           taskWaitForEventSet(preEventLocationOf(Event0))
+  void taskWaitForEventSet(Tuint08 uiEventSet) defSysWrapperEpilogue;
   #define taskWaitForEventSetOnNames2(Event0,Event1)                                    taskWaitForEventSet(preEventLocationOf(Event0)|preEventLocationOf(Event1))
   #define taskWaitForEventSetOnNames3(Event0,Event1,Event2)                             taskWaitForEventSet(preEventLocationOf(Event0)|preEventLocationOf(Event1)|preEventLocationOf(Event2))
   #define taskWaitForEventSetOnNames4(Event0,Event1,Event2,Event3)                      taskWaitForEventSet(preEventLocationOf(Event0)|preEventLocationOf(Event1)|preEventLocationOf(Event2)|preEventLocationOf(Event3))

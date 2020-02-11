@@ -1,5 +1,5 @@
 /*
- * Femto OS v 0.91 - Copyright (C) 2008-2009 Ruud Vlaming
+ * Femto OS v 0.92 - Copyright (C) 2008-2010 Ruud Vlaming
  *
  * This file is part of the Femto OS distribution.
  *
@@ -101,7 +101,7 @@
 #elif (cfgUseSynchronization == cfgSyncNon)
   #define  MinSlotSize_Task                         1
   #define  MaxSlotSize_Task                         14
-#elif
+#else
   /* You should not come here, if you do cfgUseSynchronization is misspelled. */
   #define  MinSlotSize_Task                         1
   #define  MaxSlotSize_Task                         14
@@ -382,6 +382,10 @@
 
 #if ( !defined(cfgUseDelay) || ((cfgUseDelay != cfgTrue) && (cfgUseDelay != cfgFalse)) )
   #error "Parameter 'cfgUseDelay' is misspelled or incorrect."
+#endif
+
+#if ( !defined(cfgUseSuspendOnDelay) || ((cfgUseSuspendOnDelay != cfgTrue) && (cfgUseSuspendOnDelay != cfgFalse)) )
+  #error "Parameter 'cfgUseSuspendOnDelay' is misspelled or incorrect."
 #endif
 
 #if ( !defined(cfgUseSynchronization) || ((cfgUseSynchronization != cfgSyncSingleSlot) && (cfgUseSynchronization != cfgSyncSingleBlock) && (cfgUseSynchronization != cfgSyncDoubleBlock) && (cfgUseSynchronization != cfgSyncNon)) )
@@ -670,6 +674,14 @@
 
 #if ( !defined(includeGenQueuRead) || ((includeGenQueuRead != cfgTrue) && (includeGenQueuRead != cfgFalse)) )
   #error "Parameter 'includeGenQueuRead' is misspelled or incorrect."
+#endif
+
+#if ( !defined(includeGenQueuUnwrite) || ((includeGenQueuUnwrite != cfgTrue) && (includeGenQueuUnwrite != cfgFalse)) )
+  #error "Parameter 'includeGenQueuUnwrite' is misspelled or incorrect."
+#endif
+
+#if ( !defined(includeGenQueuUnread) || ((includeGenQueuUnread != cfgTrue) && (includeGenQueuUnread != cfgFalse)) )
+  #error "Parameter 'includeGenQueuUnread' is misspelled or incorrect."
 #endif
 
 #if ( !defined(includeGenQueuClear) || ((includeGenQueuClear != cfgTrue) && (includeGenQueuClear != cfgFalse)) )
@@ -1950,6 +1962,14 @@
   #warning "Use of 'includeGenQueuRead' requires activation of cfgUseSynchronization."
 #endif
 
+#if (includeGenQueuUnwrite == cfgTrue) && (cfgUseSynchronization == cfgSyncNon)
+  #warning "Use of 'includeGenQueuUnwrite' requires activation of cfgUseSynchronization."
+#endif
+
+#if (includeGenQueuUnread == cfgTrue) && (cfgUseSynchronization == cfgSyncNon)
+  #warning "Use of 'includeGenQueuUnread' requires activation of cfgUseSynchronization."
+#endif
+
 #if (includeGenQueuClear == cfgTrue) && (cfgUseSynchronization == cfgSyncNon)
   #warning "Use of 'includeGenQueuClear' requires activation of cfgUseSynchronization."
 #endif
@@ -2174,6 +2194,8 @@
       (includeGenWaitRelease == cfgTrue) ||         \
       (includeGenQueuWrite == cfgTrue) ||           \
       (includeGenQueuRead == cfgTrue) ||            \
+      (includeGenQueuUnwrite == cfgTrue) ||         \
+      (includeGenQueuUnread == cfgTrue) ||          \
       (includeGenQueuClear == cfgTrue) ||           \
       (includeGenQueuPeek == cfgTrue) ||            \
       (includeGenQueuReadable == cfgTrue) ||        \
@@ -2181,6 +2203,11 @@
       (includeGenQueuFull == cfgTrue) ||            \
       (includeGenQueuEmpty == cfgTrue) )
   #warning "Possibly unprotected calls to the OS, activate cfgIntOsProtected."
+  /* You get this warning if an interrupt may occur at execution of the OS and
+   * you make use of genXXX calls in your code at the same time. In general you
+   * may not make use genXXX in this situation. However, if you need the OS to
+   * be interruptible for fast response and you make sure you do not use genXXX
+   * calls in your ISR, you can ignore the warning.  */
 #endif
 
 #if ( ( defined(CN_00) && (TaskInclude(CN_00) != cfgExclude) && (StackIsShared(CN_00)) ) || \

@@ -1,5 +1,5 @@
 /*
- * Femto OS v 0.91 - Copyright (C) 2008-2009 Ruud Vlaming
+ * Femto OS v 0.92 - Copyright (C) 2008-2010 Ruud Vlaming
  *
  * This file is part of the Femto OS distribution.
  *
@@ -121,19 +121,18 @@
 #define devEIR            GICR
 #define devINT            INT0
 
-/* Auxilairy Storage */
+/* Auxilairy Storage, devAuxSysReg must be in low IO if
+ * used, value of devAuxEventReg may equal to devAuxSysReg. */
 #define devAuxEventReg    UBRRL
 #define devAuxSysReg      UBRRL
 #define devAuxSysRegBit   7
 
+/* Features */
+#define devSupPINWrite    cfgFalse
 
-/**
- * Interrupt service routines.
- *
- * Service routines that are not present should not be defined and
- * cannot be defined cfgUndefined.
- */
-
+/* Interrupt service routines.
+ * Service routines that are not present should not be
+ * defined and cannot be defined cfgUndefined. */
 #define devSigTimerCompare     SIG_OUTPUT_COMPARE2
 #define devSigTimerOverflow    SIG_OVERFLOW2
 #define devSigExternalInt      SIG_INTERRUPT0

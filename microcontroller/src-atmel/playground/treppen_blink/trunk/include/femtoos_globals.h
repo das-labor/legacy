@@ -1,5 +1,5 @@
 /*
- * Femto OS v 0.91 - Copyright (C) 2008-2009 Ruud Vlaming
+ * Femto OS v 0.92 - Copyright (C) 2008-2010 Ruud Vlaming
  *
  * This file is part of the Femto OS distribution.
  *
@@ -296,6 +296,12 @@
  * present. If so, the task will consume the request, but will not suspend.
  */
 #define    defSuspendClear      0x04
+
+
+
+/* Definition used to check slot numbers, since it is used in user code,
+ * (expended by macro's) it is defined here.  */
+#define defCheckSlotTypeError   0xF0
 
 
 /**
@@ -876,7 +882,7 @@
  */
 #define  callIdSystem                                 0x00  /** <!----> */
 #define  callIdTaskYield                              0x01  /** <!--0125--> */
-#define  callIdTaskWaitForEvent                       0x02  /** <!--0805--> */
+#define  callIdTaskWaitForEvents                      0x02  /** <!--0805--> */
 #define  callIdTaskDelayFromNow                       0x03  /** <!--0116--> */
 #define  callIdTaskDelayFromWake                      0x04  /** <!--0117--> */
 #define  callIdTaskSuspend                            0x05  /** <!--0120--> */
@@ -948,12 +954,12 @@
 #define  callIdGenAddtoTickCount                      0x47  /** <!--0203--> */
 #define  callIdGenPassFlashString                     0x48  /** <!--0201--> */
 #define  callIdGenCountEventBlocks                    0x49  /** <!--0804--> */
-#define  callIdGenReserved1                           0x4A  /** <!----> */
-#define  callIdGenReserved2                           0x4B  /** <!----> */
-#define  callIdGenReserved3                           0x4C  /** <!----> */
-#define  callIdGenReserved4                           0x4D  /** <!----> */
-#define  callIdGenReserved5                           0x4E  /** <!----> */
-#define  callIdGenReserved6                           0x4F  /** <!----> */
+#define  callIdGenQueuUnwrite                         0x4A  /** <!--0327--> */
+#define  callIdGenQueuUnread                          0x4B  /** <!--0328--> */
+#define  callIdGenReserved1                           0x4C  /** <!----> */
+#define  callIdGenReserved2                           0x4D  /** <!----> */
+#define  callIdGenReserved3                           0x4E  /** <!----> */
+#define  callIdGenReserved4                           0x4F  /** <!----> */
 
 /**
  * API call pseudo ID's. These are not actually used, or are 'OnName' functions
@@ -982,11 +988,12 @@
 #define  callIdIsrStackCheck                          ----  /** <!--0406--> */
 #define  callIdIsrStartLoad                           ----  /** <!--0407--> */
 #define  callIdIsrStopLoad                            ----  /** <!--0408--> */
-#define  callIdIsrFireEvent                           ----  /** <!--0803--> */
-#define  callIdGenFireEvent                           ----  /** <!--0802--> */
 #define  callIdTaskFileClear                          0x1D  /** <!--0516--> */
 #define  callIdTaskFileDirectRead                     ----  /** <!--0514--> */
 #define  callIdTaskFileDirectWrite                    ----  /** <!--0515--> */
+#define  callIdGenFireEvent                           ----  /** <!--0802--> */
+#define  callIdIsrFireEvent                           ----  /** <!--0803--> */
+#define  callIdTaskWaitForEventSet                    0x02  /** <!--0806--> */
 
 
 /**

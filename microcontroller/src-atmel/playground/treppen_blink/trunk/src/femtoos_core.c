@@ -1,5 +1,5 @@
 /*
- * Femto OS v 0.91 - Copyright (C) 2008-2009 Ruud Vlaming
+ * Femto OS v 0.92 - Copyright (C) 2008-2010 Ruud Vlaming
  *
  * This file is part of the Femto OS distribution.
  *
@@ -211,13 +211,13 @@
 /**
  * Internal use only, not possible to call yourself from application code.
  *
- * Body function for taskWaitForEvent See and use that function.
+ * Body function for taskWaitForEventSet See and use that function.
  */
 #if (cfgUseEvents == cfgTrue) && (includeTaskWaitForEvents == cfgTrue)
   #if (cfgUseTimeout == cfgTrue)
-    static void privWaitForEventBody(Tuint08 uiEvent, Tuint16 uiTicksToWait) __attribute__((used)) defSysReduceProEpilogue;
+    static void privWaitForEventSetBody(Tuint08 uiEventSet, Tuint16 uiTicksToWait) __attribute__((used)) defSysReduceProEpilogue;
   #else
-    static void privWaitForEventBody(Tuint08 uiEvent) __attribute__((used)) defSysReduceProEpilogue;
+    static void privWaitForEventSetBody(Tuint08 uiEventSet) __attribute__((used)) defSysReduceProEpilogue;
   #endif
 #endif
 
@@ -466,7 +466,17 @@ static void privEnterTask(void) defSysReduceProEpilogue;
   #endif
 #endif
 
-  /**
+/**
+ * Internal use only, not possible to call yourself from application code.
+ *
+ * Checks if the task must be suspended and acts accordingly.
+ */
+#if (includeTaskSuspend == cfgTrue) || ((cfgUseDelay == cfgTrue) && (cfgUseSuspendOnDelay == cfgTrue))
+  static void privHandleSuspend(Tuint08 uiSuspendMode);
+#endif
+
+
+/**
  * Internal use only, not possible to call yourself from application code.
  *
  * Cleans the whole slotstack
@@ -1104,8 +1114,8 @@ static void privTaskInit(Tuint08 uiTaskNumber, Tuint08 uiInitControl)
        uiInitControl =  (uiInitControl & defInitStatusCopySetMask) | defInitStatusCopyDont; }
   #endif
  /* If we have a suspend request, this will be honored at this place. This may override the previous
-  * situation. Tasks cannot ignore a suspend request at this moment. Suspend requests are only possible
-  * when genSuspend() is present: */
+  * situation. Tasks cannot ignore a suspend request at this moment. External suspend requests are only
+  * possible when genSuspend() is present. A restart with  defRestartSuspended is honored nevertheless. */
   #if (includeGenSuspend == cfgTrue)
     /* test if the request has been made */
     if ((taskTCB->defSusField & defSusGetMask) == defSusRequest)
@@ -2606,6 +2616,33 @@ static void privTraceWatermarks(void)
 #endif
 
 
+#if (includeTaskSuspend == cfgTrue) || ((cfgUseDelay == cfgTrue) && (cfgUseSuspendOnDelay == cfgTrue))
+
+static void privHandleSuspend(Tuint08 uiSuspendMode)
+{ /* Get the task control block of the task that called this routine. */
+  TtaskControlBlock * curTCB = privTcbList(privTaskNumber(defCurrentTaskNumber));
+  /* Call this to see if we must suspend the current task and do so if needed.
+   * See in what situation we are. Note that the default action is to clear the request, even if
+   * we do not suspend. If we request for an immediate suspend, or if it has been requested from
+   * the outside. The latter is only possible by a genSuspend.  */
+  if ( ((uiSuspendMode & defSuspendNowGetMask) == defSuspendNow)
+    #if (includeGenSuspend == cfgTrue)
+     || ( ((uiSuspendMode & defSuspendCheckGetMask) == defSuspendCheck) &&
+          ((curTCB->defSusField & defSusGetMask) == defSusRequest) )
+    #endif
+     )
+  { /* issue the suspend. We do not have to check whether we are sleeping or terminated because that is not
+     * possible right here, the task called it on itself remember? The same holds for the blocking
+     * state. Thus just put the task in the suspended state. */
+    curTCB->uiTaskStatus = (curTCB->uiTaskStatus & defBaseSuspendedSetMask) | defBaseSuspendedTask; }
+  /* If the suspend could have been issued from the outside ... */
+  #if (includeGenSuspend == cfgTrue)
+    /* ... clear the request, if present. */
+    curTCB->defSusField = (curTCB->defSusField & defSusSetMask) | defSusClear;
+  #endif
+  }
+#endif
+
 
 #if (cfgUseSynchronization == cfgSyncSingleSlot) && ((cfgUseTaskWatchdog == cfgTrue) || ( includeTaskRecreate == cfgTrue ))
 
@@ -3112,8 +3149,6 @@ static void privRestoreInitialPriority(Tuint08 uiTaskNumber)
 #endif
 
 
-#if (cfgUseSynchronization != cfgSyncNon) && (defUseQueus == cfgTrue)
-
 /* The queue mechanism allows for several tasks writing and reading bytes. The OS
  * locks all tasks not able at that moment to write or read the required quantity of bytes.
  * Ah, and take care, the queues (and locks for that matter) are numbers from 1 and
@@ -3143,15 +3178,18 @@ static void privRestoreInitialPriority(Tuint08 uiTaskNumber)
  * Thus we write/read downwards, the wrapping is easier detected that way.
  */
 
+#if (cfgUseSynchronization != cfgSyncNon) && (defUseQueus == cfgTrue)
 
 static Tuint08 privQueuTest(Tuint08 uiSlot, Tsint08 siFreeFilling)
-{ /* If we want to know the size of a queue use this function, or if we
-   * want to test if a certain number of bytes will fit.  We use negative numbers
-   * for writing, and positive numbers for reading. */
+{ /* If we want to test if a certain number of bytes will fit.  We use negative numbers
+   * for writing, and positive numbers for reading. This method returns the number
+   * of bytes that can be read or written. */
   /* The size information of the queue is in flash, note the shift from slot numbers
    * to queue array numbering. */
   Tuint08 uiSize = privGetQueuSize(uiSlot-1);
-  /* Parameter FreeFilling zero is miss-used to request the size of the queue. */
+  /* Parameter FreeFilling zero is miss-used to request the size of the queue.
+   * TODO: 0.93, this seems not to be used actively, due to the presence of privGetQueuSize()
+   * but removal increases the footprint of Queues demo application. Sort out!*/
   if (siFreeFilling==0) { return uiSize; }
   /* The information about the write and read positions are stored in two arrays, the
    * uiQueuWrite and the uiQueuRead. Obtain the write pointer. That pointer points to
@@ -3175,7 +3213,7 @@ static Tuint08 privQueuTest(Tuint08 uiSlot, Tsint08 siFreeFilling)
    * might be full was already resolved, so in the calculation below it is assumed the
    * queue is not full, i.e. uiWrite==uiRead implies it is empty. Make sure the calculation
    * never produced negative numbers. */
-  Tuint08 uiReadable  = uiWrite<=uiRead ? uiRead - uiWrite : uiSize - (uiWrite - uiRead);
+  Tuint08 uiReadable  = (uiWrite<=uiRead) ? (uiRead - uiWrite) : (uiSize - (uiWrite - uiRead));
   /* Every byte that is not readable, must be writable. */
   Tuint08 uiWriteable = uiSize - uiReadable;
   /* Now decide what to return, for positive siFreeFilling we asks for the readable characters,
@@ -3225,60 +3263,6 @@ static Tbool privSizeFitsQueu(Tuint08 uiSlot, Tsint08 siFreeFilling)
   /* The default is true, i.e. you get the lock and it remains in effect if the siFreeFilling == 0 or
    * we have no queue at all. */
   return true; }
-
-#endif
-
-
-#if ((cfgUseSynchronization != cfgSyncNon) && ((defUseMutexes == cfgTrue) || (defUseQueus == cfgTrue))) && 0
-
-static void privReleaseSyncBlockingTasks(void)
-{ /* Arrive here if you have just completed putting sum data on the queue, or used a Mutex
-   * and are done and have released your own lock. Or call it when the task is
-   * initilialized or terminated. It runs through all tasks, and unblocks (not unlock)
-   * the first task that meets the conditions. This may not be the one with the highest
-   * priority. It does not operate on waitblocks (since they cannot, and should not,
-   * be released like this) */
-  Tuint08 uiLoopTask;
-  /* Run through all tasks possibly having a slot. */
-  for (uiLoopTask=0; uiLoopTask<defNumberOfTasksWithSlot; uiLoopTask++)
-  { TtaskExtendedControlBlock * loopTCB = (TtaskExtendedControlBlock *) privTcbList(uiLoopTask);
-    /* First check it this is a blocking task (a non blocking task does not need to
-     * be released) Furthermore, it must be a task that is able to run, otherwise way
-     * may release a task which is for instance suspended, and that will hold the lock
-     * for ever. */
-     if ((loopTCB->uiTaskStatus & ( defBaseStopStateGetMask | defBaseModeGetMask | defBaseBlockStateGetMask | defBaseDressGetMask))  == (defBaseStopStateGo | defBaseModeSync | defBaseBlockStateBlocked | defBaseDressSlot) )
-     { /* If yes, extract on which slots this task is blocking */
-       Tuint08 uiRightSlot = (loopTCB->uiTaskSlot & defSlotRightGetMask) >> defSlotRightShift;
-       /* Now we must test if this is not a wait-slot */
-       #if (defUseWaits == cfgTrue)
-         if (uiRightSlot < defNumberWaitBegin)
-       #endif
-       { /* If we arive here we are dealing with a queue of mutex. Now, depending on if we are working
-          * with doublelocks, we may need the left slot too. Waits and mutex/queues can never mix, so we
-          * do not need to worry */
-         #if (cfgUseSynchronization == cfgSyncDoubleBlock)
-           Tuint08 uiLeftSlot  = (loopTCB->uiTaskSlot & defSlotLeftGetMask) >> defSlotLeftShift;
-           /* Now we must test if these slots are unlocked on some other task */
-           if (privFreeLockAbsent(uiLeftSlot) && privFreeLockAbsent(uiRightSlot))
-           { /* If not, we must test if the filling conditions on this task are fulfilled
-              * by the queue. If it is a mutex, privSizeFitsQueu returns true per default. If
-              * we do not have queues at all testing is not needed. */
-            #if (defUseQueus == cfgTrue)
-              if (privSizeFitsQueu(uiLeftSlot,loopTCB->siQueuLeftLock) && privSizeFitsQueu(uiRightSlot,loopTCB->siQueuRightLock))
-            #endif
-        #else
-           /* Now we must test if these slots are unlocked on some other task */
-           if (privFreeLockAbsent(uiRightSlot))
-           { /* If not, we must test if the filling conditions on this task are fulfilled
-              * by the queue. If it is a mutex, privSizeFitsQueu returns true per default. If
-              * we do not have queues at all testing is not needed. */
-            #if (defUseQueus == cfgTrue)
-              if (privSizeFitsQueu(uiRightSlot,loopTCB->siQueuRightLock))
-            #endif
-        #endif
-          { /* This task seems to fulfill all requirements to be released. Make it so. */
-            privUnblockTask(uiLoopTask | defParaLockStateKeep | defParaRetStateTrue); } } } } } }
-
 
 #endif
 
@@ -4303,13 +4287,13 @@ void taskFileClose(void)
 #if (cfgUseEvents == cfgTrue) && (includeTaskWaitForEvents == cfgTrue)
 
 #if (cfgUseTimeout == cfgTrue)
-  Tbool taskWaitForEvent(Tuint08 uiEvent, Tuint16 uiTicksToWait)
+  Tbool taskWaitForEventSet(Tuint08 uiEventSet, Tuint16 uiTicksToWait)
 #else
-  void taskWaitForEvent(Tuint08 uiEvent)
+  void taskWaitForEventSet(Tuint08 uiEventSet)
 #endif
 { portResqueGlobalInterruptState();
   portSaveContext();
-  portJump(privWaitForEventBody); }
+  portJump(privWaitForEventSetBody); }
 
 #endif
 
@@ -4724,6 +4708,12 @@ void privDelayFromNowBody(Tuint16 uiTicksToWait)
    * delay for otherwise it may end up delaying one full tick round. Otherwise
    * we call the privDelayCalc with the request to measure the delay time from now */
   if (uiTicksToWait != defDelayTimeZero) { privDelayCalcFromNow(uiTicksToWait); }
+  /* If we may suspend on delay, we must check here. Note that the only source of a suspend request
+   * is the method genSuspend().  */
+  #if (includeGenSuspend == cfgTrue) && (cfgUseSuspendOnDelay == cfgTrue)
+    /* Since we come here not voluntarily we only suspend when requested. Therefore supply defSuspendCheck.*/
+    privHandleSuspend(defSuspendCheck);
+  #endif
   /* We are done and call for a task switch. */
   privEnterOS(defActionTaskStateSwitch);  }
 
@@ -4755,6 +4745,12 @@ void privDelayFromWakeBody(Tuint16 uiTicksToWait)
    * we call the privDelayCalc with the request to measure the delay time from the
    * last wakeup time. */
   if (uiTicksToWait != defDelayTimeZero) { privDelayCalcFromWake(uiTicksToWait); }
+  /* If we may suspend on delay, we must check here. Note that the only source of a suspend request
+   * is the method genSuspend().  */
+  #if (includeGenSuspend == cfgTrue) && (cfgUseSuspendOnDelay == cfgTrue)
+    /* Since we come here not voluntarily we only suspend when requested. Therefore supply defSuspendCheck.*/
+    privHandleSuspend(defSuspendCheck);
+  #endif
   /* We are done and call for a task switch. */
   privEnterOS(defActionTaskStateSwitch);  }
 
@@ -4824,23 +4820,35 @@ void genSuspend(Tuint08 uiTaskNumber)
   uiTaskNumber = privTaskNumber(uiTaskNumber);
   /* Get the task control block of the task at hand. */
   TtaskControlBlock * taskTCB = privTcbList(uiTaskNumber);
-  /* First check if we have a shared task in shared mode. */
+  /* First check if we can suspend directly, there are two situations, test for shared mode */
   #if (defUseSharedStack == cfgTrue)
-    /* That is the only situation that may be suspended directly. */
-    if ((taskTCB->uiTaskStatus & defBaseSharedGetMask) == defBaseSharedTask)
-    /* Change the status information to mark we want suspension of this task. */
-    { taskTCB->uiTaskStatus = (taskTCB->uiTaskStatus & defBaseSuspendedSetMask) | defBaseSuspendedTask; }
-    else
+    /* When in a share mode we may suspended directly. */
+    Tbool bSusOnShare = ((taskTCB->uiTaskStatus & defBaseSharedGetMask) == defBaseSharedTask);
+  #else
+    Tbool bSusOnShare = false;
   #endif
-  /* If not, check if the task is running at all. We do not want to suspend a terminated
-   * or already suspended task. For all these tasks a suspend request must be issued. */
-  { if (taskTCB->uiTaskStatus >= defBaseSleepingTask)
+  /* Test for suspend on delay mode.*/
+  #if ((cfgUseDelay == cfgTrue) && (cfgUseSuspendOnDelay == cfgTrue))
+    /* When we are in a delayed state and allow for suspend on delay we may suspend directly.*/
+    Tbool bSusOnDelay = ((taskTCB->uiTaskStatus & defBaseRunningGetMask) == defBaseRunDelayedTask);
+  #else
+    Tbool bSusOnDelay = false;
+  #endif
+  /* now see if we have one of the two situations */
+  if (bSusOnShare || bSusOnDelay)
+  { /* Change the status information to mark we want suspension of this task. */
+    taskTCB->uiTaskStatus = (taskTCB->uiTaskStatus & defBaseSuspendedSetMask) | defBaseSuspendedTask; }
+  else
+  {/* If not, check if the task is running at all. We do not want to suspend a terminated
+    * or already suspended task. For all these tasks a suspend request must be issued. */
+    if (taskTCB->uiTaskStatus >= defBaseSleepingTask)
     /* Change the status information to mark we want suspension of this task. */
     { taskTCB->defSusField = (taskTCB->defSusField & defSusSetMask) | defSusRequest; } }
   /* We are done. */
   privExitSysCritical(); }
 
 #endif
+
 
 
 #if (includeTaskSuspend == cfgTrue)
@@ -4851,8 +4859,6 @@ void privSuspendBody(Tuint08 uiSuspendMode)
   privInitOsSwitch();
   /* Tell what we are doing. */
   privTraceAPI(callIdTaskSuspend);
-  /* Get the task control block of the task that called this routine. */
-  TtaskControlBlock * curTCB = privTcbList(privTaskNumber(defCurrentTaskNumber));
   #if (cfgCheckMethodUse == cfgTrue)
     /* Check if the call has a valid argument */
     if ( (uiSuspendMode != defSuspendNow) && (uiSuspendMode != defSuspendClear)
@@ -4865,35 +4871,20 @@ void privSuspendBody(Tuint08 uiSuspendMode)
       { privShowError((errInvalidSuspendMode | errTaskStateCurrent), callIdTaskSuspend, errCurrentTask ); }
     /* If there is the possibility of the dominant mode, see ... */
     #if (includeTaskProtectSwitchTasks == cfgTrue) || (includeTaskProtectSwitchCritical == cfgTrue)
+      /* Get the task control block of the task that called this routine. */
+      TtaskControlBlock * curTCB = privTcbList(privTaskNumber(defCurrentTaskNumber));
       /* ... if we do not have a dominant task at hand */
       if ((curTCB->uiTaskStatus & defBaseDressGetMask) == defBaseDressRunable)
       /* Report an error and stop the task. */
       { privShowError((errIllegalDominantState | errTaskStateCurrent | errOsStateAsIs), callIdTaskSuspend,  errCurrentTask ); }
     #endif
   #endif
-  /* See in what situation we are. Note that the default action is to clear the request, even if
-   * we do not suspend. If we request for an immediate suspend, or if it has been requested from
-   * the outside. The latter is only possible by a genSuspend.  */
-  if ( ((uiSuspendMode & defSuspendNowGetMask) == defSuspendNow)
-    #if (includeGenSuspend == cfgTrue)
-     || ( ((uiSuspendMode & defSuspendCheckGetMask) == defSuspendCheck) &&
-          ((curTCB->defSusField & defSusGetMask) == defSusRequest) )
-    #endif
-     )
-  { /* issue the suspend. We do not have to check whether we are sleeping or terminated because that is not
-     * possible right here, the task called it on itself remember? The same holds for the blocking
-     * state. Thus just put the task in the suspended state. */
-    curTCB->uiTaskStatus = (curTCB->uiTaskStatus & defBaseSuspendedSetMask) | defBaseSuspendedTask; }
-  /* If the suspend could have been issued from the outside ... */
-  #if (includeGenSuspend == cfgTrue)
-    /* ... clear the request, if present. */
-    curTCB->defSusField = (curTCB->defSusField & defSusSetMask) | defSusClear;
-  #endif
+  /* Handling of this situation is delegated */
+  privHandleSuspend(uiSuspendMode);
   /* We are done, go get a task switch */
   privEnterOS(defActionTaskStateSwitch); }
 
 #endif
-
 
 #if (includeGenResume == cfgTrue)
 
@@ -4958,7 +4949,7 @@ void genResume(Tuint08 uiTaskNumber)
      * that task will never be resumed again. We could introduce code that tracks that situation
      * down and calls  privReleaseSyncBlockingTasks(). However, that will at the least costs a lot
      * of stack space, or requires an extra messaging system to the OS. In practice it is very
-     * unwise to suspend a task which is blocking or holds queue's or mutexes. This isues have
+     * unwise to suspend a task which is blocking or holds queue's or mutexes. These issues have
      * now been resolved by the cooperation model for suspending tasks with the suspend request.
      */
     }
@@ -5938,12 +5929,12 @@ void genWaitRelease(Tuint08 uiSlot)
     { privShowError((errSlotZeroUsed | errTaskStateCurrent | errOsStateAsIs), callIdTaskSyncRequest, errCurrentTask ); }
     /* Check the type of the slot which is coupled to its number, and if mutexes do not have Fillings */
     if ( ( (uiRightSlot != defSlotRightFree) && ((uiRightSlot < defNumberQueuBegin) || (uiRightSlot >= defNumberMutexEnd ))) ||
-         ( (siFreeRightFilling != 0) && ((uiRightSlot >= defNumberMutexBegin) || (uiRightSlot < defNumberMutexEnd ))) )
+         ( (siFreeRightFilling != 0) && ((uiRightSlot >= defNumberMutexBegin) && (uiRightSlot < defNumberMutexEnd ))) )
       /* If so report an error. */
     { privShowError((errSlotTypeMismatch | errTaskStateCurrent | errOsStateAsIs), callIdTaskSyncRequest, errCurrentTask ); }
     #if (cfgUseSynchronization == cfgSyncDoubleBlock)
       if ( ( (uiLeftSlot  != defSlotLeftFree)  && ((uiLeftSlot  < defNumberQueuBegin) || (uiLeftSlot  >= defNumberMutexEnd ))) ||
-           ( (siFreeLeftFilling  != 0) && ((uiLeftSlot  >= defNumberMutexBegin) || (uiLeftSlot  < defNumberMutexEnd ))) )
+           ( (siFreeLeftFilling  != 0) && ((uiLeftSlot  >= defNumberMutexBegin) && (uiLeftSlot  < defNumberMutexEnd ))) )
         /* If so report an error. */
       { privShowError((errSlotTypeMismatch | errTaskStateCurrent | errOsStateAsIs), callIdTaskSyncRequest, errCurrentTask ); }
       /* Check if not two identical slots are locked */
@@ -6063,6 +6054,7 @@ void genWaitRelease(Tuint08 uiSlot)
     privEnterOS(defActionTaskStateSwitch); } }
 
 #endif
+
 
 
 #if (cfgUseSynchronization != cfgSyncNon) && ( (includeTaskQueu == cfgTrue) || (includeTaskMutex == cfgTrue) )
@@ -6198,10 +6190,9 @@ void genQueuWrite(Tuint08 uiSlot, Tbyte bItem)
     /* If so report an error. */
     { privShowError((errSlotTypeMismatch | errTaskStateCurrent), callIdGenQueuWrite, errCurrentTask ); }
   #endif
-  /* Get the write level of the queue, we put it in a register, cause gcc cannot optimize this variable for
-   * it is volatile. Note that the queue number and the slot number differ by one, because the first item
-   * on any array in C has the number zero. The first queue however is one, because we reserved number zero
-   * to indicate a free lock. */
+  /* Get the write level of the queue. Note that the queue number and the slot number differ by one,
+   * because the first item on any array in C has the number zero. The first queue however is one,
+   * because we reserved number zero to indicate a free lock. */
   Tuint08 uiWrite = uiQueuWrite[uiSlot-1];
   /* If the queue is already full we ignore the item, otherwise we may place it on the queue*/
   if ((uiWrite & defQueuFillingGetMask) == defQueuFillingStateNotFull)
@@ -6210,7 +6201,7 @@ void genQueuWrite(Tuint08 uiSlot, Tbyte bItem)
     /* writing is done downwards (this is because it is much easier to detect we reached the bottom of
      * an array as the top (this must be extracted from flash) so lower the writing level. */
     uiWrite--;
-    /* if we went trough the bottom ... */
+    /* if we went through the bottom ... */
     if (uiWrite == 0xFF)
     { /* only then we need to access the flash to find the top of the array. */
       uiWrite = privGetQueuSize(uiSlot-1)-1; }
@@ -6224,7 +6215,7 @@ void genQueuWrite(Tuint08 uiSlot, Tbyte bItem)
     { uiWrite = (uiWrite & defQueuFillingSetMask) | defQueuFillingStateFull; }
     /* restore the write level into the right place. */
     uiQueuWrite[uiSlot-1] = uiWrite; }
-  /* Sometime it may be useful to interpret writing to a full queue as an error */
+  /* Sometimes it may be useful to interpret writing to a full queue as an error */
   #if (cfgCheckQueuFilling == cfgTrue)
     /* arriving here means we tried to write to a full queue, thus report the error, but this can
      * only be done when we are inside a task. From an ISR this is not possible because the error
@@ -6275,8 +6266,7 @@ Tbyte genQueuRead(Tuint08 uiSlot)
     /* If so report an error. */
     { privShowError((errSlotTypeMismatch | errTaskStateCurrent), callIdGenQueuRead, errCurrentTask ); }
   #endif
-  /* Get the read/write level of the queue, and put it in registers, cause gcc cannot optimize this
-   * variable for they are volatile. Note that the queue number and the slot number differ by one,
+  /* Get the read/write level of the queue. Note that the queue number and the slot number differ by one,
    * because the first item on any array in C has the number zero. The first queue however is one,
    * because we reserved number zero to indicate a free lock. */
   Tuint08 uiRead = uiQueuRead[uiSlot-1];
@@ -6298,7 +6288,7 @@ Tbyte genQueuRead(Tuint08 uiSlot)
     if (uiRead == 0xFF)
     { /* only then we need to access the flash to find the top of the array. */
       uiRead = privGetQueuSize(uiSlot-1)-1; }
-    /* read the item (uiRead points to the last item written). */
+    /* read the item (uiRead points to the last item actually read). */
     Result = qCurQueu[uiRead];
     /* restore the read level into the right place. */
     uiQueuRead[uiSlot-1] = uiRead; }
@@ -6318,6 +6308,110 @@ Tbyte genQueuRead(Tuint08 uiSlot)
   privExitSysCritical();
   /* and return the result. */
   return Result; }
+
+#endif
+
+
+#if (cfgUseSynchronization != cfgSyncNon) && (defUseQueus == cfgTrue) && (includeGenQueuUnwrite == cfgTrue)
+
+void genQueuUnwrite(Tuint08 uiSlot, Tuint08 uiUnwriteSize)
+{ /* Use this method to remove previously written bytes from the queue. The bytes are
+   * not really removed, but the write index is decreased. After that, they may be
+   * overwritten again. There are never more bytes unwritten as present.
+   * Usually you lock that queue first by taskQueuRequest, so you are sure you have
+   * full control over the queue, however this is not required. */
+  privEnterSysCritical();
+  /* Tell what we are doing */
+  privTraceAPI(callIdGenQueuUnwrite);
+  /* Check if the user uses this method properly. */
+  #if (cfgCheckMethodUse == cfgTrue)
+    /* If we have no protection for the OS from interrupts ... */
+    #if (cfgIntOsProtected == cfgFalse)
+      /* we may not arrive here from an isr */
+      if ((uiOsStatus & defContextGetMask) == defContextStateIsr)
+      /* and if we do this is a fatal error. */
+      { privShowError((fatIllegalCallfromISR | errTaskStateNon), callIdGenQueuUnwrite, errNoInfo ); }
+    #endif
+    /* Check the capabilities of the current task */
+    privCheckCapabilities(callIdGenQueuUnwrite, ((cfgCapSynchronization) & 0xFF) );
+    /* The zero slot is reserved to indicate there is no lock, thus it cannot be actively used. */
+    if (uiSlot == defSlotFree)
+    /* Report an error and stop the task. */
+    { privShowError((errSlotZeroUsed | errTaskStateCurrent), callIdGenQueuUnwrite, errCurrentTask ); }
+    /* Check the type of the slot which is coupled to its number. */
+    if ((uiSlot < defNumberQueuBegin) || (uiSlot >= defNumberQueuEnd))
+    /* If so report an error. */
+    { privShowError((errSlotTypeMismatch | errTaskStateCurrent), callIdGenQueuUnwrite, errCurrentTask ); }
+  #endif
+  /* First we must see how many bytes can be unwritting. This is equal to the number of readable bytes.*/
+  Tuint08 uiUnwriteable = privQueuTest(uiSlot,+1);
+  /* Maximize the number of unwritten bytes, so we can never unwrite to many bytes. */
+  if (uiUnwriteSize > uiUnwriteable) { uiUnwriteSize = uiUnwriteable; }
+  /* Get the write index for the write queue. */
+  Tuint08 uiWrite = uiQueuWrite[uiSlot-1];
+  /* Decrease the index. Well actually it must be increased since reading and writing is done downwards. */
+  uiWrite += uiUnwriteSize;
+  /* Now we need to check if the index does not exceed the array. So we need the size of the queue. */
+  Tuint08 uiSize = privGetQueuSize(uiSlot-1);
+  /* And check if the array overflows. If so, wrap it around. */
+  if (uiWrite >= uiSize) { uiWrite -= uiSize; }
+  /* Store the new write index. From now on, the unwritten locations can be reused for
+   * writing. Note that the actual values are not restored. So if this command is followed by
+   * a unread, the original information will not return. */
+  uiQueuWrite[uiSlot-1] =  uiWrite;
+  /* We are done, leave the protected zone. */
+  privExitSysCritical(); }
+
+#endif
+
+
+#if (cfgUseSynchronization != cfgSyncNon) && (defUseQueus == cfgTrue) && (includeGenQueuUnread == cfgTrue)
+
+void genQueuUnread(Tuint08 uiSlot, Tuint08 uiUnreadSize)
+{ /* Use this method to remove previously read bytes from the queue. The bytes are
+   * not really removed, but the read index is decreased. After that, they may be
+   * reread. There are never more bytes unread as present.
+   * Usually you lock that queue first by taskQueuRequest, so you are sure you have
+   * full control over the queue, however this is not required. */
+  privEnterSysCritical();
+  /* Tell what we are doing */
+  privTraceAPI(callIdGenQueuUnread);
+  /* Check if the user uses this method properly. */
+  #if (cfgCheckMethodUse == cfgTrue)
+    /* If we have no protection for the OS from interrupts ... */
+    #if (cfgIntOsProtected == cfgFalse)
+      /* we may not arrive here from an isr */
+      if ((uiOsStatus & defContextGetMask) == defContextStateIsr)
+      /* and if we do this is a fatal error. */
+      { privShowError((fatIllegalCallfromISR | errTaskStateNon), callIdGenQueuUnread, errNoInfo ); }
+    #endif
+    /* Check the capabilities of the current task */
+    privCheckCapabilities(callIdGenQueuUnread, ((cfgCapSynchronization) & 0xFF) );
+    /* The zero slot is reserved to indicate there is no lock, thus it cannot be actively used. */
+    if (uiSlot == defSlotFree)
+    /* Report an error and stop the task. */
+    { privShowError((errSlotZeroUsed | errTaskStateCurrent), callIdGenQueuUnread, errCurrentTask ); }
+    /* Check the type of the slot which is coupled to its number. */
+    if ((uiSlot < defNumberQueuBegin) || (uiSlot >= defNumberQueuEnd))
+    /* If so report an error. */
+    { privShowError((errSlotTypeMismatch | errTaskStateCurrent), callIdGenQueuUnread, errCurrentTask ); }
+  #endif
+  /* First we must see how many bytes can be unread. This is equal to the number of writeable bytes.*/
+  Tuint08 uiUnreadable = privQueuTest(uiSlot,-1);
+  /* Maximize the number of unread bytes, so we can never unread to many bytes. */
+  if (uiUnreadSize > uiUnreadable) { uiUnreadSize = uiUnreadable; }
+  /* Get the read index for the read queue. */
+  Tuint08 uiRead = uiQueuRead[uiSlot-1];
+  /* Decrease the index. Well actually it must be increased since reading and writing is done downwards. */
+  uiRead += uiUnreadSize;
+  /* Now we need to check if the index does not exceed the array. So we need the size of the queue. */
+  Tuint08 uiSize = privGetQueuSize(uiSlot-1);
+  /* And check if the array overflows. If so, wrap it around. */
+  if (uiRead >= uiSize) { uiRead -= uiSize; }
+  /* Store the new read index. From now on, the unread locations can be read again. */
+  uiQueuRead[uiSlot-1] =  uiRead;
+  /* We are done, leave the protected zone. */
+  privExitSysCritical(); }
 
 #endif
 
@@ -7275,27 +7369,27 @@ void taskFileWriteBuffer(Tuint08 uiFileNumber, Tuint08 uiOffset, Tuint08 uiSize,
 #if (cfgUseEvents == cfgTrue) && (includeTaskWaitForEvents == cfgTrue)
 
 #if (cfgUseTimeout == cfgTrue)
-  void privWaitForEventBody(Tuint08 uiEventSet, Tuint16 uiTicksToWait)
+  void privWaitForEventSetBody(Tuint08 uiEventSet, Tuint16 uiTicksToWait)
 #else
-  void privWaitForEventBody(Tuint08 uiEventSet)
+  void privWaitForEventSetBody(Tuint08 uiEventSet)
 #endif
 { /* Call this if you want to wait for one or more events.
    * This is a switching call, let us first initialize the OS.
    * (It is a 'body' function too, see the explanation of this design elsewhere.) */
   privInitOsSwitch();
   /* Tell what we are doing. */
-  privTraceAPI(callIdTaskWaitForEvent);
+  privTraceAPI(callIdTaskWaitForEvents);
   /* Check if the user uses this method properly. */
   #if (cfgCheckMethodUse == cfgTrue)
     /* Check the capabilities of the current task */
-    privCheckCapabilities(callIdTaskWaitForEvent, ((cfgCapEvent) & 0xFF) );
+    privCheckCapabilities(callIdTaskWaitForEvents, ((cfgCapEvent) & 0xFF) );
     #if (cfgUseTimeout == cfgTrue)
       /* Check the capabilities of the current task */
-      privCheckCapabilities(callIdTaskWaitForEvent, ((cfgCapTimeout) & 0xFF) );
+      privCheckCapabilities(callIdTaskWaitForEvents, ((cfgCapTimeout) & 0xFF) );
       /* Check if we do not violate the max delay time */
       if (uiTicksToWait > defDelayTimeMax)
       /* Report an error and stop the task. */
-      { privShowError((errTaskDelayTooLong | errTaskStateCurrent | errOsStateAsIs), callIdTaskWaitForEvent, errCurrentTask ); }
+      { privShowError((errTaskDelayTooLong | errTaskStateCurrent | errOsStateAsIs), callIdTaskWaitForEvents, errCurrentTask ); }
     #endif
   #endif
   /* If we make use of timeouts, we write it as a delay. */
@@ -7303,12 +7397,14 @@ void taskFileWriteBuffer(Tuint08 uiFileNumber, Tuint08 uiOffset, Tuint08 uiSize,
     /* If we make use of timeouts, set the delay variable, which is used for the timeout. */
     if (uiTicksToWait != defLockBlockInfinite) { privDelayCalcFromNow(uiTicksToWait); }
   #endif
-  /* Get the task control block of the task that called this routine. */
-  TtaskControlBlock * curTCB = privTcbList(privTaskNumber(defCurrentTaskNumber));
-  /* Set the event block. This may contain one or more events. */
-  curTCB->uiTaskEvents = uiEventSet;
-  /* block the task */
-  curTCB->uiTaskStatus = (curTCB->uiTaskStatus & (defBaseModeSetMask & defBaseBlockStateSetMask & defBaseDressSetMask)) | (defBaseModeSync | defBaseBlockStateBlocked | defBaseDressEvent);
+  /* Test if there are any events we should wait on, if not we have nothing to do. */
+  if (uiEventSet != defAllEventsReset)
+  { /* Get the task control block of the task that called this routine. */
+    TtaskControlBlock * curTCB = privTcbList(privTaskNumber(defCurrentTaskNumber));
+    /* Set the event block. This may contain one or more events. */
+    curTCB->uiTaskEvents = uiEventSet;
+    /* block the task */
+    curTCB->uiTaskStatus = (curTCB->uiTaskStatus & (defBaseModeSetMask & defBaseBlockStateSetMask & defBaseDressSetMask)) | (defBaseModeSync | defBaseBlockStateBlocked | defBaseDressEvent); }
   /* We are done, since we blocked we switch in any case. */
   privEnterOS(defActionTaskStateSwitch); }
 

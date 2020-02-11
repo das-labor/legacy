@@ -1,5 +1,5 @@
 /*
- * Femto OS v 0.91 - Copyright (C) 2008-2009 Ruud Vlaming
+ * Femto OS v 0.92 - Copyright (C) 2008-2010 Ruud Vlaming
  *
  * This file is part of the Femto OS distribution.
  *
@@ -265,6 +265,7 @@
 #define defBaseDressWrite              0x00
 
 #define defBaseRunningTask             0xF0
+#define defBaseRunDelayedTask          0xE0
 #define defBaseNoBlocksTask            0xE0
 #define defBaseSyncBlockedTask         0xC0
 #define defBaseSharedTask              0xA0
@@ -542,6 +543,15 @@
  */
 #define defInitCPUStatusRegister   (portInitCPUStatusRegister & ~((1 << portInitModeInterruptLoc) | (1 << portInitGlobalInterruptLoc) | (1 << portInitTickInterruptLoc)) )
 
+
+/* Definition for the read/write mode for queus.  */
+#define defQueuModeGetMask             0x80
+#define defQueuModeSizeMask            (~defQueuModeGetMask)
+#define defQueuModeSetMask             (~defQueuModeGetMask)
+#define defQueuModeRead                0x00
+#define defQueuModeWrite               0x80
+
+
 /* Definitions for the Queu subfield. Note that the Write- and ReadEmpty bytes are, and
  * must be, 0x00. This is because upon initial use we want to make use of the .bss cleaning,
  * to save code. The values of the StateFull/StateNotFull must be defined accordingly.
@@ -692,8 +702,6 @@
 #define defActionRunStateIdle          (defContextStateTask)
 #define defActionRunStateTask          0x00
 
-/* Definition used to check slot numbers */
-#define defCheckSlotTypeError          0xF0
 
 /* Definition to fire all events */
 #define defAllEventsSet                0xFF

@@ -1,5 +1,5 @@
 /*
- * Femto OS v 0.91 - Copyright (C) 2008-2009 Ruud Vlaming
+ * Femto OS v 0.92 - Copyright (C) 2008-2010 Ruud Vlaming
  *
  * This file is part of the Femto OS distribution.
  *
@@ -112,8 +112,10 @@
       (includeGenQueuFull == cfgTrue) || \
       (includeGenQueuPeek == cfgTrue) || \
       (includeGenQueuRead == cfgTrue) || \
+      (includeGenQueuUnread == cfgTrue) || \
       (includeGenQueuReadable == cfgTrue) || \
       (includeGenQueuWrite == cfgTrue) || \
+      (includeGenQueuUnwrite == cfgTrue) || \
       (includeGenQueuWriteable == cfgTrue) || \
       (includeGenResume == cfgTrue) || \
       (includeGenSetPriority == cfgTrue) || \
@@ -3109,14 +3111,14 @@
  * Note: n0 .. n7 should be constants and not variables.
  */
 #define preBitSet
-#define preBitSet1(p,n0)                      ( p | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF))) ) )
-#define preBitSet2(p,n0,n1)                   ( p | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF))) ) )
-#define preBitSet3(p,n0,n1,n2)                ( p | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF))) ) )
-#define preBitSet4(p,n0,n1,n2,n3)             ( p | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF))) ) )
-#define preBitSet5(p,n0,n1,n2,n3,n4)          ( p | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF))) ) )
-#define preBitSet6(p,n0,n1,n2,n3,n4,n5)       ( p | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF))) ) )
-#define preBitSet7(p,n0,n1,n2,n3,n4,n5,n6)    ( p | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF)) | ((Tuint16)1<<((n6) & 0xFF))) ) )
-#define preBitSet8(p,n0,n1,n2,n3,n4,n5,n6,n7) ( p | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF)) | ((Tuint16)1<<((n6) & 0xFF)) | ((Tuint16)1<<((n7) & 0xFF))) ) )
+#define preBitSet1(p,n0)                      ( (p) | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF))) ) )
+#define preBitSet2(p,n0,n1)                   ( (p) | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF))) ) )
+#define preBitSet3(p,n0,n1,n2)                ( (p) | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF))) ) )
+#define preBitSet4(p,n0,n1,n2,n3)             ( (p) | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF))) ) )
+#define preBitSet5(p,n0,n1,n2,n3,n4)          ( (p) | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF))) ) )
+#define preBitSet6(p,n0,n1,n2,n3,n4,n5)       ( (p) | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF))) ) )
+#define preBitSet7(p,n0,n1,n2,n3,n4,n5,n6)    ( (p) | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF)) | ((Tuint16)1<<((n6) & 0xFF))) ) )
+#define preBitSet8(p,n0,n1,n2,n3,n4,n5,n6,n7) ( (p) | (Tuint08)(0xFF & ( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF)) | ((Tuint16)1<<((n6) & 0xFF)) | ((Tuint16)1<<((n7) & 0xFF))) ) )
 
 /** <!--0711-->
  * Use this function as general method to clear bits.
@@ -3130,14 +3132,14 @@
  * Note: n0 .. n7 should be constants and not variables.
  */
 #define preBitClr
-#define preBitClr1(p,n0)                      ( p & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF))) ) )
-#define preBitClr2(p,n0,n1)                   ( p & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF))) ) )
-#define preBitClr3(p,n0,n1,n2)                ( p & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF))) ) )
-#define preBitClr4(p,n0,n1,n2,n3)             ( p & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF))) ) )
-#define preBitClr5(p,n0,n1,n2,n3,n4)          ( p & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF))) ) )
-#define preBitClr6(p,n0,n1,n2,n3,n4,n5)       ( p & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF))) ) )
-#define preBitClr7(p,n0,n1,n2,n3,n4,n5,n6)    ( p & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF)) | ((Tuint16)1<<((n6) & 0xFF))) ) )
-#define preBitClr8(p,n0,n1,n2,n3,n4,n5,n6,n7) ( p & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF)) | ((Tuint16)1<<((n6) & 0xFF)) | ((Tuint16)1<<((n7) & 0xFF))) ) )
+#define preBitClr1(p,n0)                      ( (p) & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF))) ) )
+#define preBitClr2(p,n0,n1)                   ( (p) & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF))) ) )
+#define preBitClr3(p,n0,n1,n2)                ( (p) & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF))) ) )
+#define preBitClr4(p,n0,n1,n2,n3)             ( (p) & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF))) ) )
+#define preBitClr5(p,n0,n1,n2,n3,n4)          ( (p) & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF))) ) )
+#define preBitClr6(p,n0,n1,n2,n3,n4,n5)       ( (p) & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF))) ) )
+#define preBitClr7(p,n0,n1,n2,n3,n4,n5,n6)    ( (p) & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF)) | ((Tuint16)1<<((n6) & 0xFF))) ) )
+#define preBitClr8(p,n0,n1,n2,n3,n4,n5,n6,n7) ( (p) & (Tuint08)(0xFF & ~( ((Tuint16)1<<((n0) & 0xFF)) | ((Tuint16)1<<((n1) & 0xFF)) | ((Tuint16)1<<((n2) & 0xFF)) | ((Tuint16)1<<((n3) & 0xFF)) | ((Tuint16)1<<((n4) & 0xFF)) | ((Tuint16)1<<((n5) & 0xFF)) | ((Tuint16)1<<((n6) & 0xFF)) | ((Tuint16)1<<((n7) & 0xFF))) ) )
 
 /** <!--0712-->
  * Test if a bit on a particular place is set.
@@ -3145,7 +3147,7 @@
  * Use this to quickly test if a bit is set on a location (0..7). On the
  * AVR this is compiled to a atomic test if possible.
  */
-#define preBitIsSet(p,q)                      ( (p & (1<<q)) == (1<<q) )
+#define preBitIsSet(p,q)                      ( ((p) & (1<<(q))) == (1<<(q)) )
 
 /** <!--0713-->
  * Test if a bit on a particular place is cleared.
@@ -3153,7 +3155,7 @@
  * Use this to quickly test if a bit is cleared on a location (0..7). On the
  * AVR this is compiled to a atomic test if possible.
  */
-#define preBitIsClr(p,q)                      ( (p & (1<<q)) == 0 )
+#define preBitIsClr(p,q)                      ( ((p) & (1<<(q))) == 0 )
 
 /** <!--0720-->
  * Returns the task number of a task with the name "TaskName".
