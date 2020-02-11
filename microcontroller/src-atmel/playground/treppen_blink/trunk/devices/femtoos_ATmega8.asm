@@ -133,9 +133,9 @@
 /* Interrupt service routines.
  * Service routines that are not present should not be
  * defined and cannot be defined cfgUndefined. */
-#define devSigTimerCompare     SIG_OUTPUT_COMPARE2
-#define devSigTimerOverflow    SIG_OVERFLOW2
-#define devSigExternalInt      SIG_INTERRUPT0
+#define devSigTimerCompare     TIMER2_COMP_vect
+#define devSigTimerOverflow    TIMER2_OVF_vect
+#define devSigExternalInt      INT0_vect
 
 #endif /* FEMTOOS_DEVICE_DEFINITIONS */
 
