@@ -5,7 +5,7 @@ extern void pca9555_write_byte(uint8_t byte, uint8_t cmd);
 extern void pca9555_write_word(uint16_t byte, uint8_t cmd);
 extern uint16_t pca9555_read_byte(uint8_t cmd);
 
-enum {
+typedef enum {
 	PCA9555_IN0,
 	PCA9555_IN1,
 	PCA9555_OUT0,

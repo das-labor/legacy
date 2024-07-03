@@ -1,6 +1,6 @@
 #pragma once
 
-enum {
+typedef enum {
 	I0,
 	I1,
 	I2,
@@ -10,14 +10,14 @@ enum {
 	Q1,
 } TEA6420_CONFIG;
 
-enum {
+typedef enum {
 	OUTPUT_1,
 	OUTPUT_2,
 	OUTPUT_3,
 	OUTPUT_4,
 } TEA6420_OUTPUT;
 
-enum {
+typedef enum {
 	INPUT_1,
 	INPUT_2,
 	INPUT_3,
@@ -26,7 +26,7 @@ enum {
 	MUTE,
 } TEA6420_INPUT;
 
-enum {
+typedef enum {
 	GAIN_6DB,
 	GAIN_4DB,
 	GAIN_2DB,
